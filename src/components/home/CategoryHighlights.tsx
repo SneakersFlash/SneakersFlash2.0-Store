@@ -98,7 +98,7 @@ function CategoryTile({ category, index }: CategoryTileProps) {
 
         {category.imageUrl && (
           <Image
-            src={buildImageUrl(category.imageUrl)}
+            src={buildImageUrl(category.imageUrl ?? '')}
             alt={category.name}
             fill
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"

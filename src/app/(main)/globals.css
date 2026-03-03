@@ -188,11 +188,10 @@
   /* ── Primary button ── */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
-           bg-primary text-primary-foreground
+           bg-primary hover:bg-brand-yellowDark text-primary-foreground
            px-6 py-3 font-display uppercase tracking-widest text-sm
            transition-all duration-200 active:scale-95;
   }
-  .btn-primary:hover { background-color: #D4A000; }
 
   /* ── Ghost button ── */
   .btn-ghost {

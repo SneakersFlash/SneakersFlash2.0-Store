@@ -1,45 +1,47 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Instagram, Twitter, Youtube, Facebook } from "lucide-react";
 
 const FOOTER_LINKS = {
   Help: [
-    { label: "Contact Us", href: "/contact" },
-    { label: "Order Status", href: "/account/orders" },
-    { label: "Shipping & Returns", href: "/shipping" },
-    { label: "Size Guide", href: "/size-guide" },
-    { label: "FAQs", href: "/faq" },
+    { label: "Contact Us",        href: "/contact"          },
+    { label: "Order Status",      href: "/account/orders"   },
+    { label: "Shipping & Returns",href: "/shipping"         },
+    { label: "Size Guide",        href: "/size-guide"       },
+    { label: "FAQs",              href: "/faq"              },
   ],
   Company: [
-    { label: "About SneakersFlash", href: "/about" },
-    { label: "Careers", href: "/careers" },
-    { label: "Press", href: "/press" },
-    { label: "Sustainability", href: "/sustainability" },
+    { label: "About SNKRS Flash", href: "/about"            },
+    { label: "Careers",           href: "/careers"          },
+    { label: "Press",             href: "/press"            },
+    { label: "Sustainability",    href: "/sustainability"   },
   ],
   Shop: [
-    { label: "New Arrivals", href: "/products?sort=newest" },
-    { label: "Best Sellers", href: "/products?sort=popular" },
-    { label: "Sale", href: "/products?sale=true" },
-    { label: "All Brands", href: "/brands" },
-    { label: "Gift Cards", href: "/gift-cards" },
+    { label: "New Arrivals",      href: "/products?sort=newest"  },
+    { label: "Best Sellers",      href: "/products?sort=popular" },
+    { label: "Sale",              href: "/products?sale=true"    },
+    { label: "All Brands",        href: "/brands"                },
+    { label: "Gift Cards",        href: "/gift-cards"            },
   ],
 };
 
 const SOCIAL_LINKS = [
-  { icon: Instagram, label: "Instagram", href: "https://instagram.com/sneakersflash" },
-  { icon: Twitter, label: "Twitter / X", href: "https://twitter.com/sneakersflash" },
-  { icon: Youtube, label: "YouTube", href: "https://youtube.com/@sneakersflash" },
-  { icon: Facebook, label: "Facebook", href: "https://facebook.com/sneakersflash" },
+  { icon: Instagram, label: "Instagram", href: "https://instagram.com/snkrsflash" },
+  { icon: Twitter,   label: "X / Twitter",href: "https://twitter.com/snkrsflash"  },
+  { icon: Youtube,   label: "YouTube",   href: "https://youtube.com/@snkrsflash"  },
+  { icon: Facebook,  label: "Facebook",  href: "https://facebook.com/snkrsflash"  },
 ];
 
 const PAYMENT_METHODS = ["VISA", "MC", "BCA", "BNI", "GoPay", "OVO", "Dana"];
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-brand-gray-900 border-t border-border mt-24">
+    <footer className="bg-card border-t border-border mt-24">
+
       {/* ── Newsletter band ── */}
-      <div className="bg-brand-gray-800 border-b border-border">
+      <div className="bg-muted border-b border-border">
         <div className="container-2xl py-10">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div>
@@ -54,9 +56,9 @@ export function Footer() {
               <input
                 type="email"
                 placeholder="Your email address"
-                className="flex-1 md:w-72 bg-brand-gray-700 border border-border px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                className="flex-1 md:w-72 bg-background border border-border px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
               />
-              <button className="bg-primary hover:bg-primary/90 text-white px-6 py-3 text-sm font-display uppercase tracking-widest transition-colors shrink-0">
+              <button className="bg-primary hover:bg-brand-yellowDark text-primary-foreground px-6 py-3 text-sm font-display uppercase tracking-widest transition-colors shrink-0">
                 Subscribe
               </button>
             </div>
@@ -64,23 +66,30 @@ export function Footer() {
         </div>
       </div>
 
-      {/* ── Main footer grid ── */}
+      {/* ── Main grid ── */}
       <div className="container-2xl py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+
           {/* Brand col */}
           <div className="lg:col-span-2">
-            <Link
-              href="/"
-              className="font-display text-2xl font-bold tracking-wider block mb-4"
-            >
-              SNEAKERS<span className="text-primary">FLASH</span>
+            {/* Real logo */}
+            <Link href="/" className="block mb-5">
+              <Image
+                src="/images/logo.jpeg"
+                alt="SNKRS Flash"
+                width={160}
+                height={42}
+                className="h-10 w-auto object-contain"
+              />
             </Link>
+
             <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
-              Indonesia's home for authentic sneakers and streetwear. New drops every week. Always legit.
+              Indonesia's home for authentic sneakers and streetwear.
+              New drops every Friday. Always legit. ⚡
             </p>
 
-            {/* Social links */}
-            <div className="flex items-center gap-3">
+            {/* Social */}
+            <div className="flex items-center gap-2">
               {SOCIAL_LINKS.map(({ icon: Icon, label, href }) => (
                 <a
                   key={label}
@@ -88,9 +97,9 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="w-9 h-9 bg-brand-gray-800 border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all"
+                  className="w-9 h-9 bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-all duration-200"
                 >
-                  <Icon size={16} />
+                  <Icon size={15} />
                 </a>
               ))}
             </div>
@@ -119,27 +128,22 @@ export function Footer() {
 
       {/* ── Bottom bar ── */}
       <div className="border-t border-border">
-        <div className="container-2xl py-6">
+        <div className="container-2xl py-5">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Legal links */}
-            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-              <span>© {currentYear} SneakersFlash. All rights reserved.</span>
-              <Link href="/privacy" className="hover:text-foreground transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="hover:text-foreground transition-colors">
-                Terms of Service
-              </Link>
+            <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+              <span>© {year} SNKRS Flash. All rights reserved.</span>
+              <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+              <Link href="/terms"   className="hover:text-foreground transition-colors">Terms</Link>
             </div>
 
             {/* Payment methods */}
-            <div className="flex items-center gap-2">
-              {PAYMENT_METHODS.map((method) => (
+            <div className="flex items-center gap-1.5 flex-wrap justify-center">
+              {PAYMENT_METHODS.map((m) => (
                 <span
-                  key={method}
-                  className="px-2 py-0.5 bg-brand-gray-800 border border-border text-[10px] font-mono font-bold text-muted-foreground tracking-wider"
+                  key={m}
+                  className="px-2 py-1 bg-muted border border-border text-[10px] font-mono font-bold text-muted-foreground tracking-wider"
                 >
-                  {method}
+                  {m}
                 </span>
               ))}
             </div>

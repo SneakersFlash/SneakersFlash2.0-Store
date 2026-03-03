@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight, Zap } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 
 interface PromoStripProps {
   eyebrow?: string;
@@ -11,7 +12,7 @@ interface PromoStripProps {
   sub?: string;
   ctaLabel: string;
   ctaHref: string;
-  variant?: "red" | "dark";
+  variant?: "yellow" | "dark";
 }
 
 export function PromoStrip({
@@ -20,31 +21,50 @@ export function PromoStrip({
   sub,
   ctaLabel,
   ctaHref,
-  variant = "red",
+  variant = "yellow",
 }: PromoStripProps) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.5 });
-
-  const isRed = variant === "red";
+  const isInView = useInView(ref, { once: true, amount: 0.4 });
+  const isYellow = variant === "yellow";
 
   return (
     <section
       ref={ref}
-      className={`relative overflow-hidden py-14 ${
-        isRed ? "bg-primary" : "bg-brand-gray-800 border-y border-border"
-      }`}
+      className={cn(
+        "relative overflow-hidden py-14",
+        isYellow
+          ? "bg-primary"                                   // solid yellow
+          : "bg-muted border-y border-border"              // muted (dark/light aware)
+      )}
     >
-      {/* Ghost text bg */}
+      {/* Ghost text */}
       <div className="absolute inset-0 flex items-center justify-end overflow-hidden pointer-events-none select-none">
         <p
-          className={`font-display font-black uppercase leading-none ${
-            isRed ? "text-white/10" : "text-white/[0.03]"
-          }`}
+          className={cn(
+            "font-display font-black uppercase leading-none",
+            isYellow ? "text-black/10" : "text-foreground/[0.03]"
+          )}
           style={{ fontSize: "clamp(6rem, 20vw, 18rem)" }}
         >
-          SALE
+          FLASH
         </p>
       </div>
+
+      {/* Lightning bolt accent */}
+      <motion.div
+        animate={{ opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 2.5, repeat: Infinity }}
+        className="absolute left-8 top-1/2 -translate-y-1/2 pointer-events-none hidden xl:block"
+      >
+        <Zap
+          size={80}
+          className={cn(
+            "opacity-10",
+            isYellow ? "text-black" : "text-primary"
+          )}
+          fill="currentColor"
+        />
+      </motion.div>
 
       <div className="relative z-10 container-2xl">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -57,15 +77,13 @@ export function PromoStrip({
                 className="flex items-center gap-2 mb-3"
               >
                 <Zap
-                  size={14}
-                  className={isRed ? "text-white/80" : "text-primary"}
-                  fill="currentColor"
+                  size={13}
+                  className={isYellow ? "text-black/60 fill-black/60" : "text-primary fill-primary"}
                 />
-                <span
-                  className={`text-xs font-display uppercase tracking-[0.2em] ${
-                    isRed ? "text-white/80" : "text-primary"
-                  }`}
-                >
+                <span className={cn(
+                  "text-xs font-display uppercase tracking-[0.2em]",
+                  isYellow ? "text-black/70" : "text-primary"
+                )}>
                   {eyebrow}
                 </span>
               </motion.div>
@@ -75,9 +93,10 @@ export function PromoStrip({
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className={`font-display text-3xl md:text-5xl font-bold uppercase tracking-tight ${
-                isRed ? "text-white" : "text-foreground"
-              }`}
+              className={cn(
+                "font-display text-3xl md:text-5xl font-bold uppercase tracking-tight",
+                isYellow ? "text-black" : "text-foreground"
+              )}
             >
               {headline}
             </motion.h2>
@@ -87,9 +106,10 @@ export function PromoStrip({
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
                 transition={{ duration: 0.4, delay: 0.25 }}
-                className={`text-sm mt-2 ${
-                  isRed ? "text-white/70" : "text-muted-foreground"
-                }`}
+                className={cn(
+                  "text-sm mt-2",
+                  isYellow ? "text-black/60" : "text-muted-foreground"
+                )}
               >
                 {sub}
               </motion.p>
@@ -104,15 +124,17 @@ export function PromoStrip({
           >
             <Link
               href={ctaHref}
-              className={`group inline-flex items-center gap-3 px-8 py-4 font-display uppercase tracking-widest text-sm transition-all duration-200 ${
-                isRed
-                  ? "bg-white text-primary hover:bg-white/90"
-                  : "bg-primary text-white hover:bg-primary/90"
-              }`}
+              className={cn(
+                "group inline-flex items-center gap-3 px-8 py-4",
+                "font-display uppercase tracking-widest text-sm transition-all duration-200",
+                isYellow
+                  ? "bg-black text-brand-yellow hover:bg-brand-gray-900"
+                  : "bg-primary text-primary-foreground hover:bg-brand-yellowDark"
+              )}
             >
               {ctaLabel}
               <ArrowRight
-                size={15}
+                size={14}
                 className="transition-transform duration-200 group-hover:translate-x-1"
               />
             </Link>

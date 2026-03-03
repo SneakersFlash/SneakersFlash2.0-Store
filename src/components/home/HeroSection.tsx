@@ -2,75 +2,15 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Zap } from "lucide-react";
 
-// ─── Slide data ───────────────────────────────────────────────────────────────
-// In production, this could come from a CMS or backend banners API.
-
-const HERO_SLIDES = [
-  {
-    id: 1,
-    eyebrow: "New Season · 2025",
-    headline: "RUN YOUR\nOWN\nRULES",
-    subheadline: "The latest drops from Nike, Adidas, and New Balance — exclusively on SneakersFlash.",
-    cta: { label: "Shop New Arrivals", href: "/products?sort=newest" },
-    secondaryCta: { label: "Explore Brands", href: "/brands" },
-    // Using a gradient + geometric shapes as hero background
-    // Replace src below with your actual hero image URL
-    imageSrc: null as string | null,
-    accentWord: "RUN",
-    bgClass: "from-brand-black via-brand-gray-900 to-brand-gray-800",
-  },
-];
-
-const slide = HERO_SLIDES[0];
-
-// ─── Animation variants ───────────────────────────────────────────────────────
-
-const container = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.12,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
-
-const fadeIn = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { duration: 0.6, ease: "easeOut" },
-  },
-};
-
-const slideRight = {
-  hidden: { opacity: 0, x: -60 },
-  show: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
-  },
-};
-
-// ─── Marquee ticker ───────────────────────────────────────────────────────────
+// ─── Ticker ───────────────────────────────────────────────────────────────────
 
 const TICKER_ITEMS = [
   "NEW ARRIVALS",
   "FREE SHIPPING OVER RP 500K",
-  "AUTHENTIC GUARANTEED",
+  "100% AUTHENTIC",
   "NEW DROPS EVERY FRIDAY",
   "EXCLUSIVE RELEASES",
 ];
@@ -78,14 +18,10 @@ const TICKER_ITEMS = [
 function Ticker() {
   const repeated = [...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS];
   return (
-    <div className="overflow-hidden border-y border-border bg-brand-gray-900/80 backdrop-blur-sm">
+    <div className="overflow-hidden border-y border-border bg-muted/50">
       <motion.div
         animate={{ x: ["0%", "-33.33%"] }}
-        transition={{
-          duration: 20,
-          repeat: Infinity,
-          ease: "linear",
-        }}
+        transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
         className="flex whitespace-nowrap py-2.5"
       >
         {repeated.map((item, i) => (
@@ -94,7 +30,7 @@ function Ticker() {
             className="inline-flex items-center gap-4 px-8 text-[11px] font-display uppercase tracking-widest text-muted-foreground"
           >
             {item}
-            <span className="text-primary font-bold text-base leading-none">✦</span>
+            <Zap size={10} className="text-primary fill-primary" />
           </span>
         ))}
       </motion.div>
@@ -102,41 +38,53 @@ function Ticker() {
   );
 }
 
-// ─── Background geometric elements ────────────────────────────────────────────
+// ─── Background ───────────────────────────────────────────────────────────────
 
 function HeroBg() {
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Base gradient */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${slide.bgClass}`} />
+      {/* Base — matches dark bg; will be card color in light mode */}
+      <div className="absolute inset-0 bg-card" />
 
-      {/* Large circle — top right */}
+      {/* Yellow radial glow — top right */}
       <div
-        className="absolute -top-1/4 -right-1/4 w-[70vw] h-[70vw] rounded-full opacity-[0.03]"
-        style={{ background: "radial-gradient(circle, #CC0000 0%, transparent 70%)" }}
+        className="absolute -top-1/3 -right-1/4 w-[65vw] h-[65vw] rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(245,184,0,0.08) 0%, transparent 65%)",
+        }}
       />
 
-      {/* Diagonal stripe set — bottom left */}
-      <div className="absolute bottom-0 left-0 w-80 h-full opacity-[0.04] overflow-hidden">
-        {[...Array(12)].map((_, i) => (
+      {/* Second glow — bottom left */}
+      <div
+        className="absolute -bottom-1/4 -left-1/4 w-[50vw] h-[50vw] rounded-full pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(245,184,0,0.04) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* Diagonal rule lines */}
+      <div className="absolute bottom-0 right-0 w-96 h-full opacity-[0.025] overflow-hidden pointer-events-none">
+        {[...Array(14)].map((_, i) => (
           <div
             key={i}
-            className="absolute bg-white"
+            className="absolute bg-foreground"
             style={{
               width: "1px",
               height: "120%",
-              left: `${i * 28}px`,
+              right: `${i * 26}px`,
               top: "-10%",
-              transform: "rotate(-25deg)",
+              transform: "rotate(20deg)",
               transformOrigin: "top center",
             }}
           />
         ))}
       </div>
 
-      {/* Noise texture */}
+      {/* Noise grain */}
       <div
-        className="absolute inset-0 opacity-[0.025]"
+        className="absolute inset-0 pointer-events-none opacity-[0.02]"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
           backgroundSize: "200px 200px",
@@ -144,30 +92,50 @@ function HeroBg() {
       />
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-background to-transparent" />
     </div>
   );
 }
 
-// ─── Main Hero Section ────────────────────────────────────────────────────────
+// ─── Animation variants ───────────────────────────────────────────────────────
+
+const container = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 36 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.25, 0.46, 0.45, 0.94] } },
+};
+const fadeIn = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { duration: 0.5 } },
+};
+const slideLeft = {
+  hidden: { opacity: 0, x: -50 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.75, ease: [0.25, 0.46, 0.45, 0.94] } },
+};
+
+// ─── Main Hero ────────────────────────────────────────────────────────────────
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Parallax on scroll
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  const bgY    = useTransform(scrollYProgress, [0, 1], ["0%",  "25%"]);
+  const textY  = useTransform(scrollYProgress, [0, 1], ["0%",  "12%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
 
   return (
     <section ref={sectionRef} className="relative">
-      {/* ── Main hero block ── */}
       <div className="relative min-h-[88vh] flex flex-col justify-center overflow-hidden">
-        {/* Parallax background */}
+
+        {/* Parallax BG */}
         <motion.div className="absolute inset-0" style={{ y: bgY }}>
           <HeroBg />
         </motion.div>
@@ -187,29 +155,20 @@ export function HeroSection() {
             <motion.div variants={fadeIn} className="flex items-center gap-3 mb-6">
               <div className="h-px w-10 bg-primary" />
               <span className="text-xs font-display uppercase tracking-[0.3em] text-primary">
-                {slide.eyebrow}
+                New Season · 2025
               </span>
             </motion.div>
 
-            {/* Massive headline */}
+            {/* Headline */}
             <motion.h1
-              variants={slideRight}
-              className="font-display font-bold uppercase leading-[0.9] tracking-tight mb-8"
+              variants={slideLeft}
+              className="font-display font-bold uppercase leading-[0.88] tracking-tighter mb-8"
               style={{ fontSize: "clamp(3.5rem, 12vw, 9rem)" }}
             >
-              {slide.headline.split("\n").map((line, i) => (
-                <span key={i} className="block">
-                  {i === 0 ? (
-                    <span className="text-foreground">{line}</span>
-                  ) : i === 1 ? (
-                    <>
-                      <span className="text-primary">{line}</span>
-                    </>
-                  ) : (
-                    <span className="text-foreground">{line}</span>
-                  )}
-                </span>
-              ))}
+              <span className="block text-foreground">RUN YOUR</span>
+              {/* "OWN" gets the yellow gradient — mirrors the logo's bolt color */}
+              <span className="block text-gradient-yellow">OWN</span>
+              <span className="block text-foreground">RULES</span>
             </motion.h1>
 
             {/* Subheadline */}
@@ -217,68 +176,77 @@ export function HeroSection() {
               variants={fadeUp}
               className="text-base md:text-lg text-muted-foreground max-w-md leading-relaxed mb-10"
             >
-              {slide.subheadline}
+              The latest drops from Nike, Adidas, and New Balance — exclusively on SNKRS Flash.
             </motion.p>
 
             {/* CTAs */}
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
               <Link
-                href={slide.cta.href}
-                className="group/btn inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-white px-8 py-4 font-display uppercase tracking-widest text-sm transition-all duration-200 hover:gap-5"
+                href="/products?sort=newest"
+                className="group/btn btn-primary gap-3 hover:gap-4 transition-all"
               >
-                {slide.cta.label}
+                Shop New Arrivals
                 <ArrowRight
-                  size={16}
+                  size={15}
                   className="transition-transform duration-200 group-hover/btn:translate-x-1"
                 />
               </Link>
               <Link
-                href={slide.secondaryCta.href}
-                className="inline-flex items-center gap-3 border border-foreground/30 hover:border-foreground text-foreground px-8 py-4 font-display uppercase tracking-widest text-sm transition-all duration-200 hover:bg-white/5"
+                href="/brands"
+                className="btn-ghost"
               >
-                {slide.secondaryCta.label}
+                Explore Brands
               </Link>
             </motion.div>
 
-            {/* Stats row */}
+            {/* Stats */}
             <motion.div
               variants={fadeUp}
-              className="flex items-center gap-8 mt-14 pt-10 border-t border-border/50"
+              className="hidden sm:flex items-center gap-8 mt-14 pt-10 border-t border-border/50"
             >
               {[
-                { value: "500+", label: "Premium Brands" },
-                { value: "10K+", label: "Products" },
-                { value: "100%", label: "Authentic" },
-                { value: "1–3 Day", label: "Delivery" },
+                { value: "500+",   label: "Premium Brands" },
+                { value: "10K+",   label: "Products"       },
+                { value: "100%",   label: "Authentic"      },
+                { value: "1–3 Day",label: "Delivery"       },
               ].map(({ value, label }) => (
-                <div key={label} className="hidden sm:block">
-                  <p className="font-display text-2xl font-bold text-foreground">
-                    {value}
-                  </p>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">
-                    {label}
-                  </p>
+                <div key={label}>
+                  <p className="font-display text-2xl font-bold text-primary">{value}</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">{label}</p>
                 </div>
               ))}
             </motion.div>
           </motion.div>
         </motion.div>
 
-        {/* Large ghost text — editorial overlay */}
+        {/* Ghost "FLASH" watermark */}
         <motion.div
-          style={{ opacity: useTransform(scrollYProgress, [0, 0.6], [0.035, 0]) }}
-          className="absolute right-0 bottom-8 pointer-events-none select-none overflow-hidden"
+          style={{ opacity: useTransform(scrollYProgress, [0, 0.6], [0.04, 0]) }}
+          className="absolute right-0 bottom-6 pointer-events-none select-none overflow-hidden"
         >
           <p
             className="font-display font-black uppercase text-foreground leading-none"
-            style={{ fontSize: "clamp(8rem, 25vw, 22rem)" }}
+            style={{ fontSize: "clamp(7rem, 24vw, 20rem)" }}
           >
             FLASH
           </p>
         </motion.div>
+
+        {/* Animated lightning bolt accent — mirrors logo */}
+        <motion.div
+          animate={{ opacity: [0.6, 1, 0.6], scale: [1, 1.05, 1] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-24 right-12 md:right-24 pointer-events-none hidden lg:block"
+        >
+          <Zap
+            size={48}
+            className="text-primary drop-shadow-[0_0_20px_rgba(245,184,0,0.5)]"
+            fill="currentColor"
+          />
+        </motion.div>
       </div>
 
-      {/* ── Ticker banner ── */}
+      {/* Ticker */}
       <Ticker />
     </section>
   );

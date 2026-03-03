@@ -46,7 +46,7 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed top-0 left-0 bottom-0 w-80 bg-brand-gray-900 z-50 lg:hidden flex flex-col overflow-hidden"
+            className="fixed top-0 left-0 bottom-0 w-80 bg-background z-50 lg:hidden flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-border">
@@ -66,7 +66,7 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
             </div>
 
             {/* User section */}
-            <div className="px-5 py-4 border-b border-border bg-brand-gray-800">
+            <div className="px-5 py-4 border-b border-border bg-background">
               {isAuthenticated ? (
                 <div className="flex items-center gap-3">
                   <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center text-primary font-display font-bold text-sm">
@@ -111,7 +111,7 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
                             expandedItem === item.label ? null : item.label
                           )
                         }
-                        className="flex items-center justify-between w-full px-5 py-3.5 text-sm font-display uppercase tracking-wider text-left hover:bg-brand-gray-800 transition-colors"
+                        className="flex items-center justify-between w-full px-5 py-3.5 text-sm font-display uppercase tracking-wider text-left hover:bg-background transition-colors"
                       >
                         <span className={cn(item.isRed && "text-primary")}>
                           {item.label}
@@ -132,7 +132,7 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="overflow-hidden bg-brand-gray-800"
+                            className="overflow-hidden bg-background"
                           >
                             {item.megaMenu.columns.map((col) => (
                               <div key={col.title} className="px-5 py-3">
@@ -170,7 +170,7 @@ export function MobileMenu({ isOpen, onClose, navItems }: MobileMenuProps) {
                       href={item.href}
                       onClick={onClose}
                       className={cn(
-                        "flex items-center px-5 py-3.5 text-sm font-display uppercase tracking-wider hover:bg-brand-gray-800 transition-colors",
+                        "flex items-center px-5 py-3.5 text-sm font-display uppercase tracking-wider hover:bg-background transition-colors",
                         item.isRed ? "text-primary" : "text-foreground"
                       )}
                     >
