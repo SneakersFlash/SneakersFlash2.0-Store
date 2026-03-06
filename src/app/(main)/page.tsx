@@ -1,57 +1,64 @@
 import type { Metadata } from "next";
-import { HeroSection } from "@/components/home/HeroSection";
-import { FeaturedProducts } from "@/components/home/FeaturedProducts";
-import { CategoryHighlights } from "@/components/home/CategoryHighlights";
-import { BrandStrip } from "@/components/home/BrandStrip";
-import { PromoStrip } from "@/components/home/PromoStrip";
-import { TrustBar } from "@/components/home/TrustBar";
+import { TopSearchBar }     from "@/components/home/TopSearchBar";
+import { TrustRow }          from "@/components/home/TrustRow";
+import { HeroBanner }        from "@/components/home/HeroBanner";
+import { CategoryShortcuts } from "@/components/home/CategoryShortcuts";
+import { BrandGrid }         from "@/components/home/BrandGrid";
+import { ProductSection }    from "@/components/home/ProductSection";
+import { BottomNavigation }  from "@/components/home/BottomNavigation";
 
 export const metadata: Metadata = {
-  title: "SneakersFlash — Premium Sneakers & Footwear",
+  title: "SNKRS Flash — Premium Sneakers & Footwear",
   description:
-    "Shop Indonesia's biggest sneaker collection. Authentic Nike, Adidas, New Balance and more. Free shipping over Rp 500k.",
+    "Toko sneakers premium Indonesia. Nike, Adidas, New Balance dan lebih. Gratis ongkir di atas Rp 500k.",
 };
 
-// ISR — revalidate home page every 60 seconds so featured products stay fresh
 export const revalidate = 60;
 
 export default function HomePage() {
   return (
     <>
-      {/* 1. Full-screen hero with parallax + ticker */}
-      <HeroSection />
+      {/* 1. Mobile sticky search bar */}
+      <TopSearchBar />
 
-      {/* 2. Trust signals */}
-      <TrustBar />
+      {/* 2. Trust row */}
+      <TrustRow />
 
-      {/* 3. Featured products grid */}
-      <FeaturedProducts />
+      {/* 3. Hero promo banner */}
+      <HeroBanner />
 
-      {/* 4. Promo strip */}
-      <PromoStrip
-        eyebrow="Limited Time"
-        headline="Up to 50% off selected styles"
-        sub="Sale prices applied at checkout. While stocks last."
-        ctaLabel="Shop the Sale"
-        ctaHref="/products?sale=true"
-        variant="yellow"
+      {/* 4. Category shortcut pills */}
+      <CategoryShortcuts />
+
+      {/* 5. Shop by Brand */}
+      <BrandGrid />
+
+      {/* 6. Lifestyle section */}
+      <ProductSection
+        title="Lifestyle"
+        filters={{ categorySlug: "lifestyle", limit: 8 }}
+        bgColor="#4A3728"
+        viewAllHref="/products?category=lifestyle"
       />
 
-      {/* 5. Category highlights — bento grid */}
-      <CategoryHighlights />
-
-      {/* 6. Brand strip */}
-      <BrandStrip />
-
-      {/* 7. Secondary promo — dark variant */}
-      <PromoStrip
-        eyebrow="Members only"
-        headline="New drops land every Friday"
-        sub="Subscribe to our newsletter and never miss a release."
-        ctaLabel="Get Early Access"
-        ctaHref="#newsletter"
-        variant="dark"
+      {/* 7. Running section */}
+      <ProductSection
+        title="Running"
+        filters={{ categorySlug: "running", limit: 8 }}
+        bgColor="#1A2E1A"
+        viewAllHref="/products?category=running"
       />
+
+      {/* 8. Padel & Tennis section */}
+      <ProductSection
+        title="Padel & Tenis"
+        filters={{ categorySlug: "padel", limit: 8 }}
+        bgColor="#1A1A2E"
+        viewAllHref="/products?category=padel"
+      />
+
+      {/* 9. Fixed bottom nav (mobile only) */}
+      <BottomNavigation />
     </>
   );
 }

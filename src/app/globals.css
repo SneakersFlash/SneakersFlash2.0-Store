@@ -279,4 +279,13 @@
 
   /* ── Light mode specific surface helpers ── */
   .light body { @apply bg-[#F5F5F0]; }
+
+  /* ── Hide scrollbar but keep scroll ── */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }
