@@ -11,8 +11,8 @@ export const productsService = {
       params: {
         page: filters.page ?? 1,
         limit: filters.limit ?? 20,
-        ...(filters.categorySlug && { category: filters.categorySlug }),
-        ...(filters.brandId && { brand: filters.brandId }),
+        ...(filters.categoryName && { category: filters.categoryName }),
+        ...(filters.brandName && { brand: filters.brandName }),
         ...(filters.minPrice && { minPrice: filters.minPrice }),
         ...(filters.maxPrice && { maxPrice: filters.maxPrice }),
         ...(filters.sizes?.length && { sizes: filters.sizes.join(",") }),

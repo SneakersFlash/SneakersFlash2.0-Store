@@ -90,7 +90,9 @@ export function ProductSection({
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
 
-  const href = viewAllHref ?? `/products?category=${filters.categorySlug ?? ""}`;
+  const href = viewAllHref ?? `/products}`;
+  // const href = viewAllHref ?? `/products?categoryId=${filters.categorySlug ?? ""}`;
+
 
   const { data, isLoading } = useProducts({
     ...filters,
@@ -188,12 +190,6 @@ function MockCard({ mock, index }: { mock: (typeof MOCK_PRODUCTS)[number]; index
     >
       {/* Image placeholder */}
       <div className="relative bg-muted rounded-sm overflow-hidden mb-2" style={{ aspectRatio: "1/1" }}>
-        {/* Brand stamp */}
-        <div className="absolute top-1.5 left-1.5 z-10 bg-card/90 backdrop-blur-sm px-1.5 py-0.5 rounded-sm">
-          <span className="font-display font-black text-[9px] uppercase tracking-wider text-foreground leading-none">
-            SNKRS<br />FL<span className="text-primary">⚡</span>SH
-          </span>
-        </div>
         {/* Placeholder shoe shape */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-3/4 h-3/4 bg-muted-foreground/10 rounded-full flex items-center justify-center">

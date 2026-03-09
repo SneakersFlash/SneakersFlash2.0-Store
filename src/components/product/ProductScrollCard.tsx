@@ -47,10 +47,10 @@ export function ProductScrollCard({
 }: ProductScrollCardProps) {
   const [imgError, setImgError] = useState(false);
 
-  const imageSrc  = imgError ? "/images/placeholder-product.svg" : getProductImageUrl(product.images);
-  const hasDiscount = Boolean(product.salePrice && product.salePrice < product.price);
-  const displayPrice = product.salePrice ?? product.price;
-  const saving = hasDiscount ? discountPercent(product.price, product.salePrice!) : 0;
+  const imageSrc  = imgError ? "/images/placeholder-product.svg" : getProductImageUrl(product.variants[0]?.imageUrl);
+  const hasDiscount = Boolean(product.variants[0]?.price && product.variants[0].price < product.basePrice);
+  const displayPrice = product.variants[0]?.price ?? product.basePrice;
+  const saving = hasDiscount ? discountPercent(product.basePrice, product.variants[0]?.price!) : 0;
 
   const isScroll = variant === "scroll";
 
@@ -66,13 +66,6 @@ export function ProductScrollCard({
       <Link href={`/products/${product.slug}`} className="block">
         {/* Image */}
         <div className="relative bg-muted rounded-sm overflow-hidden mb-2" style={{ aspectRatio: "1/1" }}>
-          {/* Brand stamp — top left */}
-          <div className="absolute top-1.5 left-1.5 z-10 bg-card/90 backdrop-blur-sm px-1.5 py-0.5 rounded-sm">
-            <span className="font-display font-black text-[9px] uppercase tracking-wider text-foreground leading-none">
-              SNKRS<br />FL<span className="text-primary">⚡</span>SH
-            </span>
-          </div>
-
           <Image
             src={imageSrc}
             alt={product.name}
@@ -104,7 +97,7 @@ export function ProductScrollCard({
           {hasDiscount && (
             <div className="flex items-center gap-1.5 flex-wrap">
               <p className="text-[11px] line-through text-muted-foreground">
-                {formatPrice(product.price)}
+                {formatPrice(product.basePrice)}
               </p>
               <span className="inline-flex items-center px-1.5 py-0.5 bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400 text-[9px] font-bold uppercase tracking-wider rounded-sm">
                 save {saving}%
@@ -113,7 +106,7 @@ export function ProductScrollCard({
           )}
 
           {/* Stars */}
-          <StarRating rating={product?.rating ?? 4.2} count={product?.reviewCount ?? 78} />
+          <StarRating rating={parseFloat(product?.ratingAvg ?? '4.2') ?? 4.2} count={product?.reviewCount ?? 78} />
         </div>
       </Link>
     </motion.div>

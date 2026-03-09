@@ -21,8 +21,10 @@ export interface Category {
 export interface ProductVariant {
   id: string;
   size: string;
+  price: number;
   stock: number;
   sku: string;
+  imageUrl: string[]
 }
 
 export interface ProductImage {
@@ -37,7 +39,7 @@ export interface Product {
   name: string;
   slug: string;
   description: string;
-  price: number;
+  basePrice: number;
   salePrice?: number;
   sku: string;
   isActive: boolean;
@@ -46,7 +48,7 @@ export interface Product {
   category: Category;
   images: ProductImage[];
   variants: ProductVariant[];
-  rating?: number;
+  ratingAvg?: string;
   reviewCount?: number;
   createdAt: string;
   updatedAt: string;
@@ -61,8 +63,8 @@ export interface ProductListResponse {
 }
 
 export interface ProductFilters {
-  categorySlug?: string;
-  brandId?: string;
+  categoryName?: string;
+  brandName?: string;
   minPrice?: number;
   maxPrice?: number;
   sizes?: string[];

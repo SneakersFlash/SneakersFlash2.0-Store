@@ -16,13 +16,19 @@ export function buildImageUrl(path?: string | null, fallback = "/images/placehol
 }
 
 /**
- * Get the primary (first) image URL from a product's images array.
+ * Get the primary (first) image URL from a product's imageUrl array.
  */
 export function getProductImageUrl(
-  images?: Array<{ url: string; order?: number }>,
+  imageUrl?: string[], 
   fallback?: string
 ): string {
-  if (!images || images.length === 0) return fallback ?? "/images/placeholder-product.jpg";
-  const sorted = [...images].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  return buildImageUrl(sorted[0].url);
+  // Cek apakah imageUrl tidak ada atau kosong
+  console.log(imageUrl);
+  
+  if (!imageUrl || imageUrl.length === 0) {
+    return fallback ?? "/images/placeholder-product.jpg";
+  }
+  
+  // Karena data sudah berupa array of string, langsung ambil elemen pertama (index 0)
+  return buildImageUrl(imageUrl[0], fallback);
 }

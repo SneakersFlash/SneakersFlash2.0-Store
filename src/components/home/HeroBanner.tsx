@@ -2,125 +2,81 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Zap } from "lucide-react";
 
-interface HeroBannerProps {
-  /** Override defaults for different promotions */
-  headline?: string;
-  subheadline?: string;
-  discountValue?: string;
-  voucherValue?: string;
-  sneakerPrice?: string;
-  ctaLabel?: string;
-  ctaHref?: string;
-  bgFrom?: string;
-  bgTo?: string;
-}
-
-export function HeroBanner({
-  headline = "GASPOL",
-  subheadline = "Gajian Seru Poll",
-  discountValue = "60%",
-  voucherValue = "200K",
-  sneakerPrice = "499K",
-  ctaLabel = "Shop Now",
-  ctaHref = "/products?sale=true",
-  bgFrom = "#1565C0",
-  bgTo = "#0D47A1",
-}: HeroBannerProps) {
+export function HeroBanner() {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="relative overflow-hidden mx-0"
-      style={{ background: `linear-gradient(135deg, ${bgFrom} 0%, ${bgTo} 100%)` }}
+      className="relative w-full aspect-[4/3] max-h-[350px] overflow-hidden bg-gradient-to-br from-[#0088FF] to-[#0055FF] px-4 py-6"
     >
-      <div className="relative flex items-center min-h-[180px] sm:min-h-[220px] px-5 py-5 gap-4">
-
-        {/* ── Left side: headline + CTA ── */}
-        <div className="flex-1 z-10">
-          {/* Lightning bolt + headline */}
-          <div className="flex items-center gap-1.5 mb-1">
-            <Zap size={16} className="text-primary fill-primary shrink-0" />
-            <h2 className="font-display font-black text-white text-3xl sm:text-4xl uppercase leading-none tracking-tight">
-              {headline}
-            </h2>
+      {/* ── Kiri: Teks Utama & Tombol ── */}
+      <div className="relative z-20 flex flex-col h-full justify-between w-1/2">
+        <div>
+          <h2 className="font-display font-black text-white text-4xl sm:text-5xl uppercase leading-none tracking-tight drop-shadow-md">
+            GASPOL
+          </h2>
+          <div className="inline-block bg-primary text-zinc-900 text-[10px] font-bold px-2 py-0.5 rounded-sm mt-1">
+            Gajian Seru Poll
           </div>
-
-          {/* Sub */}
-          <div className="inline-flex items-center gap-1.5 bg-primary/20 border border-primary/40 px-2.5 py-1 rounded-full mb-4">
-            <Zap size={10} className="text-primary fill-primary" />
-            <span className="text-primary text-[11px] font-bold uppercase tracking-wider">
-              {subheadline}
-            </span>
-          </div>
-
-          {/* CTA button */}
-          <motion.div whileTap={{ scale: 0.94 }}>
-            <Link
-              href={ctaHref}
-              className="inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 text-xs font-display font-bold uppercase tracking-widest transition-colors rounded-sm"
-            >
-              {ctaLabel}
-            </Link>
-          </motion.div>
         </div>
 
-        {/* ── Right side: badge stack ── */}
-        <div className="flex flex-col gap-2 z-10 shrink-0">
+        {/* Nanti di sini bisa ditaruh <Image> gambar sepatu absolut */}
 
-          {/* Discount badge */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="bg-primary text-primary-foreground rounded-md px-3 py-2 text-center min-w-[90px]"
+        <motion.div whileTap={{ scale: 0.95 }} className="mt-auto">
+          <Link
+            href="/products?sale=true"
+            className="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-md shadow-lg"
           >
-            <p className="text-[9px] font-bold uppercase tracking-wider leading-none mb-0.5">
-              DISCOUNT up to
-            </p>
-            <p className="font-display font-black text-2xl leading-none">
-              {discountValue}
-            </p>
-          </motion.div>
-
-          {/* Voucher badge */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-            className="bg-primary text-primary-foreground rounded-md px-3 py-2 text-center min-w-[90px]"
-          >
-            <p className="text-[9px] font-bold uppercase tracking-wider leading-none mb-0.5">
-              VOUCHER Disc.
-            </p>
-            <p className="font-display font-black text-2xl leading-none">
-              {voucherValue}
-            </p>
-          </motion.div>
-
-          {/* Sneaker price badge */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
-            className="bg-white/15 backdrop-blur border border-white/20 text-white rounded-md px-3 py-2 text-center min-w-[90px]"
-          >
-            <p className="text-[9px] font-bold uppercase tracking-wider leading-none mb-0.5">
-              SNEAKERS Start from
-            </p>
-            <p className="font-display font-black text-2xl leading-none">
-              {sneakerPrice}
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Decorative bolt watermark */}
-        <div className="absolute right-1/3 top-1/2 -translate-y-1/2 pointer-events-none opacity-5">
-          <Zap size={180} className="text-white fill-white" />
-        </div>
+            Shop Now
+          </Link>
+        </motion.div>
       </div>
+
+      {/* ── Kanan: Stacking Badges ── */}
+      <div className="absolute top-4 right-4 flex flex-col items-end gap-2 z-20">
+        
+        {/* Discount Badge */}
+        <div className="bg-primary border-2 border-primary rounded-xl px-3 py-1 text-center min-w-[100px] shadow-md transform rotate-2">
+          <p className="text-[9px] font-bold text-zinc-900 uppercase leading-tight">
+            Discount
+          </p>
+          <p className="font-display font-black text-blue-700 text-3xl leading-none">
+            60<span className="text-lg">%</span>
+          </p>
+        </div>
+
+        {/* Voucher Badge */}
+        <div className="bg-[#0055FF] border-2 border-[#0088FF] rounded-xl px-3 py-1 text-center min-w-[110px] shadow-md -transform -rotate-1">
+          <p className="text-[9px] font-bold text-white uppercase leading-tight">
+            Voucher
+          </p>
+          <p className="font-display font-black text-primary text-3xl leading-none">
+            200<span className="text-lg">K</span>
+          </p>
+        </div>
+
+        {/* Sneakers Start From */}
+        <div className="bg-white rounded-xl px-3 py-1 text-center min-w-[110px] shadow-md transform rotate-1 mt-1">
+          <p className="text-[9px] font-bold text-zinc-500 uppercase leading-tight">
+            Sneakers start from
+          </p>
+          <p className="font-display font-black text-[#0066FF] text-2xl leading-none">
+            499<span className="text-sm">K</span>
+          </p>
+        </div>
+
+      </div>
+
+      {/* Grid Background Pattern (Opsional agar mirip desain) */}
+      <div 
+        className="absolute inset-0 opacity-10 pointer-events-none"
+        style={{
+          backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
+          backgroundSize: '20px 20px'
+        }}
+      />
     </motion.div>
   );
 }

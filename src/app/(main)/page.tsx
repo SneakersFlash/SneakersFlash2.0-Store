@@ -3,7 +3,7 @@ import { TopSearchBar }     from "@/components/home/TopSearchBar";
 import { TrustRow }          from "@/components/home/TrustRow";
 import { HeroBanner }        from "@/components/home/HeroBanner";
 import { CategoryShortcuts } from "@/components/home/CategoryShortcuts";
-import { BrandGrid }         from "@/components/home/BrandGrid";
+import { BrandCarousel }         from "@/components/home/BrandCarousel";
 import { ProductSection }    from "@/components/home/ProductSection";
 import { BottomNavigation }  from "@/components/home/BottomNavigation";
 
@@ -31,20 +31,20 @@ export default function HomePage() {
       <CategoryShortcuts />
 
       {/* 5. Shop by Brand */}
-      <BrandGrid />
+      <BrandCarousel />
 
       {/* 6. Lifestyle section */}
       <ProductSection
         title="Lifestyle"
-        filters={{ categorySlug: "lifestyle", limit: 8 }}
+        filters={{ categoryName: "Lifestyle/Casual", limit: 8 }}
         bgColor="#4A3728"
-        viewAllHref="/products?category=lifestyle"
+        viewAllHref="/products?category=Lifestyle/Casual"
       />
 
       {/* 7. Running section */}
       <ProductSection
         title="Running"
-        filters={{ categorySlug: "running", limit: 8 }}
+        filters={{ categoryName: "running", limit: 8 }}
         bgColor="#1A2E1A"
         viewAllHref="/products?category=running"
       />
@@ -52,7 +52,7 @@ export default function HomePage() {
       {/* 8. Padel & Tennis section */}
       <ProductSection
         title="Padel & Tenis"
-        filters={{ categorySlug: "padel", limit: 8 }}
+        filters={{ categoryName: "padel", limit: 8 }}
         bgColor="#1A1A2E"
         viewAllHref="/products?category=padel"
       />
