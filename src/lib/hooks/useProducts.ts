@@ -38,8 +38,8 @@ export function useInfiniteProducts(filters: Omit<ProductFilters, "page"> = {}) 
       productsService.getProducts({ ...filters, page: pageParam as number }),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      const hasMore = lastPage.page < lastPage.totalPages;
-      return hasMore ? lastPage.page + 1 : undefined;
+      const hasMore = lastPage.meta.page < lastPage.meta.lastPage;
+      return hasMore ? lastPage.meta.page + 1 : undefined;
     },
     staleTime: 1000 * 60 * 3,
   });

@@ -1,4 +1,5 @@
-// ─── User / Auth Types ────────────────────────────────────────────────────────
+// src/features/auth/types/index.ts 
+// (atau di src/types/user.types.ts jika Anda belum memindahkannya)
 
 export interface User {
   id: string;
@@ -7,6 +8,7 @@ export interface User {
   lastName: string;
   phone?: string;
   role: "USER" | "ADMIN";
+  provider?: "LOCAL" | "GOOGLE" | "APPLE"; // Tambahan untuk tracking OAuth
   createdAt: string;
 }
 
@@ -27,17 +29,11 @@ export interface RegisterDto {
   phone?: string;
 }
 
+export interface OAuthLoginDto {
+  token: string; // Token ID yang didapat dari Google/Apple SDK di frontend
+}
+
 export interface AuthResponse {
   access_token: string;
   user: User;
-}
-
-export interface Address {
-  id: string;
-  street: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-  isDefault: boolean;
 }

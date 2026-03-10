@@ -7,6 +7,7 @@ import { Search, ShoppingBag, SlidersHorizontal, X } from "lucide-react";
 import { useCartStore, selectCartItemCount } from "@/lib/store/cartStore";
 import { FilterModal } from "../common/FIlterModal";
 import { ShoppingCart } from "../common/ShoppingCart";
+import { CartSidebar } from "../cart/CartSidebar";
 
 export function TopSearchBar() {
   const [query, setQuery] = useState("");
@@ -17,7 +18,7 @@ export function TopSearchBar() {
   const handleSearch = () => {
     const q = query.trim();
     if (q) router.push(`/products?q=${encodeURIComponent(q)}`);
-  };
+  };  
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -97,7 +98,7 @@ export function TopSearchBar() {
         // TODO: Update URL Params atau fetch data di sini
       }}
     />
-    <ShoppingCart/>
+    <CartSidebar/>
     </>
   );
 }

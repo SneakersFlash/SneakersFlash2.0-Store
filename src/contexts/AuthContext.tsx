@@ -1,161 +1,93 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, ReactNode, useRef } from "react";
+import { useGoogleLogin } from "@react-oauth/google";
+import { useAuthGMutations } from "@/lib/hooks/useAuthGMutations";
 
-export interface User {
-  id: string;
-  email: string;
-  name?: string;
-  avatar?: string;
-  provider?: "email" | "google" | "apple";
+interface AuthResult {
+  success: boolean;
+  error?: string;
 }
 
-interface AuthState {
-  user: User | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
+interface AuthContextType {
+  login: (email: string, password: string) => Promise<AuthResult>;
+  loginWithGoogle: () => Promise<AuthResult>;
+  loginWithApple: () => Promise<AuthResult>;
 }
 
-interface AuthContextValue extends AuthState {
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
-  loginWithApple: () => Promise<{ success: boolean; error?: string }>;
-  logout: () => void;
-  register: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>;
-}
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const AuthContext = createContext<AuthContextValue | null>(null);
+export function   AuthProvider({ children }: { children: ReactNode }) {
+  const { loginMutation, googleLoginMutation, appleLoginMutation } = useAuthGMutations();
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    isLoading: true,
-    isAuthenticated: false,
+  // Ref untuk menyimpan fungsi "resolve" dari Promise Google Login
+  const googleAuthResolver = useRef<((value: AuthResult) => void) | null>(null);
+
+  // --- 1. LOCAL LOGIN ---
+  const login = async (email: string, password: string): Promise<AuthResult> => {
+    try {
+      await loginMutation.mutateAsync({ email, password });
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message || "Login failed. Please check your credentials." };
+    }
+  };
+
+  // --- 2. GOOGLE LOGIN SETUP (Dipanggil di top-level) ---
+  const triggerGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        await googleLoginMutation.mutateAsync(tokenResponse.access_token);
+        // Jika sukses, selesaikan promise yang tertunda
+        if (googleAuthResolver.current) {
+          googleAuthResolver.current({ success: true });
+        }
+      } catch (error: any) {
+        if (googleAuthResolver.current) {
+          googleAuthResolver.current({ success: false, error: error.message || "Google authentication failed at server." });
+        }
+      } finally {
+        googleAuthResolver.current = null; // Bersihkan ref
+      }
+    },
+    onError: () => {
+      if (googleAuthResolver.current) {
+        googleAuthResolver.current({ success: false, error: "Failed to open Google login window." });
+        googleAuthResolver.current = null;
+      }
+    },
   });
 
-  // Restore session from localStorage on mount
-  useEffect(() => {
+  // Fungsi yang dipanggil oleh UI (Mengembalikan Promise)
+  const loginWithGoogle = (): Promise<AuthResult> => {
+    return new Promise((resolve) => {
+      // Simpan fungsi resolve ke dalam ref agar bisa dipanggil oleh callbacks useGoogleLogin di atas
+      googleAuthResolver.current = resolve;
+      // Picu pop-up Google
+      triggerGoogleLogin();
+    });
+  };
+
+  // --- 3. APPLE LOGIN ---
+  const loginWithApple = async (): Promise<AuthResult> => {
     try {
-      const stored = localStorage.getItem("sneakerflash_user");
-      if (stored) {
-        const user: User = JSON.parse(stored);
-        setState({ user, isLoading: false, isAuthenticated: true });
-      } else {
-        setState((prev) => ({ ...prev, isLoading: false }));
-      }
-    } catch {
-      setState((prev) => ({ ...prev, isLoading: false }));
+      return { success: false, error: "Apple login is not fully configured yet." };
+    } catch (error: any) {
+      return { success: false, error: error.message || "Apple login failed." };
     }
-  }, []);
-
-  const setUser = useCallback((user: User | null) => {
-    setState({ user, isLoading: false, isAuthenticated: !!user });
-    if (user) {
-      localStorage.setItem("sneakerflash_user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("sneakerflash_user");
-    }
-  }, []);
-
-  const login = useCallback(
-    async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
-      try {
-        setState((prev) => ({ ...prev, isLoading: true }));
-        // TODO: Replace with real API call
-        await new Promise((res) => setTimeout(res, 1200));
-        if (password.length < 6) {
-          setState((prev) => ({ ...prev, isLoading: false }));
-          return { success: false, error: "Invalid email or password." };
-        }
-        const user: User = {
-          id: crypto.randomUUID(),
-          email,
-          name: email.split("@")[0],
-          provider: "email",
-        };
-        setUser(user);
-        return { success: true };
-      } catch {
-        setState((prev) => ({ ...prev, isLoading: false }));
-        return { success: false, error: "An unexpected error occurred." };
-      }
-    },
-    [setUser]
-  );
-
-  const loginWithGoogle = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
-    try {
-      setState((prev) => ({ ...prev, isLoading: true }));
-      // TODO: Integrate Google OAuth
-      await new Promise((res) => setTimeout(res, 1000));
-      const user: User = {
-        id: crypto.randomUUID(),
-        email: "google.user@gmail.com",
-        name: "Google User",
-        provider: "google",
-      };
-      setUser(user);
-      return { success: true };
-    } catch {
-      setState((prev) => ({ ...prev, isLoading: false }));
-      return { success: false, error: "Google login failed." };
-    }
-  }, [setUser]);
-
-  const loginWithApple = useCallback(async (): Promise<{ success: boolean; error?: string }> => {
-    try {
-      setState((prev) => ({ ...prev, isLoading: true }));
-      // TODO: Integrate Apple OAuth
-      await new Promise((res) => setTimeout(res, 1000));
-      const user: User = {
-        id: crypto.randomUUID(),
-        email: "apple.user@icloud.com",
-        name: "Apple User",
-        provider: "apple",
-      };
-      setUser(user);
-      return { success: true };
-    } catch {
-      setState((prev) => ({ ...prev, isLoading: false }));
-      return { success: false, error: "Apple login failed." };
-    }
-  }, [setUser]);
-
-  const logout = useCallback(() => {
-    setUser(null);
-  }, [setUser]);
-
-  const register = useCallback(
-    async (email: string, password: string, name: string): Promise<{ success: boolean; error?: string }> => {
-      try {
-        setState((prev) => ({ ...prev, isLoading: true }));
-        // TODO: Replace with real API call
-        await new Promise((res) => setTimeout(res, 1200));
-        const user: User = {
-          id: crypto.randomUUID(),
-          email,
-          name,
-          provider: "email",
-        };
-        setUser(user);
-        return { success: true };
-      } catch {
-        setState((prev) => ({ ...prev, isLoading: false }));
-        return { success: false, error: "Registration failed." };
-      }
-    },
-    [setUser]
-  );
+  };
 
   return (
-    <AuthContext.Provider value={{ ...state, login, loginWithGoogle, loginWithApple, logout, register }}>
+    <AuthContext.Provider value={{ login, loginWithGoogle, loginWithApple }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-export function useAuth(): AuthContextValue {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
-  return ctx;
-}
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};

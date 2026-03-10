@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Oswald, Barlow } from "next/font/google";
 import { Providers } from "@/components/common/Providers";
 import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
 
@@ -65,9 +64,7 @@ export default function RootLayout({
     >
       <body className="min-h-screen bg-background text-foreground antialiased">
         <Providers>
-          <AuthProvider>
             {children}
-          </AuthProvider>
         </Providers>
       </body>
     </html>

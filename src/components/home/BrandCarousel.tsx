@@ -20,7 +20,7 @@ function BrandCard({ brand, index }: { brand: Brand; index: number }) {
       className="flex-shrink-0 snap-start"
     >
       <Link
-        href={`/products?brand=${cleanSlug}`}
+        href={`/products?brandName=${cleanSlug}`}
         className="group flex items-center justify-center bg-white border border-border/40 shadow-sm rounded-2xl w-36 h-16 hover:border-zinc-900/20 hover:shadow-md transition-all duration-300 relative overflow-hidden px-4"
       >
         <div className="absolute inset-0 bg-gradient-to-tr from-zinc-100/0 via-zinc-100/0 to-zinc-100/50 opacity-0 group-hover:opacity-100 transition-opacity" />

@@ -54,17 +54,22 @@ export interface Product {
   updatedAt: string;
 }
 
-export interface ProductListResponse {
-  data: Product[];
+export interface Meta {
   total: number;
   page: number;
   limit: number;
-  totalPages: number;
+  lastPage: number;
+}
+export interface ProductListResponse {
+  data: Product[];
+  meta: Meta
 }
 
 export interface ProductFilters {
   categoryName?: string;
+  category?: string;
   brandName?: string;
+  subCategory?: string;
   minPrice?: number;
   maxPrice?: number;
   sizes?: string[];

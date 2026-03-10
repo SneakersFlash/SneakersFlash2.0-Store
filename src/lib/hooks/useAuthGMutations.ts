@@ -1,0 +1,39 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { authService } from "@/lib/api/auth.service";
+import { useAuthStore } from "@/lib/store/authStore";
+import type { LoginDto, AuthResponse } from "@/types/user.types";
+
+export function useAuthGMutations() {
+  const queryClient = useQueryClient();
+  const setAuth = useAuthStore((state) => state.setAuth);
+
+  const handleSuccess = (data: AuthResponse) => {
+    // 1. Simpan user & token ke Zustand (otomatis masuk localStorage & interceptor Axios)
+    setAuth(data.user, data.access_token);
+    
+    // 2. Bersihkan/refresh cache data user & cart
+    queryClient.invalidateQueries({ queryKey: ["cart"] });
+    queryClient.invalidateQueries({ queryKey: ["user"] });
+  };
+
+  const loginMutation = useMutation({
+    mutationFn: (dto: LoginDto) => authService.login(dto),
+    onSuccess: handleSuccess,
+  });
+
+  const googleLoginMutation = useMutation({
+    mutationFn: (token: string) => authService.loginWithGoogle({ token }),
+    onSuccess: handleSuccess,
+  });
+
+  const appleLoginMutation = useMutation({
+    mutationFn: (token: string) => authService.loginWithApple({ token }),
+    onSuccess: handleSuccess,
+  });
+
+  return {
+    loginMutation,
+    googleLoginMutation,
+    appleLoginMutation,
+  };
+}

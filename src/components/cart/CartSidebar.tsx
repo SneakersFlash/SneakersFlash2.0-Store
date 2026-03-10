@@ -7,6 +7,9 @@ import { X, ShoppingBag, Minus, Plus, Trash2 } from "lucide-react";
 import { useCartStore, selectCartItemCount, selectCartTotal } from "@/lib/store/cartStore";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { buildImageUrl } from "@/lib/utils/imageUrl";
+import { useAuthStore } from "@/lib/store/authStore";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export function CartSidebar() {
   const {
@@ -16,10 +19,18 @@ export function CartSidebar() {
     removeItemOptimistic,
     updateQuantityOptimistic,
   } = useCartStore();
-
+  const router = useRouter();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const itemCount = useCartStore(selectCartItemCount);
   const total = useCartStore(selectCartTotal);
 
+  useEffect(() => {
+    // Jika sidebar keranjang sedang terbuka TAPI user belum login
+    if (isOpen && !isAuthenticated) {
+      closeCart();           // Tutup paksa keranjangnya
+      router.push("/login"); // Lempar ke halaman login
+    }
+  }, [isOpen, isAuthenticated, router, closeCart]);
   return (
     <AnimatePresence>
       {isOpen && (
@@ -29,7 +40,7 @@ export function CartSidebar() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-50"
+            className="fixed inset-0 bg-white/60 z-50"
             onClick={closeCart}
           />
 
@@ -127,7 +138,7 @@ export function CartSidebar() {
                             {/* Price */}
                             <span className="font-display font-bold text-sm">
                               {formatPrice(
-                                (item.product.salePrice ?? item.product.price) *
+                                (item.product.salePrice ?? item.product.basePrice) *
                                   item.quantity
                               )}
                             </span>
