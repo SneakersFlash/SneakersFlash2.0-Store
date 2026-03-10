@@ -103,7 +103,7 @@ export function ProductListingClient({
   const displayTitle = qFromUrl ? `Search: "${qFromUrl}"` : brandFromUrl ? `${brandFromUrl.toUpperCase()}` : categoryName || "All Footwear";
 
   return (
-    <div className="flex flex-col flex-1 pb-20">
+    <div className="flex flex-col flex-1">
       
       {/* --- TOP HEADER --- */}
       <div className="sticky top-0 z-30 bg-white border-b border-gray-100 px-4 py-3 shadow-sm">
