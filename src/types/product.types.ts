@@ -41,6 +41,7 @@ export interface Product {
   description: string;
   basePrice: number;
   salePrice?: number;
+  weightGrams?: number;
   sku: string;
   isActive: boolean;
   isFeatured: boolean;

@@ -37,7 +37,6 @@ export default async function HomePage() {
   const displayCategories = categories.slice(0, 5);
   return (
     <>
-      <TopSearchBar />
       <TrustRow />
       <HeroBanner banners={banners} />
       <CategoryShortcuts />
@@ -66,8 +65,6 @@ export default async function HomePage() {
           viewAllHref="/products"
         />
       )}
-
-      <BottomNavigation />
     </>
   );
 }

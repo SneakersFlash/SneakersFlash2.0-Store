@@ -24,7 +24,7 @@ export const productsService = {
   },
 
   async getProduct(slug: string): Promise<Product> {
-    const { data } = await apiClient.get<Product>(`/products/${slug}`);
+    const { data } = await apiClient.get<Product>(`/products/slug/${slug}`);
     return data;
   },
 

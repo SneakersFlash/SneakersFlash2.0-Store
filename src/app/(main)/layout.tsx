@@ -1,6 +1,4 @@
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { BottomNavigation } from "@/components/home/BottomNavigation";
+import { ClientLayoutWrapper } from "./ClientLayoutWrapper";
 
 export default function MainLayout({
   children,
@@ -8,25 +6,9 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      {/* Desktop navbar — hidden on mobile (TopSearchBar takes over) */}
-      {/* <Navbar /> */}
-
-      {/*
-        Mobile: no extra top padding — TopSearchBar is sticky inside page.
-        Desktop: Navbar adds its own spacer div internally.
-      */}
-      <main className="min-h-screen">
-        <>
-          {children}
-          <BottomNavigation/>
-        </>
-      </main>
-
-      {/* Footer — hidden on mobile via lg:block */}
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
-    </>
+    // Membungkus seluruh halaman di route (main) dengan aturan UI pintar
+    <ClientLayoutWrapper>
+      {children}
+    </ClientLayoutWrapper>
   );
 }

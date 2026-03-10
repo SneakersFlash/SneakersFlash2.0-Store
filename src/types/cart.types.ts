@@ -2,25 +2,27 @@
 
 import type { Product, ProductVariant } from "./product.types";
 
+// ─── Cart Types ───────────────────────────────────────────────────────────────
+
 export interface CartItem {
-  id: string;
-  productId: string;
-  variantId: string;
-  quantity: number;
-  product: Product;
-  variant: ProductVariant;
+  id: string;          // ID item keranjang (contoh: "23")
+  productName: string; // Nama produk
+  variantSku: string;  // SKU varian (bisa dipakai sebagai pengganti Size sementara)
+  price: number;       // Harga satuan
+  quantity: number;    // Jumlah
+  subtotal: number;    // Harga x Jumlah
+  image: string[];     // Array URL gambar
+  size?: string;       // Opsional: Jika nanti backend Anda menambahkan properti size
 }
 
 export interface Cart {
-  id: string;
-  items: CartItem[];
-  total: number;
-  itemCount: number;
+  cartId: string;      // ID keranjang
+  items: CartItem[];   // Array berisi CartItem di atas
+  grandTotal: number;  // Total keseluruhan
 }
 
 export interface AddToCartDto {
-  productId: string;
-  variantId: string;
+  productVariantId: number; 
   quantity: number;
 }
 
@@ -28,15 +30,17 @@ export interface UpdateCartItemDto {
   quantity: number;
 }
 
+// ... (Bagian Order Types biarkan sama seperti sebelumnya) ...
 // ─── Order Types ──────────────────────────────────────────────────────────────
 
+// 👈 PENTING: Disesuaikan dengan enum OrderStatus di Prisma Backend
 export type OrderStatus =
-  | "PENDING"
-  | "CONFIRMED"
-  | "PROCESSING"
-  | "SHIPPED"
-  | "DELIVERED"
-  | "CANCELLED";
+  | "pending"
+  | "paid"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
 
 export interface OrderItem {
   id: string;
@@ -67,13 +71,22 @@ export interface Order {
   updatedAt: string;
 }
 
+// 👈 PENTING: Disesuaikan dengan create-order.dto.ts di Backend
 export interface CreateOrderDto {
-  shippingAddressId?: string;
-  shippingAddress?: {
-    street: string;
+  cartItemIds: string[]; // ID barang keranjang yang dicentang
+  address: {
+    recipientName: string;
+    phone: string;
+    addressLine: string;
+    subdistrictId: number;
     city: string;
-    state: string;
     postalCode: string;
-    country: string;
   };
+  courier: {
+    name: string;
+    service: string;
+    cost: number;
+  };
+  paymentMethod: string;
+  voucherCode?: string;
 }
