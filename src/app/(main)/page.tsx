@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
-import { TopSearchBar }     from "@/components/home/TopSearchBar";
+import { TopSearchBar }      from "@/components/home/TopSearchBar";
 import { TrustRow }          from "@/components/home/TrustRow";
 import { HeroBanner }        from "@/components/home/HeroBanner";
 import { CategoryShortcuts } from "@/components/home/CategoryShortcuts";
-import { BrandCarousel }         from "@/components/home/BrandCarousel";
+import { BrandCarousel }     from "@/components/home/BrandCarousel";
 import { ProductSection }    from "@/components/home/ProductSection";
 import { BottomNavigation }  from "@/components/home/BottomNavigation";
+
+// Import service Anda di sini
+import { categoriesService } from "@/lib/api/categories.service";
+import { bannersService } from "@/lib/api/banners.service";
 
 export const metadata: Metadata = {
   title: "SNKRS Flash — Premium Sneakers & Footwear",
@@ -13,51 +17,56 @@ export const metadata: Metadata = {
     "Toko sneakers premium Indonesia. Nike, Adidas, New Balance dan lebih. Gratis ongkir di atas Rp 500k.",
 };
 
+// Seluruh halaman ini akan di-cache dan direvalidasi setiap 60 detik
 export const revalidate = 60;
 
-export default function HomePage() {
+const SECTION_COLORS = [
+  "#4A3728",
+  "#1A2E1A",
+  "#1A1A2E",
+  "#2D2A26",
+  "#3E2723",
+];
+
+export default async function HomePage() {
+  const [categories, banners] = await Promise.all([
+    categoriesService.getAll().catch(() => []),
+    bannersService.getBanners("home_top").catch(() => []),
+  ]);
+  
+  const displayCategories = categories.slice(0, 5);
   return (
     <>
-      {/* 1. Mobile sticky search bar */}
       <TopSearchBar />
-
-      {/* 2. Trust row */}
       <TrustRow />
-
-      {/* 3. Hero promo banner */}
-      <HeroBanner />
-
-      {/* 4. Category shortcut pills */}
+      <HeroBanner banners={banners} />
       <CategoryShortcuts />
-
-      {/* 5. Shop by Brand */}
       <BrandCarousel />
 
-      {/* 6. Lifestyle section */}
-      <ProductSection
-        title="Lifestyle"
-        filters={{ categoryName: "Lifestyle/Casual", limit: 8 }}
-        bgColor="#4A3728"
-        viewAllHref="/products?category=Lifestyle/Casual"
-      />
+      {displayCategories.length > 0 ? (
+        displayCategories.map((category: any, index: any) => {
+          const bgColor = SECTION_COLORS[index % SECTION_COLORS.length];
 
-      {/* 7. Running section */}
-      <ProductSection
-        title="Running"
-        filters={{ categoryName: "running", limit: 8 }}
-        bgColor="#1A2E1A"
-        viewAllHref="/products?category=running"
-      />
+          return (
+            <ProductSection
+              key={category.id || category.slug}
+              title={category.name}
+              filters={{ categoryName: category.name, limit: 8 }}
+              bgColor={bgColor}
+              viewAllHref={`/products?category=${category.slug}`}
+              backgroundImage={category.imageUrl}
+            />
+          );
+        })
+      ) : (
+        <ProductSection
+          title="Featured Products"
+          filters={{ limit: 8 }}
+          bgColor="#1A1A2E"
+          viewAllHref="/products"
+        />
+      )}
 
-      {/* 8. Padel & Tennis section */}
-      <ProductSection
-        title="Padel & Tenis"
-        filters={{ categoryName: "padel", limit: 8 }}
-        bgColor="#1A1A2E"
-        viewAllHref="/products?category=padel"
-      />
-
-      {/* 9. Fixed bottom nav (mobile only) */}
       <BottomNavigation />
     </>
   );

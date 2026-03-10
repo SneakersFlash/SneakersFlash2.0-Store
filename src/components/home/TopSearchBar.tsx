@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, ShoppingBag, SlidersHorizontal, X } from "lucide-react";
 import { useCartStore, selectCartItemCount } from "@/lib/store/cartStore";
+import { FilterModal } from "../common/FIlterModal";
+import { ShoppingCart } from "../common/ShoppingCart";
 
 export function TopSearchBar() {
   const [query, setQuery] = useState("");
@@ -17,7 +19,10 @@ export function TopSearchBar() {
     if (q) router.push(`/products?q=${encodeURIComponent(q)}`);
   };
 
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
   return (
+    <>
     <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border lg:hidden">
       <div className="flex items-center gap-2.5 px-4 py-3">
         {/* Search input */}
@@ -75,7 +80,8 @@ export function TopSearchBar() {
         {/* Sort/filter icon */}
         <motion.button
           whileTap={{ scale: 0.88 }}
-          onClick={() => router.push("/products")}
+          // onClick={() => router.push("/products")}
+          onClick={() => setIsFilterOpen(true)}
           className="shrink-0 w-9 h-9 flex items-center justify-center"
           aria-label="Filter"
         >
@@ -83,5 +89,15 @@ export function TopSearchBar() {
         </motion.button>
       </div>
     </div>
+    <FilterModal
+      isOpen={isFilterOpen}
+      onClose={() => setIsFilterOpen(false)}
+      onApply={(selectedFilters) => {
+        console.log("Filter yang dipilih:", selectedFilters);
+        // TODO: Update URL Params atau fetch data di sini
+      }}
+    />
+    <ShoppingCart/>
+    </>
   );
 }

@@ -22,9 +22,6 @@ export function getProductImageUrl(
   imageUrl?: string[], 
   fallback?: string
 ): string {
-  // Cek apakah imageUrl tidak ada atau kosong
-  console.log(imageUrl);
-  
   if (!imageUrl || imageUrl.length === 0) {
     return fallback ?? "/images/placeholder-product.jpg";
   }

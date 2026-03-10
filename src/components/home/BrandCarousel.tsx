@@ -2,24 +2,14 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";// Sesuaikan path ini
+import { Brand } from "@/types/product.types";
+import { brandsService } from "@/lib/api/brands.service";
 
-const BRANDS = [
-  { name: "Nike",        slug: "nike",        logoText: "NIKE"      },
-  { name: "Adidas",      slug: "adidas",      logoText: "adidas"    },
-  { name: "Puma",        slug: "puma",        logoText: "PUMA"      },
-  { name: "Skechers",    slug: "skechers",    logoText: "SKECHERS"  },
-  { name: "New Balance", slug: "new-balance", logoText: "NB"        },
-  { name: "Reebok",      slug: "reebok",      logoText: "Reebok"    },
-];
+function BrandCard({ brand, index }: { brand: Brand; index: number }) {
+  // Membersihkan slash berlebih jika ada slug seperti "/AIR"
+  const cleanSlug = brand.slug.startsWith("/") ? brand.slug.substring(1) : brand.slug;
 
-function BrandCard({
-  brand,
-  index,
-}: {
-  brand: (typeof BRANDS)[number];
-  index: number;
-}) {
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -27,27 +17,30 @@ function BrandCard({
       viewport={{ once: true, margin: "-20px" }}
       transition={{ duration: 0.4, delay: index * 0.1, ease: "easeOut" }}
       whileTap={{ scale: 0.95 }}
-      // Perhatikan w-36 (144px), ini akan jadi acuan perhitungan scroll kita
       className="flex-shrink-0 snap-start"
     >
       <Link
-        href={`/products?brand=${brand.slug}`}
-        className="group flex items-center justify-center bg-white border border-border/40 shadow-sm rounded-2xl w-36 h-16 hover:border-zinc-900/20 hover:shadow-md transition-all duration-300 relative overflow-hidden"
+        href={`/products?brand=${cleanSlug}`}
+        className="group flex items-center justify-center bg-white border border-border/40 shadow-sm rounded-2xl w-36 h-16 hover:border-zinc-900/20 hover:shadow-md transition-all duration-300 relative overflow-hidden px-4"
       >
         <div className="absolute inset-0 bg-gradient-to-tr from-zinc-100/0 via-zinc-100/0 to-zinc-100/50 opacity-0 group-hover:opacity-100 transition-opacity" />
         
-        <span
-          className={`font-black tracking-tighter text-zinc-900 select-none relative z-10 transition-transform duration-300 group-hover:scale-110 ${
-            brand.slug === "adidas"
-              ? "text-xl italic"
-              : brand.slug === "skechers"
-              ? "text-base"
-              : "text-2xl"
-          }`}
-          style={{ fontFamily: "var(--font-oswald), sans-serif" }}
-        >
-          {brand.logoText}
-        </span>
+        {/* Jika ada logoUrl, tampilkan gambar. Jika tidak, tampilkan teks namanya */}
+        {brand.logoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={brand.logoUrl}
+            alt={brand.name}
+            className="w-full h-full object-contain relative z-10 transition-transform duration-300 group-hover:scale-110"
+          />
+        ) : (
+          <span
+            className="font-black tracking-tighter text-zinc-900 select-none relative z-10 transition-transform duration-300 group-hover:scale-110 text-xl text-center truncate w-full"
+            style={{ fontFamily: "var(--font-oswald), sans-serif" }}
+          >
+            {brand.name}
+          </span>
+        )}
       </Link>
     </motion.div>
   );
@@ -55,34 +48,67 @@ function BrandCard({
 
 export function BrandCarousel() {
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Mengambil data brands dari API
   useEffect(() => {
-    // Jika user sedang interaksi (hover/touch), hentikan timer
-    if (isPaused) return;
+    const fetchBrands = async () => {
+      try {
+        const data = await brandsService.getAll();
+        // Hanya ambil brand yang isActive = true dan urutkan jika diperlukan
+        const activeBrands: any = data.filter(b => b.isActive);
+        setBrands(activeBrands);
+      } catch (error) {
+        console.error("Failed to fetch brands:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBrands();
+  }, []);
+
+  // Animasi Auto-Scroll
+  useEffect(() => {
+    if (isPaused || brands.length === 0) return;
 
     const interval = setInterval(() => {
       if (carouselRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-        
-        // Jarak geser: Lebar 1 card (w-36 = 144px) + gap (gap-3 = 12px) = 156px
-        const scrollAmount = 156; 
+        const scrollAmount = 156; // 144px (w-36) + 12px (gap-3)
 
-        // Cek apakah sudah mentok sampai ke item paling kanan
-        // Tambahkan toleransi beberapa pixel (-10) agar lebih akurat
         if (scrollLeft + clientWidth >= scrollWidth - 10) {
-          // Jika mentok, kembali ke awal dengan smooth
           carouselRef.current.scrollTo({ left: 0, behavior: "smooth" });
         } else {
-          // Geser ke kanan sebanyak 1 kartu
           carouselRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
         }
       }
-    }, 2500); // Bergeser setiap 2.5 detik
+    }, 2500);
 
-    // Bersihkan interval saat komponen dibongkar
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, brands.length]);
+
+  // Tampilkan Skeleton atau jangan render carouselnya jika masih loading
+  if (isLoading) {
+    return (
+      <div className="py-6 bg-background flex flex-col gap-4 animate-pulse">
+        <div className="px-5 flex items-center justify-between">
+          <div className="h-5 bg-muted rounded w-32" />
+          <div className="h-4 bg-muted rounded w-16" />
+        </div>
+        <div className="flex gap-3 px-5 pt-1 overflow-hidden">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="w-36 h-16 bg-muted rounded-2xl flex-shrink-0" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Sembunyikan component jika ternyata tidak ada brand aktif
+  if (brands.length === 0) return null;
 
   return (
     <div className="py-6 bg-background flex flex-col gap-4 relative">
@@ -109,7 +135,6 @@ export function BrandCarousel() {
       <div className="relative w-full">
         <div
           ref={carouselRef}
-          // Fungsi untuk menghentikan animasi saat disentuh / di-hover
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
           onTouchStart={() => setIsPaused(true)}
@@ -119,8 +144,8 @@ export function BrandCarousel() {
         >
           <style dangerouslySetInnerHTML={{__html: `div::-webkit-scrollbar { display: none; }`}} />
 
-          {BRANDS.map((brand, i) => (
-            <BrandCard key={brand.slug} brand={brand} index={i} />
+          {brands.map((brand, i) => (
+            <BrandCard key={brand.id} brand={brand} index={i} />
           ))}
 
           <div className="w-2 flex-shrink-0" />

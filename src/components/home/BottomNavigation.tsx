@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils/cn";
 
 const NAV_ITEMS = [
   {
-    label: "Home",
+    label: "",
     href: "/",
     icon: null, // uses logo image
     isLogo: true,

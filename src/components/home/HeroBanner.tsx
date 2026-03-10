@@ -1,82 +1,139 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { buildImageUrl } from "@/lib/utils/imageUrl";
+import type { Banner } from "@/lib/api/banners.service";
 
-export function HeroBanner() {
+interface HeroBannerProps {
+  banners: Banner[];
+}
+
+const slideVariants = {
+  enter: (direction: number) => ({ x: direction > 0 ? "100%" : "-100%" }),
+  center: { zIndex: 1, x: 0 },
+  exit: (direction: number) => ({ zIndex: 0, x: direction < 0 ? "100%" : "-100%" }),
+};
+
+const AUTO_SLIDE_DELAY = 5000;
+
+export function HeroBanner({ banners }: HeroBannerProps) {
+  const [page, setPage] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const paginate = useCallback(
+    (newDirection: number) => {
+      setDirection(newDirection);
+      setPage((prev) => prev + newDirection);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (isHovered || !banners || banners.length <= 1) return;
+    const timer = setInterval(() => paginate(1), AUTO_SLIDE_DELAY);
+    return () => clearInterval(timer);
+  }, [isHovered, paginate, banners]);
+
+  // Loading Skeleton dengan rasio yang disesuaikan
+  if (!banners || banners.length === 0) {
+    return (
+      <div className="w-full sm:px-4 lg:px-6 sm:pt-4 mb-2 sm:mb-6">
+        {/* Mobile: 1280x930 | Desktop: 1600x500 */}
+        <div className="w-full aspect-[128/93] sm:aspect-[16/5] bg-zinc-200 dark:bg-zinc-800 animate-pulse sm:rounded-2xl" />
+      </div>
+    );
+  }
+
+  const imageIndex = Math.abs(page % banners.length);
+  const currentBanner = banners[imageIndex];
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="relative w-full aspect-[4/3] max-h-[350px] overflow-hidden bg-gradient-to-br from-[#0088FF] to-[#0055FF] px-4 py-6"
-    >
-      {/* ── Kiri: Teks Utama & Tombol ── */}
-      <div className="relative z-20 flex flex-col h-full justify-between w-1/2">
-        <div>
-          <h2 className="font-display font-black text-white text-4xl sm:text-5xl uppercase leading-none tracking-tight drop-shadow-md">
-            GASPOL
-          </h2>
-          <div className="inline-block bg-primary text-zinc-900 text-[10px] font-bold px-2 py-0.5 rounded-sm mt-1">
-            Gajian Seru Poll
-          </div>
-        </div>
-
-        {/* Nanti di sini bisa ditaruh <Image> gambar sepatu absolut */}
-
-        <motion.div whileTap={{ scale: 0.95 }} className="mt-auto">
-          <Link
-            href="/products?sale=true"
-            className="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white px-5 py-2 text-xs font-bold uppercase tracking-wider rounded-md shadow-lg"
+    // Wrapper luar: Di mobile full-bleed, di layar sm (640px) ke atas diberi margin & padding
+    <div className="w-full sm:px-4 lg:px-6 sm:pt-4 mb-4 sm:mb-6">
+      <div
+        // PERUBAHAN UTAMA: aspect-[128/93] untuk HP, aspect-[16/5] untuk Desktop
+        className="relative w-full aspect-[128/93] sm:aspect-[16/5] overflow-hidden sm:rounded-2xl bg-zinc-100 dark:bg-zinc-900 group shadow-sm"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onTouchStart={() => setIsHovered(true)}
+        onTouchEnd={() => setIsHovered(false)}
+      >
+        <AnimatePresence initial={false} custom={direction}>
+          <motion.div
+            key={page}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "tween", duration: 0.4, ease: "easeInOut" },
+            }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={1}
+            onDragEnd={(e, { offset, velocity }) => {
+              const swipe = Math.abs(offset.x) * velocity.x;
+              if (swipe < -10000) paginate(1);
+              else if (swipe > 10000) paginate(-1);
+            }}
+            className="absolute inset-0 cursor-grab active:cursor-grabbing"
           >
-            Shop Now
-          </Link>
-        </motion.div>
+            <Link href={currentBanner.targetUrl || "/"} className="block w-full h-full relative">
+              
+              {/* GAMBAR MOBILE (Ditampilkan jika lebar layar < 640px) */}
+              <div className="block sm:hidden absolute inset-0">
+                <Image
+                  src={currentBanner.imageMobileUrl.startsWith("http") ? currentBanner.imageMobileUrl : buildImageUrl(currentBanner.imageMobileUrl)}
+                  alt={currentBanner.title}
+                  fill
+                  className="object-cover object-center" 
+                  priority={imageIndex === 0}
+                />
+              </div>
+
+              {/* GAMBAR DESKTOP (Ditampilkan jika lebar layar >= 640px) */}
+              <div className="hidden sm:block absolute inset-0">
+                <Image
+                  src={currentBanner.imageDesktopUrl.startsWith("http") ? currentBanner.imageDesktopUrl : buildImageUrl(currentBanner.imageDesktopUrl)}
+                  alt={currentBanner.title}
+                  fill
+                  className="object-cover object-center"
+                  priority={imageIndex === 0}
+                />
+              </div>
+
+            </Link>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Navigasi Kiri / Kanan (Hanya Desktop) */}
+        {banners.length > 1 && (
+          <>
+            <button onClick={(e) => { e.preventDefault(); paginate(-1); }} className="absolute left-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-white/50 backdrop-blur-sm text-zinc-900 opacity-0 group-hover:opacity-100 transition-all z-10 hidden sm:flex hover:bg-white shadow-md"><ChevronLeft size={20} /></button>
+            <button onClick={(e) => { e.preventDefault(); paginate(1); }} className="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-white/50 backdrop-blur-sm text-zinc-900 opacity-0 group-hover:opacity-100 transition-all z-10 hidden sm:flex hover:bg-white shadow-md"><ChevronRight size={20} /></button>
+          </>
+        )}
+
+        {/* Indikator Dots */}
+        {banners.length > 1 && (
+          <div className="absolute bottom-2.5 sm:bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10 pointer-events-none">
+            {banners.map((_, idx) => (
+              <button
+                key={idx}
+                className={`pointer-events-auto h-1.5 rounded-full transition-all duration-300 drop-shadow-md ${
+                  idx === imageIndex ? "w-5 bg-white" : "w-1.5 bg-white/60"
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* ── Kanan: Stacking Badges ── */}
-      <div className="absolute top-4 right-4 flex flex-col items-end gap-2 z-20">
-        
-        {/* Discount Badge */}
-        <div className="bg-primary border-2 border-primary rounded-xl px-3 py-1 text-center min-w-[100px] shadow-md transform rotate-2">
-          <p className="text-[9px] font-bold text-zinc-900 uppercase leading-tight">
-            Discount
-          </p>
-          <p className="font-display font-black text-blue-700 text-3xl leading-none">
-            60<span className="text-lg">%</span>
-          </p>
-        </div>
-
-        {/* Voucher Badge */}
-        <div className="bg-[#0055FF] border-2 border-[#0088FF] rounded-xl px-3 py-1 text-center min-w-[110px] shadow-md -transform -rotate-1">
-          <p className="text-[9px] font-bold text-white uppercase leading-tight">
-            Voucher
-          </p>
-          <p className="font-display font-black text-primary text-3xl leading-none">
-            200<span className="text-lg">K</span>
-          </p>
-        </div>
-
-        {/* Sneakers Start From */}
-        <div className="bg-white rounded-xl px-3 py-1 text-center min-w-[110px] shadow-md transform rotate-1 mt-1">
-          <p className="text-[9px] font-bold text-zinc-500 uppercase leading-tight">
-            Sneakers start from
-          </p>
-          <p className="font-display font-black text-[#0066FF] text-2xl leading-none">
-            499<span className="text-sm">K</span>
-          </p>
-        </div>
-
-      </div>
-
-      {/* Grid Background Pattern (Opsional agar mirip desain) */}
-      <div 
-        className="absolute inset-0 opacity-10 pointer-events-none"
-        style={{
-          backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
-          backgroundSize: '20px 20px'
-        }}
-      />
-    </motion.div>
+    </div>
   );
 }

@@ -45,7 +45,7 @@ export const useCartStore = create<CartStore>()(
         return get().items.reduce(
           (sum, item) =>
             sum +
-            (item.product.salePrice ?? item.product.price) * item.quantity,
+            (item.product.salePrice ?? item.product.basePrice) * item.quantity,
           0
         );
       },
@@ -118,6 +118,6 @@ export const selectCartItemCount = (state: CartStore) =>
 export const selectCartTotal = (state: CartStore) =>
   state.items.reduce(
     (sum, item) =>
-      sum + (item.product.salePrice ?? item.product.price) * item.quantity,
+      sum + (item.product.salePrice ?? item.product.basePrice) * item.quantity,
     0
   );
