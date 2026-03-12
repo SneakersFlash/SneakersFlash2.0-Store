@@ -2,16 +2,12 @@ import { categoriesService } from "@/lib/api/categories.service";
 import { ProductListingClient } from "./ProductListingClient";
 import Image from "next/image";
 
-// 1. Tipe data searchParams WAJIB berupa Promise di Next.js 15
 type ProductsPageProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  // 2. WAJIB di-await sebelum nilainya bisa dibaca
   const resolvedParams = await searchParams;
-  
-  // 3. Ambil nilai category setelah di-await
   const categorySlug = typeof resolvedParams.category === 'string' ? resolvedParams.category : undefined;
   
   let categoryData = null;
@@ -19,11 +15,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   if (categorySlug) {
     try {
-      // Ambil data dari NestJS API Anda
       const categories = await categoriesService.getAll();
       categoryData = categories.find((c: any) => c.slug === categorySlug) || null;
       
-      // Mengambil anak kategori jika disematkan pada properti 'children'
       if (categoryData && categoryData.children) {
         subCategories = categoryData.children; 
       }
@@ -33,9 +27,10 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   }
 
   return (
-    <div className="min-h-screen bg-[#F9F9F9] flex flex-col">
+    <div className="min-h-screen bg-[#F8F9FB] flex flex-col">
+      {/* HEADER BANNER CATEGORY */}
       {categoryData?.imageUrl && (
-        <div className="relative w-full h-48 md:h-64 bg-gray-900 shrink-0">
+        <div className="relative w-full h-[25vh] min-h-[220px] md:h-[35vh] bg-[#001D4A] shrink-0 overflow-hidden">
           <Image
             src={categoryData.imageUrl}
             alt={categoryData.name}
@@ -43,8 +38,13 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             className="object-cover opacity-60"
             priority
           />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <h1 className="text-white text-3xl font-display font-bold uppercase tracking-widest drop-shadow-md">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+          
+          <div className="absolute inset-0 container mx-auto max-w-7xl px-4 flex flex-col justify-end pb-8 md:pb-12">
+            <span className="text-[#FF6B00] font-bold text-[10px] md:text-xs uppercase tracking-[0.3em] mb-1.5 md:mb-2">
+              Explore Collection
+            </span>
+            <h1 className="text-white text-3xl md:text-6xl font-display font-black uppercase tracking-tight drop-shadow-lg">
               {categoryData.name}
             </h1>
           </div>

@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";// Sesuaikan path ini
+import { useEffect, useRef, useState } from "react";
 import { Brand } from "@/types/product.types";
 import { brandsService } from "@/lib/api/brands.service";
+import { ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 
 function BrandCard({ brand, index }: { brand: Brand; index: number }) {
   // Membersihkan slash berlebih jika ada slug seperti "/AIR"
@@ -15,27 +17,27 @@ function BrandCard({ brand, index }: { brand: Brand; index: number }) {
       initial={{ opacity: 0, x: 20 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true, margin: "-20px" }}
-      transition={{ duration: 0.4, delay: index * 0.1, ease: "easeOut" }}
+      transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
       whileTap={{ scale: 0.95 }}
-      className="flex-shrink-0 snap-start"
+      className="shrink-0 snap-start"
     >
       <Link
         href={`/products?brandName=${cleanSlug}`}
-        className="group flex items-center justify-center bg-white border border-border/40 shadow-sm rounded-2xl w-36 h-16 hover:border-zinc-900/20 hover:shadow-md transition-all duration-300 relative overflow-hidden px-4"
+        className="group flex items-center justify-center bg-white border border-gray-100 shadow-sm rounded-xl md:rounded-2xl w-[120px] h-[60px] md:w-[160px] md:h-[80px] hover:border-gray-300 hover:shadow-md transition-all duration-300 relative overflow-hidden px-4"
       >
-        <div className="absolute inset-0 bg-gradient-to-tr from-zinc-100/0 via-zinc-100/0 to-zinc-100/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-gray-50/0 via-gray-50/0 to-gray-100/50 opacity-0 group-hover:opacity-100 transition-opacity" />
         
-        {/* Jika ada logoUrl, tampilkan gambar. Jika tidak, tampilkan teks namanya */}
         {brand.logoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={brand.logoUrl}
             alt={brand.name}
-            className="w-full h-full object-contain relative z-10 transition-transform duration-300 group-hover:scale-110"
+            // Efek Grayscale: Abu-abu saat diam, berwarna penuh saat di-hover
+            className="w-full h-full object-contain relative z-10 transition-all duration-300 group-hover:scale-110 filter grayscale group-hover:grayscale-0 opacity-70 group-hover:opacity-100"
           />
         ) : (
           <span
-            className="font-black tracking-tighter text-zinc-900 select-none relative z-10 transition-transform duration-300 group-hover:scale-110 text-xl text-center truncate w-full"
+            className="font-black tracking-tighter text-gray-800 select-none relative z-10 transition-transform duration-300 group-hover:scale-110 text-sm md:text-lg text-center truncate w-full"
             style={{ fontFamily: "var(--font-oswald), sans-serif" }}
           >
             {brand.name}
@@ -52,12 +54,10 @@ export function BrandCarousel() {
   const [isLoading, setIsLoading] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
 
-  // Mengambil data brands dari API
   useEffect(() => {
     const fetchBrands = async () => {
       try {
         const data = await brandsService.getAll();
-        // Hanya ambil brand yang isActive = true dan urutkan jika diperlukan
         const activeBrands: any = data.filter(b => b.isActive);
         setBrands(activeBrands);
       } catch (error) {
@@ -70,14 +70,16 @@ export function BrandCarousel() {
     fetchBrands();
   }, []);
 
-  // Animasi Auto-Scroll
+  // Animasi Auto-Scroll yang Disesuaikan untuk Desktop/Mobile
   useEffect(() => {
     if (isPaused || brands.length === 0) return;
 
     const interval = setInterval(() => {
       if (carouselRef.current) {
         const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-        const scrollAmount = 156; // 144px (w-36) + 12px (gap-3)
+        // Mengambil lebar kartu pertama secara dinamis + gap
+        const firstChild = carouselRef.current.children[0] as HTMLElement;
+        const scrollAmount = firstChild ? firstChild.clientWidth + 16 : 176; 
 
         if (scrollLeft + clientWidth >= scrollWidth - 10) {
           carouselRef.current.scrollTo({ left: 0, behavior: "smooth" });
@@ -90,68 +92,62 @@ export function BrandCarousel() {
     return () => clearInterval(interval);
   }, [isPaused, brands.length]);
 
-  // Tampilkan Skeleton atau jangan render carouselnya jika masih loading
   if (isLoading) {
     return (
-      <div className="py-6 bg-background flex flex-col gap-4 animate-pulse">
-        <div className="px-5 flex items-center justify-between">
-          <div className="h-5 bg-muted rounded w-32" />
-          <div className="h-4 bg-muted rounded w-16" />
+      <div className="py-2 container mx-auto max-w-7xl animate-pulse px-4 lg:px-0">
+        <div className="flex items-center justify-between mb-4">
+          <div className="h-5 bg-gray-200 rounded w-32" />
+          <div className="h-4 bg-gray-200 rounded w-16" />
         </div>
-        <div className="flex gap-3 px-5 pt-1 overflow-hidden">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="w-36 h-16 bg-muted rounded-2xl flex-shrink-0" />
+        <div className="flex gap-3 md:gap-4 overflow-hidden">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="w-[120px] h-[60px] md:w-[160px] md:h-[80px] bg-gray-100 rounded-xl md:rounded-2xl shrink-0 border border-gray-100" />
           ))}
         </div>
       </div>
     );
   }
 
-  // Sembunyikan component jika ternyata tidak ada brand aktif
   if (brands.length === 0) return null;
 
   return (
-    <div className="py-6 bg-background flex flex-col gap-4 relative">
-      <div className="px-5 flex items-center justify-between">
-        <h3 className="font-display text-base font-bold text-foreground tracking-tight">
-          Shop by Brand
+    <div className="relative w-full py-2">
+      {/* HEADER SECTION (Menyatu dengan batas layar max-w-7xl) */}
+      <div className="container mx-auto px-4 max-w-7xl flex items-center justify-between mb-4 md:mb-6">
+        <h3 className="text-lg md:text-xl font-bold text-gray-900 tracking-tight hidden lg:block">
+          {/* Judul ini bisa disembunyikan jika Anda sudah memanggil judul "Brand Terlaris" di page.tsx */}
         </h3>
         <Link
           href="/brands"
-          className="group flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-zinc-900 transition-colors"
+          className="text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-[#FF6B00] transition-colors flex items-center gap-1 ml-auto"
         >
-          View All
-          <svg
-            className="w-4 h-4 transition-transform group-hover:translate-x-1"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
+          View All <ChevronRight size={14} />
         </Link>
       </div>
 
-      <div className="relative w-full">
+      {/* CAROUSEL TRACK */}
+      <div className="relative container mx-auto max-w-7xl px-0 lg:px-4">
+        
+        {/* Fading Edges khusus Desktop untuk efek elegan */}
+        <div className="hidden lg:block absolute left-4 top-0 bottom-0 w-16 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+        <div className="hidden lg:block absolute right-4 top-0 bottom-0 w-16 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
         <div
           ref={carouselRef}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
           onTouchStart={() => setIsPaused(true)}
           onTouchEnd={() => setIsPaused(false)}
-          className="flex overflow-x-auto snap-x snap-mandatory gap-3 px-5 pb-4 pt-1 scrollbar-hide"
+          className="flex overflow-x-auto snap-x snap-mandatory gap-3 md:gap-5 px-4 lg:px-0 pb-4 pt-1 scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
+          {/* Custom style for Webkit hidden scrollbar */}
           <style dangerouslySetInnerHTML={{__html: `div::-webkit-scrollbar { display: none; }`}} />
 
           {brands.map((brand, i) => (
             <BrandCard key={brand.id} brand={brand} index={i} />
           ))}
-
-          <div className="w-2 flex-shrink-0" />
         </div>
-
-        <div className="absolute top-0 right-0 h-full w-12 bg-gradient-to-l from-background to-transparent pointer-events-none" />
       </div>
     </div>
   );

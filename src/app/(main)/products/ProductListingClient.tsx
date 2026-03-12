@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { ArrowLeft, Search, SlidersHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import { useProducts } from "@/lib/hooks/useProducts";
 import { ProductGrid } from "@/components/product/ProductGrid";
-import { FilterModal } from "@/components/common/FIlterModal"; // Pastikan path import sesuai
+import { FilterModal } from "@/components/common/FIlterModal"; 
 import { cn } from "@/lib/utils/cn";
 import type { ProductFilters } from "@/types/product.types";
 import { Pagination } from "@/components/common/Pagination";
@@ -29,21 +29,18 @@ export function ProductListingClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // --- 1. STATE UNTUK MODAL FILTER ---
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   
-  // --- 2. AMBIL PARAMETER DARI URL ---
   const categoryFromUrl = searchParams.get("category");
   const subCategoryFromUrl = searchParams.get("subCategory") || "all";
   const brandFromUrl = searchParams.get("brand") || searchParams.get("brandName"); 
   const qFromUrl = searchParams.get("q"); 
   const sortFromUrl: any = searchParams.get("sort");
-  const pageFromUrl = Number(searchParams.get("page")) || 1; // Default ke halaman 1
+  const pageFromUrl = Number(searchParams.get("page")) || 1;
 
-  // --- 3. BENTUK FILTER UNTUK API ---
   const currentFilters: ProductFilters = {
     page: pageFromUrl,
-    limit: 12, // Anda bisa mengatur jumlah produk per halaman di sini
+    limit: 12, 
   };
 
   if (subCategoryFromUrl !== "all") currentFilters.categoryName = subCategoryFromUrl;
@@ -53,94 +50,80 @@ export function ProductListingClient({
   if (qFromUrl) currentFilters.q = qFromUrl;
   if (sortFromUrl) currentFilters.sort = sortFromUrl;
 
-  // --- 4. FETCH DATA ---
   const { data, isLoading } = useProducts(currentFilters);
   const products = data?.data || [];
   const totalProducts = data?.meta.total || 0;
   const totalPages = data?.meta.lastPage || 1;
 
-  // --- 5. FUNGSI UPDATE URL (PAGINATION & TABS & MODAL) ---
   const updateUrlParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
-    
     Object.entries(updates).forEach(([key, value]) => {
       if (value === null) params.delete(key);
       else params.set(key, value);
     });
-
     router.replace(`${pathname}?${params.toString()}`);
   };
 
   const handleTabChange = (slug: string) => {
     updateUrlParams({ 
       subCategory: slug === "all" ? null : slug,
-      page: "1" // Reset ke halaman 1 jika ganti tab
+      page: "1" 
     });
   };
 
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return;
     updateUrlParams({ page: newPage.toString() });
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Gulir ke atas saat ganti halaman
+    window.scrollTo({ top: 0, behavior: "smooth" }); 
   };
 
-  // Fungsi saat tombol "Apply" di modal filter ditekan
   const handleApplyFilter = (modalFilters: any) => {
-    // Memetakan data dari FilterModal ke format URL Parameter
     updateUrlParams({
-      // Gabungkan brand yang dipilih menjadi string yang dipisahkan koma (jika ada)
-      brand: modalFilters.brands.length > 0 ? modalFilters.brands.join(",") : null,
-      
-      // Ubah format sort: "high-to-low" menjadi "desc", dsb (sesuaikan dengan backend Anda)
+      brand: modalFilters.brands?.length > 0 ? modalFilters.brands.join(",") : null,
       sort: modalFilters.priceSort === "high-to-low" ? "desc" 
           : modalFilters.priceSort === "low-to-high" ? "asc" 
           : null,
-          
-      page: "1" // Selalu reset ke halaman 1 jika filter berubah
+      page: "1" 
     });
   };
 
   const displayTitle = qFromUrl ? `Search: "${qFromUrl}"` : brandFromUrl ? `${brandFromUrl.toUpperCase()}` : categoryName || "All Footwear";
 
   return (
-    <div className="flex flex-col flex-1">
-      
-      {/* --- TOP HEADER --- */}
-      <div className="sticky top-0 z-30 bg-white border-b border-gray-100 px-4 py-3 shadow-sm">
-        <div className="flex items-center justify-between">
-          <button onClick={() => router.back()} className="p-1.5 -ml-1.5 hover:bg-gray-100 rounded-full transition-colors">
-            <ArrowLeft size={24} className="text-gray-900" />
-          </button>
-          
-          <div className="text-center">
-            <h1 className="font-bold text-lg text-gray-900 tracking-tight capitalize">
+    <div className="flex flex-col flex-1 pb-24">
+      <div className="container mx-auto max-w-7xl px-4 py-6 md:py-10">
+        
+        {/* --- HEADER TITLE & FILTER BUTTON --- */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 md:mb-8">
+          <div>
+            <h1 className="text-2xl md:text-4xl font-display font-black uppercase tracking-tight text-gray-900">
               {displayTitle}
             </h1>
-            <p className="text-xs text-gray-500 font-medium mt-0.5">
-              {isLoading ? "Loading..." : `${totalProducts} Products`}
+            <p className="text-xs md:text-sm text-gray-500 mt-1.5 font-medium">
+              {isLoading ? "Fetching collection..." : `Showing ${totalProducts} results`}
             </p>
           </div>
           
-          {/* Tombol Filter Utama di Header */}
           <button 
             onClick={() => setIsFilterModalOpen(true)}
-            className="p-1.5 -mr-1.5 hover:bg-gray-100 rounded-full transition-colors relative"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-white border border-gray-200 hover:border-gray-900 rounded-full text-sm font-bold transition-all shadow-sm w-full md:w-auto group"
           >
-            <SlidersHorizontal size={22} className="text-gray-900" />
+            <SlidersHorizontal size={16} className="text-gray-500 group-hover:text-gray-900 transition-colors" />
+            Filter & Sort
             {(brandFromUrl || sortFromUrl) && (
-              <span className="absolute top-1 right-1 w-2 h-2 bg-[#FF6B00] rounded-full border border-white"></span>
+              <span className="w-2 h-2 bg-[#FF6B00] rounded-full ml-1"></span>
             )}
           </button>
         </div>
 
-        {/* --- HORIZONTAL FILTER TABS --- */}
+        {/* --- HORIZONTAL FILTER TABS (SUBCATEGORY) --- */}
         {subCategories.length > 0 && !brandFromUrl && !qFromUrl && (
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 mt-4">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-4 mb-4 border-b border-gray-200/60">
             <button
               onClick={() => handleTabChange("all")}
               className={cn(
-                "shrink-0 px-5 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border",
-                subCategoryFromUrl === "all" ? "bg-black text-white border-black shadow-md" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                "shrink-0 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-200 border",
+                subCategoryFromUrl === "all" ? "bg-[#1C1C1C] text-white border-[#1C1C1C] shadow-md" : "bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-900"
               )}
             >
               All
@@ -150,8 +133,8 @@ export function ProductListingClient({
                 key={tab.id}
                 onClick={() => handleTabChange(tab.slug)}
                 className={cn(
-                  "shrink-0 px-5 py-1.5 rounded-full text-sm font-medium transition-all duration-200 border",
-                  subCategoryFromUrl === tab.slug ? "bg-black text-white border-black shadow-md" : "bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                  "shrink-0 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-200 border",
+                  subCategoryFromUrl === tab.slug ? "bg-[#1C1C1C] text-white border-[#1C1C1C] shadow-md" : "bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-900"
                 )}
               >
                 {tab.name}
@@ -159,25 +142,28 @@ export function ProductListingClient({
             ))}
           </div>
         )}
-      </div>
 
-      {/* --- PRODUCT GRID AREA --- */}
-      <div className="px-4 py-6 flex-1">
-        <ProductGrid
-          products={products}
-          isLoading={isLoading}
-          columns={2} 
-          skeletonCount={6}
-        />
-
-        {/* --- PAGINATION CONTROLS --- */}
-        {!isLoading && totalPages > 1 && (
-          <Pagination
-            currentPage={pageFromUrl}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
+        {/* --- PRODUCT GRID AREA --- */}
+        <div className="w-full mt-6">
+          <ProductGrid
+            products={products}
+            isLoading={isLoading}
+            columns={4} // 👈 Desktop akan menjadi 4 Kolom, Mobile akan menjadi 2 Kolom
+            skeletonCount={8}
           />
-        )}
+
+          {/* --- PAGINATION CONTROLS --- */}
+          {!isLoading && totalPages > 1 && (
+            <div className="mt-12 flex justify-center">
+              <Pagination
+                currentPage={pageFromUrl}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
+        </div>
+
       </div>
 
       {/* --- FILTER MODAL INTEGRATION --- */}

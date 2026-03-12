@@ -1,26 +1,30 @@
+"use client";
 
 import { useProducts } from "@/lib/hooks/useProducts";
 import { ProductGrid } from "./ProductGrid";
 
-// ==========================================
-export function RelatedProducts({ categoryName, currentProductId }: { categoryName?: string, currentProductId: string }) {
-  // Ambil produk berdasarkan kategori yang sama, limit 5 (karena 1 mungkin produk yang sama dan akan di-filter)
-    const { data, isLoading } = useProducts({ categoryName, limit: 5 });
+interface RelatedProductsProps {
+  categoryName?: string;
+  currentProductId: string;
+}
+
+export function RelatedProducts({ categoryName, currentProductId }: RelatedProductsProps) {
+  const { data, isLoading } = useProducts({ categoryName, limit: 5 });
     
-    // Filter agar produk yang sedang dilihat tidak muncul di rekomendasi, lalu ambil maksimal 4
-    const products = (data?.data || [])
-        .filter((p) => p.id !== currentProductId)
-        .slice(0, 4);
+  const products = (data?.data || [])
+    .filter((p) => p.id !== currentProductId)
+    .slice(0, 4);
 
-    // Jika tidak ada data yang terkait, jangan render apa-apa
-    if (!isLoading && products.length === 0) return null;
+  if (!isLoading && products.length === 0) return null;
 
-    return (
-        <ProductGrid 
+  return (
+    <div className="w-full">
+      <ProductGrid 
         products={products} 
         isLoading={isLoading} 
-        columns={2} 
+        columns={4}
         skeletonCount={4} 
-        />
-    );
+      />
+    </div>
+  );
 }
