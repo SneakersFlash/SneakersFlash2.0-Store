@@ -46,7 +46,7 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
 
       {/* --- KONTEN HALAMAN UTAMA --- */}
       {/* pb-20 digunakan agar konten tidak tertutup BottomNavigation jika sedang aktif */}
-      <main className={`min-h-screen ${showBottomNav ? "pb-16 lg:pb-0" : ""}`}>
+      <main className={`min-h-screen ${showBottomNav ? " lg:pb-0" : ""}`}>
         {children}
       </main>
 

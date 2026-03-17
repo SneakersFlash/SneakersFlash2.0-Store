@@ -47,7 +47,7 @@ export function Pagination({
   const canNext = currentPage < totalPages;
 
   return (
-    <div className={cn("flex items-center justify-center gap-2 w-full my-10", className)}>
+    <div className={cn("flex items-center justify-center gap-2 w-full my-5", className)}>
       
       {/* Tombol Previous */}
       <button

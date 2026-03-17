@@ -46,7 +46,7 @@ export interface Product {
   isActive: boolean;
   isFeatured: boolean;
   brand: Brand;
-  category: Category;
+  categories: Category[];
   images: ProductImage[];
   variants: ProductVariant[];
   ratingAvg?: string;

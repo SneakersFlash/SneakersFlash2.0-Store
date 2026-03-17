@@ -90,19 +90,11 @@ export function ProductListingClient({
   const displayTitle = qFromUrl ? `Search: "${qFromUrl}"` : brandFromUrl ? `${brandFromUrl.toUpperCase()}` : categoryName || "All Footwear";
 
   return (
-    <div className="flex flex-col flex-1 pb-24">
+    <div className="flex flex-col flex-1 pb-2">
       <div className="container mx-auto max-w-7xl px-4 py-6 md:py-10">
         
         {/* --- HEADER TITLE & FILTER BUTTON --- */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 md:mb-8">
-          <div>
-            <h1 className="text-2xl md:text-4xl font-display font-black uppercase tracking-tight text-gray-900">
-              {displayTitle}
-            </h1>
-            <p className="text-xs md:text-sm text-gray-500 mt-1.5 font-medium">
-              {isLoading ? "Fetching collection..." : `Showing ${totalProducts} results`}
-            </p>
-          </div>
           
           <button 
             onClick={() => setIsFilterModalOpen(true)}
@@ -114,6 +106,11 @@ export function ProductListingClient({
               <span className="w-2 h-2 bg-[#FF6B00] rounded-full ml-1"></span>
             )}
           </button>
+          <div>
+            <p className="text-xs md:text-sm text-gray-500 mt-1.5 font-medium">
+              {isLoading ? "Fetching collection..." : `Showing ${totalProducts} results`}
+            </p>
+          </div>
         </div>
 
         {/* --- HORIZONTAL FILTER TABS (SUBCATEGORY) --- */}
@@ -154,7 +151,7 @@ export function ProductListingClient({
 
           {/* --- PAGINATION CONTROLS --- */}
           {!isLoading && totalPages > 1 && (
-            <div className="mt-12 flex justify-center">
+            <div className="flex justify-center">
               <Pagination
                 currentPage={pageFromUrl}
                 totalPages={totalPages}

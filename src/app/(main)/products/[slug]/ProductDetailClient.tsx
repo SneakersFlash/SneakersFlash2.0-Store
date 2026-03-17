@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { 
   Star, ChevronRight, Zap, CreditCard, ShieldCheck,
-  Loader2, Ruler, Check
+  Loader2, Ruler, Check,
+  BadgeCheck,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -32,6 +33,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
   const [selectedSizeId, setSelectedSizeId] = useState<string | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isAdding, setIsAdding] = useState(false);
+  const [isInstallmentOpen, setIsInstallmentOpen] = useState(true);
 
   // ─── 1. STATE BARU UNTUK LOGIKA ZOOM MOUSE ─────────────────────────────────────
   const [zoomProps, setZoomProps] = useState({ x: 0, y: 0, isHovered: false });
@@ -119,8 +121,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
 
     setZoomProps({ x: xPercent, y: yPercent, isHovered: true });
   };
-  // ─────────────────────────────────────────────────────────────────────────────
-
+    
   return (
     <div className="min-h-screen bg-white lg:bg-[#F8F9FB] pb-32 lg:pb-16 pt-4 lg:pt-8">
       <div className="container mx-auto max-w-7xl px-0 lg:px-4">
@@ -166,17 +167,26 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
 
             {/* Thumbnails */}
             {images.length > 1 && (
-              <div className="flex items-center gap-3 px-4 lg:px-0 overflow-x-auto no-scrollbar py-2">
+              <div className="flex items-center justify-between gap-2 lg:gap-3 px-4 lg:px-0 w-full py-2">
                 {images.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
                     className={cn(
-                      "relative w-16 h-16 lg:w-20 lg:h-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all",
-                      idx === activeImageIndex ? "border-black opacity-100" : "border-transparent bg-gray-50 opacity-60 hover:opacity-100"
+                      // Menggunakan flex-1 dan aspect-square agar terbagi rata dan tetap kotak di mobile
+                      // lg:flex-none lg:w-20 lg:h-20 mengembalikan ukuran statis untuk desktop
+                      "relative flex-1 aspect-square lg:flex-none lg:w-20 lg:h-20 rounded-xl overflow-hidden border-2 transition-all",
+                      idx === activeImageIndex 
+                        ? "border-black opacity-100" 
+                        : "border-transparent bg-gray-50 opacity-60 hover:opacity-100"
                     )}
                   >
-                    <Image src={img} alt={`Thumbnail ${idx}`} fill className="object-cover p-1" />
+                    <Image 
+                      src={img} 
+                      alt={`Thumbnail ${idx}`} 
+                      fill 
+                      className="object-contain p-2" 
+                    />
                   </button>
                 ))}
               </div>
@@ -188,8 +198,17 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
             {/* Breadcrumb & Brand */}
             <div className="mb-4">
               <p className="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
-                {product.isFeatured ? "New Arrival / " : ""}{product.category?.name ?? "Footwear"}
+                {product.isFeatured ? "New Arrival / " : ""}
+                {product.categories?.map(item => item.name).join(', ') || "Footwear"}
               </p>
+              <div className="flex">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={16} className={i < Math.floor(rating) ? "text-[#FF6B00] fill-[#FF6B00]" : "text-gray-200 fill-gray-200"} />
+                  ))}
+              </div>
+              <span className="text-sm font-medium text-gray-600 underline cursor-pointer hover:text-black">
+                  {reviewCount} Reviews
+              </span>
               <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-gray-900 mb-1">
                 {product.brand?.name ?? "BRAND"}
               </h2>
@@ -288,30 +307,87 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
             </div>
 
             {/* Perks & Benefits */}
-            <div className="bg-gray-50 lg:bg-white rounded-2xl p-5 mb-8 border border-gray-100 space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="bg-[#FF6B00]/10 text-[#FF6B00] p-2.5 rounded-full"><Zap size={20} fill="currentColor" /></div>
-                <div>
-                  <h4 className="text-sm font-bold text-gray-900">Earn Flash Points</h4>
-                  <p className="text-xs text-gray-500">You will get <span className="font-bold text-black">{earnedPoints.toLocaleString('id-ID')} pts</span> for this purchase.</p>
+            <div className="flex flex-col border-t border-[#E5E5E5] mb-8 mt-2 lg:mt-4">
+              
+              {/* Earn Flash Points */}
+              <div className="flex items-center justify-between py-4 border-b border-[#E5E5E5] cursor-pointer hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-3.5">
+                  <div className="bg-[#FF6B00] text-white w-7 h-7 rounded-full flex items-center justify-center">
+                    <Zap size={15} fill="currentColor" className="ml-[1px]" />
+                  </div>
+                  <p className="text-[15px] text-[#1A1A1A]">
+                    Earn Flash Points: <span className="font-bold">{earnedPoints.toLocaleString('id-ID')}</span>
+                  </p>
                 </div>
+                {/* <ChevronRight size={24} strokeWidth={1.5} className="text-black" /> */}
               </div>
-              <hr className="border-gray-200/60" />
-              <div className="flex items-center gap-4">
-                <div className="bg-blue-50 text-blue-600 p-2.5 rounded-full"><ShieldCheck size={20} /></div>
-                <div>
-                  <h4 className="text-sm font-bold text-gray-900">100% Authentic</h4>
-                  <p className="text-xs text-gray-500">Every product is verified and guaranteed legit.</p>
+
+              {/* Credit Card Installment (Accordion Trigger) */}
+              <div 
+                className="flex items-center justify-between py-4 border-b border-[#E5E5E5] cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => setIsInstallmentOpen(!isInstallmentOpen)}
+              >
+                <div className="flex items-center gap-3.5">
+                  <CreditCard size={28} strokeWidth={1.5} className="text-black" />
+                  <p className="text-[15px] text-[#1A1A1A]">
+                    <span className="font-bold">0%</span> Interest Credit Card Installment*
+                  </p>
                 </div>
+                <motion.div animate={{ rotate: isInstallmentOpen ? 90 : 0 }} transition={{ duration: 0.2 }}>
+                  <ChevronRight size={24} strokeWidth={1.5} className="text-black" />
+                </motion.div>
               </div>
-              <hr className="border-gray-200/60" />
-              <div className="flex items-center gap-4">
-                <div className="bg-green-50 text-green-600 p-2.5 rounded-full"><CreditCard size={20} /></div>
-                <div>
-                  <h4 className="text-sm font-bold text-gray-900">Secure Installments</h4>
-                  <p className="text-xs text-gray-500">0% Interest credit card installment available.</p>
+
+              {/* Accordion Content Simulasi Cicilan */}
+              <AnimatePresence>
+                {isInstallmentOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden bg-[#F8F9FB] border-b border-[#E5E5E5]"
+                  >
+                    <div className="p-4 md:px-5">
+                      <p className="text-[13px] font-bold text-gray-500 mb-3 uppercase tracking-wider">
+                        Simulasi Cicilan 0%
+                      </p>
+                      <div className="space-y-2.5 text-[14px] text-gray-800">
+                        <div className="flex justify-between items-center pb-2 border-b border-gray-200 border-dashed">
+                          <span>3 Bulan</span>
+                          <span className="font-bold text-black">
+                            {formatPrice(displayPrice / 3)} <span className="text-[12px] text-gray-500 font-normal">/ bln</span>
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center pb-2 border-b border-gray-200 border-dashed">
+                          <span>6 Bulan</span>
+                          <span className="font-bold text-black">
+                            {formatPrice(displayPrice / 6)} <span className="text-[12px] text-gray-500 font-normal">/ bln</span>
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>12 Bulan</span>
+                          <span className="font-bold text-black">
+                            {formatPrice(displayPrice / 12)} <span className="text-[12px] text-gray-500 font-normal">/ bln</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Tukar Size */}
+              <div className="flex items-center justify-between py-4 border-b border-[#E5E5E5] cursor-pointer hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-3.5">
+                  {/* Menggunakan fill hitam & stroke putih agar persis seperti badge verified di desain */}
+                  <BadgeCheck size={30} fill="black" stroke="white" strokeWidth={1.5} />
+                  <p className="text-[15px] text-[#1A1A1A]">
+                    Bisa <span className="font-bold">Tukar Size*</span>
+                  </p>
                 </div>
+                {/* <ChevronRight size={24} strokeWidth={1.5} className="text-black" /> */}
               </div>
+
             </div>
 
             {/* Deskripsi */}
@@ -334,7 +410,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
             You Might Also Like
           </h3>
           <div className="px-4 lg:px-0">
-            <RelatedProducts categoryName={product.category?.name} currentProductId={product.id} />
+            <RelatedProducts categoryName={product.categories[0].name} currentProductId={product.id} />
           </div>
         </div>
 

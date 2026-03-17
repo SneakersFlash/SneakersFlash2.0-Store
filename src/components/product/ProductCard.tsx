@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Heart, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
@@ -13,33 +13,35 @@ import type { Product } from "@/types/product.types";
 interface ProductCardProps {
   product: Product;
   priority?: boolean;
-  index?: number;     
+  index?: number;
 }
 
-function StarRating({ rating = 4.2, count = 78 }: { rating?: number; count?: number }) {
-  const full  = Math.floor(rating);
+function StarRating({ rating = 4, count = 78 }: { rating?: number; count?: number }) {
+  const full = Math.floor(rating);
   return (
-    <div className="flex items-center gap-1 mt-auto pt-1.5">
-      <div className="flex">
+    <div className="flex items-center gap-1 sm:gap-2 mt-auto pt-1.5 sm:pt-2">
+      <div className="flex gap-0.5 sm:gap-1">
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
-            size={11}
+            // Menggunakan class w & h agar ukuran icon bisa responsif
             className={cn(
+              "w-2.5 h-2.5 sm:w-4 sm:h-4 transition-colors",
               i < full
-                ? "text-[#FF6B00] fill-[#FF6B00]"
-                : "text-gray-200 fill-gray-100"
+                ? "text-black fill-black" 
+                : "text-black fill-transparent" 
             )}
           />
         ))}
       </div>
-      <span className="text-[10px] text-gray-500">({count})</span>
+      <span className="text-[10px] sm:text-[13px] md:text-[15px] text-[#4A4A4A] underline underline-offset-[3px] decoration-1">
+        ({count} review)
+      </span>
     </div>
   );
 }
 
 export function ProductCard({ product, priority = false, index = 0 }: ProductCardProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const primaryImage = getProductImageUrl(product.variants?.[0]?.imageUrl);
@@ -60,23 +62,23 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
         delay: index * 0.06,
         ease: [0.25, 0.46, 0.45, 0.94],
       }}
-      className="group relative h-full"
+      className="group relative h-full font-sans"
     >
-      {/* ── CARD WRAPPER UTAMA (Latar Putih, Border, Shadow, Rounded) ── */}
       <Link 
         href={`/products/${product.slug}`} 
-        className="block h-full bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-gray-300 transition-all duration-300 overflow-hidden flex flex-col"
+        className="block h-full bg-white border border-[#E5E5E5] rounded-[12px] sm:rounded-[20px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col relative pb-3 sm:pb-5"
       >
-        
-        {/* ── Image container (Kotak Gambar) ── */}
-        <div className="relative overflow-hidden bg-gray-50/80 aspect-square shrink-0">
+
+        {/* ── Image Container ── */}
+        {/* Mengubah aspect ratio di mobile menjadi kotak (aspect-square) agar lebih pas */}
+        <div className="relative w-full aspect-square sm:aspect-[5/4] bg-white pt-4 sm:pt-10 pb-2 px-2 sm:px-4 shrink-0 flex items-center justify-center">
           <Image
             src={imageError ? "/images/placeholder-product.svg" : primaryImage}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className={cn(
-              "object-cover transition-all duration-700 ease-out p-4",
+              "object-contain transition-all duration-700 ease-out p-3 sm:p-6",
               secondaryImage
                 ? "group-hover:opacity-0 group-hover:scale-105"
                 : "group-hover:scale-105"
@@ -91,75 +93,47 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
               alt={`${product.name} — alternate view`}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-cover opacity-0 scale-105 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-100 p-4"
+              className="object-contain opacity-0 scale-105 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-100 p-3 sm:p-6"
             />
           )}
+        </div>
 
-          {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
-            {product.isFeatured && (
-              <span className="inline-flex items-center px-2 py-1 text-[9px] font-bold uppercase tracking-wider bg-black text-white rounded-md shadow-sm">
-                Featured
-              </span>
-            )}
-            {product.variants?.every((v) => v.stock === 0) && (
-              <span className="inline-flex items-center px-2 py-1 text-[9px] font-bold uppercase tracking-wider bg-white/90 text-red-600 rounded-md backdrop-blur-md shadow-sm">
-                Sold Out
-              </span>
+        {/* ── Product Info ── */}
+        <div className="px-3 sm:px-4 md:px-5 flex flex-col flex-1">
+          {/* Brand */}
+          <h3 className="text-[12px] sm:text-[16px] md:text-[20px] font-bold uppercase tracking-tight text-black mb-0.5 sm:mb-1">
+            {product.brand?.name ?? "NIKE"}
+          </h3>
+
+          {/* Nama Produk */}
+          <p className="text-[12px] sm:text-[14px] md:text-[18px] leading-snug sm:leading-normal font-normal text-black line-clamp-2 sm:line-clamp-1 mb-1.5 sm:mb-3">
+            {product.name ? product.name.toLocaleUpperCase() : product.name}
+          </p>
+
+          {/* Harga & Diskon */}
+          <div className="flex flex-col mt-auto">
+            {/* Harga Utama */}
+            <span className="text-[16px] sm:text-[24px] md:text-[24px] font-bold text-[#FF0000] leading-none tracking-tight mb-1 sm:mb-2">
+              {formatPrice(displayPrice)}
+            </span>
+            
+            {hasDiscount && (
+              <div className="flex items-center gap-1.5 sm:gap-3 mb-1 sm:mb-2 flex-wrap">
+                <span className="text-[11px] sm:text-[14px] md:text-[14px] text-[#4A4A4A] line-through font-normal">
+                  {formatPrice(product.basePrice)}
+                </span>
+                <span className="inline-flex items-center justify-center bg-[#B2FFB9] text-[#00A925] text-[10px] sm:text-[12px] md:text-[15px] font-bold px-1.5 sm:px-2 py-0.5 rounded-sm">
+                  save {saving}%
+                </span>
+              </div>
             )}
           </div>
 
-          {/* Wishlist button */}
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsWishlisted((prev) => !prev);
-            }}
-            className={cn(
-              "absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center rounded-full",
-              "bg-white shadow-sm border border-gray-200",
-              "opacity-0 lg:group-hover:opacity-100 transition-all duration-300 translate-y-2 lg:group-hover:translate-y-0",
-              "hover:scale-110 active:scale-95"
-            )}
-            aria-label="Add to wishlist"
-          >
-            <Heart
-              size={14}
-              className={cn(
-                "transition-colors",
-                isWishlisted ? "fill-red-500 text-red-500" : "text-gray-400"
-              )}
-            />
-          </button>
-        </div>
-
-        {/* ── Product info (Berada di dalam Card, ada Padding) ── */}
-        <div className="p-3 md:p-4 flex flex-col flex-1 space-y-0.5">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
-            {product.brand?.name ?? "Brand"}
-          </p>
-
-          <h3 className="text-[13px] sm:text-sm font-medium line-clamp-2 leading-snug text-gray-900 group-hover:text-black transition-colors duration-200 mb-1">
-            {product.name}
-          </h3>
-
-          <p className="font-bold text-[14px] sm:text-base text-gray-900 leading-tight mt-1">
-            {formatPrice(displayPrice)}
-          </p>
-
-          {hasDiscount && (
-            <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-              <p className="text-[11px] sm:text-xs line-through text-gray-400 font-medium">
-                {formatPrice(product.basePrice)}
-              </p>
-              <span className="inline-flex items-center px-1.5 py-0.5 bg-red-50 text-red-600 text-[9px] font-bold uppercase tracking-wider rounded-md">
-                save {saving}%
-              </span>
-            </div>
-          )}
-
-          <StarRating rating={parseFloat(product?.ratingAvg ?? '4.2') ?? 4.2} count={product?.reviewCount ?? 78} />
+          {/* Rating */}
+          <StarRating 
+            rating={parseFloat(product?.ratingAvg ?? '4') ?? 4} 
+            count={product?.reviewCount ?? 78} 
+          />
         </div>
       </Link>
     </motion.div>

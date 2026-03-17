@@ -12,7 +12,9 @@ export interface CartItem {
   quantity: number;    // Jumlah
   subtotal: number;    // Harga x Jumlah
   image: string[];     // Array URL gambar
-  size?: string;       // Opsional: Jika nanti backend Anda menambahkan properti size
+  size?: string;       //
+  weight?: number
+  weightKilogram?: number
 }
 
 export interface Cart {
