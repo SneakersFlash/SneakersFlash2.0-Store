@@ -5,12 +5,22 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { BottomNavigation } from "@/components/home/BottomNavigation";
 import { TopSearchBar } from "@/components/home/TopSearchBar"; // Pastikan path import benar
+import { useAuthStore } from "@/lib/store/authStore";
+import { useEffect } from "react";
 
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   // --- LOGIKA KONDISI URL ---
   
+  const isHydrated = useAuthStore((state) => state.isHydrated);
+  
+  useEffect(() => {
+    // Jangan panggil API jika Zustand belum selesai membaca localStorage
+    if (!isHydrated) return; 
+    
+    // fetchApiWithToken();
+  }, [isHydrated]);
   // 1. Apakah ini halaman Home?
   const isHome = pathname === "/";
   

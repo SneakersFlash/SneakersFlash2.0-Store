@@ -19,7 +19,7 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       token: null,
       isAuthenticated: false,
@@ -38,12 +38,14 @@ export const useAuthStore = create<AuthState>()(
     {
       name: "sf-auth",
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ user: state.user, token: state.token }),
+      partialize: (state) => ({ 
+        user: state.user, 
+        token: state.token,
+        isAuthenticated: state.isAuthenticated 
+      }),
       onRehydrateStorage: () => (state) => {
-        state?.setHydrated();
-        // If there's a stored token, re-set isAuthenticated
-        if (state?.token) {
-          state.isAuthenticated = true;
+        if (state) {
+          state.setHydrated();
         }
       },
     }
@@ -51,9 +53,6 @@ export const useAuthStore = create<AuthState>()(
 );
 
 // ─── Register the token getter with Axios client ──────────────────────────────
-// This breaks the circular dependency: apiClient needs the token,
-// but can't import the store directly.
-
 if (typeof window !== "undefined") {
   registerTokenGetter(() => useAuthStore.getState().token);
   registerUnauthorizedHandler(() => useAuthStore.getState().clearAuth());

@@ -178,25 +178,8 @@ export default function CheckoutPage() {
     try {
       const response = await ordersService.checkout(orderPayload);
 
-      if (response.snapToken && typeof window !== "undefined" && (window as any).snap) {
-        (window as any).snap.pay(response.snapToken, {
-          onSuccess: function () {
-            router.push(`/orders/${response.id}?status=success`);
-          },
-          onPending: function () {
-            router.push(`/orders/${response.id}?status=pending`);
-          },
-          onError: function () {
-            alert("Pembayaran gagal diproses.");
-          },
-          onClose: function () {
-            router.push(`/orders`); 
-          }
-        });
-      } else {
-        alert("Checkout Berhasil!");
-        router.push(`/orders/${response.id}`);
-      }
+      router.push(`/orders/${response.id}`); 
+      
     } catch (error: any) {
       alert(error?.response?.data?.message || "Terjadi kesalahan saat memproses pesanan Anda.");
     } finally {
