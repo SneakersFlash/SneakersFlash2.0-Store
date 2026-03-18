@@ -152,7 +152,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 <p className="font-bold text-gray-900 mb-1">{order.address.recipientName || "Recipient"}</p>
                 <p className="text-gray-600 leading-relaxed">
                   {order.address.phone}<br/>
-                  {order.address.addressLine}<br/>
+                  {order.address.street}<br/>
                   {order.address.city}, {order.address.postalCode}
                 </p>
               </div>

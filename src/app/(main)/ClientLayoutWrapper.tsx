@@ -30,10 +30,12 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
   
   // 3. Apakah ini halaman Checkout?
   const isCheckout = pathname.startsWith("/checkout");
+  const isOrder = pathname.startsWith("/orders");
+  const isMyOrder = pathname.startsWith("/account/orders");
 
   // --- ATURAN VISIBILITAS ---
-  const showDesktopNavbar = !isCheckout;
-  const showFooter = !isCheckout;
+  const showDesktopNavbar = !isCheckout && !isOrder && !isMyOrder;
+  const showFooter = !isCheckout && !isOrder && !isMyOrder;
   
   // Bottom Nav disembunyikan di Detail Produk (karena ada bar Add to Cart) dan Checkout
   const showBottomNav = !isProductDetail && !isCheckout;
