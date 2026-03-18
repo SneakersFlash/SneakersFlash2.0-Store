@@ -56,8 +56,24 @@ export default function RegisterPage() {
     e.preventDefault();
     if (!validateForm()) return;
     setIsSubmitting(true);
-    const result = await register(form.email, form.password, form.name);
+
+    // Smart split of the "Full name" input to satisfy your RegisterDto
+    const nameParts = form.name.trim().split(" ");
+    const firstName = nameParts[0] || "";
+    // If they only enter one name (e.g., "John"), use it for both to prevent backend errors.
+    // Otherwise, join the rest of the words as the last name.
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : firstName;
+
+    const result = await register({
+      email: form.email,
+      password: form.password,
+      firstName: firstName,
+      lastName: lastName,
+      // Note: 'phone' is optional in your DTO, so it is perfectly fine to omit it here!
+    });
+    
     setIsSubmitting(false);
+    
     if (result.success) router.push("/");
     else setErrors({ general: result.error ?? "Registration failed." });
   };
