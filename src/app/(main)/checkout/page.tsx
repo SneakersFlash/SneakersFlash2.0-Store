@@ -294,7 +294,7 @@ export default function CheckoutPage() {
                     <label key={idx} className={cn(
                       "flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors",
                       selectedCourier?.service === opt.service ? "border-[#FF6B00] bg-orange-50/30" : "border-gray-200 bg-white"
-                    )} onClick={() => { setSelectedCourier(opt); setIsShippingOpen(false); }}>
+                    )} onClick={() => { setSelectedCourier(opt); }}>
                       <div className="flex items-center gap-3">
                         {selectedCourier?.service === opt.service ? <CheckCircle2 size={18} className="text-[#FF6B00]" /> : <Circle size={18} className="text-gray-300" />}
                         <div>
@@ -328,7 +328,7 @@ export default function CheckoutPage() {
               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden bg-gray-50/50">
                 <div className="p-4 border-b border-gray-100 flex gap-2">
                   <input type="text" placeholder="Enter promo code" value={tempVoucher} onChange={(e) => setTempVoucher(e.target.value.toUpperCase())} className="flex-1 p-2.5 border border-gray-300 rounded-lg text-sm font-bold uppercase tracking-wider" />
-                  <button onClick={() => { setAppliedVoucher(tempVoucher); setIsVoucherOpen(false); }} className="bg-black text-white font-bold px-5 rounded-lg text-sm">Apply</button>
+                  <button onClick={() => { setAppliedVoucher(tempVoucher) }} className="bg-black text-white font-bold px-5 rounded-lg text-sm">Apply</button>
                 </div>
               </motion.div>
             )}
@@ -357,7 +357,7 @@ export default function CheckoutPage() {
                       <h3 className="text-xs font-bold text-gray-900 mb-2">{group.category}</h3>
                       <div className="space-y-0 text-gray-700 bg-white border border-gray-200 rounded-lg overflow-hidden">
                         {group.options.map((option) => (
-                          <label key={option.id} className="flex items-center justify-between p-3 border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => { setSelectedPayment(option.id); setIsPaymentOpen(false); }}>
+                          <label key={option.id} className="flex items-center justify-between p-3 border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => { setSelectedPayment(option.id) }}>
                             <div className="flex items-center gap-3">
                               <span className="text-[10px] font-black text-blue-800 italic w-12 text-center bg-gray-100 py-1 rounded">{option.logo}</span>
                               <span className="text-sm font-medium text-gray-900">{option.name}</span>
