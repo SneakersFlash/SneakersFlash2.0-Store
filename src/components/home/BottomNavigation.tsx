@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { LayoutGrid, Heart, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
@@ -36,7 +36,9 @@ const NAV_ITEMS = [
 
 export function BottomNavigation() {
   const pathname = usePathname();
-
+  const searchParams = useSearchParams();
+  const search = searchParams.toString();
+  const currentPath = search ? `${pathname}?${search}` : pathname;
   return (
     <>
       {/* Spacer so content isn't hidden behind nav */}
@@ -50,8 +52,13 @@ export function BottomNavigation() {
                 ? pathname === "/"
                 : pathname.startsWith(item.href);
 
+            let finalHref = item.href;
+              if (item.label === "Login" && currentPath !== "/") {
+                finalHref = `/login?callbackUrl=${encodeURIComponent(currentPath)}`;
+              }
+
             return (
-              <Link key={item.label} href={item.href} className="flex-1">
+              <Link key={item.label} href={finalHref} className="flex-1">
                 <motion.div
                   whileTap={{ scale: 0.85 }}
                   className={cn(

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { 
   Star, ChevronRight, Zap, CreditCard, ShieldCheck,
@@ -24,7 +24,12 @@ interface ProductDetailClientProps {
 
 export function ProductDetailClient({ slug }: ProductDetailClientProps) {
   const router = useRouter();
-  
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const search = searchParams.toString();
+  const currentPath = search ? `${pathname}?${search}` : pathname;
+
   // --- STATE & HOOKS ---
   const { data: product, isLoading: isProductLoading } = useProduct(slug);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -41,6 +46,16 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
   const ZOOM_LEVEL = 1.8; 
   // ─────────────────────────────────────────────────────────────────────────────
 
+  useEffect(() => {
+    if (product) {
+      const variants = product.variants || []; 
+      
+      if (variants.length === 1) {
+        setSelectedSizeId(variants[0].id);
+      }
+    }
+  }, [product]);
+  
   // --- LOADING & ERROR STATE ---
   if (isProductLoading) {
     return (
@@ -241,7 +256,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
             {/* Size Selector */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-sm font-bold text-gray-900">Select Size (EUR)</h3>
+                <h3 className="text-sm font-bold text-gray-900">Select Size</h3>
                 <button className="text-xs font-bold text-gray-500 hover:text-black flex items-center gap-1">
                   <Ruler size={14} /> Size Guide
                 </button>
@@ -268,7 +283,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                     >
                       {variant.size}
                       {isOutOfStock && (
-                         <div className="absolute inset-0 w-full h-[1px] bg-gray-300 rotate-45 top-1/2 -translate-y-1/2" />
+                        <div className="absolute inset-0 w-full h-[1px] bg-gray-300 rotate-45 top-1/2 -translate-y-1/2" />
                       )}
                     </button>
                   );
@@ -279,6 +294,15 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
 
             {/* 💻 ACTION BUTTONS (DESKTOP) */}
             <div className="hidden lg:flex gap-4 mb-10">
+              {!isAuthenticated ? (
+            <button
+              onClick={() => router.push(`/login?callbackUrl=${encodeURIComponent(currentPath)}`)}
+              className="w-full flex items-center justify-center py-3.5 rounded-xl font-bold text-sm transition-all shadow-md bg-[#FF6B00] text-white hover:bg-[#e66000] active:scale-[0.98]"
+            >
+              Login to Purchase
+            </button>
+          ) : (
+            <>
               <button
                 onClick={handleAddToCart}
                 disabled={!selectedSizeId || isAdding}
@@ -304,6 +328,8 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
               >
                 {isAdding ? <Loader2 size={20} className="animate-spin text-white" /> : "Buy it Now"}
               </button>
+            </>
+              )}
             </div>
 
             {/* Perks & Benefits */}
@@ -382,7 +408,7 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
                   {/* Menggunakan fill hitam & stroke putih agar persis seperti badge verified di desain */}
                   <BadgeCheck size={30} fill="black" stroke="white" strokeWidth={1.5} />
                   <p className="text-[15px] text-[#1A1A1A]">
-                    Bisa <span className="font-bold">Tukar Size*</span>
+                    100% <span className="font-bold">Authentic</span>
                   </p>
                 </div>
                 {/* <ChevronRight size={24} strokeWidth={1.5} className="text-black" /> */}
@@ -429,31 +455,43 @@ export function ProductDetailClient({ slug }: ProductDetailClientProps) {
         </div>
 
         <div className="flex px-4 pb-4 gap-3">
-          <button
-            onClick={handleAddToCart}
-            disabled={!selectedSizeId || isAdding}
-            className={cn(
-              "flex-1 flex items-center justify-center py-3.5 rounded-xl font-bold text-sm transition-all",
-              selectedSizeId
-                ? "border-2 border-gray-200 text-gray-900 hover:bg-gray-50"
-                : "border-2 border-gray-100 text-gray-400 bg-gray-50 cursor-not-allowed"
-            )}
-          >
-            {isAdding ? <Loader2 size={18} className="animate-spin" /> : "Add to Cart"}
-          </button>
-          
-          <button
-            onClick={handleBuyNow}
-            disabled={!selectedSizeId || isAdding}
-            className={cn(
-              "flex-1 flex items-center justify-center py-3.5 rounded-xl font-bold text-sm transition-all shadow-md",
-              selectedSizeId
-                ? "bg-[#1C1C1C] text-white hover:bg-black active:scale-[0.98]"
-                : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"
-            )}
-          >
-            {isAdding ? <Loader2 size={18} className="animate-spin text-white" /> : "Buy Now"}
-          </button>
+          {/* Cek apakah user sudah login */}
+          {!isAuthenticated ? (
+            <button
+              onClick={() => router.push(`/login?callbackUrl=${encodeURIComponent(currentPath)}`)}
+              className="w-full flex items-center justify-center py-3.5 rounded-xl font-bold text-sm transition-all shadow-md bg-[#FF6B00] text-white hover:bg-[#e66000] active:scale-[0.98]"
+            >
+              Login to Purchase
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={handleAddToCart}
+                disabled={!selectedSizeId || isAdding}
+                className={cn(
+                  "flex-1 flex items-center justify-center py-3.5 rounded-xl font-bold text-sm transition-all",
+                  selectedSizeId
+                    ? "border-2 border-gray-200 text-gray-900 hover:bg-gray-50"
+                    : "border-2 border-gray-100 text-gray-400 bg-gray-50 cursor-not-allowed"
+                )}
+              >
+                {isAdding ? <Loader2 size={18} className="animate-spin" /> : "Add to Cart"}
+              </button>
+              
+              <button
+                onClick={handleBuyNow}
+                disabled={!selectedSizeId || isAdding}
+                className={cn(
+                  "flex-1 flex items-center justify-center py-3.5 rounded-xl font-bold text-sm transition-all shadow-md",
+                  selectedSizeId
+                    ? "bg-[#1C1C1C] text-white hover:bg-black active:scale-[0.98]"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed" // Saya asumsikan ini sambungan dari kode Anda yang terpotong
+                )}
+              >
+                Buy Now
+              </button>
+            </>
+          )}
         </div>
       </div>
 

@@ -3,13 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ShoppingBag, User, Menu, X,
   ChevronDown, Heart, LogOut, Package, Settings,
 } from "lucide-react";
-import { useCartStore, selectCartItemCount } from "@/lib/store/cartStore";
+import { useCartStore } from "@/lib/store/cartStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { cn } from "@/lib/utils/cn";
@@ -224,7 +224,7 @@ function SearchBar({ onClose }: { onClose: () => void }) {
 
 // ─── Account dropdown ─────────────────────────────────────────────────────────
 
-function AccountDropdown({ onClose }: { onClose: () => void }) {
+function AccountDropdown({ onClose, pathname }: { onClose: () => void, pathname: string }) {
   const { user, isAuthenticated, clearAuth } = useAuthStore();
 
   return (
@@ -240,14 +240,16 @@ function AccountDropdown({ onClose }: { onClose: () => void }) {
           <p className="text-sm text-muted-foreground mb-3">Sign in to your account</p>
           <div className="space-y-2">
             <Link
-              href="/login"
+              // 2. Ubah href menjadi dinamis
+              href={pathname === "/" ? "/login" : `/login?callbackUrl=${encodeURIComponent(pathname)}`}
               onClick={onClose}
               className="block w-full text-center bg-primary hover:bg-brand-yellowDark text-primary-foreground py-2.5 text-sm font-display uppercase tracking-wider transition-colors"
             >
               Sign In
             </Link>
             <Link
-              href="/register"
+              // 3. Ubah href menjadi dinamis
+              href={pathname === "/" ? "/register" : `/register?callbackUrl=${encodeURIComponent(pathname)}`}
               onClick={onClose}
               className="block w-full text-center border border-border hover:border-primary text-foreground py-2.5 text-sm font-display uppercase tracking-wider transition-colors"
             >
@@ -320,6 +322,14 @@ function Logo() {
 
 export function Navbar() {
   const pathname    = usePathname();
+  const searchParams = useSearchParams();
+  const router       = useRouter();
+  
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  const search = searchParams.toString();
+  const currentPath = search ? `${pathname}?${search}` : pathname;
+
   const [activeMenu,  setActiveMenu]  = useState<string | null>(null);
   const [showSearch,  setShowSearch]  = useState(false);
   const [showAccount, setShowAccount] = useState(false);
@@ -327,8 +337,11 @@ export function Navbar() {
   const [isScrolled,  setIsScrolled]  = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
 
-  const cartItemCount = useCartStore(selectCartItemCount);
-  const { openCart }  = useCartStore();
+  const items = useCartStore((state) => state.items);
+  const { openCart } = useCartStore();
+  
+  // 3. Kalkulasi total kuantitas barang di keranjang secara langsung
+  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
     const fn = () => setIsScrolled(window.scrollY > 20);
@@ -448,7 +461,7 @@ export function Navbar() {
               {/* Theme toggle */}
               <ThemeToggle />
 
-              {/* Account */}
+{/* Account */}
               <div className="relative">
                 <button
                   onClick={() => { setShowAccount(!showAccount); setShowSearch(false); }}
@@ -458,29 +471,27 @@ export function Navbar() {
                   <User size={19} />
                 </button>
                 <AnimatePresence>
-                  {showAccount && <AccountDropdown onClose={() => setShowAccount(false)} />}
+                  {showAccount && <AccountDropdown onClose={() => setShowAccount(false)} pathname={currentPath} />}
                 </AnimatePresence>
               </div>
 
               {/* Cart */}
               <button
-                onClick={() => { openCart(); setShowSearch(false); setShowAccount(false); }}
+                onClick={() => { 
+                  if (!isAuthenticated) {
+                    router.push(currentPath === "/" ? "/login" : `/login?callbackUrl=${encodeURIComponent(currentPath)}`);
+                    return;
+                  }
+                  openCart(); 
+                  setShowSearch(false); 
+                  setShowAccount(false); 
+                }}
                 className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
-                aria-label={`Cart (${cartItemCount} items)`}
+                aria-label={`Cart (${cartCount} items)`}
               >
                 <ShoppingBag size={19} />
                 <AnimatePresence>
-                  {cartItemCount > 0 && (
-                    <motion.span
-                      key="badge"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      className="absolute -top-0.5 -right-0.5 h-4 w-4 flex items-center justify-center bg-primary text-primary-foreground text-[10px] font-bold rounded-full"
-                    >
-                      {cartItemCount > 9 ? "9+" : cartItemCount}
-                    </motion.span>
-                  )}
+                  <CartBadge count={cartCount} />
                 </AnimatePresence>
               </button>
             </div>
@@ -519,5 +530,22 @@ export function Navbar() {
       {/* Cart sidebar */}
       <CartSidebar />
     </>
+  );
+}
+
+function CartBadge({ count }: { count: number }) {
+  return (
+    <AnimatePresence>
+      {count > 0 && (
+        <motion.span
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          exit={{ scale: 0 }}
+          className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center bg-[#FF6B00] text-white text-[9px] font-bold rounded-full border-2 border-white"
+        >
+          {count > 9 ? "9+" : count}
+        </motion.span>
+      )}
+    </AnimatePresence>
   );
 }

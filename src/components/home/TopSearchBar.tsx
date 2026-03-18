@@ -5,7 +5,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, ShoppingBag, SlidersHorizontal, X, ArrowLeft, Share2 } from "lucide-react";
 
-// 1. Hapus import selectCartItemCount, cukup ambil useCartStore saja
+import { useAuthStore } from "@/lib/store/authStore";
 import { useCartStore } from "@/lib/store/cartStore"; 
 import { FilterModal } from "../common/FIlterModal";
 import { CartSidebar } from "../cart/CartSidebar";
@@ -17,16 +17,18 @@ export function TopSearchBar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // 2. Ambil state items dan fungsi openCart dari Zustand
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  
+  const search = searchParams.toString();
+  const currentPath = search ? `${pathname}?${search}` : pathname;
+  
   const items = useCartStore((state) => state.items);
   const { openCart } = useCartStore();
   
-  // 3. Kalkulasi total kuantitas barang di keranjang secara langsung
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // --- LOGIKA KONDISI HALAMAN ---
   const isHome = pathname === "/";
   const isProductList = pathname === "/products";
   const isProductDetail = pathname.startsWith("/products/") && pathname !== "/products";
@@ -92,7 +94,13 @@ export function TopSearchBar() {
             {/* Cart icon */}
             <motion.button
               whileTap={{ scale: 0.88 }}
-              onClick={openCart}
+              onClick={() => {
+                  if (!isAuthenticated) {
+                    router.push(currentPath === "/" ? "/login" : `/login?callbackUrl=${encodeURIComponent(currentPath)}`);
+                    return;
+                  }
+                  openCart();
+                }}
               className="relative shrink-0 w-9 h-9 flex items-center justify-center"
             >
               <ShoppingBag size={22} className="text-foreground" />
@@ -120,7 +128,15 @@ export function TopSearchBar() {
               <button onClick={() => setIsFilterOpen(true)} className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
                 <SlidersHorizontal size={22} className="text-gray-900" />
               </button>
-              <button onClick={openCart} className="relative p-1.5 hover:bg-gray-100 rounded-full transition-colors">
+              <button 
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    router.push(currentPath === "/" ? "/login" : `/login?callbackUrl=${encodeURIComponent(currentPath)}`);
+                    return;
+                  }
+                  openCart();
+                }}
+                className="relative p-1.5 hover:bg-gray-100 rounded-full transition-colors">
                 <ShoppingBag size={22} className="text-gray-900" />
                 <CartBadge count={cartCount} />
               </button>
@@ -141,7 +157,15 @@ export function TopSearchBar() {
               <button className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
                 <Share2 size={22} className="text-gray-900" />
               </button>
-              <button onClick={openCart} className="relative p-1.5 hover:bg-gray-100 rounded-full transition-colors">
+              <button
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    router.push(currentPath === "/" ? "/login" : `/login?callbackUrl=${encodeURIComponent(currentPath)}`);
+                    return;
+                  }
+                  openCart();
+                }}
+                className="relative p-1.5 hover:bg-gray-100 rounded-full transition-colors">
                 <ShoppingBag size={22} className="text-gray-900" />
                 <CartBadge count={cartCount} />
               </button>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+// 1. Tambahkan usePathname dan useSearchParams di import
+import { useRouter, usePathname, useSearchParams } from "next/navigation"; 
 import { useAuthStore } from "@/lib/store/authStore";
 
 interface WithAuthOptions {
@@ -24,13 +25,25 @@ export function withAuth<P extends object>(
     const isHydrated = useAuthStore((state) => state.isHydrated);
     
     const router = useRouter();
+    // 2. Gunakan hooks untuk mendapatkan path dan query params
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
     useEffect(() => {
       // Pastikan store sudah di-hydrate dari localStorage sebelum mengecek auth
       if (isHydrated && !isAuthenticated) {
-        router.replace(redirectTo);
+        // 3. Susun full path saat ini (beserta query parameternya jika ada)
+        let currentPath = pathname;
+        const search = searchParams.toString();
+        if (search) {
+          currentPath += `?${search}`;
+        }
+        
+        // 4. Arahkan dengan menyisipkan callbackUrl
+        const loginUrl = `${redirectTo}?callbackUrl=${encodeURIComponent(currentPath)}`;
+        router.replace(loginUrl);
       }
-    }, [isAuthenticated, isHydrated, router, redirectTo]);
+    }, [isAuthenticated, isHydrated, router, redirectTo, pathname, searchParams]);
 
     // Tampilkan loading screen selama data di localStorage sedang dibaca (hydration)
     if (!isHydrated) return <AuthLoadingScreen />;
@@ -48,15 +61,26 @@ export function withAuth<P extends object>(
 export function useRequireAuth(redirectTo = "/login") {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const isHydrated = useAuthStore((state) => state.isHydrated);
+  
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (isHydrated && !isAuthenticated) {
-      router.replace(redirectTo);
+      let currentPath = pathname;
+      const search = searchParams.toString();
+      if (search) {
+        currentPath += `?${search}`;
+      }
+      
+      const loginUrl = `${redirectTo}?callbackUrl=${encodeURIComponent(currentPath)}`;
+      console.log(loginUrl);
+      
+      router.replace(loginUrl);
     }
-  }, [isAuthenticated, isHydrated, redirectTo, router]);
+  }, [isAuthenticated, isHydrated, redirectTo, router, pathname, searchParams]);
 
-  // Kembalikan isHydrated sebagai pengganti isLoading
   return { isAuthenticated, isLoading: !isHydrated };
 }
 

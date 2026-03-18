@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { validateEmail, validatePassword } from "@/lib/auth-validation";
 import AuthInput from "./AuthInput";
@@ -22,6 +22,9 @@ interface FormErrors {
 
 export default function LoginForm() {
   const router = useRouter();
+  // 2. Ambil search params dari URL
+  const searchParams = useSearchParams(); 
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const { login, loginWithGoogle, loginWithApple } = useAuth();
 
   const [form, setForm] = useState<FormState>({ email: "", password: "" });
@@ -58,7 +61,7 @@ export default function LoginForm() {
     setIsSubmitting(false);
 
     if (result.success) {
-      router.push("/");
+      router.push(callbackUrl); 
     } else {
       setErrors({ general: result.error ?? "Login failed. Please try again." });
     }
@@ -68,7 +71,7 @@ export default function LoginForm() {
     setSocialLoading("google");
     const result = await loginWithGoogle();
     setSocialLoading(null);
-    if (result.success) router.push("/");
+    if (result.success) router.push(callbackUrl); 
     else setErrors({ general: result.error ?? "Google login failed." });
   };
 
@@ -76,7 +79,7 @@ export default function LoginForm() {
     setSocialLoading("apple");
     const result = await loginWithApple();
     setSocialLoading(null);
-    if (result.success) router.push("/");
+    if (result.success) router.push(callbackUrl); 
     else setErrors({ general: result.error ?? "Apple login failed." });
   };
 
