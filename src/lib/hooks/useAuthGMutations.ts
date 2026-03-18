@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { authService } from "@/lib/api/auth.service";
 import { useAuthStore } from "@/lib/store/authStore";
-import type { LoginDto, AuthResponse } from "@/types/user.types";
+import type { LoginDto, AuthResponse, RegisterDto } from "@/types/user.types";
 
 export function useAuthGMutations() {
   const queryClient = useQueryClient();
@@ -31,9 +31,15 @@ export function useAuthGMutations() {
     onSuccess: handleSuccess,
   });
 
+  const registerMutation = useMutation({
+    mutationFn: (dto: RegisterDto) => authService.register(dto),
+    onSuccess: handleSuccess,
+  })
+
   return {
     loginMutation,
     googleLoginMutation,
     appleLoginMutation,
+    registerMutation
   };
 }

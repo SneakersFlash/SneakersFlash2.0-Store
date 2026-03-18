@@ -3,22 +3,25 @@
 import { createContext, useContext, ReactNode, useRef } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useAuthGMutations } from "@/lib/hooks/useAuthGMutations";
+import { RegisterDto } from "@/types/user.types";
 
 interface AuthResult {
   success: boolean;
   error?: string;
 }
 
+
 interface AuthContextType {
   login: (email: string, password: string) => Promise<AuthResult>;
   loginWithGoogle: () => Promise<AuthResult>;
   loginWithApple: () => Promise<AuthResult>;
+  register: (dto: RegisterDto) => Promise<AuthResult>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function   AuthProvider({ children }: { children: ReactNode }) {
-  const { loginMutation, googleLoginMutation, appleLoginMutation } = useAuthGMutations();
+  const { loginMutation, googleLoginMutation, appleLoginMutation, registerMutation } = useAuthGMutations();
 
   // Ref untuk menyimpan fungsi "resolve" dari Promise Google Login
   const googleAuthResolver = useRef<((value: AuthResult) => void) | null>(null);
@@ -30,6 +33,15 @@ export function   AuthProvider({ children }: { children: ReactNode }) {
       return { success: true };
     } catch (error: any) {
       return { success: false, error: error.message || "Login failed. Please check your credentials." };
+    }
+  };
+
+  const register = async (dto: RegisterDto): Promise<AuthResult> => {
+    try {
+      await registerMutation.mutateAsync(dto);
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message || "Register failed. Please check your input." };
     }
   };
 
@@ -78,7 +90,7 @@ export function   AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ login, loginWithGoogle, loginWithApple }}>
+    <AuthContext.Provider value={{ login, loginWithGoogle, loginWithApple, register }}>
       {children}
     </AuthContext.Provider>
   );
