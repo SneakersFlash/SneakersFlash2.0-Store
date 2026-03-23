@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
@@ -37,7 +37,7 @@ const NAV_ITEMS = [
   },
 ];
 
-export function BottomNavigation() {
+function BottomNavigationInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const search = searchParams.toString();
@@ -219,5 +219,13 @@ export function BottomNavigation() {
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+export function BottomNavigation() {
+  return (
+    <Suspense fallback={<div className="h-16 lg:hidden" aria-hidden />}>
+      <BottomNavigationInner />
+    </Suspense>
   );
 }

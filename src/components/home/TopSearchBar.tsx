@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, ShoppingBag, SlidersHorizontal, X, ArrowLeft, Share2 } from "lucide-react";
@@ -11,7 +11,7 @@ import { FilterModal } from "../common/FIlterModal";
 import { CartSidebar } from "../cart/CartSidebar";
 import { cn } from "@/lib/utils/cn";
 
-export function TopSearchBar() {
+function TopSearchBarInner() {
   const [query, setQuery] = useState("");
   const router = useRouter();
   const pathname = usePathname();
@@ -184,6 +184,14 @@ export function TopSearchBar() {
       />
       <CartSidebar />
     </>
+  );
+}
+
+export function TopSearchBar() {
+  return (
+    <Suspense fallback={null}>
+      <TopSearchBarInner />
+    </Suspense>
   );
 }
 

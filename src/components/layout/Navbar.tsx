@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -41,21 +41,21 @@ export const NAV_ITEMS = [
         {
           title: "By Sport",
           links: [
-            { label: "Running",      href: "/products?category=running"      },
-            { label: "Basketball",   href: "/products?category=basketball"   },
-            { label: "Training",     href: "/products?category=training"     },
-            { label: "Lifestyle",    href: "/products?category=lifestyle"    },
-            { label: "Skateboarding",href: "/products?category=skateboarding"},
+            { label: "Running",       href: "/products?category=running"       },
+            { label: "Basketball",    href: "/products?category=basketball"    },
+            { label: "Training",      href: "/products?category=training"      },
+            { label: "Lifestyle",     href: "/products?category=lifestyle"     },
+            { label: "Skateboarding", href: "/products?category=skateboarding" },
           ],
         },
         {
           title: "By Brand",
           links: [
-            { label: "Nike",         href: "/products?brand=nike"        },
-            { label: "Adidas",       href: "/products?brand=adidas"      },
-            { label: "New Balance",  href: "/products?brand=new-balance" },
-            { label: "Puma",         href: "/products?brand=puma"        },
-            { label: "Converse",     href: "/products?brand=converse"    },
+            { label: "Nike",        href: "/products?brand=nike"        },
+            { label: "Adidas",      href: "/products?brand=adidas"      },
+            { label: "New Balance", href: "/products?brand=new-balance" },
+            { label: "Puma",        href: "/products?brand=puma"        },
+            { label: "Converse",    href: "/products?brand=converse"    },
           ],
         },
         {
@@ -79,10 +79,10 @@ export const NAV_ITEMS = [
         {
           title: "Tops",
           links: [
-            { label: "T-Shirts",  href: "/products?category=tshirts"  },
-            { label: "Hoodies",   href: "/products?category=hoodies"  },
-            { label: "Jackets",   href: "/products?category=jackets"  },
-            { label: "Jerseys",   href: "/products?category=jerseys"  },
+            { label: "T-Shirts", href: "/products?category=tshirts" },
+            { label: "Hoodies",  href: "/products?category=hoodies" },
+            { label: "Jackets",  href: "/products?category=jackets" },
+            { label: "Jerseys",  href: "/products?category=jerseys" },
           ],
         },
         {
@@ -104,8 +104,8 @@ export const NAV_ITEMS = [
       ],
     },
   },
-  { label: "Brands", href: "/brands",              megaMenu: null },
-  { label: "Sale",   href: "/products?sale=true",  megaMenu: null, isSale: true },
+  { label: "Brands", href: "/brands",             megaMenu: null },
+  { label: "Sale",   href: "/products?sale=true", megaMenu: null, isSale: true },
 ];
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────
@@ -224,7 +224,7 @@ function SearchBar({ onClose }: { onClose: () => void }) {
 
 // ─── Account dropdown ─────────────────────────────────────────────────────────
 
-function AccountDropdown({ onClose, pathname }: { onClose: () => void, pathname: string }) {
+function AccountDropdown({ onClose, pathname }: { onClose: () => void; pathname: string }) {
   const { user, isAuthenticated, clearAuth } = useAuthStore();
 
   return (
@@ -240,7 +240,6 @@ function AccountDropdown({ onClose, pathname }: { onClose: () => void, pathname:
           <p className="text-sm text-muted-foreground mb-3">Sign in to your account</p>
           <div className="space-y-2">
             <Link
-              // 2. Ubah href menjadi dinamis
               href={pathname === "/" ? "/login" : `/login?callbackUrl=${encodeURIComponent(pathname)}`}
               onClick={onClose}
               className="block w-full text-center bg-primary hover:bg-brand-yellowDark text-primary-foreground py-2.5 text-sm font-display uppercase tracking-wider transition-colors"
@@ -248,7 +247,6 @@ function AccountDropdown({ onClose, pathname }: { onClose: () => void, pathname:
               Sign In
             </Link>
             <Link
-              // 3. Ubah href menjadi dinamis
               href={pathname === "/" ? "/register" : `/register?callbackUrl=${encodeURIComponent(pathname)}`}
               onClick={onClose}
               className="block w-full text-center border border-border hover:border-primary text-foreground py-2.5 text-sm font-display uppercase tracking-wider transition-colors"
@@ -270,9 +268,9 @@ function AccountDropdown({ onClose, pathname }: { onClose: () => void, pathname:
           </div>
           <ul className="py-2">
             {[
-              { icon: Package,  label: "My Orders",        href: "/account/orders"   },
-              { icon: Heart,    label: "Wishlist",          href: "/account/wishlist" },
-              { icon: Settings, label: "Account Settings",  href: "/account"          },
+              { icon: Package,  label: "My Orders",       href: "/account/orders"   },
+              { icon: Heart,    label: "Wishlist",         href: "/account/wishlist" },
+              { icon: Settings, label: "Account Settings", href: "/account"          },
             ].map(({ icon: Icon, label, href }) => (
               <li key={href}>
                 <Link
@@ -318,29 +316,46 @@ function Logo() {
   );
 }
 
-// ─── Main Navbar ──────────────────────────────────────────────────────────────
+// ─── Cart badge ───────────────────────────────────────────────────────────────
 
-export function Navbar() {
-  const pathname    = usePathname();
+function CartBadge({ count }: { count: number }) {
+  return (
+    <AnimatePresence>
+      {count > 0 && (
+        <motion.span
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          exit={{ scale: 0 }}
+          className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center bg-[#FF6B00] text-white text-[9px] font-bold rounded-full border-2 border-white"
+        >
+          {count > 9 ? "9+" : count}
+        </motion.span>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ─── Inner component: everything that needs useSearchParams ───────────────────
+
+function NavbarInner() {
+  const pathname     = usePathname();
   const searchParams = useSearchParams();
   const router       = useRouter();
-  
+
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  const search = searchParams.toString();
+  const search      = searchParams.toString();
   const currentPath = search ? `${pathname}?${search}` : pathname;
 
-  const [activeMenu,  setActiveMenu]  = useState<string | null>(null);
-  const [showSearch,  setShowSearch]  = useState(false);
-  const [showAccount, setShowAccount] = useState(false);
+  const [activeMenu,   setActiveMenu]   = useState<string | null>(null);
+  const [showSearch,   setShowSearch]   = useState(false);
+  const [showAccount,  setShowAccount]  = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isScrolled,  setIsScrolled]  = useState(false);
+  const [isScrolled,   setIsScrolled]   = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
 
   const items = useCartStore((state) => state.items);
   const { openCart } = useCartStore();
-  
-  // 3. Kalkulasi total kuantitas barang di keranjang secara langsung
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
@@ -359,7 +374,9 @@ export function Navbar() {
   useEffect(() => {
     const fn = (e: MouseEvent) => {
       if (navRef.current && !navRef.current.contains(e.target as Node)) {
-        setActiveMenu(null); setShowSearch(false); setShowAccount(false);
+        setActiveMenu(null);
+        setShowSearch(false);
+        setShowAccount(false);
       }
     };
     document.addEventListener("mousedown", fn);
@@ -384,12 +401,12 @@ export function Navbar() {
             : "bg-card border-b border-border"
         )}
       >
-        {/* ── Announcement bar ── */}
+        {/* Announcement bar */}
         <div className="announcement-bar">
           FREE SHIPPING ON ORDERS OVER RP 500.000 &nbsp;⚡&nbsp; NEW DROPS EVERY FRIDAY
         </div>
 
-        {/* ── Main nav row ── */}
+        {/* Main nav row */}
         <div className="container-2xl">
           <div className="flex items-center h-16 gap-4 lg:gap-6">
 
@@ -418,8 +435,8 @@ export function Navbar() {
                     href={item.href}
                     className={cn(
                       "nav-link flex items-center gap-1 px-3 py-2",
-                      (item as { isSale?: boolean }).isSale  && "text-red-500 hover:text-red-400",
-                      (item as { isHot?:  boolean }).isHot   && "text-primary",
+                      (item as { isSale?: boolean }).isSale && "text-red-500 hover:text-red-400",
+                      (item as { isHot?: boolean }).isHot  && "text-primary",
                       pathname === item.href && "active"
                     )}
                   >
@@ -461,7 +478,7 @@ export function Navbar() {
               {/* Theme toggle */}
               <ThemeToggle />
 
-{/* Account */}
+              {/* Account */}
               <div className="relative">
                 <button
                   onClick={() => { setShowAccount(!showAccount); setShowSearch(false); }}
@@ -471,20 +488,29 @@ export function Navbar() {
                   <User size={19} />
                 </button>
                 <AnimatePresence>
-                  {showAccount && <AccountDropdown onClose={() => setShowAccount(false)} pathname={currentPath} />}
+                  {showAccount && (
+                    <AccountDropdown
+                      onClose={() => setShowAccount(false)}
+                      pathname={currentPath}
+                    />
+                  )}
                 </AnimatePresence>
               </div>
 
               {/* Cart */}
               <button
-                onClick={() => { 
+                onClick={() => {
                   if (!isAuthenticated) {
-                    router.push(currentPath === "/" ? "/login" : `/login?callbackUrl=${encodeURIComponent(currentPath)}`);
+                    router.push(
+                      currentPath === "/"
+                        ? "/login"
+                        : `/login?callbackUrl=${encodeURIComponent(currentPath)}`
+                    );
                     return;
                   }
-                  openCart(); 
-                  setShowSearch(false); 
-                  setShowAccount(false); 
+                  openCart();
+                  setShowSearch(false);
+                  setShowAccount(false);
                 }}
                 className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
                 aria-label={`Cart (${cartCount} items)`}
@@ -515,7 +541,11 @@ export function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/40 z-30"
-            onClick={() => { setActiveMenu(null); setShowSearch(false); setShowAccount(false); }}
+            onClick={() => {
+              setActiveMenu(null);
+              setShowSearch(false);
+              setShowAccount(false);
+            }}
           />
         )}
       </AnimatePresence>
@@ -533,19 +563,15 @@ export function Navbar() {
   );
 }
 
-function CartBadge({ count }: { count: number }) {
+// ─── Public export: wraps inner component in Suspense ────────────────────────
+
+export function Navbar() {
   return (
-    <AnimatePresence>
-      {count > 0 && (
-        <motion.span
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          exit={{ scale: 0 }}
-          className="absolute -top-1 -right-1 h-4 w-4 flex items-center justify-center bg-[#FF6B00] text-white text-[9px] font-bold rounded-full border-2 border-white"
-        >
-          {count > 9 ? "9+" : count}
-        </motion.span>
-      )}
-    </AnimatePresence>
+    <Suspense fallback={
+      // Minimal placeholder that holds the height so layout doesn't shift
+      <div className="fixed top-0 left-0 right-0 z-40 bg-card border-b border-border h-[96px]" />
+    }>
+      <NavbarInner />
+    </Suspense>
   );
 }
