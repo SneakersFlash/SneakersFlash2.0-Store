@@ -36,7 +36,7 @@ export function Providers({ children }: ProvidersProps) {
     <GoogleOAuthProvider clientId={googleClientId}>
       <ThemeProvider
         attribute="class"
-        defaultTheme="dark"
+        defaultTheme="light"
         enableSystem={false}
         themes={["dark", "light"]}
       >
