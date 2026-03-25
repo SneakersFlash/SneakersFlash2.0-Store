@@ -34,7 +34,7 @@ function StarRating({ rating = 4, count = 78 }: { rating?: number; count?: numbe
           />
         ))}
       </div>
-      <span className="text-[12px] lg:text-[13px] text-[#4A4A4A] underline underline-offset-4 decoration-1">
+      <span className="text-[11px] lg:text-[12px] text-[#888888] underline underline-offset-4 decoration-1">
         ({count} review)
       </span>
     </div>
@@ -87,28 +87,31 @@ export function ProductScrollCard({
         {/* ── Product info ── */}
         <div className="px-3 lg:px-4 flex flex-col flex-1">
           {/* Brand */}
-          <h3 className="text-[14px] lg:text-[18px] font-bold uppercase tracking-tight text-black mb-0.5">
-            {product.brand?.name ?? "NIKE"}
+          <h3 className="text-[13px] lg:text-[15px] font-bold tracking-tight text-black mb-0.5">
+            {product.brand?.name ?? "Nike"}
           </h3>
 
           {/* Nama Produk */}
-          <p className="text-[13px] lg:text-[17px] font-normal text-black line-clamp-1 mb-2 lg:mb-3">
-            {product.name}
+          <p className="text-[12px] lg:text-[14px] font-normal text-black line-clamp-1 mb-2 lg:mb-3">
+            {product.name.toUpperCase()}
           </p>
 
           {/* Harga & Diskon */}
           <div className="flex flex-col mt-auto">
-            <span className="text-[20px] lg:text-[28px] font-bold text-[#FF0000] leading-none tracking-tight mb-1.5 lg:mb-2">
+            <span className={cn(
+              "text-[16px] lg:text-[20px] font-bold leading-none tracking-tight mb-1.5",
+              hasDiscount ? "text-[#FF0000]" : "text-black"
+            )}>
               {formatPrice(displayPrice)}
             </span>
             
             {hasDiscount && (
-              <div className="flex items-center gap-1.5 lg:gap-3 mb-1.5 lg:mb-2 flex-wrap">
-                <span className="text-[12px] lg:text-[16px] text-[#4A4A4A] line-through font-normal">
+              <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                <span className="text-[11px] lg:text-[13px] text-[#888888] line-through font-normal">
                   {formatPrice(product.basePrice)}
                 </span>
-                <span className="inline-flex items-center justify-center bg-[#B2FFB9] text-[#00A925] text-[11px] lg:text-[14px] font-bold px-1.5 py-0.5">
-                  save {saving}%
+                <span className="inline-flex items-center justify-center bg-[#FF0000] text-white text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded-full">
+                  -{saving}%
                 </span>
               </div>
             )}

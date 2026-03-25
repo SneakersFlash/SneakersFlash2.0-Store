@@ -10,7 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-barlow)", "sans-serif"],
+        sans: ["var(--font-inter)", "sans-serif"],
+        body: ["var(--font-barlow)", "sans-serif"],
         display: ["var(--font-oswald)", "sans-serif"],
         mono: ["var(--font-ibm-plex-mono)", "monospace"],
       },

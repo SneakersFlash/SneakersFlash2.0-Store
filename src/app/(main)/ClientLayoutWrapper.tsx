@@ -30,6 +30,7 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
   
   // 3. Apakah ini halaman Checkout?
   const isCheckout = pathname.startsWith("/checkout");
+  const isBrands = pathname.startsWith("/brands");
   const isOrder = pathname.startsWith("/orders");
   const isMyOrder = pathname.startsWith("/account/orders");
 

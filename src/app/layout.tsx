@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Oswald, Barlow } from "next/font/google";
+import { Oswald, Barlow, Inter } from "next/font/google";
 import { Providers } from "@/components/common/Providers";
 import "./globals.css";
 
@@ -20,6 +20,11 @@ const barlow = Barlow({
   display: "swap",
 });
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter", // Mendefinisikan variabel CSS untuk Tailwind
+  weight: ['400', '500', '600', '700'], // Pastikan untuk memuat berat yang dibutuhkan (regular, medium, semibold, bold)
+});
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
 export const metadata: Metadata = {
@@ -59,7 +64,7 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${oswald.variable} ${barlow.variable}`}
+      className={`${oswald.variable} ${barlow.variable} ${inter.variable}`}
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-background text-foreground antialiased">

@@ -34,7 +34,7 @@ function StarRating({ rating = 4, count = 78 }: { rating?: number; count?: numbe
           />
         ))}
       </div>
-      <span className="text-[10px] sm:text-[13px] md:text-[15px] text-[#4A4A4A] underline underline-offset-[3px] decoration-1">
+      <span className="text-[10px] sm:text-[12px] text-[#888888] underline underline-offset-[3px] decoration-1">
         ({count} review)
       </span>
     </div>
@@ -101,29 +101,32 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
         {/* ── Product Info ── */}
         <div className="px-3 sm:px-4 md:px-5 flex flex-col flex-1">
           {/* Brand */}
-          <h3 className="text-[12px] sm:text-[16px] md:text-[20px] font-bold uppercase tracking-tight text-black mb-0.5 sm:mb-1">
-            {product.brand?.name ?? "NIKE"}
+          <h3 className="text-[12px] sm:text-[14px] font-bold tracking-tight text-black mb-0.5">
+            {product.brand?.name ?? "Nike"}
           </h3>
 
           {/* Nama Produk */}
-          <p className="text-[12px] sm:text-[14px] md:text-[18px] leading-snug sm:leading-normal font-normal text-black line-clamp-2 sm:line-clamp-1 mb-1.5 sm:mb-3">
-            {product.name ? product.name.toLocaleUpperCase() : product.name}
+          <p className="text-[11px] sm:text-[13px] leading-snug font-normal text-black line-clamp-2 mb-1.5 sm:mb-2">
+            {product.name.toUpperCase()}
           </p>
 
           {/* Harga & Diskon */}
           <div className="flex flex-col mt-auto">
             {/* Harga Utama */}
-            <span className="text-[16px] sm:text-[24px] md:text-[24px] font-bold text-[#FF0000] leading-none tracking-tight mb-1 sm:mb-2">
+            <span className={cn(
+              "text-[14px] sm:text-[18px] font-bold leading-none tracking-tight mb-1",
+              hasDiscount ? "text-[#FF0000]" : "text-black"
+            )}>
               {formatPrice(displayPrice)}
             </span>
             
             {hasDiscount && (
-              <div className="flex items-center gap-1.5 sm:gap-3 mb-1 sm:mb-2 flex-wrap">
-                <span className="text-[11px] sm:text-[14px] md:text-[14px] text-[#4A4A4A] line-through font-normal">
+              <div className="flex items-center gap-1.5 mb-1 sm:mb-2 flex-wrap">
+                <span className="text-[11px] sm:text-[13px] text-[#888888] line-through font-normal">
                   {formatPrice(product.basePrice)}
                 </span>
-                <span className="inline-flex items-center justify-center bg-[#B2FFB9] text-[#00A925] text-[10px] sm:text-[12px] md:text-[15px] font-bold px-1.5 sm:px-2 py-0.5 rounded-sm">
-                  save {saving}%
+                <span className="inline-flex items-center justify-center bg-[#FF0000] text-white text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 rounded-full">
+                  -{saving}%
                 </span>
               </div>
             )}

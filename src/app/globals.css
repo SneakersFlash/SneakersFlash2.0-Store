@@ -84,8 +84,10 @@
 
   body {
     @apply bg-background text-foreground font-sans;
-    font-size: 15px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 400;
+    letter-spacing: -0.01em;
     transition: background-color 0.3s ease, color 0.2s ease;
   }
 
@@ -145,7 +147,7 @@
 
   /* ── Uppercase label ── */
   .label {
-    @apply text-xs font-semibold uppercase tracking-widest text-muted-foreground;
+    @apply text-xs font-semibold uppercase tracking-widest text-muted-foreground font-sans;
   }
 
   /* ── Yellow badge / tag ── */
@@ -162,7 +164,7 @@
 
   /* ── Navbar link ── */
   .nav-link {
-    @apply relative font-display uppercase text-sm tracking-widest text-foreground/75
+    @apply relative font-sans font-medium text-sm tracking-wide text-foreground/75
            hover:text-foreground transition-colors duration-200;
   }
   .nav-link::after {
@@ -174,9 +176,9 @@
   .nav-link.active { @apply text-foreground; }
 
   /* ── Prices ── */
-  .price         { @apply font-display text-xl font-bold text-foreground; }
-  .price-original{ @apply text-sm line-through text-muted-foreground; }
-  .price-sale    { @apply font-display font-bold text-red-500; }
+  .price         { @apply font-sans text-base font-bold text-foreground; }
+  .price-original{ @apply font-sans text-xs line-through text-muted-foreground; }
+  .price-sale    { @apply font-sans font-bold text-red-500; }
 
   /* ── Section heading with yellow line ── */
   .section-heading { @apply font-display text-3xl md:text-4xl font-bold uppercase tracking-wider; }
