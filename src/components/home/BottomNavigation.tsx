@@ -189,7 +189,6 @@ function BottomNavigationInner() {
               <ul className="py-2 px-3">
                 {[
                   { icon: Package,  label: "My Orders",        href: "/account/orders"   },
-                  { icon: Heart,    label: "Wishlist",          href: "/account/wishlist" },
                   { icon: Settings, label: "Account Settings",  href: "/account"          },
                 ].map(({ icon: Icon, label, href }) => (
                   <li key={href}>

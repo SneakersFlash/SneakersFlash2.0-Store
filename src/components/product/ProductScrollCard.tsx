@@ -99,8 +99,7 @@ export function ProductScrollCard({
           {/* Harga & Diskon */}
           <div className="flex flex-col mt-auto">
             <span className={cn(
-              "text-[16px] lg:text-[20px] font-bold leading-none tracking-tight mb-1.5",
-              hasDiscount ? "text-[#FF0000]" : "text-black"
+              "text-[16px] lg:text-[20px] font-bold leading-none tracking-tight mb-1.5 text-black"
             )}>
               {formatPrice(displayPrice)}
             </span>
