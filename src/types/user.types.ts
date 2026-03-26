@@ -37,3 +37,38 @@ export interface AuthResponse {
   access_token: string;
   user: User;
 }
+
+export interface UserProfile {
+  id: string; // atau number, tergantung parsing BigInt dari backend
+  name: string | null;
+  email: string;
+  phone: string | null;
+  role: string;
+  customerTier: string;
+  pointsBalance: number | any;
+  createdAt: string;
+  addresses?: UserAddress[]; // Alamat default
+}
+
+export interface UserAddress {
+  id: number;
+  label: string | null;
+  recipientName: string;
+  phone: string;
+  addressLine: string;
+  provinceId: number;
+  cityId: number;
+  districtId: number;
+  subdistrictId?: number | null;
+  postalCode: string;
+  isDefault: boolean;
+  latitude?: number
+  longitude?: number
+  // Relasi (opsional, tergantung backend mengirimkannya atau tidak)
+  province?: { id: number; name: string };
+  city?: { id: number; name: string; type: string };
+  district?: { id: number; name: string };
+}
+
+export interface CreateUserAddressDto extends Omit<UserAddress, 'id' | 'province' | 'city' | 'district'> {}
+export interface UpdateUserAddressDto extends Partial<CreateUserAddressDto> {}

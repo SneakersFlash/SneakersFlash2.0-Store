@@ -64,10 +64,10 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${oswald.variable} ${barlow.variable} ${inter.variable}`}
+      // className={`${inter.variable}`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-background text-foreground antialiased">
+      <body className={`min-h-screen bg-background text-foreground antialiased ${inter.variable}`}>
         <Providers>
             {children}
         </Providers>

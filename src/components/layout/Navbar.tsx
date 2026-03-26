@@ -15,6 +15,7 @@ import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { cn } from "@/lib/utils/cn";
 import { MobileMenu } from "./MobileMenu";
 import { CartSidebar } from "../cart/CartSidebar";
+import { WishlistSidebar } from "../wishlist/WishlistSidebar";
 
 // ─── Nav data ─────────────────────────────────────────────────────────────────
 
@@ -270,7 +271,7 @@ function AccountDropdown({ onClose, pathname }: { onClose: () => void; pathname:
             {[
               { icon: Package,  label: "My Orders",       href: "/account/orders"   },
               { icon: Heart,    label: "Wishlist",         href: "/account/wishlist" },
-              { icon: Settings, label: "Account Settings", href: "/account"          },
+              { icon: Settings, label: "My Account", href: "/account"          },
             ].map(({ icon: Icon, label, href }) => (
               <li key={href}>
                 <Link
@@ -352,6 +353,7 @@ function NavbarInner() {
   const [showAccount,  setShowAccount]  = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isScrolled,   setIsScrolled]   = useState(false);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
 
   const items = useCartStore((state) => state.items);
@@ -403,7 +405,7 @@ function NavbarInner() {
       >
         {/* Announcement bar */}
         <div className="announcement-bar">
-          FREE SHIPPING ON ORDERS OVER RP 500.000 &nbsp;⚡&nbsp; NEW DROPS EVERY FRIDAY
+          FREE SHIPPING ON ORDERS RP 50.000 &nbsp;⚡&nbsp; NEW DROPS EVERY FRIDAY
         </div>
 
         {/* Main nav row */}
@@ -478,6 +480,15 @@ function NavbarInner() {
               {/* Theme toggle */}
               <ThemeToggle />
 
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => setIsWishlistOpen(true)} // <-- Tambahkan ini
+                  className="p-2 hover:bg-muted rounded-full transition-colors"
+                  aria-label="Wishlist"
+                >
+                  <Heart className="w-5 h-5" />
+                </button>
+              </div>
               {/* Account */}
               <div className="relative">
                 <button
@@ -559,6 +570,10 @@ function NavbarInner() {
 
       {/* Cart sidebar */}
       <CartSidebar />
+      <WishlistSidebar 
+        isOpen={isWishlistOpen} 
+        onClose={() => setIsWishlistOpen(false)} 
+      />
     </>
   );
 }

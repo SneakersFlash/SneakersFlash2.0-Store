@@ -4,11 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Star } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import type { Product } from "@/types/product.types";
+import { useAddWishlist, useCheckWishlist, useRemoveWishlist } from "@/lib/hooks/useWishlist";
 
 interface ProductScrollCardProps {
   product: Product;
@@ -48,13 +49,33 @@ export function ProductScrollCard({
 }: ProductScrollCardProps) {
   const [imgError, setImgError] = useState(false);
 
+  const productId = Number(product.id);
+
+  const { data: checkData, isLoading: isChecking } = useCheckWishlist(productId);
+  const { mutate: add, isPending: isAdding } = useAddWishlist();
+  const { mutate: remove, isPending: isRemoving } = useRemoveWishlist();
+  
+
   const imageSrc = imgError ? "/images/placeholder-product.svg" : getProductImageUrl(product.variants[0]?.imageUrl);
   const hasDiscount = Boolean(product.variants[0]?.price && product.variants[0].price < product.basePrice);
   const displayPrice = product.variants[0]?.price ?? product.basePrice;
   const saving = hasDiscount ? discountPercent(product.basePrice, product.variants[0]?.price!) : 0;
 
+  const isWishlisted = checkData?.wishlisted || false;
+  const wishlistId = checkData?.wishlistId;
+  const isProcessing = isAdding || isRemoving || isChecking;
   const isScroll = variant === "scroll";
 
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isWishlisted && wishlistId) {
+      remove({ id: wishlistId, productId });
+    } else {
+      add({ productId });
+    }
+  };
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -74,6 +95,26 @@ export function ProductScrollCard({
 
         {/* ── Image container ── */}
         <div className="relative w-full aspect-[5/4] bg-white pt-8 pb-2 px-3 shrink-0 flex items-center justify-center">
+          <button
+            onClick={handleWishlistToggle}
+            disabled={isProcessing}
+            className={cn(
+              "absolute top-3 right-3 sm:top-4 sm:right-4 z-10 p-2 rounded-full bg-white/90 shadow-sm transition-all duration-300",
+              "hover:scale-110 disabled:opacity-50",
+              isWishlisted
+                ? "text-[#FF0000]" // Saat sudah wishlist, selalu merah
+                : "text-[#888888] hover:text-[#FF0000]" // Selalu muncul abu-abu, saat di-hover jadi merah
+            )}
+            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          >
+            <Heart
+              className={cn(
+                "w-4 h-4 sm:w-5 sm:h-5 transition-colors",
+                isProcessing && "animate-pulse",
+                isWishlisted && "fill-[#FF0000]"
+              )}
+            />
+          </button>
           <Image
             src={imageSrc}
             alt={product.name}

@@ -92,8 +92,8 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
               "absolute top-3 right-3 sm:top-4 sm:right-4 z-10 p-2 rounded-full bg-white/90 shadow-sm transition-all duration-300",
               "hover:scale-110 disabled:opacity-50",
               isWishlisted
-                ? "text-[#FF0000] opacity-100 translate-y-0"
-                : "text-[#888888] opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 hover:text-[#FF0000]"
+                ? "text-[#FF0000]" // Saat sudah wishlist, selalu merah
+                : "text-[#888888] hover:text-[#FF0000]" // Selalu muncul abu-abu, saat di-hover jadi merah
             )}
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >

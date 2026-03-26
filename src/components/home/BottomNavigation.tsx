@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LayoutGrid, Heart, LogIn, User, Package, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useAuthStore } from "@/lib/store/authStore";
+import { WishlistSidebar } from "@/components/wishlist/WishlistSidebar";
+import { useRouter } from "next/navigation";
 
 const NAV_ITEMS = [
   {
@@ -38,6 +40,7 @@ const NAV_ITEMS = [
 ];
 
 function BottomNavigationInner() {
+  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const search = searchParams.toString();
@@ -45,6 +48,7 @@ function BottomNavigationInner() {
 
   const { isAuthenticated, user, clearAuth } = useAuthStore();
   const [showAccount, setShowAccount] = useState(false);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
 
   return (
     <>
@@ -65,6 +69,8 @@ function BottomNavigationInner() {
             let isActive = false;
             if (isAuthItem && isAuthenticated) {
               isActive = showAccount || pathname.startsWith("/account");
+            } else if (item.label === "Wishlist") {
+              isActive = isWishlistOpen
             } else {
               isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
             }
@@ -119,6 +125,24 @@ function BottomNavigationInner() {
               </motion.div>
             );
 
+            if (item.label === "Wishlist") {
+              return (
+                <button 
+                  key={item.label || idx} 
+                  className="flex-1 h-full focus:outline-none"
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      router.push(currentPath === "/" ? "/login" : `/login?callbackUrl=${encodeURIComponent(currentPath)}`);
+                      return;
+                    }
+                    setIsWishlistOpen(true);
+                  }}
+                >
+                  {ItemContent}
+                </button>
+              );
+            }
+
             // Jika item ini menu akun dan user SUDAH login, jadikan tombol yang memicu pop-up (bukan Link)
             if (isAuthItem && isAuthenticated) {
               return (
@@ -142,6 +166,10 @@ function BottomNavigationInner() {
         </div>
       </nav>
 
+      <WishlistSidebar 
+        isOpen={isWishlistOpen} 
+        onClose={() => setIsWishlistOpen(false)} 
+      />
       {/* Mobile Account Menu (Bottom Sheet Drawer) */}
       <AnimatePresence>
         {showAccount && isAuthenticated && (
@@ -189,7 +217,7 @@ function BottomNavigationInner() {
               <ul className="py-2 px-3">
                 {[
                   { icon: Package,  label: "My Orders",        href: "/account/orders"   },
-                  { icon: Settings, label: "Account Settings",  href: "/account"          },
+                  { icon: Settings, label: "My Account",  href: "/account"          },
                 ].map(({ icon: Icon, label, href }) => (
                   <li key={href}>
                     <Link
