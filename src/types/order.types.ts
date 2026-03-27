@@ -2,7 +2,7 @@ export interface CheckoutAddress {
     recipientName: string;
     phone: string;
     addressLine: string;
-    subdistrictId: number;
+    subdistrictId: number | null;
     city: string;
     postalCode: string;
 }

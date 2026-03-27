@@ -20,6 +20,11 @@ export const usersService = {
     return response.data;
   },
 
+  getMyAddress: async (id: number): Promise<UserAddress> => {
+    const response = await apiClient.get(`/users/me/addresses/${id}`);
+    return response.data;
+  },
+
   addMyAddress: async (data: CreateUserAddressDto): Promise<UserAddress> => {
     const response = await apiClient.post('/users/me/addresses', data);
     return response.data;

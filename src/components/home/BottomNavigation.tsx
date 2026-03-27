@@ -93,7 +93,7 @@ function BottomNavigationInner() {
                 {item.isLogo ? (
                   <div className="w-8 h-8 relative">
                     <Image
-                      src="/images/logo.jpeg"
+                      src="/images/logo_basic.png"
                       alt="Home"
                       fill
                       className="object-contain"

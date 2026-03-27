@@ -7,6 +7,7 @@ export const userKeys = {
   all: ["user"] as const,
   profile: () => [...userKeys.all, "profile"] as const,
   addresses: () => [...userKeys.all, "addresses"] as const,
+  address: (id: number) => [...userKeys.all, "addresses", id] as const,
 };
 
 // --- Queries ---
@@ -22,6 +23,14 @@ export function useMyAddresses() {
   return useQuery({
     queryKey: userKeys.addresses(),
     queryFn: () => usersService.getMyAddresses(),
+  });
+}
+
+export function useMyAddress(id: number) {
+  return useQuery({
+    queryKey: userKeys.address(id),
+    queryFn: () => usersService.getMyAddress(id),
+    enabled: !!id,
   });
 }
 
@@ -52,8 +61,9 @@ export function useUpdateAddress() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateUserAddressDto }) => usersService.updateMyAddress(id, data),
-    onSuccess: () => {
+    onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: userKeys.addresses() });
+      queryClient.invalidateQueries({ queryKey: userKeys.address(id) });
       queryClient.invalidateQueries({ queryKey: userKeys.profile() });
     },
   });
@@ -63,8 +73,9 @@ export function useDeleteAddress() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: number) => usersService.deleteMyAddress(id),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: userKeys.addresses() });
+      queryClient.invalidateQueries({ queryKey: userKeys.address(id) });
     },
   });
 }

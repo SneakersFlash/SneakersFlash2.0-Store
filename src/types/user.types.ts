@@ -59,7 +59,7 @@ export interface UserAddress {
   provinceId: number;
   cityId: number;
   districtId: number;
-  subdistrictId?: number | null;
+  subdistrictId: number | null;
   postalCode: string;
   isDefault: boolean;
   latitude?: number

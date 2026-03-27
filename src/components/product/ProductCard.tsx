@@ -140,8 +140,7 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
           </p>
           <div className="flex flex-col mt-auto">
             <span className={cn(
-              "text-[14px] sm:text-[18px] font-bold leading-none tracking-tight mb-1",
-              hasDiscount ? "text-[#FF0000]" : "text-black"
+              "text-[14px] sm:text-[18px] font-bold leading-none tracking-tight mb-1 text-black"
             )}>
               {formatPrice(displayPrice)}
             </span>

@@ -5,8 +5,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
   Star, ChevronRight, Zap, CreditCard, ShieldCheck,
-  Loader2, Ruler, Check,
-  BadgeCheck,
+  Loader2, Ruler, Check, BadgeCheck, X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -22,7 +21,122 @@ interface ProductDetailClientProps {
   slug: string;
 }
 
-// ─── Inner component: everything that needs useSearchParams ───────────────────
+// ─── REVIEWS SHEET COMPONENT ──────────────────────────────────────────────────
+
+function ReviewsSheet({ isOpen, onClose, productImages }: { isOpen: boolean; onClose: () => void; productImages: string[] }) {
+  // Mock data tailored to match the screenshot UI
+  const mockReviews = [
+    {
+      id: 1,
+      name: "Budi Santoso",
+      date: "Jan 19, 2026",
+      rating: 5,
+      text: "Pengiriman cepat sampai, packing rapih dan barang original 👍",
+      highlights: "Authentic Product, Fast Delivery, Great Quality, True to Color / Size, Neat Packaging.",
+      images: productImages.length > 0 ? [productImages[0], productImages[0], productImages[0], productImages[0]] : [],
+      avatar: "https://i.pravatar.cc/150?u=1"
+    },
+    {
+      id: 2,
+      name: "Siti Aminah",
+      date: "Jan 18, 2026",
+      rating: 5,
+      text: "Sepatunya keren banget! Nyaman dipakai buat lari maupun jalan-jalan.",
+      highlights: "Comfortable, Great Design, Fast Delivery",
+      images: productImages.length > 1 ? [productImages[1], productImages[1]] : [],
+      avatar: "https://i.pravatar.cc/150?u=2"
+    }
+  ];
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-end justify-center lg:items-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          />
+
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 28, stiffness: 220 }}
+            className="relative bg-white w-full lg:w-[500px] lg:rounded-2xl rounded-t-2xl z-10 h-[85vh] lg:h-[80vh] flex flex-col"
+          >
+            {/* Handle for mobile swipe hint */}
+            <div className="flex justify-center pt-3 pb-1 shrink-0 lg:hidden">
+              <div className="w-10 h-1 bg-gray-300 rounded-full" />
+            </div>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 pb-4 pt-2 lg:pt-5 border-b border-gray-100 shrink-0">
+              <h3 className="font-bold text-base text-gray-900">All Reviews</h3>
+              <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Scrollable Review List */}
+            <div className="overflow-y-auto flex-1 p-5 space-y-6">
+              {mockReviews.map((review, idx) => (
+                <div key={review.id} className={cn("pb-6", idx !== mockReviews.length - 1 && "border-b border-gray-100")}>
+                  {/* User Info */}
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-100 border border-gray-200">
+                      <Image src={review.avatar} alt={review.name} fill className="object-cover" />
+                    </div>
+                    <span className="text-sm font-bold text-gray-900">{review.name}</span>
+                  </div>
+
+                  {/* Rating & Date */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-0.5">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          size={13}
+                          className={i < review.rating ? "fill-[#FF6B00] text-[#FF6B00]" : "fill-gray-200 text-gray-200"}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs text-gray-400">Reviewed on {review.date}</span>
+                  </div>
+
+                  {/* Images row */}
+                  {review.images.length > 0 && (
+                    <div className="flex gap-2 mb-3 overflow-x-auto no-scrollbar pb-1">
+                      {review.images.map((img, i) => (
+                        <div key={i} className="relative w-[72px] h-[72px] rounded-lg overflow-hidden shrink-0 border border-gray-200 bg-gray-50">
+                          <Image src={img} alt={`Review img ${i}`} fill className="object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Review Text */}
+                  <p className="text-sm text-gray-800 leading-relaxed mb-2">{review.text}</p>
+
+                  {/* Highlights */}
+                  {review.highlights && (
+                    <p className="text-[11px] text-gray-400 leading-relaxed">
+                      Highlights: {review.highlights}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+// ─── MAIN INNER COMPONENT ─────────────────────────────────────────────────────
 
 function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
   const router       = useRouter();
@@ -41,6 +155,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
   const [activeImageIndex,  setActiveImageIndex]  = useState(0);
   const [isAdding,          setIsAdding]          = useState(false);
   const [isInstallmentOpen, setIsInstallmentOpen] = useState(true);
+  const [isReviewsOpen,     setIsReviewsOpen]     = useState(false);
   const [zoomProps,         setZoomProps]         = useState({ x: 0, y: 0, isHovered: false });
 
   const ZOOM_LEVEL = 1.8;
@@ -98,7 +213,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
   const saving      = hasDiscount
     ? discountPercent(product.basePrice, product.variants?.[0]?.price!)
     : 0;
-  const rating       = parseFloat(product.ratingAvg ?? "4.8");
+  const rating       = parseFloat(product.ratingAvg?.d[0] ?? "4.8");
   const reviewCount  = product.reviewCount ?? 98;
   const earnedPoints = Math.floor(Number(displayPrice) * 0.033);
 
@@ -178,15 +293,24 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
               )}
             </div>
 
-            {/* Thumbnail strip */}
+            {/* Thumbnail strip - Dynamically scales depending on count */}
             {images.length > 1 && (
-              <div className="flex gap-2 px-4 lg:px-0 overflow-x-auto no-scrollbar">
+              <div 
+                className={cn(
+                  "px-4 lg:px-0 gap-2 no-scrollbar",
+                  images.length <= 4 ? "grid" : "flex overflow-x-auto"
+                )}
+                style={{
+                  gridTemplateColumns: images.length <= 4 ? `repeat(${images.length}, minmax(0, 1fr))` : undefined,
+                }}
+              >
                 {images.map((src: string, i: number) => (
                   <button
                     key={i}
                     onClick={() => setActiveImageIndex(i)}
                     className={cn(
-                      "shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all",
+                      "relative rounded-xl overflow-hidden border-2 transition-all aspect-square shrink-0 bg-[#F0F2F5]",
+                      images.length > 4 ? "w-[22%]" : "w-full", // 22% implies scrolling on 5+ images
                       activeImageIndex === i
                         ? "border-[#FF6B00]"
                         : "border-transparent opacity-60 hover:opacity-100"
@@ -195,9 +319,8 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                     <Image
                       src={src}
                       alt={`${product.name} view ${i + 1}`}
-                      width={64}
-                      height={64}
-                      className="object-contain w-full h-full bg-[#F0F2F5] p-1"
+                      fill
+                      className="object-contain p-2"
                     />
                   </button>
                 ))}
@@ -218,8 +341,11 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
               </h1>
             </div>
 
-            {/* Rating */}
-            <div className="flex items-center gap-2">
+            {/* Rating (Now clickable) */}
+            <button 
+              onClick={() => setIsReviewsOpen(true)}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity w-fit"
+            >
               <div className="flex items-center gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
@@ -234,8 +360,8 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                 ))}
               </div>
               <span className="text-sm font-bold text-gray-700">{rating}</span>
-              <span className="text-xs text-gray-400">({reviewCount} reviews)</span>
-            </div>
+              <span className="text-xs text-gray-400 underline underline-offset-2">({reviewCount} reviews)</span>
+            </button>
 
             {/* Price */}
             <div className="flex items-baseline gap-3">
@@ -496,6 +622,13 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
           )}
         </div>
       </div>
+
+      {/* RENDER THE REVIEWS SHEET */}
+      <ReviewsSheet 
+        isOpen={isReviewsOpen} 
+        onClose={() => setIsReviewsOpen(false)} 
+        productImages={images} 
+      />
     </div>
   );
 }

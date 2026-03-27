@@ -305,7 +305,7 @@ function Logo() {
     <Link href="/" className="shrink-0 flex items-center">
       <div className="relative h-9 w-auto">
         <Image
-          src="/images/logo.jpeg"
+          src="/images/logo_basic.png"
           alt="SNKRS Flash"
           width={140}
           height={36}
