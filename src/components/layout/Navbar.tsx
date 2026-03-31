@@ -203,7 +203,7 @@ function SearchBar({ onClose }: { onClose: () => void }) {
               if (e.key === "Escape") onClose();
               if (e.key === "Enter") {
                 const q = (e.target as HTMLInputElement).value.trim();
-                if (q) window.location.href = `/products?q=${encodeURIComponent(q)}`;
+                if (q) window.location.href = `/products?search=${encodeURIComponent(q)}`;
               }
             }}
           />
@@ -270,7 +270,6 @@ function AccountDropdown({ onClose, pathname }: { onClose: () => void; pathname:
           <ul className="py-2">
             {[
               { icon: Package,  label: "My Orders",       href: "/account/orders"   },
-              { icon: Heart,    label: "Wishlist",         href: "/account/wishlist" },
               { icon: Settings, label: "My Account", href: "/account"          },
             ].map(({ icon: Icon, label, href }) => (
               <li key={href}>

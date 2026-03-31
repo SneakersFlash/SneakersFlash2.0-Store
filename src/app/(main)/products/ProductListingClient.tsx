@@ -36,7 +36,7 @@ function ProductListingClientInner({
   const subCategoryFromUrl = searchParams.get("subCategory") || "all";
   const brandFromUrl =
     searchParams.get("brand") || searchParams.get("brandName");
-  const qFromUrl = searchParams.get("q");
+  const searchFromUrl = searchParams.get("search") || searchParams.get("q");
   const sortFromUrl: any = searchParams.get("sort");
   const pageFromUrl = Number(searchParams.get("page")) || 1;
 
@@ -50,7 +50,9 @@ function ProductListingClientInner({
   else if (categoryFromUrl) currentFilters.categoryName = categoryFromUrl;
 
   if (brandFromUrl) currentFilters.brandName = brandFromUrl;
-  if (qFromUrl) currentFilters.q = qFromUrl;
+  if (searchFromUrl) {
+      (currentFilters as any).search = searchFromUrl; 
+    }
   if (sortFromUrl) currentFilters.sort = sortFromUrl;
 
   const { data, isLoading } = useProducts(currentFilters);
@@ -96,8 +98,8 @@ function ProductListingClientInner({
     });
   };
 
-  const displayTitle = qFromUrl
-    ? `Search: "${qFromUrl}"`
+  const displayTitle = searchFromUrl
+    ? `Search: "${searchFromUrl}"`
     : brandFromUrl
     ? `${brandFromUrl.toUpperCase()}`
     : categoryName || "All Footwear";
@@ -131,7 +133,7 @@ function ProductListingClientInner({
         </div>
 
         {/* HORIZONTAL FILTER TABS (SUBCATEGORY) */}
-        {subCategories.length > 0 && !brandFromUrl && !qFromUrl && (
+        {subCategories.length > 0 && !brandFromUrl && !searchFromUrl && (
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-4 mb-4 border-b border-gray-200/60">
             <button
               onClick={() => handleTabChange("all")}

@@ -11,34 +11,24 @@ import { useEffect } from "react";
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // --- LOGIKA KONDISI URL ---
-  
   const isHydrated = useAuthStore((state) => state.isHydrated);
   
   useEffect(() => {
-    // Jangan panggil API jika Zustand belum selesai membaca localStorage
     if (!isHydrated) return; 
     
-    // fetchApiWithToken();
   }, [isHydrated]);
-  // 1. Apakah ini halaman Home?
   const isHome = pathname === "/";
   
-  // 2. Apakah ini halaman Detail Produk? (Contoh: /products/nike-air-force-1)
-  // Regex ini mencocokkan "/products/" yang diikuti karakter apapun selain garis miring
   const isProductDetail = pathname.match(/^\/products\/[^\/]+$/);
   
-  // 3. Apakah ini halaman Checkout?
   const isCheckout = pathname.startsWith("/checkout");
   const isBrands = pathname.startsWith("/brands");
   const isOrder = pathname.startsWith("/orders");
   const isMyOrder = pathname.startsWith("/account/orders");
 
-  // --- ATURAN VISIBILITAS ---
   const showDesktopNavbar = !isCheckout && !isOrder && !isMyOrder;
   const showFooter = !isCheckout && !isOrder && !isMyOrder;
   
-  // Bottom Nav disembunyikan di Detail Produk (karena ada bar Add to Cart) dan Checkout
   const showBottomNav = !isProductDetail && !isCheckout;
 
   return (
@@ -46,19 +36,14 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
       {/* --- DESKTOP NAVBAR --- */}
       {showDesktopNavbar && (
         <div className="hidden lg:block">
-          {/* Anda bisa meng-uncomment Navbar jika komponennya sudah siap */}
           <Navbar /> 
         </div>
       )}
 
-      {/* --- MOBILE GLOBAL HEADER --- */}
-      {/* TopSearchBar sekarang akan pintar mengatur bentuknya sendiri */}
       {!isCheckout && (
         <TopSearchBar />
       )}
 
-      {/* --- KONTEN HALAMAN UTAMA --- */}
-      {/* pb-20 digunakan agar konten tidak tertutup BottomNavigation jika sedang aktif */}
       <main className={`min-h-screen ${showBottomNav ? " lg:pb-0" : ""}`}>
         {children}
       </main>

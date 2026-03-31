@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { ArrowLeft, RefreshCw, AlertCircle, Copy, CheckCircle2, MapPin, CreditCard, Receipt, Box } from "lucide-react";
+import { ArrowLeft, RefreshCw, AlertCircle, Copy, CheckCircle2, MapPin, CreditCard, Receipt, Box, Loader2, XCircle } from "lucide-react";
 import { ordersService } from "@/lib/api/orders.service";
 import { formatPrice } from "@/lib/utils/formatPrice";
 
@@ -15,9 +15,13 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   useEffect(() => {
-    const fetchOrderDetails = async () => {
+    fetchOrderDetails()
+  }, [resolvedParams.id]);
+
+  const fetchOrderDetails = async () => {
       try {
         const data = await ordersService.getOrderDetails(resolvedParams.id);
         setOrder(data);
@@ -28,9 +32,21 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
       }
     };
 
-    fetchOrderDetails();
-  }, [resolvedParams.id]);
-
+    const handleCancelOrder = async () => {
+    if (!window.confirm("Apakah Anda yakin ingin membatalkan pesanan ini?")) return;
+    
+    setIsCancelling(true);
+    try {
+      await ordersService.cancelOrder(resolvedParams.id);
+      alert("Pesanan berhasil dibatalkan.");
+      // Panggil ulang data untuk memperbarui status di layar menjadi 'cancelled'
+      await fetchOrderDetails();
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Gagal membatalkan pesanan.");
+    } finally {
+      setIsCancelling(false);
+    }
+  };
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -59,7 +75,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   }
 
   // Tentukan apakah user harus dialihkan ke halaman pembayaran
-  const needsPayment = order.status === "pending";
+  const needsPayment = order.status === "waiting_payment";
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] sm:py-10">
@@ -196,7 +212,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
         {/* BOTTOM ACTION BUTTON (Hanya jika belum bayar) */}
         {needsPayment && (
-          <div className="p-4 bg-white border-t border-gray-100 sticky bottom-0 z-20">
+          <div className="p-4 bg-white border-t border-gray-100 sticky bottom-0 z-20 space-y-3 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+            
+            {/* Tombol Bayar */}
             <button 
               onClick={() => router.push(`/orders/${order.id}`)}
               className="w-full flex items-center justify-center gap-2 bg-[#FF6B00] text-white hover:bg-[#e66000] active:scale-[0.98] font-bold py-3.5 rounded-xl transition-all shadow-md"
@@ -204,6 +222,21 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               <CreditCard size={18} />
               Pay Now
             </button>
+
+            {/* 👇 Tombol Batalkan Pesanan */}
+            <button 
+              onClick={handleCancelOrder}
+              disabled={isCancelling}
+              className="w-full flex items-center justify-center gap-2 bg-white text-gray-500 hover:text-red-600 hover:bg-red-50 border border-gray-200 hover:border-red-200 active:scale-[0.98] font-semibold py-3.5 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isCancelling ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
+                <XCircle size={18} />
+              )}
+              {isCancelling ? "Membatalkan..." : "Batalkan Pesanan"}
+            </button>
+            
           </div>
         )}
       </div>

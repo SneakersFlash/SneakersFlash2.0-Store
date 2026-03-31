@@ -552,7 +552,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
           </h3>
           <div className="px-4 lg:px-0">
             <RelatedProducts
-              categoryName={product.categories[0].name}
+              categoryName={product.categories.length > 0 ? product.categories[0].name : ''}
               currentProductId={product.id}
             />
           </div>

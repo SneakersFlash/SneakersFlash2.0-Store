@@ -23,6 +23,10 @@ import { logisticsService } from "@/lib/api/logistics.service";
 import { ordersService } from "@/lib/api/orders.service";
 import type { UserAddress } from "@/types/user.types";
 
+// Import Voucher Components
+import VoucherSelector from "@/components/voucher/VoucherSelector";
+import type { AppliedVoucher } from "@/types/voucher.types";
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ORIGIN_COORDS = { lat: -6.1752685, lng: 106.7720772 };
@@ -78,7 +82,7 @@ function MiniMap({ lat, lng }: { lat: number; lng: number }) {
   useEffect(() => {
     if (mapRef.current || !ref.current) return;
     import("leaflet").then((L) => {
-      const map = L.map(ref.current!, {
+      const map = L?.map(ref.current!, {
         center: [lat, lng], zoom: 15,
         zoomControl: false, dragging: false, scrollWheelZoom: false,
         doubleClickZoom: false, touchZoom: false, attributionControl: false,
@@ -421,7 +425,6 @@ export default function CheckoutPage() {
   const [usePoints,          setUsePoints]          = useState(false);
   const [selectedPayment,    setSelectedPayment]    = useState<string | null>(null);
   const [isShippingOpen,     setIsShippingOpen]     = useState(false);
-  const [isVoucherOpen,      setIsVoucherOpen]      = useState(false);
   const [isPaymentOpen,      setIsPaymentOpen]      = useState(false);
   const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
   const [isSummaryOpen,      setIsSummaryOpen]      = useState(false);
@@ -447,24 +450,28 @@ export default function CheckoutPage() {
     : null;
   const instantBlocked = selectedDistKm !== null && selectedDistKm > INSTANT_DISTANCE_LIMIT_KM;
 
-  // ── Voucher ───────────────────────────────────────────────────────────────
-  const [tempVoucher,    setTempVoucher]    = useState("");
-  const [appliedVoucher, setAppliedVoucher] = useState<string | null>(null);
-  const voucherDiscount = 0; // wire to real discount API
+  // ── Voucher (Updated State) ───────────────────────────────────────────────
+  const [appliedVoucher, setAppliedVoucher] = useState<AppliedVoucher | null>(null);
 
   // ── Shipping ──────────────────────────────────────────────────────────────
   const [shippingOptions,  setShippingOptions]  = useState<any[]>([]);
   const [selectedCourier,  setSelectedCourier]  = useState<any | null>(null);
   const [isCalcShipping,   setIsCalcShipping]   = useState(false);
 
-  // ── Calculations ──────────────────────────────────────────────────────────
+  // ── Calculations (Updated) ────────────────────────────────────────────────
   const subtotal      = checkoutItems.reduce((s, i) => s + (Number(i.price) * i.quantity), 0);
   const totalWeight   = checkoutItems.reduce((s, i) => s + ((i.weightKilogram ?? 2) * i.quantity), 0);
   const pointsBalance = 21560; // replace with auth store / profile
   const pointsDiscount = usePoints ? Math.min(pointsBalance, Math.floor(subtotal * 0.1)) : 0;
+  
+  // Menggunakan voucherDiscount dari objek voucher yang diaplikasikan
+  const voucherDiscount = appliedVoucher?.discountAmount || 0; 
   const pointsEarned  = Math.floor(subtotal * 0.033);
   const shippingCost  = selectedCourier?.cost ?? 0;
-  const grandTotal    = subtotal + shippingCost - voucherDiscount - pointsDiscount;
+  
+  // Pastikan grandTotal tidak kurang dari 0
+  const calculatedTotal = subtotal + shippingCost - voucherDiscount - pointsDiscount;
+  const grandTotal    = Math.max(0, calculatedTotal);
 
   // ── Fetch shipping ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -551,7 +558,7 @@ export default function CheckoutPage() {
           cost: selectedCourier.cost 
         },
         paymentMethod: selectedPayment,
-        voucherCode:   appliedVoucher || undefined,
+        voucherCode:   appliedVoucher?.code || undefined, // Send code if applied
       });
       router.push(`/orders/${res.id}`);
     } catch (err: any) {
@@ -777,31 +784,12 @@ export default function CheckoutPage() {
         <section className="bg-white lg:rounded-xl lg:border lg:border-gray-200 overflow-hidden divide-y divide-gray-100">
 
           {/* Voucher */}
-          <button onClick={() => setIsVoucherOpen(!isVoucherOpen)} className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-            <div className="flex items-center gap-3">
-              <Ticket size={18} className={appliedVoucher ? "text-[#FF6B00]" : "text-gray-500"} />
-              <span className={cn("text-sm font-medium", appliedVoucher ? "text-[#FF6B00] font-semibold" : "text-gray-700")}>
-                {appliedVoucher ? `Voucher: ${appliedVoucher}` : "Enter voucher code"}
-              </span>
-            </div>
-            {isVoucherOpen ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
-          </button>
-          <AnimatePresence>
-            {isVoucherOpen && (
-              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                <div className="p-4 flex gap-2">
-                  <input type="text" placeholder="PROMO CODE" value={tempVoucher}
-                    onChange={(e) => setTempVoucher(e.target.value.toUpperCase())}
-                    className="flex-1 p-2.5 border border-gray-300 rounded-lg text-sm font-bold uppercase tracking-widest focus:border-[#FF6B00] outline-none"
-                  />
-                  <button onClick={() => { setAppliedVoucher(tempVoucher); setIsVoucherOpen(false); }}
-                    className="bg-gray-900 text-white font-bold px-5 rounded-lg text-sm hover:bg-black transition-colors">
-                    Apply
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <VoucherSelector 
+            subtotal={subtotal} 
+            appliedVoucher={appliedVoucher} 
+            onApply={(voucher) => setAppliedVoucher(voucher)} 
+            onRemove={() => setAppliedVoucher(null)} 
+          />
 
           {/* Flash Points */}
           <div className="flex items-center justify-between p-4">

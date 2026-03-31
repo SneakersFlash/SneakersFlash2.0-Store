@@ -72,7 +72,7 @@ function MapPicker({ coordinates, onCoordinatesChange }: { coordinates: Coordina
     useEffect(() => {
         if (mapInstanceRef.current || !mapContainerRef.current) return;
         import("leaflet").then((L) => {
-        const map = L.map(mapContainerRef.current!, { center: [coordinates.lat, coordinates.lng], zoom: 15 });
+        const map = L?.map(mapContainerRef.current!, { center: [coordinates.lat, coordinates.lng], zoom: 15 });
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OSM", maxZoom: 19 }).addTo(map);
         const icon = L.divIcon({
             className: "",

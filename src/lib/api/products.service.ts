@@ -17,7 +17,7 @@ export const productsService = {
         ...(filters.maxPrice && { maxPrice: filters.maxPrice }),
         ...(filters.sizes?.length && { sizes: filters.sizes.join(",") }),
         ...(filters.sort && { sort: filters.sort }),
-        ...(filters.q && { q: filters.q }),
+        ...(filters.search && { search: filters.search }),
       },
     });
     return data;

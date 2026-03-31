@@ -35,7 +35,7 @@ function TopSearchBarInner() {
 
   const handleSearch = () => {
     const q = query.trim();
-    if (q) router.push(`/products?q=${encodeURIComponent(q)}`);
+    if (q) router.push(`/products?search=${encodeURIComponent(q)}`);
   };
 
   const getListTitle = () => {
@@ -67,7 +67,7 @@ function TopSearchBarInner() {
                 placeholder="Sepatu running…"
                 className="w-full bg-muted border border-transparent rounded-full pl-9 pr-9 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
               />
-              <AnimatePresence>
+              {/* <AnimatePresence>
                 {query && (
                   <motion.button
                     initial={{ opacity: 0, scale: 0.8 }}
@@ -79,7 +79,7 @@ function TopSearchBarInner() {
                     <X size={13} />
                   </motion.button>
                 )}
-              </AnimatePresence>
+              </AnimatePresence> */}
             </div>
 
             {/* Sort/filter icon */}

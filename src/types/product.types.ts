@@ -78,7 +78,8 @@ export interface ProductFilters {
   sort?: ProductSortOption;
   page?: number;
   limit?: number;
-  q?: string;
+  search?: string;
+  excludeCategories?: string;
 }
 
 export type ProductSortOption =

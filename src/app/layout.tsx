@@ -35,6 +35,10 @@ export const metadata: Metadata = {
     default: "SneakersFlash — Premium Sneakers & Footwear",
     template: "%s | SneakersFlash",
   },
+  icons: {
+    icon: '/icon.png',
+    apple: '/icon.png',
+  },
   description:
     "Shop the latest sneakers, running shoes, and streetwear. New drops every week. Free shipping on orders over Rp 500k.",
   keywords: ["sneakers", "footwear", "shoes", "streetwear", "Nike", "Adidas"],

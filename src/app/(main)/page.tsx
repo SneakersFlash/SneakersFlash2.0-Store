@@ -6,18 +6,17 @@ import { CategoryShortcuts } from "@/components/home/CategoryShortcuts";
 import { BrandCarousel }     from "@/components/home/BrandCarousel";
 import { ProductSection }    from "@/components/home/ProductSection";
 
-
-// Import service Anda di sini
-import { categoriesService } from "@/lib/api/categories.service";
+// Kita hanya perlu banner service sekarang, karena kategori sudah fix
 import { bannersService } from "@/lib/api/banners.service";
+import { ProductSortOption } from "@/types/product.types";
+import { categoriesService } from "@/lib/api/categories.service";
 
 export const metadata: Metadata = {
-  title: "SNKRS Flash — Premium Sneakers & Footwear",
+  title: "SneakersFlash — Premium Sneakers & Footwear",
   description:
     "Toko sneakers premium Indonesia. Nike, Adidas, New Balance dan lebih. Gratis ongkir di atas Rp 500k.",
 };
 
-// Seluruh halaman ini akan di-cache dan direvalidasi setiap 60 detik
 export const revalidate = 60;
 
 const SECTION_COLORS = [
@@ -29,14 +28,63 @@ const SECTION_COLORS = [
 ];
 
 export default async function HomePage() {
-  const [categories, banners] = await Promise.all([
-    categoriesService.getAll().catch(() => []),
+
+  const [banners, apiCategories] = await Promise.all([
     bannersService.getBanners("home_top").catch(() => []),
+    categoriesService.getAll().catch(() => []), 
   ]);
   
-  const displayCategories = categories.slice(0, 5);
-  const firstGroup = displayCategories.slice(0, 2); // 3 kategori pertama yang akan didampingi Side Banner
-  const restGroup = displayCategories.slice(3);
+  
+  
+  const getCategoryImage = (categoryName: string) => {
+    const foundCategory = (apiCategories as any[]).find(
+      (c) => c.name.toLowerCase() === categoryName.toLowerCase()
+    );
+    return foundCategory?.imageUrl || "/placeholder.jpg";
+  };
+  
+  const firstGroup = [
+    { 
+      id: "footwear", 
+      title: "Footwear", 
+      filters: { categoryName: "Footwear", limit: 8 }, 
+      href: "/products?category=footwear" ,
+      bgImage: getCategoryImage("Footwear")
+    },
+    { 
+      id: "lifestyle-casual", 
+      title: "Lifestyle/Casual", 
+      filters: { categoryName: "Lifestyle/Casual", limit: 8, page: 2, excludeCategories: 'Footwear' }, 
+      href: "/products?category=lifestyle-casual", 
+      bgImage: getCategoryImage("Lifestyle/Casual")
+    }
+  ];
+
+  const restGroup = [
+    { 
+      id: "running-shoes", 
+      title: "Running Shoes", 
+      filters: { 
+        categoryName: 'Running Shoes',
+        limit: 8, 
+        excludeCategories: "Footwear,Lifestyle/Casual" 
+      }, 
+      href: "/products?category=running",
+      bgImage: getCategoryImage("Running") 
+    },
+    { 
+      id: "apparel", 
+      title: "Apparel", 
+      filters: { 
+        categoryName: "Apparel", 
+        limit: 8, 
+        excludeCategories: "Footwear,Lifestyle/Casual" 
+      }, 
+      href: "/products?category=apparel",
+      bgImage: getCategoryImage("Apparel")
+    }
+  ];
+
   return (
     <>
       <TrustRow />
@@ -51,7 +99,8 @@ export default async function HomePage() {
         <div className="flex flex-col lg:flex-row gap-8 items-stretch">
           
           {/* SIDE BANNER */}
-          <div className="hidden lg:flex flex-col relative w-[280px] shrink-0 rounded-2xl overflow-hidden shadow-lg bg-[#001D4A] group">            <Image 
+          <div className="hidden lg:flex flex-col relative w-[280px] shrink-0 rounded-2xl overflow-hidden shadow-lg bg-[#001D4A] group">
+            <Image 
               src="/placeholder.jpg" // Ganti dengan path banner vertikal Anda
               alt="Promo Sidebar"
               fill
@@ -69,35 +118,35 @@ export default async function HomePage() {
             </div>
           </div>
 
-          {/* KUMPULAN PRODUCT SECTION (Kanan) - Pakai headerStyle="clean" */}
+          {/* KUMPULAN PRODUCT SECTION (Kanan) */}
           <div className="flex-1 flex flex-col gap-10 w-full min-w-0">
-            {firstGroup.map((category: any) => (
+            {firstGroup.map((section) => (
               <ProductSection
-                key={category.id || category.slug}
-                title={category.name}
-                filters={{ categoryName: category.name, limit: 8 }}
-                viewAllHref={`/products?category=${category.slug}`}
+                key={section.id}
+                title={section.title}
+                filters={section.filters}
+                viewAllHref={section.href}
               />
             ))}
           </div>
 
         </div>
 
-        {/* KUMPULAN PRODUCT SECTION SISANYA (Bawah, Full Width) - Pakai headerStyle="banner" */}
+        {/* KUMPULAN PRODUCT SECTION SISANYA (Bawah, Full Width) */}
         {restGroup.length > 0 && (
           <div className="flex flex-col gap-12 mt-16 pt-16 border-t border-gray-200">
-            {restGroup.map((category: any, index: number) => {
-               const bgColor = SECTION_COLORS[(firstGroup.length + index) % SECTION_COLORS.length];
-               return (
+            {restGroup.map((section, index) => {
+              const bgColor = SECTION_COLORS[index % SECTION_COLORS.length];
+              return (
                 <ProductSection
-                  key={category.id || category.slug}
-                  title={category.name}
-                  filters={{ categoryName: category.name, limit: 8 }}
+                  key={section.id}
+                  title={section.title}
+                  filters={section.filters}
                   bgColor={bgColor}
-                  viewAllHref={`/products?category=${category.slug}`}
-                  backgroundImage={category.imageUrl}
+                  viewAllHref={section.href}
+                  backgroundImage={section.bgImage}
                 />
-               )
+              )
             })}
           </div>
         )}

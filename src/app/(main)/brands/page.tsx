@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 import { Brand } from "@/types/product.types";
 import { brandsService } from "@/lib/api/brands.service";
 import { ArrowLeft } from "lucide-react";
-import { useRouter } from "next/router";
+// 1. PERBAIKAN: Gunakan next/navigation untuk App Router
+import { useRouter } from "next/navigation"; 
 
 // ─── Brand Row Item ───────────────────────────────────────────────────────────
 
@@ -61,12 +62,7 @@ function AlphaSection({
 }) {
   return (
     <div className="mb-2">
-      <header className="sticky top-0 bg-white z-40 px-4 py-3 flex items-center gap-4 border-b border-gray-200 shadow-sm">
-        <button onClick={() => router.back()} className="p-1 -ml-1 hover:bg-gray-100 rounded-full">
-          <ArrowLeft size={24} className="text-gray-900" />
-        </button>
-        <h1 className="text-lg font-bold text-gray-900">Secure Checkout</h1>
-      </header>
+      {/* 2. PERBAIKAN: Header dipindahkan dari sini agar tidak ter-render berkali-kali */}
       <div className="px-4 pt-4 pb-1">
         <span className="text-[13px] font-semibold text-[#1A1A1A]">{letter}</span>
       </div>
@@ -83,7 +79,7 @@ function AlphaSection({
 
 function BrandSkeleton() {
   return (
-    <div className="animate-pulse px-4">
+    <div className="animate-pulse px-4 py-4">
       {[..."ACNPRSV"].map((letter) => (
         <div key={letter} className="mb-3">
           <div className="h-4 w-4 bg-gray-200 rounded mb-3 mt-4" />
@@ -102,6 +98,7 @@ function BrandSkeleton() {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function BrandsPage() {
+  const router = useRouter(); // 3. PERBAIKAN: Inisiasi router di komponen utama
   const [brands, setBrands] = useState<Brand[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -141,27 +138,36 @@ export default function BrandsPage() {
     count += grouped[letter].length;
   });
 
-  if (isLoading) return <BrandSkeleton />;
-
-  if (brands.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-48 text-[#888] text-sm">
-        No brands available
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-white font-sans divide-y divide-[#F5F5F5]">
+    <div className="bg-white min-h-screen font-sans">
       
-      {letters.map((letter) => (
-        <AlphaSection
-          key={letter}
-          letter={letter}
-          brands={grouped[letter]}
-          startIndex={letterStartIndexes[letter]}
-        />
-      ))}
+      {/* 4. PERBAIKAN: Header diletakkan di bagian paling atas page, judul diganti jadi "Semua Brand" */}
+      <header className="sticky top-0 bg-white z-40 px-4 py-3 flex items-center gap-4 border-b border-gray-200 shadow-sm">
+        <button onClick={() => router.back()} className="p-1 -ml-1 hover:bg-gray-100 rounded-full">
+          <ArrowLeft size={24} className="text-gray-900" />
+        </button>
+        <h1 className="text-lg font-bold text-gray-900">Semua Brand</h1>
+      </header>
+
+      {/* Konten Halaman */}
+      {isLoading ? (
+        <BrandSkeleton />
+      ) : brands.length === 0 ? (
+        <div className="flex items-center justify-center h-48 text-[#888] text-sm">
+          No brands available
+        </div>
+      ) : (
+        <div className="divide-y divide-[#F5F5F5]">
+          {letters.map((letter) => (
+            <AlphaSection
+              key={letter}
+              letter={letter}
+              brands={grouped[letter]}
+              startIndex={letterStartIndexes[letter]}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

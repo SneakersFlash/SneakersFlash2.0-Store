@@ -32,7 +32,7 @@ function SectionBannerHeader({
   return (
     <Link href={viewAllHref} className="block group mb-4">
       <div
-        className="relative h-20 md:h-28 flex items-center px-5 md:px-8 overflow-hidden rounded-2xl shadow-sm transition-transform duration-300 group-hover:scale-[1.01]"
+        className="relative h-20 md:h-28 flex items-center px-5 md:px-8 overflow-hidden rounded-2xl shadow-xs transition-transform duration-300 group-hover:scale-[1.01]"
         style={{ backgroundColor: bgColor }}
       >
         {backgroundImage ? (
@@ -51,9 +51,6 @@ function SectionBannerHeader({
 
         <div className="relative z-10 flex items-center justify-between w-full">
           <div className="flex flex-col">
-            <p className="text-[10px] md:text-xs font-bold text-white/70 uppercase tracking-[0.2em] mb-0.5">
-              Collection
-            </p>
             <h3 className="font-display font-black text-2xl md:text-3xl text-white uppercase tracking-tight line-clamp-1">
               {title}
             </h3>

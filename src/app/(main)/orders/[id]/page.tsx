@@ -50,7 +50,7 @@ export default function OrderPaymentPage({ params }: { params: Promise<{ id: str
     // Gunakan expireTime dari API, jika tidak ada fallback ke 24 jam setelah createdAt
     const expiryDate = order.expireTime 
       ? new Date(order.expireTime).getTime() 
-      : new Date(order.createdAt).getTime() + (24 * 60 * 60 * 1000);
+      : new Date(order.createdAt).getTime() + (1 * 60 * 60 * 1000);
 
     const timer = setInterval(() => {
       const now = new Date().getTime();
