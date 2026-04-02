@@ -62,15 +62,15 @@ export default async function HomePage() {
 
   const restGroup = [
     { 
-      id: "running-shoes", 
-      title: "Running Shoes", 
+      id: "womens", 
+      title: "Womens", 
       filters: { 
-        categoryName: 'Running Shoes',
+        categoryName: 'Womens',
         limit: 8, 
         excludeCategories: "Footwear,Lifestyle/Casual" 
       }, 
-      href: "/products?category=running",
-      bgImage: getCategoryImage("Running") 
+      href: "/products?category=womens",
+      bgImage: getCategoryImage("Womens") 
     },
     { 
       id: "apparel", 
