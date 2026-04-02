@@ -128,19 +128,19 @@ export function ProductScrollCard({
         {/* ── Product info ── */}
         <div className="px-3 lg:px-4 flex flex-col flex-1">
           {/* Brand */}
-          <h3 className="text-[13px] lg:text-[15px] font-bold tracking-tight text-black mb-0.5">
+          <h3 className="text-[10px] lg:text-[12px] font-bold tracking-tight text-black mb-0.5">
             {product.brand?.name ?? "Nike"}
           </h3>
 
           {/* Nama Produk */}
-          <p className="text-[12px] lg:text-[14px] font-normal text-black line-clamp-1 mb-2 lg:mb-3">
+          <p className="text-[10px] lg:text-[12px] font-normal text-black line-clamp-2 mb-2 lg:mb-3">
             {product.name.toUpperCase()}
           </p>
 
           {/* Harga & Diskon */}
           <div className="flex flex-col mt-auto">
             <span className={cn(
-              "text-[16px] lg:text-[20px] font-bold leading-none tracking-tight mb-1.5 text-black"
+              "text-[14px] lg:text-[20px] font-bold leading-none tracking-tight mb-1.5 text-black"
             )}>
               {formatPrice(displayPrice)}
             </span>
@@ -150,8 +150,8 @@ export function ProductScrollCard({
                 <span className="text-[11px] lg:text-[13px] text-[#888888] line-through font-normal">
                   {formatPrice(product.basePrice)}
                 </span>
-                <span className="inline-flex items-center justify-center bg-[#FF0000] text-white text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded-full">
-                  -{saving}%
+                <span className="inline-flex items-center justify-center bg-green-200 text-green-500 text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded">
+                  Save {saving}%
                 </span>
               </div>
             )}

@@ -83,7 +83,7 @@ export function CartSidebar() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white">
               <div className="flex items-center gap-2">
                 <ShoppingBag size={20} className="text-gray-900" />
-                <span className="font-bold tracking-tight text-lg text-gray-900">
+                <span className="font-bold tracking-tight text-md text-gray-900">
                   Cart ({items.length})
                 </span>
               </div>
@@ -110,7 +110,7 @@ export function CartSidebar() {
                       )}>
                         {isAllSelected && <Check size={14} className="text-white" strokeWidth={3} />}
                       </div>
-                      <span className="text-sm font-bold text-gray-700 select-none">Select All</span>
+                      <span className="text-[12px] font-bold text-gray-700 select-none">Select All</span>
                     </button>
                   </div>
 
@@ -145,7 +145,7 @@ export function CartSidebar() {
                           <div className="flex flex-col flex-1 min-w-0 py-0.5">
                             <div className="flex justify-between items-start gap-2">
                               <div className="min-w-0 cursor-pointer" onClick={() => toggleSelectItem(item.id)}>
-                                <h3 className="text-sm font-bold text-gray-900 leading-snug truncate">
+                                <h3 className="text-[12px] font-bold text-gray-900 leading-snug truncate">
                                   {item.productName}
                                 </h3>
                                 <p className="text-xs text-gray-500 mt-0.5">SKU: {item.variantSku}</p>
@@ -161,7 +161,7 @@ export function CartSidebar() {
                             </div>
 
                             <div className="flex items-end justify-between mt-auto pt-2">
-                              <span className="font-bold text-sm text-[#FF6B00]">{formatPrice(price)}</span>
+                              <span className="font-bold text-[12px] text-[#FF6B00]">{formatPrice(price)}</span>
                               <div className="flex items-center border border-gray-200 rounded-md h-7 overflow-hidden">
                                 <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-7 h-full flex items-center justify-center hover:bg-gray-100"><Minus size={12} /></button>
                                 <span className="w-8 text-center text-xs font-bold bg-gray-50 border-x border-gray-200">{item.quantity}</span>
@@ -193,7 +193,7 @@ export function CartSidebar() {
                   }}
                   disabled={selectedItems.length === 0}
                   className={cn(
-                    "w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-sm transition-all",
+                    "w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-[12px] transition-all",
                     selectedItems.length > 0 
                       ? "bg-[#1C1C1C] hover:bg-black active:scale-[0.98] text-white shadow-lg" 
                       : "bg-gray-200 text-gray-400 cursor-not-allowed"
@@ -217,8 +217,8 @@ function EmptyCart({ onClose }: { onClose: () => void }) {
         <ShoppingBag size={32} className="text-gray-300" />
       </div>
       <h3 className="font-bold text-lg text-gray-900 mb-2">Your Cart is Empty</h3>
-      <p className="text-sm text-gray-500 mb-8 max-w-[250px]">Looks like you haven't added any sneakers to your cart yet.</p>
-      <button onClick={onClose} className="bg-black hover:bg-gray-800 text-white px-8 py-3.5 rounded-xl font-bold text-sm transition-all active:scale-95">
+      <p className="text-[12px] text-gray-500 mb-8 max-w-[250px]">Looks like you haven't added any sneakers to your cart yet.</p>
+      <button onClick={onClose} className="bg-black hover:bg-gray-800 text-white px-8 py-3.5 rounded-xl font-bold text-[12px] transition-all active:scale-95">
         Start Shopping
       </button>
     </div>

@@ -57,8 +57,8 @@ export default function MyAccountPage() {
   if (error || !profile) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-6">
-        <p className="text-red-500 font-medium">Failed to load profile data.</p>
-        <p className="text-sm text-gray-500 mt-2">Please try logging in again.</p>
+        <p className="text-red-500 font-reguler">Failed to load profile data.</p>
+        <p className="text-[12px] text-gray-500 mt-2">Please try logging in again.</p>
       </div>
     );
   }
@@ -67,7 +67,7 @@ export default function MyAccountPage() {
     <div className="min-h-screen bg-gray-50 text-gray-900 pb-8">
       {/* HEADER */}
       <header className="bg-white px-4 py-4 flex items-center justify-between sticky top-0 z-10">
-        <h1 className="text-lg font-bold">My Account</h1>
+        <p className="text-[16px] font-bold">My Account</p>
         <button className="p-1" aria-label="Cart">
           <ShoppingBag className="w-6 h-6" />
         </button>
@@ -75,23 +75,28 @@ export default function MyAccountPage() {
 
       {/* PROFILE SECTION */}
       <div className="bg-white px-4 pt-4 pb-6">
-        <Link href="/account/edit" className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <UserCircle className="w-14 h-14 text-gray-800" strokeWidth={1.5} />
-            <div>
-              <h2 className="font-semibold text-base">{profile.name || "User Name"}</h2>
-              <p className="text-sm text-gray-600">{profile.email || "user@email.com"}</p>
-              <p className="text-sm text-gray-600">{profile.phone || "-"}</p>
+        <Link href="/account/edit" className="flex items-center justify-between mb-6 gap-2">
+          <div className="flex items-center gap-4 flex-1">
+            <UserCircle className="w-14 h-14 text-gray-800 shrink-0" strokeWidth={1.5} />
+            <div className="w-full flex-1">
+              <p className="font-semibold text-[12px] text-base">{profile.name || "User Name"}</p>
+              
+              {/* Bagian ini diubah menjadi flex justify-between */}
+              <div className="flex items-center justify-between text-[12px] text-gray-600 w-full mt-0.5 pr-10">
+                <span className="truncate pr-2">{profile.email || "user@email.com"}</span>
+                <span className="shrink-0">{profile.phone || "-"}</span>
+              </div>
+              
             </div>
           </div>
-          <ChevronRight className="text-gray-400 w-6 h-6" />
+          <ChevronRight className="text-gray-400 w-6 h-6 shrink-0" />
         </Link>
 
         {/* MEMBERSHIP CARD */}
-        <div className="bg-gradient-to-r from-orange-400 via-orange-600 to-amber-800 rounded-xl p-4 text-white relative overflow-hidden h-24 flex flex-col justify-center">
-          <div className="relative z-10">
-            <h3 className="font-bold text-lg">{profile.customerTier || "Bronze"}</h3>
-            <p className="text-sm opacity-90">
+        <div className="bg-gradient-to-r from-orange-400 via-orange-600 to-amber-800 rounded-xl p-4 text-white relative overflow-hidden h-[60px] flex flex-col justify-center">
+          <div className="relative z-10 mx-[55px]">
+            <p className="font-bold text-[12px] text-lg">{ "Bronze"}</p>
+            <p className="text-[12px] opacity-90">
               Flash Poin {Number(profile.pointsBalance.d[0] || 0).toLocaleString('id-ID')}
             </p>
           </div>
@@ -107,8 +112,8 @@ export default function MyAccountPage() {
       {/* MY PURCHASES */}
       <div className="bg-white mt-2">
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-          <h3 className="text-sm text-gray-500 font-medium">My Purchases</h3>
-          <Link href="/account/orders" className="text-sm text-orange-500 font-medium">
+          <p className="text-[12px] text-gray-500 font-reguler">My Purchases</p>
+          <Link href="/account/orders" className="text-[12px] text-orange-500 font-reguler">
             Purchase History &gt;
           </Link>
         </div>
@@ -117,7 +122,7 @@ export default function MyAccountPage() {
           {PURCHASE_STATUS.map((item) => (
             <Link key={item.label} href={item.href} className="flex flex-col items-center gap-2">
               <item.icon className="w-6 h-6 text-gray-700" strokeWidth={1.5} />
-              <span className="text-[11px] text-gray-700 font-medium">{item.label}</span>
+              <span className="text-[11px] text-gray-700 font-reguler">{item.label}</span>
             </Link>
           ))}
         </div>
@@ -131,9 +136,9 @@ export default function MyAccountPage() {
 
       {/* ACTIVITY */}
       <div className="bg-white mt-2 px-4 py-2">
-        <h3 className="text-sm text-gray-500 font-medium py-2 border-b border-gray-100 mb-2">
+        <p className="text-[12px] text-gray-500 font-reguler py-2 border-b border-gray-100 mb-2">
           Activity
-        </h3>
+        </p>
         {ACTIVITY_MENU.map((item) => (
           <MenuItem key={item.label} item={item} />
         ))}
@@ -141,9 +146,9 @@ export default function MyAccountPage() {
 
       {/* INFORMATION AND HELP */}
       <div className="bg-white mt-2 px-4 py-2">
-        <h3 className="text-sm text-gray-500 font-medium py-2 border-b border-gray-100 mb-2">
+        <p className="text-[12px] text-gray-500 font-reguler py-2 border-b border-gray-100 mb-2">
           Information and help
-        </h3>
+        </p>
         {HELP_MENU.map((item) => (
           <MenuItem key={item.label} item={item} />
         ))}
@@ -167,7 +172,7 @@ function MenuItem({ item }: { item: { icon: LucideIcon, label: string, href: str
   return (
     <Link href={item.href} className="flex items-center gap-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
       <item.icon className="w-5 h-5 text-gray-800" strokeWidth={1.5} />
-      <span className="text-sm font-medium">{item.label}</span>
+      <span className="text-[12px] font-reguler">{item.label}</span>
     </Link>
   );
 }

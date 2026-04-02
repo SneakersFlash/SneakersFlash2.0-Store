@@ -10,7 +10,7 @@ interface LocationOption { id: number; name: string; zip_code?: string; }
 interface Coordinates { lat: number; lng: number; }
 interface FormErrors { recipientName?: string; phone?: string; province?: string; city?: string; district?: string; subdistrict?: string; addressLine?: string; label?: string; }
 
-const DEFAULT_LABELS = ["Home", "Work", "Apartment"];
+const DEFAULT_LABELS = ["Home", "Work"];
 const DEFAULT_COORDS: Coordinates = { lat: -6.2088, lng: 106.8456 }; // Jakarta
 
 async function reverseGeocode(lat: number, lng: number) {
@@ -125,7 +125,7 @@ function MapPicker({ coordinates, onCoordinatesChange }: { coordinates: Coordina
             </button>
         </div>
         {locationError && <p className="text-xs text-red-500">{locationError}</p>}
-        <div ref={mapContainerRef} className="w-full h-52 rounded-xl overflow-hidden border-2 border-gray-200" style={{ zIndex: 0 }} />
+        <div ref={mapContainerRef} className="w-full h-52 rounded overflow-hidden border-2 border-gray-200" style={{ zIndex: 0 }} />
         </div>
     );
 }
@@ -289,12 +289,12 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
         
         {/* ── Address Labels ──────────────────────────────────────────────── */}
         <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Save address as</label>
+            <label className="text-[12px] font-reguler text-gray-700">Save address as</label>
             <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1 items-center">
             {labels.map((lbl) => (
                 <button
                 type="button" key={lbl} onClick={() => setSelectedLabel(lbl)}
-                className={`px-4 py-2 rounded-xl text-sm whitespace-nowrap transition-colors border-2 ${
+                className={`px-4 py-2 rounded text-sm whitespace-nowrap transition-colors border-2 ${
                     selectedLabel === lbl ? "border-orange-500 text-orange-600 bg-orange-50 font-bold" : "border-gray-200 text-gray-600 hover:bg-gray-50"
                 }`}
                 >
@@ -302,16 +302,16 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
                 </button>
             ))}
             {!isAddingLabel && (
-                <button type="button" onClick={() => setIsAddingLabel(true)} className="px-3 py-2 rounded-xl border-2 border-dashed border-gray-300 text-gray-500 text-sm hover:bg-gray-50 flex items-center gap-1 whitespace-nowrap">
-                <Plus className="w-4 h-4" /> Add
+                <button type="button" onClick={() => setIsAddingLabel(true)} className="px-3 py-2 rounded border-2 border-dashed border-gray-300 text-gray-500 text-sm hover:bg-gray-50 flex items-center gap-1 whitespace-nowrap">
+                <Plus className="w-4 h-4" /> 
                 </button>
             )}
             </div>
             {isAddingLabel && (
             <div className="flex items-center gap-2 mt-2">
-                <input type="text" value={newLabelInput} onChange={(e) => setNewLabelInput(e.target.value)} placeholder="e.g. Parent's House" className="flex-1 border-2 border-orange-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-orange-500" />
-                <button type="button" onClick={confirmAddLabel} className="p-2.5 rounded-xl bg-orange-500 text-white hover:bg-orange-600"><Check className="w-4 h-4" /></button>
-                <button type="button" onClick={() => setIsAddingLabel(false)} className="p-2.5 rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200"><X className="w-4 h-4" /></button>
+                <input type="text" value={newLabelInput} onChange={(e) => setNewLabelInput(e.target.value)} placeholder="e.g. Parent's House" className="flex-1 border-2 border-orange-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-orange-500" />
+                <button type="button" onClick={confirmAddLabel} className="p-2.5 rounded bg-orange-500 text-white hover:bg-orange-600"><Check className="w-4 h-4" /></button>
+                <button type="button" onClick={() => setIsAddingLabel(false)} className="p-2.5 rounded bg-gray-100 text-gray-600 hover:bg-gray-200"><X className="w-4 h-4" /></button>
             </div>
             )}
         </div>
@@ -319,14 +319,14 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
         {/* ── Contact Info ────────────────────────────────────────────────── */}
         <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">Recipient Name</label>
-            <input type="text" value={recipientName} onChange={(e) => { setRecipientName(e.target.value); setErrors(p => ({...p, recipientName: undefined})) }} className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500" placeholder="John Doe" />
+            <label className="text-[12px] font-reguler text-gray-700">Recipient Name <span className="text-red-500">*</span></label>
+            <input type="text" value={recipientName} onChange={(e) => { setRecipientName(e.target.value); setErrors(p => ({...p, recipientName: undefined})) }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500" placeholder="John Doe" />
             {errors.recipientName && <p className="text-xs text-red-500">{errors.recipientName}</p>}
             </div>
             <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">Phone Number</label>
-            <input type="tel" value={phone} onChange={(e) => { setPhone(e.target.value); setErrors(p => ({...p, phone: undefined})) }} className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500" placeholder="0812..." />
-            {errors.phone && <p className="text-xs text-red-500">{errors.phone}</p>}
+            <label className="text-[12px] font-reguler text-gray-700">Phone Number <span className="text-red-500">*</span></label>
+            <input type="tel" value={phone} onChange={(e) => { setPhone(e.target.value); setErrors(p => ({...p, phone: undefined})) }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500" placeholder="0812..." />
+            {errors.phone && <p className="text-xs text-red-500">{errors.phone} <span className="text-red-500">*</span></p>}
             </div>
         </div>
 
@@ -336,11 +336,11 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
         {/* ── Cascading Location ──────────────────────────────────────────── */}
         <div className="space-y-3">
             <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">Area Details</label>
+            <label className="text-[12px] font-reguler text-gray-700">Your Address <span className="text-red-500">*</span></label>
             {geocoding && <span className="flex items-center gap-1 text-xs text-orange-500"><Loader2 className="w-3 h-3 animate-spin" /> Auto-filling...</span>}
             </div>
             {geocodeError && !geocoding && (
-            <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+            <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2">
                 <p className="text-xs text-amber-700 leading-snug">{geocodeError}</p>
             </div>
             )}
@@ -348,8 +348,8 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
             <select value={provId} onChange={(e) => {
             setProvId(e.target.value); setCityId(""); setDistId(""); setSubdistId("");
             logisticsService.getCities(Number(e.target.value)).then(setCities);
-            }} className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 bg-white">
-            <option value="">Select Province</option>
+            }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500 bg-white">
+            <option value="">Select Province </option>
             {provinces.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
 
@@ -357,14 +357,14 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
             <select value={cityId} disabled={!provId} onChange={(e) => {
                 setCityId(e.target.value); setDistId(""); setSubdistId("");
                 logisticsService.getDistricts(Number(e.target.value)).then(setDistricts);
-            }} className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 bg-white disabled:bg-gray-50 disabled:text-gray-400">
+            }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500 bg-white disabled:bg-gray-50 disabled:text-gray-400">
                 <option value="">Select City</option>
                 {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
             <select value={distId} disabled={!cityId} onChange={(e) => {
                 setDistId(e.target.value); setSubdistId("");
                 logisticsService.getSubdistricts(Number(e.target.value)).then(setSubdistricts);
-            }} className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 bg-white disabled:bg-gray-50 disabled:text-gray-400">
+            }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500 bg-white disabled:bg-gray-50 disabled:text-gray-400">
                 <option value="">Select District</option>
                 {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
@@ -375,25 +375,25 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
                 setSubdistId(e.target.value);
                 const match = subdistricts.find(s => String(s.id) === e.target.value);
                 setPostalCode(match?.zip_code || "");
-            }} className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 bg-white disabled:bg-gray-50 disabled:text-gray-400">
+            }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500 bg-white disabled:bg-gray-50 disabled:text-gray-400">
                 <option value="">Select Subdistrict</option>
                 {subdistricts.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
-            <input type="text" value={postalCode} readOnly placeholder="Postal Code" className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 bg-gray-50 text-gray-500 cursor-not-allowed" />
+            <input type="text" value={postalCode} readOnly placeholder="Postal Code" className="w-full border-2 border-gray-200 rounded px-4 py-3 bg-gray-50 text-gray-500 cursor-not-allowed" />
             </div>
         </div>
 
         <div className="space-y-1">
-            <label className="text-sm font-medium text-gray-700">Detailed Address</label>
-            <textarea rows={3} value={addressLine} onChange={(e) => setAddressLine(e.target.value)} placeholder="Street name, building, house number..." className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500 resize-none" />
+            <label className="text-[12px] font-reguler text-gray-700">Detailed Address</label>
+            <textarea rows={3} value={addressLine} onChange={(e) => setAddressLine(e.target.value)} placeholder="Street name, building, house number..." className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500 resize-none" />
         </div>
 
-        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded border border-gray-200">
             <input type="checkbox" id="isDefault" checked={isDefault} onChange={(e) => setIsDefault(e.target.checked)} className="w-5 h-5 text-orange-500 rounded focus:ring-orange-500 border-gray-300" />
-            <label htmlFor="isDefault" className="text-sm font-medium text-gray-800 cursor-pointer">Set as Default Address</label>
+            <label htmlFor="isDefault" className="text-[12px] font-reguler text-gray-800 cursor-pointer">Set as Default Address</label>
         </div>
 
-        <button type="submit" disabled={isLoading} className="w-full bg-[#FF6B00] text-white font-bold py-4 rounded-xl hover:bg-orange-600 transition-colors disabled:opacity-50">
+        <button type="submit" disabled={isLoading} className="w-full bg-[#FF6B00] text-white font-bold py-4 rounded hover:bg-orange-600 transition-colors disabled:opacity-50">
             {isLoading ? "Saving..." : submitLabel}
         </button>
         </form>

@@ -90,7 +90,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           >
             <ArrowLeft size={20} className="text-gray-900" />
           </button>
-          <h1 className="text-base font-semibold text-gray-900">Order Details</h1>
+          <p className="text-[20px] font-bold text-gray-900">Order Details</p>
         </header>
 
         <div className="flex-1 overflow-y-auto bg-[#F2F2F2]">
@@ -127,7 +127,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           {/* SECTION 2: Daftar Produk */}
           <div className="bg-white p-4 sm:p-5 mb-2 sm:mb-3">
             <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold">
-              <Box size={18} /> <h3>Product List</h3>
+              <Box size={18} /> <p>Product List</p>
             </div>
             
             <div className="space-y-4">
@@ -153,7 +153,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           {/* SECTION 3: Info Pengiriman */}
           <div className="bg-white p-4 sm:p-5 mb-2 sm:mb-3">
             <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold">
-              <MapPin size={18} /> <h3>Shipping Info</h3>
+              <MapPin size={18} /> <p>Shipping Info</p>
             </div>
             <div className="text-sm text-gray-600 space-y-3">
               <div className="flex justify-between items-start gap-4">
@@ -178,7 +178,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           {/* SECTION 4: Rincian Pembayaran */}
           <div className="bg-white p-4 sm:p-5 sm:rounded-b-2xl">
             <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold">
-              <Receipt size={18} /> <h3>Payment Details</h3>
+              <Receipt size={18} /> <p>Payment Details</p>
             </div>
             
             <div className="text-sm space-y-3 mb-4">
@@ -188,16 +188,16 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               </div>
               <div className="flex justify-between text-gray-600 items-center">
                 <span>Subtotal</span>
-                <span>{formatPrice(order.subTotal || 0)}</span>
+                <span>{formatPrice(order.subtotal || 0)}</span>
               </div>
               <div className="flex justify-between text-gray-600 items-center">
                 <span>Shipping Cost</span>
                 <span>{formatPrice(order.shippingCost || 0)}</span>
               </div>
-              {order.discountTotal > 0 && (
+              {order.discountAmount > 0 && (
                 <div className="flex justify-between text-green-600 font-medium items-center">
                   <span>Total Discount</span>
-                  <span>-{formatPrice(order.discountTotal)}</span>
+                  <span>-{formatPrice(order.discountAmount)}</span>
                 </div>
               )}
             </div>
@@ -223,7 +223,6 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               Pay Now
             </button>
 
-            {/* 👇 Tombol Batalkan Pesanan */}
             <button 
               onClick={handleCancelOrder}
               disabled={isCancelling}

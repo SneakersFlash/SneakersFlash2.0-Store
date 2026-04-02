@@ -79,12 +79,12 @@ export default function SetupProfilePage() {
         <button onClick={() => router.back()} className="p-1">
           <ArrowLeft className="w-6 h-6" strokeWidth={2} />
         </button>
-        <h1 className="text-lg font-bold">Setup Profile</h1>
+        <p className="text-sm font-bold">Setup Profile</p>
       </header>
 
       <main className="flex-1 p-4">
         {submitError && (
-          <div className="mb-4 p-3 bg-red-50 border-2 border-red-200 rounded-xl text-sm text-red-600 font-medium text-center">
+          <div className="mb-4 p-3 bg-red-50 border-2 border-red-200 rounded text-sm text-red-600 font-medium text-center">
             {submitError}
           </div>
         )}
@@ -99,27 +99,27 @@ export default function SetupProfilePage() {
             </h4>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-[12px] font-reguler text-gray-700">
                 Your name <span className="text-red-500">*</span>
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <input
                   type="text" placeholder="First Name" value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500"
+                  className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500"
                 />
                 <input
                   type="text" placeholder="Last Name" value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-orange-500"
+                  className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">Your email</label>
+              <label className="text-[12px] font-reguler text-gray-700">Your email</label>
               <input type="email" value={profile?.email ?? ""} disabled
-                className="w-full border-2 border-gray-200 bg-gray-50 rounded-xl px-4 py-3 text-gray-500 cursor-not-allowed"
+                className="w-full border-2 border-gray-200 bg-gray-50 rounded px-4 py-3 text-gray-500 cursor-not-allowed"
               />
               <p className="text-[10px] text-gray-400 mt-1">Email cannot be changed here.</p>
             </div>

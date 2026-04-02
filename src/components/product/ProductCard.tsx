@@ -132,25 +132,26 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
 
         {/* ── Product Info ── */}
         <div className="px-3 sm:px-4 md:px-5 flex flex-col flex-1">
-          <h3 className="text-[12px] sm:text-[14px] font-bold tracking-tight text-black mb-0.5">
+          <h3 className="text-[10px] sm:text-[12px] font-bold tracking-tight text-black mb-0.5">
             {product.brand?.name ?? "Nike"}
           </h3>
-          <p className="text-[11px] sm:text-[13px] leading-snug font-normal text-black line-clamp-2 mb-1.5 sm:mb-2">
+          <p className="text-[10px] sm:text-[12px] leading-snug font-normal text-black line-clamp-2 mb-1.5 sm:mb-2">
             {product.name.toUpperCase()}
           </p>
           <div className="flex flex-col mt-auto">
             <span className={cn(
-              "text-[14px] sm:text-[18px] font-bold leading-none tracking-tight mb-1 text-black"
+              "text-[14px] lg:text-[20px] font-bold leading-none tracking-tight mb-1.5 text-black"
             )}>
               {formatPrice(displayPrice)}
             </span>
+            
             {hasDiscount && (
-              <div className="flex items-center gap-1.5 mb-1 sm:mb-2 flex-wrap">
-                <span className="text-[11px] sm:text-[13px] text-[#888888] line-through font-normal">
+              <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                <span className="text-[11px] lg:text-[13px] text-[#888888] line-through font-normal">
                   {formatPrice(product.basePrice)}
                 </span>
-                <span className="inline-flex items-center justify-center bg-[#FF0000] text-white text-[10px] sm:text-[11px] font-bold px-1.5 py-0.5 rounded-full">
-                  -{saving}%
+                <span className="inline-flex items-center justify-center bg-green-200 text-green-500 text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded">
+                  Save {saving}%
                 </span>
               </div>
             )}

@@ -104,12 +104,12 @@ export function FilterModal({ isOpen, onClose, onApply }: FilterModalProps) {
                   <path d="m6 6 12 12" />
                 </svg>
               </button>
-              <h2
+              <p
                 className="ml-4 font-black text-xl uppercase tracking-tight text-zinc-900"
                 style={{ fontFamily: "var(--font-oswald), sans-serif" }}
               >
                 Filter
-              </h2>
+              </p>
             </div>
 
             {/* --- BODY (Scrollable) --- */}

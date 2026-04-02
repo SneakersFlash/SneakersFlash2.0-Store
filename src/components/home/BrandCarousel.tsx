@@ -86,9 +86,9 @@ export function BrandCarousel() {
       <div className="container mx-auto px-4 max-w-7xl flex flex-col">
         
         {/* Title */}
-        <h2 className="text-[20px] md:text-[24px] font-bold text-[#1A1A1A] tracking-tight mb-4 md:mb-5">
+        <p className="text-[20px] md:text-[24px] font-bold text-[#1A1A1A] tracking-tight mb-4 md:mb-5">
           Shop by Brand
-        </h2>
+        </p>
 
         {/* Grid Brands */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-5">

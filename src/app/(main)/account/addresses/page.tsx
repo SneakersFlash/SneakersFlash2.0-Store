@@ -44,7 +44,7 @@ export default function ListAddressPage() {
             >
             <ArrowLeft className="w-6 h-6" strokeWidth={2} />
             </button>
-            <h1 className="text-lg font-bold">List Address</h1>
+            <p className="text-[16px] font-bold">List Address</p>
         </header>
 
         <main className="flex-1 p-4 flex flex-col gap-4">

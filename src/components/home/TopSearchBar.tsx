@@ -154,9 +154,9 @@ function TopSearchBarInner() {
             </button>
             
             <div className="flex items-center gap-1">
-              <button className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
+              {/* <button className="p-1.5 hover:bg-gray-100 rounded-full transition-colors">
                 <Share2 size={22} className="text-gray-900" />
-              </button>
+              </button> */}
               <button
                 onClick={() => {
                   if (!isAuthenticated) {

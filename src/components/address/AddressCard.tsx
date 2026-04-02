@@ -30,18 +30,18 @@ export function AddressCard({ address }: AddressCardProps) {
 
     return (
         <div
-        className={`bg-white p-4 rounded-xl border-2 transition-all ${
+        className={`bg-white px-2 py-2 rounded-lg border-2 transition-all ${
             address.isDefault ? "border-orange-500" : "border-gray-200"
         }`}
         >
         {/* Top Row: Label & Share */}
-        <div className="flex justify-between items-start mb-3">
+        <div className="flex justify-between items-start mb-1">
             <div className="flex items-center gap-2">
-            <h2 className="font-bold text-[15px] text-gray-900">
+            <h2 className="font-bold text-[12px] text-gray-900">
                 {address.label || "Address"}
             </h2>
             {address.isDefault && (
-                <span className="bg-[#FF6B00] text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+                <span className="bg-[#FF6B00] text-white text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
                 Utama
                 </span>
             )}
@@ -52,8 +52,8 @@ export function AddressCard({ address }: AddressCardProps) {
         </div>
 
         {/* Middle Row: Contact & Address Info */}
-        <div className="mb-3 space-y-1">
-            <p className="text-[14px] text-gray-800">{address.recipientName}</p>
+        <div className="mb-3 space-y-[0.5px]">
+            <p className="text-[12px] text-gray-800">{address.recipientName}</p>
             <p className="text-[13px] text-gray-500">{address.phone}</p>
             <p className="text-[13px] text-gray-500 leading-relaxed">
             {address.addressLine}

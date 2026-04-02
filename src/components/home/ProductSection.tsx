@@ -51,9 +51,9 @@ function SectionBannerHeader({
 
         <div className="relative z-10 flex items-center justify-between w-full">
           <div className="flex flex-col">
-            <h3 className="font-display font-black text-2xl md:text-3xl text-white uppercase tracking-tight line-clamp-1">
+            <p className="font-display font-black text-[18px] md:text-[24px] text-white tracking-tight line-clamp-1">
               {title}
-            </h3>
+            </p>
           </div>
 
           <div className="flex items-center gap-1 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-full text-white transition-all duration-300 group-hover:bg-white group-hover:text-black">

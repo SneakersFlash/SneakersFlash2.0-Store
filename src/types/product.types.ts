@@ -50,6 +50,7 @@ export interface Product {
   categories: Category[];
   images: ProductImage[];
   variants: ProductVariant[];
+  wishlists: any[]
   ratingAvg?: any;
   reviewCount?: number;
   createdAt: string;

@@ -128,7 +128,7 @@ function ShippingRow({ opt, isSelected, onSelect, disabled }: {
           ? <CheckCircle2 size={18} className="text-[#FF6B00] shrink-0" />
           : <Circle      size={18} className="text-gray-300 shrink-0" />}
         <div>
-          <p className="text-sm font-semibold text-gray-900">
+          <p className="text-xs font-semibold text-gray-900">
             {opt.courier_name || opt.courier}
             <span className="font-normal text-gray-500 ml-1">· {opt.service}</span>
           </p>
@@ -138,7 +138,7 @@ function ShippingRow({ opt, isSelected, onSelect, disabled }: {
           </p>
         </div>
       </div>
-      <span className="text-sm font-bold text-gray-900 shrink-0 ml-2">{formatPrice(opt.cost)}</span>
+      <span className="text-xs font-bold text-gray-900 shrink-0 ml-2">{formatPrice(opt.cost)}</span>
     </div>
   );
 }
@@ -185,7 +185,7 @@ function AddressSheet({
               {addresses.length === 0 && (
                 <div className="text-center py-12 text-gray-400">
                   <MapPin size={32} className="mx-auto mb-3 opacity-25" />
-                  <p className="text-sm">No saved addresses yet.</p>
+                  <p className="text-xs">No saved addresses yet.</p>
                 </div>
               )}
 
@@ -224,7 +224,7 @@ function AddressSheet({
                               </span>
                             )}
                           </div>
-                          <p className="text-sm font-bold text-gray-900 mt-1.5">
+                          <p className="text-xs font-bold text-gray-900 mt-1.5">
                             {addr.recipientName}
                             <span className="font-normal text-gray-500 ml-2 text-xs">{addr.phone}</span>
                           </p>
@@ -284,7 +284,7 @@ function AddressSheet({
             <div className="p-4 border-t border-gray-100 shrink-0">
               <button
                 onClick={onAddNew}
-                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 rounded-xl text-sm font-semibold text-gray-500 hover:border-[#FF6B00] hover:text-[#FF6B00] hover:bg-orange-50/30 transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 rounded-xl text-xs font-semibold text-gray-500 hover:border-[#FF6B00] hover:text-[#FF6B00] hover:bg-orange-50/30 transition-colors"
               >
                 <Plus size={15} /> Add New Address
               </button>
@@ -335,31 +335,31 @@ function SummaryBar({
                   </button>
                 </div>
                 <div className="space-y-2.5">
-                  <div className="flex justify-between text-sm text-gray-700">
+                  <div className="flex justify-between text-xs text-gray-700">
                     <span>Subtotal <span className="text-gray-400">({itemCount} item{itemCount > 1 ? "s" : ""})</span></span>
                     <span className="font-semibold">{formatPrice(subtotal)}</span>
                   </div>
-                  <div className="flex justify-between text-sm text-gray-700">
+                  <div className="flex justify-between text-xs text-gray-700">
                     <span>Shipping</span>
                     <span className={cn("font-semibold", !shippingCost ? "text-gray-300 italic text-xs mt-0.5" : "")}>
                       {shippingCost ? formatPrice(shippingCost) : "—"}
                     </span>
                   </div>
                   {voucherDiscount > 0 && (
-                    <div className="flex justify-between text-sm text-emerald-600">
+                    <div className="flex justify-between text-xs text-emerald-600">
                       <span className="flex items-center gap-1"><Tag size={13} /> Voucher</span>
                       <span className="font-semibold">−{formatPrice(voucherDiscount)}</span>
                     </div>
                   )}
                   {pointsDiscount > 0 && (
-                    <div className="flex justify-between text-sm text-amber-600">
+                    <div className="flex justify-between text-xs text-amber-600">
                       <span className="flex items-center gap-1"><Zap size={13} /> Flash Points</span>
                       <span className="font-semibold">−{formatPrice(pointsDiscount)}</span>
                     </div>
                   )}
                 </div>
                 <div className="border-t border-dashed border-gray-200 mt-3 pt-3 flex justify-between items-baseline">
-                  <span className="text-sm font-bold text-gray-900">Grand Total</span>
+                  <span className="text-xs font-bold text-gray-900">Grand Total</span>
                   <span className="text-xl font-extrabold text-gray-900">{formatPrice(grandTotal)}</span>
                 </div>
                 {pointsEarned > 0 && (
@@ -393,7 +393,7 @@ function SummaryBar({
                 onClick={onPay}
                 disabled={!canPay || isLoading}
                 className={cn(
-                  "shrink-0 flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm transition-all shadow-lg",
+                  "shrink-0 flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-xs transition-all shadow-lg",
                   canPay && !isLoading
                     ? "bg-[#1C1C1C] text-white hover:bg-black active:scale-[0.98] shadow-black/20"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none",
@@ -607,10 +607,10 @@ export default function CheckoutPage() {
         {/* ── 1. DELIVERY ADDRESS ───────────────────────────────────────────── */}
         <section className="bg-white p-4 lg:rounded-xl lg:border lg:border-gray-200">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold flex items-center gap-2">
+            <p className="text-xs font-bold flex items-center gap-2">
               <MapPin size={16} className="text-[#FF6B00]" />
               Delivery Address
-            </h2>
+            </p>
             <button
               onClick={() => setIsAddressSheetOpen(true)}
               className="text-xs font-bold text-[#FF6B00] border border-[#FF6B00] px-3 py-1 rounded-full hover:bg-orange-50 flex items-center gap-1 transition-colors"
@@ -636,7 +636,7 @@ export default function CheckoutPage() {
                   </span>
                 )}
               </div>
-              <p className="text-sm font-bold text-gray-900">
+              <p className="text-xs font-bold text-gray-900">
                 {selectedAddress.recipientName}
                 <span className="font-normal text-gray-500 ml-2 text-xs">{selectedAddress.phone}</span>
               </p>
@@ -671,7 +671,7 @@ export default function CheckoutPage() {
           ) : (
             <button
               onClick={() => setIsAddressSheetOpen(true)}
-              className="ml-6 flex items-center gap-2 text-sm text-[#FF6B00] font-semibold"
+              className="ml-6 flex items-center gap-2 text-xs text-[#FF6B00] font-semibold"
             >
               <Plus size={15} /> Select a delivery address
             </button>
@@ -680,9 +680,9 @@ export default function CheckoutPage() {
 
         {/* ── 2. ORDER ITEMS ────────────────────────────────────────────────── */}
         <section className="bg-white p-4 lg:rounded-xl lg:border lg:border-gray-200">
-          <h2 className="text-sm font-bold flex items-center gap-2 mb-4">
+          <p className="text-xs font-bold flex items-center gap-2 mb-4">
             <Package size={16} className="text-gray-500" /> Order Items
-          </h2>
+          </p>
           <div className="space-y-4">
             {checkoutItems.map((item) => {
               const imageUrl = item.image?.length > 0 ? getProductImageUrl([item.image[0]]) : "/placeholder.jpg";
@@ -694,7 +694,7 @@ export default function CheckoutPage() {
                   <div className="flex-1 flex flex-col justify-center">
                     <p className="text-xs font-medium text-gray-900 line-clamp-2 leading-snug">{item.productName}</p>
                     <div className="flex items-end justify-between mt-1.5">
-                      <span className="text-sm font-bold text-gray-900">{formatPrice(Number(item.price))}</span>
+                      <span className="text-xs font-bold text-gray-900">{formatPrice(Number(item.price))}</span>
                       <span className="text-xs text-gray-400">×{item.quantity} · {(item.weightKilogram ?? 0).toFixed(1)} kg</span>
                     </div>
                   </div>
@@ -708,7 +708,7 @@ export default function CheckoutPage() {
         <section className="bg-white lg:rounded-xl lg:border lg:border-gray-200 overflow-hidden">
           <div className="px-4 pt-4 pb-2 flex items-center gap-2">
             <Truck size={15} className="text-gray-500" />
-            <h2 className="text-sm font-bold">Shipping Method</h2>
+            <p className="text-xs font-bold">Shipping Method</p>
           </div>
 
           <button
@@ -722,13 +722,13 @@ export default function CheckoutPage() {
                 </span>
               ) : selectedCourier ? (
                 <>
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-xs font-semibold text-gray-900">
                     {selectedCourier.courier_name || selectedCourier.courier} · {selectedCourier.service}
                   </p>
                   <p className="text-xs text-gray-400">Est. {selectedCourier.etd || "varies"} · <span className="font-semibold text-gray-700">{formatPrice(selectedCourier.cost)}</span></p>
                 </>
               ) : (
-                <p className="text-sm text-gray-400">Select shipping method</p>
+                <p className="text-xs text-gray-400">Select shipping method</p>
               )}
             </div>
             {isShippingOpen ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
@@ -796,7 +796,7 @@ export default function CheckoutPage() {
             <div className="flex items-center gap-3">
               <Zap size={18} className="text-amber-400" />
               <div>
-                <p className="text-sm font-medium text-gray-800">Use Flash Points</p>
+                <p className="text-xs font-medium text-gray-800">Use Flash Points</p>
                 <p className="text-xs text-gray-400">{pointsBalance.toLocaleString()} pts · worth {formatPrice(Math.floor(pointsBalance))}</p>
               </div>
             </div>
@@ -814,8 +814,8 @@ export default function CheckoutPage() {
               <Wallet size={18} className="text-gray-500" />
               <div className="text-left">
                 {selectedPayment
-                  ? <p className="text-sm font-semibold text-gray-900">{paymentMethods.flatMap(g => g.options).find(o => o.id === selectedPayment)?.name}</p>
-                  : <p className="text-sm font-medium text-gray-700">Payment Method</p>}
+                  ? <p className="text-xs font-semibold text-gray-900">{paymentMethods.flatMap(g => g.options).find(o => o.id === selectedPayment)?.name}</p>
+                  : <p className="text-xs font-medium text-gray-700">Payment Method</p>}
               </div>
             </div>
             {isPaymentOpen ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
@@ -834,7 +834,7 @@ export default function CheckoutPage() {
                             className="flex items-center justify-between p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
                             <div className="flex items-center gap-3">
                               <span className="text-[10px] font-black text-blue-800 italic w-14 text-center bg-gray-100 py-1.5 rounded-lg">{option.logo}</span>
-                              <span className="text-sm font-medium text-gray-900">{option.name}</span>
+                              <span className="text-xs font-medium text-gray-900">{option.name}</span>
                             </div>
                             {selectedPayment === option.id
                               ? <CheckCircle2 size={20} className="text-[#FF6B00]" />

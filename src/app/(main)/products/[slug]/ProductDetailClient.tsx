@@ -89,7 +89,7 @@ function ReviewsSheet({ isOpen, onClose, productImages }: { isOpen: boolean; onC
                     <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-100 border border-gray-200">
                       <Image src={review.avatar} alt={review.name} fill className="object-cover" />
                     </div>
-                    <span className="text-sm font-bold text-gray-900">{review.name}</span>
+                    <span className="text-[10px] font-bold text-gray-900">{review.name}</span>
                   </div>
 
                   {/* Rating & Date */}
@@ -118,7 +118,7 @@ function ReviewsSheet({ isOpen, onClose, productImages }: { isOpen: boolean; onC
                   )}
 
                   {/* Review Text */}
-                  <p className="text-sm text-gray-800 leading-relaxed mb-2">{review.text}</p>
+                  <p className="text-[10px] text-gray-800 leading-relaxed mb-2">{review.text}</p>
 
                   {/* Highlights */}
                   {review.highlights && (
@@ -287,8 +287,8 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
               />
               {/* Badge Promo */}
               {hasDiscount && (
-                <div className="absolute top-4 left-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md">
-                  -{saving}%
+                <div className="absolute top-4 left-4 bg-green-200 text-green-500 text-xs lg:text-sm font-bold px-1.5 py-0.5 rounded">
+                  Save {saving}%
                 </div>
               )}
             </div>
@@ -331,40 +331,49 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
           {/* RIGHT COLUMN: PRODUCT INFO */}
           <div className="w-full lg:flex-1 px-4 lg:px-0 flex flex-col gap-5">
 
+            {/* Rating (Now clickable) */}
             {/* Brand & Name */}
             <div>
-              <p className="text-xs font-bold text-[#FF6B00] uppercase tracking-widest mb-1">
+              <button 
+                onClick={() => setIsReviewsOpen(true)}
+                className="flex items-center gap-2 hover:opacity-80 transition-opacity w-fit"
+              >
+                <div className="flex items-center gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      size={14}
+                      className={
+                        i < Math.round(rating)
+                          ? "fill-amber-400 text-amber-400"
+                          : "fill-gray-200 text-gray-200"
+                      }
+                    />
+                  ))}
+                </div>
+                <span className="text-[10px] font-bold text-gray-700">{rating}</span>
+                <span className="text-xs text-gray-400 underline underline-offset-2">({reviewCount} reviews)</span>
+              </button>
+              <p className="text-[18px] lg:text-[20px] font-bold uppercase tracking-widest my-1">
                 {product.brand?.name || "SneakersFlash"}
               </p>
-              <h1 className="text-2xl lg:text-3xl font-black text-gray-900 leading-tight">
+
+              {/* {product.categories.map((item: any) =>  */}
+              <p className="text-[10px] font-medium tracking-widest my-1 text-gray-400">
+                {product?.categories
+                  ?.map(category => category?.name)
+                  ?.filter(Boolean)                 
+                  ?.join(' / ')}
+              </p>
+              <p className="text-[18px] lg:text-[20px] font-semibold font-black text-gray-900 leading-tight">
                 {product.name}
-              </h1>
+              </p>
             </div>
 
-            {/* Rating (Now clickable) */}
-            <button 
-              onClick={() => setIsReviewsOpen(true)}
-              className="flex items-center gap-2 hover:opacity-80 transition-opacity w-fit"
-            >
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    size={14}
-                    className={
-                      i < Math.round(rating)
-                        ? "fill-amber-400 text-amber-400"
-                        : "fill-gray-200 text-gray-200"
-                    }
-                  />
-                ))}
-              </div>
-              <span className="text-sm font-bold text-gray-700">{rating}</span>
-              <span className="text-xs text-gray-400 underline underline-offset-2">({reviewCount} reviews)</span>
-            </button>
+            
 
             {/* Price */}
-            <div className="flex items-baseline gap-3">
+            <div className="hidden lg:flex items-baseline gap-3">
               <span className="text-3xl font-black text-gray-900">
                 {formatPrice(displayPrice)}
               </span>
@@ -379,9 +388,9 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
             {product.variants && product.variants.length > 1 && (
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <p className="text-sm font-bold text-gray-900">Select Size</p>
-                  <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-900 transition-colors">
-                    <Ruler size={13} /> Size Guide
+                  <p className="text-[10px] font-medium text-gray-900">Choose EUR Size</p>
+                  <button className="flex items-center gap-1 text-xs text-[#FF7500] hover:text-gray-900 transition-colors">
+                    Size Chart
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -395,7 +404,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                       }
                       disabled={variant.stock === 0}
                       className={cn(
-                        "px-4 py-2.5 rounded-xl text-sm font-bold border-2 transition-all",
+                        "px-4 py-2.5 rounded-xl text-[10px] font-bold border-2 transition-all",
                         variant.stock === 0
                           ? "border-gray-100 text-gray-300 bg-gray-50 cursor-not-allowed line-through"
                           : selectedSizeId === variant.id
@@ -419,7 +428,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                 onClick={handleAddToCart}
                 disabled={!selectedSizeId || isAdding}
                 className={cn(
-                  "flex-1 flex items-center justify-center py-4 rounded-2xl font-bold text-sm transition-all border-2",
+                  "flex-1 flex items-center justify-center py-4 rounded-2xl font-bold text-[10px] transition-all border-2",
                   selectedSizeId
                     ? "border-gray-200 text-gray-900 hover:bg-gray-50 hover:border-gray-400"
                     : "border-gray-100 text-gray-400 bg-gray-50 cursor-not-allowed"
@@ -431,7 +440,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                 onClick={handleBuyNow}
                 disabled={!selectedSizeId || isAdding}
                 className={cn(
-                  "flex-1 flex items-center justify-center py-4 rounded-2xl font-bold text-sm transition-all shadow-lg",
+                  "flex-1 flex items-center justify-center py-4 rounded-2xl font-bold text-[10px] transition-all shadow-lg",
                   selectedSizeId
                     ? "bg-[#1C1C1C] text-white hover:bg-black hover:shadow-xl active:scale-[0.98]"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"
@@ -451,10 +460,10 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
               {/* Earn Flash Points */}
               <div className="flex items-center justify-between py-4 border-b border-[#E5E5E5] cursor-pointer hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-3.5">
-                  <div className="bg-[#FF6B00] text-white w-7 h-7 rounded-full flex items-center justify-center">
-                    <Zap size={15} fill="currentColor" className="ml-[1px]" />
+                  <div className="bg-[#FF6B00] text-white w-5 h-5 rounded-full flex items-center justify-center">
+                    <Zap size={12} fill="currentColor" className="ml-[1px]" />
                   </div>
-                  <p className="text-[15px] text-[#1A1A1A]">
+                  <p className="text-[12px] text-[#1A1A1A]">
                     Earn Flash Points:{" "}
                     <span className="font-bold">
                       {earnedPoints.toLocaleString("id-ID")}
@@ -469,8 +478,8 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                 onClick={() => setIsInstallmentOpen(!isInstallmentOpen)}
               >
                 <div className="flex items-center gap-3.5">
-                  <CreditCard size={28} strokeWidth={1.5} className="text-black" />
-                  <p className="text-[15px] text-[#1A1A1A]">
+                  <CreditCard size={18} strokeWidth={1.5} className="text-black" />
+                  <p className="text-[12px] text-[#1A1A1A]">
                     <span className="font-bold">0%</span> Interest Credit Card Installment*
                   </p>
                 </div>
@@ -491,10 +500,10 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                     className="overflow-hidden bg-[#F8F9FB] border-b border-[#E5E5E5]"
                   >
                     <div className="p-4 md:px-5">
-                      <p className="text-[13px] font-bold text-gray-500 mb-3 uppercase tracking-wider">
+                      <p className="text-[10px] font-bold text-gray-500 mb-3 uppercase tracking-wider">
                         Simulasi Cicilan 0%
                       </p>
-                      <div className="space-y-2.5 text-[14px] text-gray-800">
+                      <div className="space-y-2.5 text-[12px] text-gray-800">
                         {[3, 6, 12].map((months) => (
                           <div
                             key={months}
@@ -521,8 +530,8 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
               {/* Authentic badge */}
               <div className="flex items-center justify-between py-4 border-b border-[#E5E5E5] cursor-pointer hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-3.5">
-                  <BadgeCheck size={30} fill="black" stroke="white" strokeWidth={1.5} />
-                  <p className="text-[15px] text-[#1A1A1A]">
+                  <BadgeCheck size={25} fill="black" stroke="white" strokeWidth={1.5} />
+                  <p className="text-[12px] text-[#1A1A1A]">
                     100% <span className="font-bold">Authentic</span>
                   </p>
                 </div>
@@ -531,13 +540,13 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
 
             {/* Description */}
             <div className="py-2">
-              <h3 className="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wider">
+              <h3 className="text-[12px] font-bold text-gray-900 mb-3 uppercase tracking-wider">
                 Product Details
               </h3>
               <div className="flex items-center gap-2 text-xs text-gray-600 mb-4 bg-gray-50 inline-block px-3 py-1.5 rounded-md border border-gray-200">
                 <span className="font-semibold">Weight:</span> {product.weightGrams ?? 900}g
               </div>
-              <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+              <p className="text-[12px] text-gray-600 leading-relaxed whitespace-pre-wrap">
                 {product.description ||
                   "No specific description available for this product. Please refer to the images for design details."}
               </p>
@@ -547,7 +556,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
 
         {/* RELATED PRODUCTS */}
         <div className="mt-16 pt-10 border-t border-gray-200">
-          <h3 className="text-2xl font-black text-gray-900 mb-8 px-4 lg:px-0 tracking-tight uppercase">
+          <h3 className="text-[20px] font-black text-gray-900 mb-8 px-4 lg:px-0 tracking-tight uppercase">
             You Might Also Like
           </h3>
           <div className="px-4 lg:px-0">
@@ -565,12 +574,12 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
           <div className="flex flex-col">
             <span className="text-xs text-gray-500 font-medium">Total Price</span>
             <div className="flex items-center gap-2">
-              <span className="text-lg font-black text-gray-900">
+              <span className="text-[21px] font-black text-gray-900">
                 {formatPrice(displayPrice)}
               </span>
               {hasDiscount && (
-                <span className="text-[10px] bg-red-100 text-[#E50000] px-1.5 py-0.5 rounded font-bold">
-                  -{saving}%
+                <span className="inline-flex items-center justify-center bg-green-200 text-green-500 text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded">
+                  Save {saving}%
                 </span>
               )}
             </div>
@@ -583,7 +592,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
               onClick={() =>
                 router.push(`/login?callbackUrl=${encodeURIComponent(currentPath)}`)
               }
-              className="w-full flex items-center justify-center py-3.5 rounded-xl font-bold text-sm transition-all shadow-md bg-[#FF6B00] text-white hover:bg-[#e66000] active:scale-[0.98]"
+              className="w-full flex items-center justify-center py-3.5 rounded-xl font-bold text-[10px] transition-all shadow-md bg-[#FF6B00] text-white hover:bg-[#e66000] active:scale-[0.98]"
             >
               Login to Purchase
             </button>
@@ -593,7 +602,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                 onClick={handleAddToCart}
                 disabled={!selectedSizeId || isAdding}
                 className={cn(
-                  "flex-1 flex items-center justify-center py-3.5 rounded-xl font-bold text-sm transition-all",
+                  "flex-1 flex items-center justify-center py-3.5 rounded-xl font-bold text-[10px] transition-all",
                   selectedSizeId
                     ? "border-2 border-gray-200 text-gray-900 hover:bg-gray-50"
                     : "border-2 border-gray-100 text-gray-400 bg-gray-50 cursor-not-allowed"
@@ -610,7 +619,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                 onClick={handleBuyNow}
                 disabled={!selectedSizeId || isAdding}
                 className={cn(
-                  "flex-1 flex items-center justify-center py-3.5 rounded-xl font-bold text-sm transition-all shadow-md",
+                  "flex-1 flex items-center justify-center py-3.5 rounded-xl font-bold text-[10px] transition-all shadow-md",
                   selectedSizeId
                     ? "bg-[#1C1C1C] text-white hover:bg-black active:scale-[0.98]"
                     : "bg-gray-200 text-gray-400 cursor-not-allowed"

@@ -44,9 +44,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <span className="text-[#FF6B00] font-bold text-[10px] md:text-xs uppercase tracking-[0.3em] mb-1.5 md:mb-2">
               Explore Collection
             </span>
-            <h1 className="text-white text-3xl md:text-6xl font-display font-black uppercase tracking-tight drop-shadow-lg">
-              {categoryData.name}
-            </h1>
           </div>
         </div>
       )}
