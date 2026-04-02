@@ -52,7 +52,7 @@ export default function OrderPaymentPage({ params }: { params: Promise<{ id: str
 
   // 2. Countdown Timer Logic
   useEffect(() => {
-    if (!order || order.status !== "waiting_payment") return;
+    if (!order || order.status !== "waiting_payment" || order.status !== "pending") return;
 
     const expiryDate = order.expireTime 
       ? new Date(order.expireTime).getTime() 
