@@ -6,6 +6,12 @@ const nextConfig: NextConfig = {
     unoptimized: true,
     remotePatterns: [
       {
+        protocol: 'https',
+        hostname: 'api-test.sneakersflash.com', // <== Tambahkan ini
+        port: '',
+        pathname: '/**',
+      },
+      {
         protocol: "http",
         hostname: "localhost",
         // Opsional: batasi port jika perlu, tapi dikosongkan agar fleksibel

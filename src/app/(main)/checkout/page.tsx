@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import {
   ArrowLeft, ChevronDown, ChevronUp, Ticket,
@@ -412,7 +412,12 @@ function SummaryBar({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function CheckoutPage() {
-  const router          = useRouter();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  const buyNowVariantId = searchParams.get('buyNowVariantId');
+  const buyNowQuantity = searchParams.get('buyNowQuantity');
+  const isBuyNowFlow = !!buyNowVariantId && !!buyNowQuantity;
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const { items, selectedItemIds } = useCartStore();
@@ -549,8 +554,10 @@ export default function CheckoutPage() {
 
     setIsLoading(true);
     try {
-      const res = await ordersService.checkout({
-        cartItemIds:   selectedItemIds.map((id) => id.toString()),
+      
+      // === PERUBAHAN UNTUK FITUR BUY NOW ===
+      // Siapkan data dasar yang selalu dikirim
+      const basePayload = {
         address:       enrichedAddress,
         courier: { 
           name: selectedCourier.courier_name || selectedCourier.courier, 
@@ -558,9 +565,27 @@ export default function CheckoutPage() {
           cost: selectedCourier.cost 
         },
         paymentMethod: selectedPayment,
-        voucherCode:   appliedVoucher?.code || undefined, // Send code if applied
-      });
+        voucherCode:   appliedVoucher?.code || undefined,
+      };
+
+      // Tentukan payload berdasarkan jalur (Buy Now atau Keranjang)
+      const finalPayload = isBuyNowFlow
+        ? {
+            ...basePayload,
+            cartItemIds: [], // Kirim array kosong agar TypeScript tidak error
+            buyNowVariantId: buyNowVariantId as string,
+            buyNowQuantity: Number(buyNowQuantity),
+          }
+        : {
+            ...basePayload,
+            cartItemIds: selectedItemIds.map((id) => id.toString()),
+          };
+
+      const res = await ordersService.checkout(finalPayload);
+      
+      // Redirect ke halaman sukses
       router.push(`/orders/${res.id}`);
+      
     } catch (err: any) {
       alert(err?.response?.data?.message || "Something went wrong. Please try again.");
     } finally {

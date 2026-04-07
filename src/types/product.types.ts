@@ -25,6 +25,10 @@ export interface ProductVariant {
   price: number;
   stock: number;
   sku: string;
+  isFlashSale?: boolean;
+  specialPrice?: number;
+  eventQuotaLimit?: number;
+  eventQuotaSold?: number;
   imageUrl: string[]
 }
 

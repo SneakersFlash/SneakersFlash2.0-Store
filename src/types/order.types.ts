@@ -20,6 +20,8 @@ export interface CheckoutPayload {
     courier: CheckoutCourier;
     paymentMethod: string;
     voucherCode?: string;
+    buyNowVariantId?: string | number;
+    buyNowQuantity?: number;
 }
 
 // Response dari POST /orders/checkout
