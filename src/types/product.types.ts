@@ -54,6 +54,7 @@ export interface Product {
   categories: Category[];
   images: ProductImage[];
   variants: ProductVariant[];
+  activeEvent: any
   wishlists: any[]
   ratingAvg?: any;
   reviewCount?: number;

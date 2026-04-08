@@ -51,7 +51,7 @@ export function EventCampaignSection({ campaigns }: EventCampaignSectionProps) {
               </div>
 
               <div className="relative z-10 flex items-center justify-between w-full md:w-auto md:justify-end gap-4 md:gap-6">
-                {campaign.countDownEnd && (
+                {campaign.isTimer && campaign.countDownEnd && (
                   <div className="flex flex-col items-start md:items-end">
                     <span className="text-[10px] text-white/80 font-medium uppercase tracking-wider mb-1 hidden md:block">
                       Berakhir Dalam:
@@ -81,19 +81,43 @@ export function EventCampaignSection({ campaigns }: EventCampaignSectionProps) {
                     <div className="w-[155px] lg:w-[220px] bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group flex flex-col h-full">
                       
                       {/* Image Frame */}
-                      <div className="relative bg-gray-50 rounded-lg overflow-hidden mb-2" style={{ aspectRatio: "1/1" }}>
-                        {p.image ? (
+                      <div className="relative aspect-square w-full bg-[#F5F5F5] overflow-hidden">
+                        
+                        {p.images && p.images.length > 0 ? (
+                          <>
+                            {/* GAMBAR PERTAMA (Default) */}
+                            <Image 
+                              src={p.images[0]} 
+                              alt={p.name} 
+                              fill 
+                              className={`object-cover transition-all duration-700 ${
+                                p.images.length > 1 ? "group-hover:opacity-0" : "group-hover:scale-105"
+                              }`} 
+                              sizes="(max-width: 768px) 50vw, 25vw" 
+                            />
+                            
+                            {/* GAMBAR KEDUA (Muncul saat Hover) */}
+                            {p.images.length > 1 && (
+                              <Image 
+                                src={p.images[1]} 
+                                alt={`${p.name} hover`} 
+                                fill 
+                                className="object-cover absolute inset-0 opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" 
+                                sizes="(max-width: 768px) 50vw, 25vw" 
+                              />
+                            )}
+                          </>
+                        ) : p.image ? (
+                          /* Fallback (Jika backend belum direstart / data lama) */
                           <Image 
                             src={p.image} 
                             alt={p.name} 
                             fill 
-                            className="object-cover group-hover:scale-105 transition-transform duration-500" 
-                            sizes="(max-width: 768px) 155px, 220px" 
+                            className="object-cover group-hover:scale-105 transition-transform duration-700" 
+                            sizes="(max-width: 768px) 50vw, 25vw" 
                           />
                         ) : (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-gray-300 text-3xl">👟</span>
-                          </div>
+                          <div className="absolute inset-0 flex items-center justify-center text-4xl">👟</div>
                         )}
                         {/* Sold Out Overlay (Jika Habis) */}
                         {p.isSoldOut && (

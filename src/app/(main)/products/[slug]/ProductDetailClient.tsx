@@ -204,15 +204,22 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
       : [getProductImageUrl(product.images?.map((img: any) => img.url) || [])];
 
   const selectedVariant = product.variants?.find((v: any) => v.id === selectedSizeId);
-  const hasDiscount = Boolean(
-    product.variants?.[0]?.price && product.variants[0].price < product.basePrice
-  );
-  const displayPrice = selectedVariant
-    ? selectedVariant.price
-    : (product.variants?.[0]?.price ?? product.basePrice);
-  const saving      = hasDiscount
-    ? discountPercent(product.basePrice, product.variants?.[0]?.price!)
-    : 0;
+  const activeEvent = product.activeEvent;
+  const isEventActive = activeEvent && (activeEvent.quotaLimit === 0 || activeEvent.quotaSold < activeEvent.quotaLimit);
+  const eventPrice = isEventActive && activeEvent.specialPrice ? activeEvent.specialPrice : null;
+
+  // Harga dasar sebelum diskon event
+  const baseDisplayPrice = selectedVariant ? selectedVariant.price : (product.variants?.[0]?.price ?? product.basePrice);
+  
+  // Harga yang ditampilkan di layar utama (Event prioritas pertama)
+  const displayPrice = eventPrice ? eventPrice : baseDisplayPrice;
+
+  // Cek apakah ada diskon (Event Harga OR Variant Harga < Base Harga)
+  const hasDiscount = Boolean(eventPrice || (product.variants?.[0]?.price && product.variants[0].price < product.basePrice));
+  
+  const saving = hasDiscount ? discountPercent(product.basePrice, displayPrice) : 0;
+  // ================================================
+
   const rating       = parseFloat(product.ratingAvg?.d[0] ?? "4.8");
   const reviewCount  = product.reviewCount ?? 98;
   const earnedPoints = Math.floor(Number(displayPrice) * 0.033);

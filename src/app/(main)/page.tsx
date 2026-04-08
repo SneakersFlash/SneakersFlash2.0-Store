@@ -53,14 +53,14 @@ export default async function HomePage() {
       title: "Footwear", 
       filters: { categoryName: "Footwear", limit: 8 }, 
       href: "/products?category=footwear" ,
-      bgImage: "https://api-test.sneakersflash.com/uploads/file-1775121921922-514968772.png"
+      bgImage: getCategoryImage("Footwear")
     },
     { 
       id: "lifestyle-casual", 
       title: "Lifestyle/Casual", 
       filters: { categoryName: "Lifestyle/Casual", limit: 8, page: 2, excludeCategories: 'Footwear' }, 
       href: "/products?category=lifestyle-casual", 
-      bgImage: "https://api-test.sneakersflash.com/uploads/file-1775121921922-514968772.png"
+      bgImage: getCategoryImage("Lifestyle/Casual")
     }
   ];
 
@@ -81,19 +81,22 @@ export default async function HomePage() {
     }
   ];
 
+  console.log(apiCategories);
+  
+
   return (
     <>
       <TrustRow />
       <HeroBanner banners={banners} />
+      
+      {/* ========================================== */}
+      {/* BAGIAN EVENT / CAMPAIGN (e.g. LAST DROP)   */}
+      {/* ========================================== */}
+      <div className="container mx-auto px-4 max-w-7xl mt-8">
+      <EventCampaignSection campaigns={campaigns} />
+
       <CategoryShortcuts />
       <BrandCarousel />
-
-      <div className="container mx-auto px-4 max-w-7xl mt-8">
-        
-        {/* ========================================== */}
-        {/* BAGIAN EVENT / CAMPAIGN (e.g. LAST DROP)   */}
-        {/* ========================================== */}
-        <EventCampaignSection campaigns={campaigns} />
 
         {/* ========================================== */}
         {/* KAWASAN PRODUK REGULER (Footwear, dll)     */}
@@ -128,6 +131,7 @@ export default async function HomePage() {
                 title={section.title}
                 filters={section.filters}
                 viewAllHref={section.href}
+                backgroundImage={section.bgImage}
               />
             ))}
           </div>

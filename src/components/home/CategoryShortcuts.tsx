@@ -58,7 +58,7 @@ export function CategoryShortcuts() {
         - Desktop: md:grid-cols-6 (6 kolom sejajar 1 baris)
         - Desktop: Max width diperbesar ke md:max-w-6xl
       */}
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-2.5 md:gap-5 max-w-2xl md:max-w-6xl mx-auto">
+      <div className="grid grid-cols-3 md:grid-cols-6 gap-2.5 md:gap-5 max-w-2xl md:max-w-7xl mx-auto">
         {SHORTCUTS.map((item, i) => (
           <motion.div
             key={item.label}
