@@ -79,10 +79,7 @@ export default async function HomePage() {
       href: "/products?category=apparel",
       bgImage: getCategoryImage("Apparel")
     }
-  ];
-
-  console.log(apiCategories);
-  
+  ];  
 
   return (
     <>
