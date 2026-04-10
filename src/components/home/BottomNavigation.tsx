@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutGrid, Heart, LogIn, User, Package, Settings, LogOut } from "lucide-react";
+import { LayoutGrid, Heart, LogIn, User, Package, Settings, LogOut, Home } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useAuthStore } from "@/lib/store/authStore";
 import { WishlistSidebar } from "@/components/wishlist/WishlistSidebar";
@@ -13,9 +13,9 @@ import { useRouter } from "next/navigation";
 
 const NAV_ITEMS = [
   {
-    label: "",
+    label: "Home",
     href: "/",
-    icon: null, // uses logo image
+    icon: Home, // uses logo image
     isLogo: true,
   },
   {
@@ -90,17 +90,7 @@ function BottomNavigationInner() {
                   isActive ? "text-[#FF6B00]" : "text-gray-400"
                 )}
               >
-                {item.isLogo ? (
-                  <div className="w-8 h-8 relative">
-                    <Image
-                      src="/images/logo_basic.png"
-                      alt="Home"
-                      fill
-                      className="object-contain"
-                      sizes="32px"
-                    />
-                  </div>
-                ) : (
+                {
                   DisplayIcon && (
                     <DisplayIcon
                       size={22}
@@ -111,7 +101,7 @@ function BottomNavigationInner() {
                       strokeWidth={isActive ? 2.5 : 1.8}
                     />
                   )
-                )}
+                }
                 {displayLabel && (
                   <span
                     className={cn(

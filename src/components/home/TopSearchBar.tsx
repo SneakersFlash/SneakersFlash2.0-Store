@@ -10,6 +10,7 @@ import { useCartStore } from "@/lib/store/cartStore";
 import { FilterModal } from "../common/FIlterModal";
 import { CartSidebar } from "../cart/CartSidebar";
 import { cn } from "@/lib/utils/cn";
+import Image from "next/image";
 
 function TopSearchBarInner() {
   const [query, setQuery] = useState("");
@@ -57,6 +58,15 @@ function TopSearchBarInner() {
         ========================================= */}
         {isHome && (
           <div className="flex items-center gap-2.5 px-4 py-3">
+            <div className="w-8 h-8 relative">
+              <Image
+                src="/images/logo_basic.png"
+                alt="Home"
+                fill
+                className="object-contain"
+                sizes="32px"
+              />
+            </div>
             <div className="relative flex-1">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -82,14 +92,6 @@ function TopSearchBarInner() {
               </AnimatePresence> */}
             </div>
 
-            {/* Sort/filter icon */}
-            <motion.button
-              whileTap={{ scale: 0.88 }}
-              onClick={() => setIsFilterOpen(true)}
-              className="shrink-0 w-9 h-9 flex items-center justify-center"
-            >
-              <SlidersHorizontal size={20} className="text-foreground" />
-            </motion.button>
 
             {/* Cart icon */}
             <motion.button
