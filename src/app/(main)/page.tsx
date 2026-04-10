@@ -6,13 +6,11 @@ import { HeroBanner }        from "@/components/home/HeroBanner";
 import { CategoryShortcuts } from "@/components/home/CategoryShortcuts";
 import { BrandCarousel }     from "@/components/home/BrandCarousel";
 import { ProductSection }    from "@/components/home/ProductSection";
-
+import { Suspense } from "react"; // 1. Add this import
 // Services
 import { bannersService } from "@/lib/api/banners.service";
 import { categoriesService } from "@/lib/api/categories.service";
 import CampaignsService from "@/lib/api/campaigns.service";
-import { ChevronRight } from "lucide-react";
-import { CountdownTimer } from "@/components/home/CountdownTimer";
 import { EventCampaignSection } from "@/components/home/EventCampaignSection";
 import { VoucherClaimSection } from "@/components/home/VoucherClaimSection";
 
@@ -92,8 +90,10 @@ export default async function HomePage() {
       {/* ========================================== */}
       <div className="container mx-auto px-4 max-w-7xl mt-8">
 
-      <VoucherClaimSection />
-      
+        <Suspense fallback={<div className="h-32 w-full animate-pulse bg-gray-100 rounded-xl" />}>
+          <VoucherClaimSection />
+        </Suspense>
+
       <EventCampaignSection campaigns={campaigns} />
 
       <CategoryShortcuts />
