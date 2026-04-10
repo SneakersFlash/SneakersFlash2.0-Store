@@ -25,12 +25,10 @@ function StarRating({ rating = 4, count = 78 }: { rating?: number; count?: numbe
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
-            size={13} // Dikecilkan sedikit untuk versi scroll
+            size={13} 
             className={cn(
               "transition-colors",
-              i < full 
-                ? "text-black fill-black" 
-                : "text-black fill-transparent"
+              i < full ? "text-black fill-black" : "text-black fill-transparent"
             )}
           />
         ))}
@@ -42,21 +40,22 @@ function StarRating({ rating = 4, count = 78 }: { rating?: number; count?: numbe
   );
 }
 
-export function ProductScrollCard({
-  product,
-  index = 0,
-  variant = "scroll",
-}: ProductScrollCardProps) {
+export function ProductScrollCard({ product, index = 0, variant = "scroll" }: ProductScrollCardProps) {
   const [imgError, setImgError] = useState(false);
 
   const productId = Number(product.id);
-
   const { data: checkData, isLoading: isChecking } = useCheckWishlist(productId);
   const { mutate: add, isPending: isAdding } = useAddWishlist();
   const { mutate: remove, isPending: isRemoving } = useRemoveWishlist();
-  
 
-  const imageSrc = imgError ? "/images/placeholder-product.svg" : getProductImageUrl(product.variants[0]?.imageUrl);
+  // Mengambil gambar utama
+  const primaryImage = getProductImageUrl(product.variants?.[0]?.imageUrl);
+  
+  // Mengambil gambar sekunder jika tersedia lebih dari 1 gambar
+  const secondaryImage = product.variants?.[0]?.imageUrl?.length > 1
+    ? getProductImageUrl([product.variants[0].imageUrl[1]])
+    : null;
+
   const hasDiscount = Boolean(product.variants[0]?.price && product.variants[0].price < product.basePrice);
   const displayPrice = product.variants[0]?.price ?? product.basePrice;
   const saving = hasDiscount ? discountPercent(product.basePrice, product.variants[0]?.price!) : 0;
@@ -69,82 +68,79 @@ export function ProductScrollCard({
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
     if (isWishlisted && wishlistId) {
       remove({ id: wishlistId, productId });
     } else {
       add({ productId });
     }
   };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-20px" }}
       transition={{ duration: 0.35, delay: index * 0.06 }}
-      className={cn(
-        "group relative h-full font-sans",
-        isScroll ? "w-[160px] lg:w-[230px]" : "w-full"
-      )}
+      className={cn("group relative h-full font-sans", isScroll ? "w-[160px] lg:w-[230px]" : "w-full")}
     >
       <Link 
         href={`/products/${product.slug}`} 
         className="block h-full bg-white border border-[#E5E5E5] rounded-[20px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col relative pb-4 lg:pb-5"
       >
-        
-
-        {/* ── Image container ── */}
-        <div className="relative w-full aspect-[5/4] bg-white pt-8 pb-2 px-3 shrink-0 flex items-center justify-center">
+        {/* ── Image container (Tanpa padding, dengan overflow-hidden) ── */}
+        <div className="relative w-full aspect-[5/4] bg-[#F5F5F5] shrink-0 overflow-hidden">
           <button
             onClick={handleWishlistToggle}
             disabled={isProcessing}
             className={cn(
               "absolute top-3 right-3 sm:top-4 sm:right-4 z-10 p-2 rounded-full bg-white/90 shadow-sm transition-all duration-300",
               "hover:scale-110 disabled:opacity-50",
-              isWishlisted
-                ? "text-[#FF0000]" // Saat sudah wishlist, selalu merah
-                : "text-[#888888] hover:text-[#FF0000]" // Selalu muncul abu-abu, saat di-hover jadi merah
+              isWishlisted ? "text-[#FF0000]" : "text-[#888888] hover:text-[#FF0000]"
             )}
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
             <Heart
-              className={cn(
-                "w-4 h-4 sm:w-5 sm:h-5 transition-colors",
-                isProcessing && "animate-pulse",
-                isWishlisted && "fill-[#FF0000]"
-              )}
+              className={cn("w-4 h-4 sm:w-5 sm:h-5 transition-colors", isProcessing && "animate-pulse", isWishlisted && "fill-[#FF0000]")}
             />
           </button>
+          
+          {/* Gambar Pertama (Akan menghilang perlahan jika ada gambar kedua) */}
           <Image
-            src={imageSrc}
+            src={imgError ? "/images/placeholder-product.svg" : primaryImage}
             alt={product.name}
             fill
-            className="object-contain transition-transform duration-700 ease-out group-hover:scale-105 p-3 lg:p-4"
+            className={cn(
+              "object-cover object-top transition-all duration-700 ease-out",
+              secondaryImage && !imgError ? "group-hover:opacity-0 group-hover:scale-105" : "group-hover:scale-105"
+            )}
             sizes="(max-width: 640px) 160px, (max-width: 1024px) 230px, 280px"
             onError={() => setImgError(true)}
           />
+
+          {/* Gambar Kedua (Akan muncul perlahan saat di-hover) */}
+          {secondaryImage && !imgError && (
+            <Image
+              src={secondaryImage}
+              alt={`${product.name} — alternate view`}
+              fill
+              sizes="(max-width: 640px) 160px, (max-width: 1024px) 230px, 280px"
+              className="object-cover object-top opacity-0 scale-105 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-100"
+            />
+          )}
         </div>
 
         {/* ── Product info ── */}
-        <div className="px-3 lg:px-4 flex flex-col flex-1">
-          {/* Brand */}
+        <div className="pt-3 lg:pt-4 px-3 lg:px-4 flex flex-col flex-1">
           <h3 className="text-[10px] lg:text-[12px] font-bold tracking-tight text-black mb-0.5">
             {product.brand?.name ?? "Nike"}
           </h3>
-
-          {/* Nama Produk */}
           <p className="text-[10px] lg:text-[12px] font-normal text-black line-clamp-2 mb-2 lg:mb-3">
             {product.name.toUpperCase()}
           </p>
-
-          {/* Harga & Diskon */}
           <div className="flex flex-col mt-auto">
-            <span className={cn(
-              "text-[14px] lg:text-[18px] font-bold leading-none tracking-tight mb-1.5 text-black"
-            )}>
+            <span className="text-[14px] lg:text-[18px] font-bold leading-none tracking-tight mb-1.5 text-black">
               {formatPrice(displayPrice)}
             </span>
-            
             {hasDiscount && (
               <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
                 <span className="text-[11px] lg:text-[13px] text-[#888888] line-through font-normal">
@@ -156,12 +152,7 @@ export function ProductScrollCard({
               </div>
             )}
           </div>
-
-          {/* Rating */}
-          <StarRating 
-            rating={parseFloat(product?.ratingAvg ?? '4') ?? 4} 
-            count={product?.reviewCount ?? 78} 
-          />
+          <StarRating rating={parseFloat(product?.ratingAvg ?? '4') ?? 4} count={product?.reviewCount ?? 78} />
         </div>
       </Link>
     </motion.div>

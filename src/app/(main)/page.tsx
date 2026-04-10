@@ -14,6 +14,7 @@ import CampaignsService from "@/lib/api/campaigns.service";
 import { ChevronRight } from "lucide-react";
 import { CountdownTimer } from "@/components/home/CountdownTimer";
 import { EventCampaignSection } from "@/components/home/EventCampaignSection";
+import { VoucherClaimSection } from "@/components/home/VoucherClaimSection";
 
 export const metadata: Metadata = {
   title: "SneakersFlash — Premium Sneakers & Footwear",
@@ -90,6 +91,9 @@ export default async function HomePage() {
       {/* BAGIAN EVENT / CAMPAIGN (e.g. LAST DROP)   */}
       {/* ========================================== */}
       <div className="container mx-auto px-4 max-w-7xl mt-8">
+
+      <VoucherClaimSection />
+      
       <EventCampaignSection campaigns={campaigns} />
 
       <CategoryShortcuts />

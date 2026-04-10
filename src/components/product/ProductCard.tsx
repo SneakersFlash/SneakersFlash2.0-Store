@@ -4,12 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Star, Heart } from "lucide-react"; // <-- Tambahkan Heart
+import { Star, Heart } from "lucide-react"; 
 import { cn } from "@/lib/utils/cn";
 import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import type { Product } from "@/types/product.types";
-
 import { useCheckWishlist, useAddWishlist, useRemoveWishlist } from "@/lib/hooks/useWishlist";
 
 interface ProductCardProps {
@@ -26,10 +25,7 @@ function StarRating({ rating = 4, count = 78 }: { rating?: number; count?: numbe
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
-            className={cn(
-              "w-2.5 h-2.5 sm:w-4 sm:h-4 transition-colors",
-              i < full ? "text-black fill-black" : "text-black fill-transparent"
-            )}
+            className={cn("w-2.5 h-2.5 sm:w-4 sm:h-4 transition-colors", i < full ? "text-black fill-black" : "text-black fill-transparent")}
           />
         ))}
       </div>
@@ -64,7 +60,6 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
     if (isWishlisted && wishlistId) {
       remove({ id: wishlistId, productId });
     } else {
@@ -83,26 +78,20 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
         href={`/products/${product.slug}`}
         className="block h-full bg-white border border-[#E5E5E5] rounded-[12px] sm:rounded-[20px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col relative pb-3 sm:pb-5"
       >
-        <div className="relative w-full aspect-square sm:aspect-[5/4] bg-white pt-4 sm:pt-10 pb-2 px-2 sm:px-4 shrink-0 flex items-center justify-center">
-          
+        {/* ── Image Container (Tanpa padding, dengan overflow-hidden) ── */}
+        <div className="relative w-full aspect-square sm:aspect-[5/4] bg-[#F5F5F5] shrink-0 overflow-hidden">
           <button
             onClick={handleWishlistToggle}
             disabled={isProcessing}
             className={cn(
               "absolute top-3 right-3 sm:top-4 sm:right-4 z-10 p-2 rounded-full bg-white/90 shadow-sm transition-all duration-300",
               "hover:scale-110 disabled:opacity-50",
-              isWishlisted
-                ? "text-[#FF0000]" // Saat sudah wishlist, selalu merah
-                : "text-[#888888] hover:text-[#FF0000]" // Selalu muncul abu-abu, saat di-hover jadi merah
+              isWishlisted ? "text-[#FF0000]" : "text-[#888888] hover:text-[#FF0000]" 
             )}
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
             <Heart
-              className={cn(
-                "w-4 h-4 sm:w-5 sm:h-5 transition-colors",
-                isProcessing && "animate-pulse",
-                isWishlisted && "fill-[#FF0000]"
-              )}
+              className={cn("w-4 h-4 sm:w-5 sm:h-5 transition-colors", isProcessing && "animate-pulse", isWishlisted && "fill-[#FF0000]")}
             />
           </button>
 
@@ -111,8 +100,9 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            // Fit gambar ke tepi dan kunci porsi atas
             className={cn(
-              "object-contain transition-all duration-700 ease-out p-3 sm:p-6",
+              "object-cover object-top transition-all duration-700 ease-out",
               secondaryImage ? "group-hover:opacity-0 group-hover:scale-105" : "group-hover:scale-105"
             )}
             priority={priority}
@@ -125,13 +115,14 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
               alt={`${product.name} — alternate view`}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              className="object-contain opacity-0 scale-105 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-100 p-3 sm:p-6"
+              // Fit gambar kedua
+              className="object-cover object-top opacity-0 scale-105 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-100"
             />
           )}
         </div>
 
-        {/* ── Product Info ── */}
-        <div className="px-3 sm:px-4 md:px-5 flex flex-col flex-1">
+        {/* ── Product Info (Menambahkan padding top di sini) ── */}
+        <div className="pt-3 sm:pt-4 px-3 sm:px-4 md:px-5 flex flex-col flex-1">
           <h3 className="text-[10px] sm:text-[12px] font-bold tracking-tight text-black mb-0.5">
             {product.brand?.name ?? "Nike"}
           </h3>
@@ -139,12 +130,9 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
             {product.name.toUpperCase()}
           </p>
           <div className="flex flex-col mt-auto">
-            <span className={cn(
-              "text-[14px] lg:text-[18px] font-bold leading-none tracking-tight mb-1.5 text-black"
-            )}>
+            <span className="text-[14px] lg:text-[18px] font-bold leading-none tracking-tight mb-1.5 text-black">
               {formatPrice(displayPrice)}
             </span>
-            
             {hasDiscount && (
               <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
                 <span className="text-[11px] lg:text-[13px] text-[#888888] line-through font-normal">

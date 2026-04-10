@@ -9,8 +9,13 @@ export const vouchersService = {
 
     checkVoucherValidity: async (code: string, amount: number) => {
         const res = await apiClient.get("/vouchers/check", {
-        params: { code, amount },
+            params: { code, amount },
         });
         return res.data;
     },
+
+    claimVoucher: async (voucherId: string) => {
+        const res = await apiClient.post("/vouchers/claim", { voucherId });
+        return res.data;
+    }
 };
