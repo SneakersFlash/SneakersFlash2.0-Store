@@ -11,8 +11,8 @@ import { Suspense } from "react"; // 1. Add this import
 import { bannersService } from "@/lib/api/banners.service";
 import { categoriesService } from "@/lib/api/categories.service";
 import CampaignsService from "@/lib/api/campaigns.service";
-import { EventCampaignSection } from "@/components/home/EventCampaignSection";
-import { VoucherClaimSection } from "@/components/home/VoucherClaimSection";
+import { EventCampaignSection } from "@/components/home/EventCampaignSection"
+import VoucherClaimSection from "@/components/home/VoucherClaimSection";
 
 export const metadata: Metadata = {
   title: "SneakersFlash — Premium Sneakers & Footwear",

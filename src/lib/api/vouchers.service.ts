@@ -7,6 +7,11 @@ export const vouchersService = {
         return res.data;
     },
 
+    getClaimableVouchers: async (): Promise<Voucher[]> => {
+        const res = await apiClient.get("/vouchers/claimable");
+        return res.data;
+    },
+
     checkVoucherValidity: async (code: string, amount: number) => {
         const res = await apiClient.get("/vouchers/check", {
             params: { code, amount },
