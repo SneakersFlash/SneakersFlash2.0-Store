@@ -43,7 +43,7 @@ export default function ForgotPasswordPage() {
       <div className="relative w-full h-56 md:h-80 mb-8 rounded-2xl overflow-hidden shadow-sm">
         <Image
           src="/images/sneakers-hero.jpeg"
-          alt="SNKRS Flash"
+          alt="Sneakers Flash"
           fill
           className="object-cover hover:scale-105 transition-transform duration-500"
           priority

@@ -176,7 +176,7 @@ export function HeroSection() {
               variants={fadeUp}
               className="text-base md:text-lg text-muted-foreground max-w-md leading-relaxed mb-10"
             >
-              The latest drops from Nike, Adidas, and New Balance — exclusively on SNKRS Flash.
+              The latest drops from Nike, Adidas, and New Balance — exclusively on Sneakers Flash.
             </motion.p>
 
             {/* CTAs */}

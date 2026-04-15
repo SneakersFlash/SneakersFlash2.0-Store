@@ -31,7 +31,7 @@ const PURCHASE_STATUS = [
 ];
 
 const ORDER_MENU = [
-  { icon: Ticket, label: "Voucher", href: "/account/vouchers" },
+  { icon: Ticket, label: "My Voucher", href: "/account/my-vouchers" },
   { icon: Wallet, label: "Payment Confirmation", href: "/account/payment-confirmation" },
 ];
 

@@ -6,7 +6,7 @@ export default function SneakerHeroIllustration() {
       <div className="relative z-10 w-64 h-48 md:w-72 md:h-56">
         <Image
           src="/images/sneakers-hero.jpeg" // <- Hapus "public" dan tambahkan "/" di awal
-          alt="SNKRS Flash"
+          alt="Sneakers Flash"
           // width={100}
           // height={10}
           fill

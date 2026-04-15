@@ -11,7 +11,7 @@ const FOOTER_LINKS = {
     { label: "FAQs",              href: "/faq"              },
   ],
   Company: [
-    { label: "About SNKRS Flash", href: "/about"            },
+    { label: "About Sneakers Flash", href: "/about"            },
     { label: "Careers",           href: "/careers"          },
     { label: "Press",             href: "/press"            },
     { label: "Sustainability",    href: "/sustainability"   },
@@ -75,8 +75,8 @@ export function Footer() {
             {/* Real logo */}
             <Link href="/" className="block mb-5">
               <Image
-                src="/images/logo.jpeg"
-                alt="SNKRS Flash"
+                src="/images/logo_basic.png"
+                alt="Sneakers Flash"
                 width={160}
                 height={42}
                 className="h-10 w-auto object-contain"
@@ -131,7 +131,7 @@ export function Footer() {
         <div className="container-2xl py-5">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-              <span>© {year} SNKRS Flash. All rights reserved.</span>
+              <span>© {year} Sneakers Flash. All rights reserved.</span>
               <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
               <Link href="/terms"   className="hover:text-foreground transition-colors">Terms</Link>
             </div>

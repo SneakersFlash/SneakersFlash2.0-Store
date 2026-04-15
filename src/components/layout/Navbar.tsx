@@ -305,7 +305,7 @@ function Logo() {
       <div className="relative h-9 w-auto">
         <Image
           src="/images/logo_basic.png"
-          alt="SNKRS Flash"
+          alt="Sneakers Flash"
           width={140}
           height={36}
           className="h-9 w-auto object-contain"
