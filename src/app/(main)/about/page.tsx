@@ -53,11 +53,11 @@ export default function AboutPage() {
 
         <SectionWrapper>
             {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10 mb-24">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-gray-200 border border-gray-200 mb-24">
             {stats.map((s) => (
-                <div key={s.label} className="bg-[#0a0a0a] p-8 text-center">
-                <p className="text-4xl md:text-5xl font-black text-[#f5f500] mb-2">{s.value}</p>
-                <p className="text-xs uppercase tracking-widest text-white/40">{s.label}</p>
+                <div key={s.label} className="bg-white p-8 text-center">
+                <p className="text-4xl md:text-5xl font-black text-black mb-2">{s.value}</p>
+                <p className="text-xs uppercase tracking-widest text-gray-500">{s.label}</p>
                 </div>
             ))}
             </div>
@@ -65,10 +65,10 @@ export default function AboutPage() {
             {/* Story */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24 items-start">
             <div>
-                <h2 className="text-2xl font-black uppercase tracking-wider mb-6">
+                <h2 className="text-2xl font-black text-black uppercase tracking-wider mb-6">
                 Cerita Kami
                 </h2>
-                <div className="space-y-4 text-white/60 text-sm leading-relaxed">
+                <div className="space-y-4 text-gray-600 text-sm leading-relaxed">
                 <p>
                     SneakersFlash lahir pada 2019 dari sebuah kamar kos di Jakarta Selatan. Berawal
                     dari frustrasi mendapatkan sneakers autentik dengan harga wajar, pendiri kami
@@ -89,20 +89,20 @@ export default function AboutPage() {
 
             {/* Vision Mission */}
             <div className="space-y-5">
-                <div className="border border-[#f5f500]/20 bg-[#f5f500]/5 p-6">
-                <p className="text-[#f5f500] text-xs uppercase tracking-widest font-bold mb-3">
+                <div className="border border-yellow-300 bg-yellow-50 p-6">
+                <p className="text-yellow-700 text-xs uppercase tracking-widest font-bold mb-3">
                     🎯 Visi
                 </p>
-                <p className="text-white font-semibold leading-relaxed">
+                <p className="text-gray-900 font-semibold leading-relaxed">
                     Menjadi platform sneaker terpercaya #1 di Asia Tenggara yang menghubungkan
                     sneakerhead dengan produk autentik terbaik.
                 </p>
                 </div>
-                <div className="border border-white/10 bg-white/[0.02] p-6">
-                <p className="text-white/50 text-xs uppercase tracking-widest font-bold mb-3">
+                <div className="border border-gray-200 bg-gray-50 p-6">
+                <p className="text-gray-500 text-xs uppercase tracking-widest font-bold mb-3">
                     🚀 Misi
                 </p>
-                <ul className="space-y-2 text-white/60 text-sm">
+                <ul className="space-y-2 text-gray-600 text-sm">
                     <li>• Menyediakan akses ke sneaker autentik dengan harga kompetitif</li>
                     <li>• Membangun komunitas sneaker yang inklusif dan teredukasi</li>
                     <li>• Menghadirkan pengalaman belanja yang cepat, aman, dan menyenangkan</li>
@@ -114,22 +114,22 @@ export default function AboutPage() {
 
             {/* Values */}
             <div className="mb-24">
-            <h2 className="text-2xl font-black uppercase tracking-wider mb-8">
+            <h2 className="text-2xl font-black text-black uppercase tracking-wider mb-8">
                 Nilai Kami
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 {values.map((v) => (
                 <div
                     key={v.title}
-                    className="border border-white/10 p-6 hover:border-[#f5f500]/30 transition-colors group"
+                    className="border border-gray-200 bg-white p-6 hover:border-black transition-colors group"
                 >
                     <p className="text-3xl mb-4 group-hover:scale-110 transition-transform inline-block">
                     {v.icon}
                     </p>
-                    <p className="font-black text-white uppercase text-sm tracking-wider mb-3">
+                    <p className="font-black text-black uppercase text-sm tracking-wider mb-3">
                     {v.title}
                     </p>
-                    <p className="text-white/40 text-xs leading-relaxed">{v.desc}</p>
+                    <p className="text-gray-500 text-xs leading-relaxed">{v.desc}</p>
                 </div>
                 ))}
             </div>
@@ -137,23 +137,23 @@ export default function AboutPage() {
 
             {/* Timeline */}
             <div>
-            <h2 className="text-2xl font-black uppercase tracking-wider mb-8">
+            <h2 className="text-2xl font-black text-black uppercase tracking-wider mb-8">
                 Perjalanan Kami
             </h2>
             <div className="space-y-0 max-w-2xl">
                 {milestones.map((m, i) => (
                 <div key={i} className="flex gap-6 group">
                     <div className="flex flex-col items-center">
-                    <div className="w-3 h-3 rounded-full bg-[#f5f500] mt-1 flex-shrink-0" />
+                    <div className="w-3 h-3 rounded-full bg-black mt-1 flex-shrink-0" />
                     {i < milestones.length - 1 && (
-                        <div className="w-px flex-1 bg-white/10 mt-1" style={{ minHeight: "40px" }} />
+                        <div className="w-px flex-1 bg-gray-200 mt-1" style={{ minHeight: "40px" }} />
                     )}
                     </div>
                     <div className="pb-8">
-                    <p className="text-[#f5f500] font-black text-xs tracking-widest mb-1">
+                    <p className="text-black font-black text-xs tracking-widest mb-1">
                         {m.year}
                     </p>
-                    <p className="text-white/70 text-sm leading-relaxed">{m.event}</p>
+                    <p className="text-gray-600 text-sm leading-relaxed">{m.event}</p>
                     </div>
                 </div>
                 ))}

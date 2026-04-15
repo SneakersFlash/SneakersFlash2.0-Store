@@ -24,10 +24,10 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
   const isCheckout = pathname.startsWith("/checkout");
   const isBrands = pathname.startsWith("/brands");
   const isOrder = pathname.startsWith("/orders");
-  const isMyOrder = pathname.startsWith("/account/orders");
+  // const isMyOrder = pathname.startsWith("/account/orders");
 
-  const showDesktopNavbar = !isCheckout && !isOrder && !isMyOrder;
-  const showFooter = !isCheckout && !isOrder && !isMyOrder;
+  const showDesktopNavbar = !isCheckout && !isOrder  ;
+  const showFooter = !isCheckout && !isOrder ;
   
   const showBottomNav = !isProductDetail && !isCheckout;
 

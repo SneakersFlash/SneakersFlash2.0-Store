@@ -41,8 +41,9 @@ export default function OrderStatusPage() {
         { label: "Terkirim", desc: "Menunggu...", done: false, active: false },
     ];
 
+    // Diubah: background putih, teks hitam, border abu-abu
     const inputClass =
-        "w-full bg-white/5 border border-white/10 text-white placeholder:text-white/30 px-4 py-3 text-sm focus:outline-none focus:border-[#f5f500] transition-colors duration-200 rounded-none";
+        "w-full bg-white border border-gray-300 text-black placeholder:text-gray-400 px-4 py-3 text-sm focus:outline-none focus:border-black transition-colors duration-200 rounded-none";
 
     return (
         <PageLayout>
@@ -58,7 +59,7 @@ export default function OrderStatusPage() {
             {!tracked ? (
                 <form onSubmit={handleTrack} className="space-y-5" noValidate>
                 <div>
-                    <label className="block text-xs uppercase tracking-wider text-white/50 mb-2">
+                    <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
                     Order ID
                     </label>
                     <input
@@ -69,12 +70,12 @@ export default function OrderStatusPage() {
                     className={inputClass}
                     />
                     {errors.orderId && (
-                    <p className="mt-1 text-xs text-red-400">{errors.orderId}</p>
+                    <p className="mt-1 text-xs text-red-500">{errors.orderId}</p>
                     )}
                 </div>
 
                 <div>
-                    <label className="block text-xs uppercase tracking-wider text-white/50 mb-2">
+                    <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
                     Email Pembelian
                     </label>
                     <input
@@ -85,32 +86,35 @@ export default function OrderStatusPage() {
                     className={inputClass}
                     />
                     {errors.email && (
-                    <p className="mt-1 text-xs text-red-400">{errors.email}</p>
+                    <p className="mt-1 text-xs text-red-500">{errors.email}</p>
                     )}
                 </div>
 
                 <button
                     type="submit"
-                    className="w-full bg-[#f5f500] text-black font-black uppercase tracking-widest text-sm py-4 hover:bg-white transition-colors duration-200"
+                    // Diubah: efek hover menjadi hitam agar lebih tegas di atas putih
+                    className="w-full bg-yellow-500 text-black font-black uppercase tracking-widest text-sm py-4 hover:bg-black hover:text-white transition-colors duration-200"
                 >
                     Track Order →
                 </button>
 
-                <p className="text-center text-white/30 text-xs">
+                <p className="text-center text-gray-500 text-xs">
                     Order ID bisa ditemukan di email konfirmasi pembelianmu.
                 </p>
                 </form>
             ) : (
                 /* Tracking Result */
                 <div>
-                <div className="border border-white/10 bg-white/[0.02] p-6 mb-8">
+                {/* Kotak Result - background abu-abu terang */}
+                <div className="border border-gray-200 bg-gray-50 p-6 mb-8">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div>
-                        <p className="text-xs uppercase tracking-wider text-white/40 mb-1">Order ID</p>
-                        <p className="font-bold text-white">{orderId}</p>
+                        <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Order ID</p>
+                        <p className="font-bold text-black">{orderId}</p>
                     </div>
-                    <span className="inline-flex items-center gap-2 bg-[#f5f500]/10 border border-[#f5f500]/30 text-[#f5f500] text-xs uppercase tracking-wider font-bold px-4 py-2">
-                        <span className="w-2 h-2 rounded-full bg-[#f5f500] animate-pulse" />
+                    {/* Badge Status - disesuaikan ke yellow untuk kontras */}
+                    <span className="inline-flex items-center gap-2 bg-yellow-100 border border-yellow-300 text-yellow-700 text-xs uppercase tracking-wider font-bold px-4 py-2">
+                        <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
                         Dalam Pengiriman
                     </span>
                     </div>
@@ -125,16 +129,16 @@ export default function OrderStatusPage() {
                         <div
                             className={`w-4 h-4 rounded-full border-2 flex-shrink-0 mt-1 transition-all ${
                             step.done
-                                ? "bg-[#f5f500] border-[#f5f500]"
+                                ? "bg-yellow-500 border-yellow-500" // Selesai: Kuning solid
                                 : step.active
-                                ? "bg-transparent border-[#f5f500] ring-4 ring-[#f5f500]/20"
-                                : "bg-transparent border-white/20"
+                                ? "bg-white border-yellow-500 ring-4 ring-yellow-200" // Aktif: Putih dengan ring kuning
+                                : "bg-transparent border-gray-300" // Belum: Abu-abu
                             }`}
                         />
                         {i < steps.length - 1 && (
                             <div
                             className={`w-px flex-1 mt-1 ${
-                                step.done ? "bg-[#f5f500]/40" : "bg-white/10"
+                                step.done ? "bg-yellow-400" : "bg-gray-200" // Garis penghubung
                             }`}
                             style={{ minHeight: "40px" }}
                             />
@@ -146,15 +150,15 @@ export default function OrderStatusPage() {
                         <p
                             className={`font-semibold text-sm uppercase tracking-wide ${
                             step.active
-                                ? "text-[#f5f500]"
+                                ? "text-yellow-600"
                                 : step.done
-                                ? "text-white"
-                                : "text-white/30"
+                                ? "text-black"
+                                : "text-gray-400"
                             }`}
                         >
                             {step.label}
                         </p>
-                        <p className="text-xs text-white/30 mt-1">{step.desc}</p>
+                        <p className="text-xs text-gray-500 mt-1">{step.desc}</p>
                         </div>
                     </div>
                     ))}
@@ -162,7 +166,7 @@ export default function OrderStatusPage() {
 
                 <button
                     onClick={() => { setTracked(false); setOrderId(""); setEmail(""); }}
-                    className="mt-6 text-xs uppercase tracking-wider text-white/40 hover:text-white underline underline-offset-4 transition-colors"
+                    className="mt-6 text-xs uppercase tracking-wider text-gray-500 hover:text-black underline underline-offset-4 transition-colors"
                 >
                     ← Cari Order Lain
                 </button>

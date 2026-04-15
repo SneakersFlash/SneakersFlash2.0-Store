@@ -7,7 +7,7 @@ interface PageLayoutProps {
 
 export default function PageLayout({ children, className = "" }: PageLayoutProps) {
     return (
-        <main className={`min-h-screen bg-[#0a0a0a] text-white ${className}`}>
+        <main className={`min-h-screen bg-white text-black ${className}`}>
             {children}
         </main>
     );

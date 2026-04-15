@@ -5,206 +5,142 @@ import SectionWrapper from "@/components/layout/SectionWrapper";
 
 const tiers = [
     {
-        name: "Flash",
-        price: "Gratis",
-        period: "selamanya",
-        color: "border-white/20",
-        badgeColor: "bg-white/10 text-white",
+        name: "Basic",
+        requirement: "Member Baru",
+        desc: "Langkah awal perjalananmu di SneakersFlash.",
+        color: "border-gray-200",
+        badgeColor: "bg-gray-100 text-gray-700",
         highlight: false,
         benefits: [
-        "Akses ke semua produk reguler",
-        "Newsletter mingguan",
-        "1 voucher ongkir/bulan (maks. Rp 15.000)",
-        "Poin reward setiap pembelian",
-        "Akses komunitas member",
+            "Dapatkan 1 Flash Point setiap belanja 10rb",
+            "Akses produk rilis reguler",
+            "Voucher ulang tahun",
+            "Akses komunitas member",
         ],
-        cta: "Mulai Gratis",
+        cta: "Daftar Sekarang",
     },
     {
-        name: "Flash Pro",
-        price: "Rp 99.000",
-        period: "/ bulan",
-        color: "border-[#f5f500]",
-        badgeColor: "bg-[#f5f500] text-black",
+        name: "Advance",
+        requirement: "Belanja 5 Juta",
+        desc: "Untuk sneakerhead yang mulai serius membangun koleksi.",
+        color: "border-yellow-400",
+        badgeColor: "bg-yellow-400 text-black",
         highlight: true,
         benefits: [
-        "Semua benefit Flash",
-        "Early access 24 jam sebelum publik",
-        "Diskon 5% semua produk",
-        "3 voucher ongkir gratis/bulan",
-        "Priority customer service",
-        "Akses flash sale eksklusif",
-        "Badge Pro di profil",
+            "Semua benefit Basic",
+            "Early access 24 jam untuk produk Limited",
+            "Multiplier Point 1.5x",
+            "3 voucher ongkir gratis/bulan",
+            "Undangan eksklusif ke Secret Flash Sale",
         ],
-        cta: "Bergabung Pro",
+        cta: "Cek Progress Belanja",
     },
     {
-        name: "Flash Elite",
-        price: "Rp 249.000",
-        period: "/ bulan",
-        color: "border-white/30",
-        badgeColor: "bg-gradient-to-r from-yellow-400 to-orange-500 text-black",
+        name: "Ultimate",
+        requirement: "Tier Tertinggi",
+        desc: "Privilese maksimal dengan diskon tambahan di setiap transaksi.",
+        color: "border-black",
+        badgeColor: "bg-black text-white",
         highlight: false,
         benefits: [
-        "Semua benefit Flash Pro",
-        "Early access 72 jam sebelum publik",
-        "Diskon 10% semua produk",
-        "Ongkir gratis unlimited",
-        "Dedicated account manager",
-        "Akses koleksi limited edition eksklusif",
-        "Undangan event & launch party",
-        "Birthday gift eksklusif",
+            "Semua benefit Advance",
+            "Diskon Flat 10% untuk semua produk",
+            "Multiplier Point 2x",
+            "Voucher ongkir gratis tanpa batas",
+            "Layanan Concierge (Personal Shopper)",
+            "Birthday Gift eksklusif dari SneakersFlash",
         ],
-        cta: "Bergabung Elite",
+        cta: "Lihat Benefit Ultimate",
     },
 ];
 
-const benefits = [
-    { icon: "⚡", title: "Early Access", desc: "Dapatkan akses ke rilis terbaru sebelum siapapun. Jangan pernah miss drop lagi." },
-    { icon: "💸", title: "Diskon Eksklusif", desc: "Hemat hingga 10% di semua produk, plus flash sale khusus member yang tidak tersedia untuk umum." },
-    { icon: "🚚", title: "Ongkir Gratis", desc: "Voucher ongkir gratis setiap bulan. Belanja lebih banyak, bayar lebih sedikit." },
-    { icon: "👑", title: "Priority Support", desc: "Antrian prioritas untuk customer service. Masalahmu diselesaikan lebih cepat." },
-    { icon: "🎁", title: "Birthday Reward", desc: "Surprise gift spesial di bulan ulang tahunmu. Karena kamu layak mendapatkan yang terbaik." },
-    { icon: "🌐", title: "Komunitas Eksklusif", desc: "Bergabung dengan ribuan sneakerhead Indonesia. Share, diskusi, dan tumbuh bersama." },
-];
-
-export default function FlashClubPage() {
+export default function FlashPointPage() {
     return (
         <PageLayout>
-        <PageHeader
-            title="Flash Club"
-            subtitle="Bergabunglah dengan komunitas sneakerhead eksklusif. Privilege lebih banyak, pengalaman lebih tinggi."
-            accentWord="Flash"
-        />
+            <PageHeader
+                title="Flash Point"
+                subtitle="Kumpulkan poin dari setiap transaksi dan naikkan levelmu untuk membuka diskon serta akses eksklusif."
+                accentWord="Point"
+            />
 
-        {/* Hero Banner */}
-        <div className="bg-[#f5f500] px-5 md:px-10 lg:px-20 py-10">
-            <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div>
-                <p className="text-black font-black text-3xl md:text-4xl uppercase tracking-tight leading-none mb-2">
-                Lebih dari Sekadar<br />Program Loyalty
-                </p>
-                <p className="text-black/60 text-sm max-w-md">
-                Flash Club adalah lifestyle. Bergabung dengan 50.000+ sneakerhead yang sudah merasakan perbedaannya.
-                </p>
-            </div>
-            <div className="flex-shrink-0 text-center">
-                <p className="text-black/60 text-xs uppercase tracking-wider mb-1">Member Aktif</p>
-                <p className="text-black font-black text-5xl">50K+</p>
-            </div>
-            </div>
-        </div>
+            <SectionWrapper>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {tiers.map((tier) => (
+                        <div
+                            key={tier.name}
+                            className={`relative border p-8 bg-white transition-all duration-300 hover:shadow-xl ${
+                                tier.color
+                            } ${tier.highlight ? "ring-1 ring-yellow-400 scale-105 z-10" : ""}`}
+                        >
+                            {tier.highlight && (
+                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-yellow-400 text-black text-[10px] font-black uppercase tracking-widest px-4 py-1">
+                                    Most Popular
+                                </div>
+                            )}
 
-        <SectionWrapper>
-            {/* Benefits Overview */}
-            <div className="mb-20">
-            <h2 className="text-2xl font-black uppercase tracking-wider mb-8">
-                Kenapa Flash Club?
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {benefits.map((b) => (
-                <div
-                    key={b.title}
-                    className="border border-white/10 p-6 hover:border-[#f5f500]/30 transition-colors group"
-                >
-                    <p className="text-3xl mb-4">{b.icon}</p>
-                    <p className="font-black uppercase text-sm tracking-wider text-white mb-2">
-                    {b.title}
-                    </p>
-                    <p className="text-white/40 text-xs leading-relaxed">{b.desc}</p>
-                </div>
-                ))}
-            </div>
-            </div>
+                            <div className="mb-8">
+                                <span className={`text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 ${tier.badgeColor}`}>
+                                    {tier.name}
+                                </span>
+                                <div className="mt-4">
+                                    <span className="text-2xl font-black text-black block">{tier.requirement}</span>
+                                    <p className="text-gray-400 text-xs mt-2 leading-relaxed">{tier.desc}</p>
+                                </div>
+                            </div>
 
-            {/* Pricing Tiers */}
-            <div>
-            <h2 className="text-2xl font-black uppercase tracking-wider mb-3">
-                Pilih Tier Kamu
-            </h2>
-            <p className="text-white/40 text-sm mb-8">
-                Mulai gratis atau upgrade kapan saja. Cancel kapan saja tanpa biaya.
-            </p>
+                            <ul className="space-y-4 mb-10">
+                                {tier.benefits.map((benefit, i) => (
+                                    <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
+                                        <span className={`mt-0.5 ${tier.name === 'Ultimate' && benefit.includes('10%') ? 'text-red-500 font-bold' : 'text-yellow-600'}`}>
+                                            {tier.name === 'Ultimate' && benefit.includes('10%') ? '★' : '✓'}
+                                        </span>
+                                        <span className={tier.name === 'Ultimate' && benefit.includes('10%') ? 'font-bold text-black' : ''}>
+                                            {benefit}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
-                {tiers.map((tier) => (
-                <div
-                    key={tier.name}
-                    className={`border p-6 md:p-8 relative ${tier.color} ${
-                    tier.highlight ? "bg-[#f5f500]/5" : "bg-white/[0.02]"
-                    }`}
-                >
-                    {tier.highlight && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <span className="bg-[#f5f500] text-black text-[10px] font-black uppercase tracking-widest px-4 py-1">
-                        Paling Populer
-                        </span>
-                    </div>
-                    )}
-
-                    <div className="mb-6">
-                    <span
-                        className={`inline-block text-[10px] uppercase tracking-widest font-black px-3 py-1 mb-4 ${tier.badgeColor}`}
-                    >
-                        {tier.name}
-                    </span>
-                    <div className="flex items-baseline gap-1">
-                        <p className="text-3xl font-black text-white">{tier.price}</p>
-                        <p className="text-white/40 text-sm">{tier.period}</p>
-                    </div>
-                    </div>
-
-                    <ul className="space-y-3 mb-8">
-                    {tier.benefits.map((b) => (
-                        <li key={b} className="flex items-start gap-3">
-                        <span className="text-[#f5f500] text-xs mt-0.5 flex-shrink-0">✓</span>
-                        <span className="text-white/60 text-xs leading-relaxed">{b}</span>
-                        </li>
+                            <button
+                                className={`block w-full text-center py-4 text-xs font-black uppercase tracking-widest transition-colors duration-200 ${
+                                    tier.highlight
+                                        ? "bg-yellow-400 text-black hover:bg-black hover:text-white"
+                                        : "bg-white text-black border border-gray-200 hover:bg-gray-100"
+                                }`}
+                            >
+                                {tier.cta}
+                            </button>
+                        </div>
                     ))}
-                    </ul>
+                </div>
 
+                <div className="mt-16 border border-gray-100 bg-gray-50/50 p-8 text-center max-w-2xl mx-auto">
+                    <h3 className="text-lg font-bold text-black mb-2">Bagaimana Cara Kerja Flash Point?</h3>
+                    <p className="text-gray-500 text-sm leading-relaxed">
+                        Sistem ini otomatis melacak total belanja kamu sejak pertama kali mendaftar. Setelah akumulasi belanja mencapai <strong>Rp 5.000.000</strong>, akunmu akan otomatis naik ke level <strong>Advance</strong>. Level <strong>Ultimate</strong> diberikan kepada member terpilih dengan kontribusi komunitas tertinggi dan riwayat belanja terbaik.
+                    </p>
+                </div>
+            </SectionWrapper>
+
+            {/* Bottom CTA */}
+            <div className="border-t border-gray-200 bg-white px-5 md:px-10 lg:px-20 py-20">
+                <div className="max-w-screen-xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
+                    <div className="max-w-xl">
+                        <p className="text-3xl md:text-5xl font-black text-black uppercase tracking-tight mb-4">
+                            Makin Sering Belanja, <span className="text-yellow-500 text-outline-black">Makin Untung.</span>
+                        </p>
+                        <p className="text-gray-500 text-sm">
+                            Level membership kamu tidak akan hangus. Sekali mencapai Advance atau Ultimate, kamu akan menikmati keuntungannya selamanya.
+                        </p>
+                    </div>
                     <a
-                    href="#"
-                    className={`block text-center font-black uppercase tracking-widest text-xs py-4 transition-colors duration-200 ${
-                        tier.highlight
-                        ? "bg-[#f5f500] text-black hover:bg-white"
-                        : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
-                    }`}
+                        href="/register"
+                        className="inline-block bg-black text-white font-black uppercase tracking-widest text-sm px-12 py-5 hover:bg-yellow-400 hover:text-black transition-all duration-200 transform hover:-translate-y-1 shadow-lg"
                     >
-                    {tier.cta} →
+                        Mulai Kumpulkan Poin →
                     </a>
                 </div>
-                ))}
             </div>
-
-            <p className="text-center text-white/20 text-xs mt-8">
-                Dengan bergabung, kamu menyetujui{" "}
-                <a href="/privacy-policy" className="underline hover:text-white/50 transition-colors">
-                Syarat & Ketentuan
-                </a>{" "}
-                Flash Club.
-            </p>
-            </div>
-        </SectionWrapper>
-
-        {/* Bottom CTA */}
-        <div className="border-t border-white/10 px-5 md:px-10 lg:px-20 py-20">
-            <div className="max-w-screen-xl mx-auto text-center">
-            <p className="text-4xl md:text-6xl font-black uppercase tracking-tight mb-4">
-                Ready to Join the{" "}
-                <span className="text-[#f5f500]">Flash?</span>
-            </p>
-            <p className="text-white/40 text-sm mb-8 max-w-md mx-auto">
-                Ribuan sneakerhead sudah di sini. Jangan sampai kamu ketinggalan drop selanjutnya.
-            </p>
-            <a
-                href="#"
-                className="inline-block bg-[#f5f500] text-black font-black uppercase tracking-widest text-sm px-12 py-4 hover:bg-white transition-colors duration-200"
-            >
-                Join Now — Gratis →
-            </a>
-            </div>
-        </div>
         </PageLayout>
     );
 }

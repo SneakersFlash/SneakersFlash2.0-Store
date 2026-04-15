@@ -44,21 +44,21 @@ export default function SizeGuidePage() {
         <SectionWrapper>
             {/* Size Table */}
             <div className="mb-20">
-            <h2 className="text-2xl font-black uppercase tracking-wider mb-6">
+            <h2 className="text-2xl font-black text-black uppercase tracking-wider mb-6">
                 Tabel Ukuran Sepatu
             </h2>
-            <p className="text-white/40 text-sm mb-6">
+            <p className="text-gray-500 text-sm mb-6">
                 Konversi ukuran US / UK / EU / CM untuk pria. Untuk wanita, kurangi 1.5 dari size US pria.
             </p>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto border border-gray-200">
                 <table className="w-full min-w-[400px] text-sm">
-                <thead>
-                    <tr className="border-b border-white/20">
+                <thead className="bg-gray-50">
+                    <tr className="border-b border-gray-200">
                     {headers.map((h) => (
                         <th
                         key={h}
-                        className="text-left py-4 px-4 text-xs uppercase tracking-widest text-[#f5f500] font-bold"
+                        className="text-left py-4 px-4 text-xs uppercase tracking-widest text-yellow-600 font-bold"
                         >
                         {h}
                         </th>
@@ -69,14 +69,14 @@ export default function SizeGuidePage() {
                     {sizeData.map((row, i) => (
                     <tr
                         key={i}
-                        className={`border-b border-white/5 hover:bg-white/[0.03] transition-colors ${
-                        i % 2 === 0 ? "" : "bg-white/[0.015]"
+                        className={`border-b border-gray-100 hover:bg-gray-100 transition-colors ${
+                        i % 2 === 0 ? "bg-white" : "bg-gray-50"
                         }`}
                     >
-                        <td className="py-3 px-4 text-white font-semibold">{row.us}</td>
-                        <td className="py-3 px-4 text-white/60">{row.uk}</td>
-                        <td className="py-3 px-4 text-white/60">{row.eu}</td>
-                        <td className="py-3 px-4 text-white/60">{row.cm}</td>
+                        <td className="py-3 px-4 text-black font-semibold">{row.us}</td>
+                        <td className="py-3 px-4 text-gray-600">{row.uk}</td>
+                        <td className="py-3 px-4 text-gray-600">{row.eu}</td>
+                        <td className="py-3 px-4 text-gray-600">{row.cm}</td>
                     </tr>
                     ))}
                 </tbody>
@@ -86,10 +86,10 @@ export default function SizeGuidePage() {
 
             {/* Cara Ukur */}
             <div className="mb-20">
-            <h2 className="text-2xl font-black uppercase tracking-wider mb-6">
+            <h2 className="text-2xl font-black text-black uppercase tracking-wider mb-6">
                 Cara Mengukur Kaki
             </h2>
-            <div className="border border-white/10 bg-white/[0.02] p-6 md:p-8 max-w-2xl">
+            <div className="border border-gray-200 bg-gray-50 p-6 md:p-8 max-w-2xl">
                 <ol className="space-y-4">
                 {[
                     "Siapkan selembar kertas, pensil, dan penggaris.",
@@ -99,10 +99,10 @@ export default function SizeGuidePage() {
                     "Cocokkan hasil ukuran dengan tabel di atas.",
                 ].map((step, i) => (
                     <li key={i} className="flex gap-4 items-start">
-                    <span className="w-7 h-7 flex-shrink-0 bg-[#f5f500] text-black text-xs font-black flex items-center justify-center">
+                    <span className="w-7 h-7 flex-shrink-0 bg-yellow-400 text-black text-xs font-black flex items-center justify-center">
                         {i + 1}
                     </span>
-                    <p className="text-white/70 text-sm leading-relaxed pt-1">{step}</p>
+                    <p className="text-gray-700 text-sm leading-relaxed pt-1">{step}</p>
                     </li>
                 ))}
                 </ol>
@@ -111,20 +111,20 @@ export default function SizeGuidePage() {
 
             {/* Tips */}
             <div>
-            <h2 className="text-2xl font-black uppercase tracking-wider mb-6">
+            <h2 className="text-2xl font-black text-black uppercase tracking-wider mb-6">
                 Tips Memilih Size
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 {tips.map((tip) => (
                 <div
                     key={tip.title}
-                    className="border border-white/10 p-5 hover:border-[#f5f500]/30 transition-colors duration-200"
+                    className="border border-gray-200 bg-white p-5 hover:border-black hover:shadow-md transition-all duration-200"
                 >
                     <p className="text-3xl mb-4">{tip.icon}</p>
-                    <p className="font-bold text-white text-sm uppercase tracking-wider mb-2">
+                    <p className="font-bold text-black text-sm uppercase tracking-wider mb-2">
                     {tip.title}
                     </p>
-                    <p className="text-white/40 text-xs leading-relaxed">{tip.desc}</p>
+                    <p className="text-gray-500 text-xs leading-relaxed">{tip.desc}</p>
                 </div>
                 ))}
             </div>

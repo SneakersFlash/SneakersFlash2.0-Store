@@ -13,7 +13,8 @@ export default function PageHeader({ title, subtitle, accentWord }: PageHeaderPr
         i < arr.length - 1 ? (
             <React.Fragment key={i}>
             {part}
-            <span className="text-[#f5f500]">{accentWord}</span>
+            {/* Mengubah kuning terang menjadi yellow-500 agar terbaca di background putih */}
+            <span className="text-yellow-500">{accentWord}</span>
             </React.Fragment>
         ) : (
             part
@@ -22,27 +23,30 @@ export default function PageHeader({ title, subtitle, accentWord }: PageHeaderPr
     };
 
     return (
-        <section className="relative border-b border-white/10 bg-[#0a0a0a] pt-20 pb-14 px-5 md:px-10 lg:px-20 overflow-hidden">
-        {/* Decorative grid */}
+        // Mengubah bg hitam menjadi bg-white dan border putih transparan menjadi abu-abu
+        <section className="relative border-b border-gray-200 bg-white pt-20 pb-14 px-5 md:px-10 lg:px-20 overflow-hidden">
+        {/* Decorative grid - warna garis diubah ke hitam (#000) agar terlihat di bg putih */}
         <div
-            className="absolute inset-0 opacity-[0.04]"
+            className="absolute inset-0 opacity-[0.03]"
             style={{
             backgroundImage:
-                "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+                "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
             backgroundSize: "60px 60px",
             }}
         />
-        {/* Glow top-left */}
-        <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-[#f5f500]/10 blur-[80px] pointer-events-none" />
+        {/* Glow top-left - nuansa kuning disesuaikan */}
+        <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-yellow-400/20 blur-[80px] pointer-events-none" />
 
         <div className="relative max-w-screen-xl mx-auto">
-            <p className="text-xs tracking-[0.3em] uppercase text-[#f5f500] font-semibold mb-4">
+            <p className="text-xs tracking-[0.3em] uppercase text-yellow-600 font-bold mb-4">
             SneakersFlash
             </p>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-tight leading-none mb-5">
+            {/* Menambahkan text-black untuk judul utama */}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-black uppercase tracking-tight leading-none mb-5">
             {renderTitle()}
             </h1>
-            <p className="text-white/50 text-base md:text-lg max-w-xl leading-relaxed">
+            {/* Mengubah text-white/50 menjadi text-gray-600 */}
+            <p className="text-gray-600 text-base md:text-lg max-w-xl leading-relaxed">
             {subtitle}
             </p>
         </div>

@@ -27,6 +27,7 @@ const categories: Category[] = [
         },
         ],
     },
+    // ... [kategori lainnya tetap sama]
     {
         label: "Produk & Keaslian",
         items: [
@@ -92,18 +93,18 @@ const categories: Category[] = [
 function AccordionItem({ q, a }: FAQ) {
     const [open, setOpen] = useState(false);
     return (
-        <div className="border-b border-white/10 last:border-b-0">
+        <div className="border-b border-gray-200 last:border-b-0">
         <button
             onClick={() => setOpen(!open)}
             className="w-full flex items-start justify-between gap-4 py-5 text-left group"
             aria-expanded={open}
         >
-            <span className="text-sm font-semibold text-white group-hover:text-[#f5f500] transition-colors leading-relaxed">
+            <span className="text-sm font-semibold text-black group-hover:text-gray-600 transition-colors leading-relaxed">
             {q}
             </span>
             <span
-            className={`flex-shrink-0 w-6 h-6 border border-white/20 flex items-center justify-center text-white/50 mt-0.5 transition-all duration-200 ${
-                open ? "rotate-45 border-[#f5f500] text-[#f5f500]" : ""
+            className={`flex-shrink-0 w-6 h-6 border border-gray-300 flex items-center justify-center text-gray-400 mt-0.5 transition-all duration-200 ${
+                open ? "rotate-45 border-black text-black" : ""
             }`}
             >
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -116,13 +117,13 @@ function AccordionItem({ q, a }: FAQ) {
             open ? "max-h-96 opacity-100 pb-5" : "max-h-0 opacity-0"
             }`}
         >
-            <p className="text-white/50 text-sm leading-relaxed">{a}</p>
+            <p className="text-gray-600 text-sm leading-relaxed">{a}</p>
         </div>
         </div>
     );
-    }
+}
 
-    export default function FAQsPage() {
+export default function FAQsPage() {
     const [activeCategory, setActiveCategory] = useState(0);
 
     return (
@@ -137,7 +138,7 @@ function AccordionItem({ q, a }: FAQ) {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
             {/* Category Nav */}
             <div className="lg:col-span-1">
-                <p className="text-xs uppercase tracking-widest text-white/30 mb-4">Kategori</p>
+                <p className="text-xs uppercase tracking-widest text-gray-400 mb-4">Kategori</p>
                 <nav className="space-y-1">
                 {categories.map((cat, i) => (
                     <button
@@ -145,8 +146,8 @@ function AccordionItem({ q, a }: FAQ) {
                     onClick={() => setActiveCategory(i)}
                     className={`w-full text-left px-4 py-3 text-sm transition-all duration-200 border-l-2 ${
                         activeCategory === i
-                        ? "border-[#f5f500] text-[#f5f500] bg-[#f5f500]/5 font-semibold"
-                        : "border-transparent text-white/50 hover:text-white hover:border-white/20"
+                        ? "border-black text-black bg-gray-100 font-semibold"
+                        : "border-transparent text-gray-500 hover:text-black hover:border-gray-300"
                     }`}
                     >
                     {cat.label}
@@ -157,26 +158,26 @@ function AccordionItem({ q, a }: FAQ) {
 
             {/* Accordion */}
             <div className="lg:col-span-3">
-                <h2 className="text-xl font-black uppercase tracking-wider mb-6">
+                <h2 className="text-xl font-black text-black uppercase tracking-wider mb-6">
                 {categories[activeCategory].label}
                 </h2>
-                <div className="border border-white/10 bg-white/[0.02] px-5 md:px-8">
+                <div className="border border-gray-200 bg-white px-5 md:px-8">
                 {categories[activeCategory].items.map((item, i) => (
                     <AccordionItem key={i} q={item.q} a={item.a} />
                 ))}
                 </div>
 
                 {/* CTA */}
-                <div className="mt-8 border border-white/10 bg-white/[0.02] p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="mt-8 border border-gray-200 bg-gray-50 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <p className="font-bold text-white text-sm">Tidak menemukan jawaban?</p>
-                    <p className="text-white/40 text-xs mt-1">
+                    <p className="font-bold text-black text-sm">Tidak menemukan jawaban?</p>
+                    <p className="text-gray-500 text-xs mt-1">
                     Tim CS kami siap membantu kamu.
                     </p>
                 </div>
                 <a
                     href="/contact-us"
-                    className="flex-shrink-0 bg-[#f5f500] text-black font-black uppercase tracking-widest text-xs px-6 py-3 hover:bg-white transition-colors"
+                    className="flex-shrink-0 bg-[#f5f500] text-black font-black uppercase tracking-widest text-xs px-6 py-3 hover:bg-black hover:text-white transition-colors"
                 >
                     Hubungi Kami →
                 </a>

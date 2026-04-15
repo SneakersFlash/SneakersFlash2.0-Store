@@ -284,7 +284,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                 src={images[activeImageIndex]}
                 alt={product.name}
                 fill
-                className="object-contain p-8 lg:p-12"
+                className="object-contain"
                 priority
                 style={{
                   transformOrigin: `${zoomProps.x}% ${zoomProps.y}%`,
@@ -327,7 +327,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                       src={src}
                       alt={`${product.name} view ${i + 1}`}
                       fill
-                      className="object-contain p-2"
+                      className="object-contain"
                     />
                   </button>
                 ))}

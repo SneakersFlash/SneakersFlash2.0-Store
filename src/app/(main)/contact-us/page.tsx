@@ -26,9 +26,10 @@ export default function ContactPage() {
         setSubmitted(true);
     };
 
+    // Diubah untuk tema terang
     const inputClass =
-        "w-full bg-white/5 border border-white/10 text-white placeholder:text-white/30 rounded-none px-4 py-3 text-sm focus:outline-none focus:border-[#f5f500] transition-colors duration-200";
-    const errorClass = "mt-1 text-xs text-red-400";
+        "w-full bg-white border border-gray-300 text-black placeholder:text-gray-400 rounded-none px-4 py-3 text-sm focus:outline-none focus:border-black transition-colors duration-200";
+    const errorClass = "mt-1 text-xs text-red-500";
 
     const contacts = [
         { label: "Email", value: "cs@sneakersflash.com", icon: "✉" },
@@ -49,24 +50,24 @@ export default function ContactPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
             {/* Form */}
             <div>
-                <h2 className="text-xl font-bold uppercase tracking-wider mb-8">
+                <h2 className="text-xl font-bold text-black uppercase tracking-wider mb-8">
                 Kirim Pesan
                 </h2>
 
                 {submitted ? (
-                <div className="border border-[#f5f500] bg-[#f5f500]/5 p-8 text-center">
-                    <p className="text-[#f5f500] text-4xl mb-4">✓</p>
-                    <p className="text-white font-bold text-lg uppercase tracking-wide">
+                <div className="border border-green-500 bg-green-50 p-8 text-center">
+                    <p className="text-green-600 text-4xl mb-4">✓</p>
+                    <p className="text-gray-900 font-bold text-lg uppercase tracking-wide">
                     Pesan Terkirim!
                     </p>
-                    <p className="text-white/50 text-sm mt-2">
+                    <p className="text-gray-600 text-sm mt-2">
                     Kami akan menghubungi kamu dalam 1×24 jam.
                     </p>
                 </div>
                 ) : (
                 <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                     <div>
-                    <label className="block text-xs uppercase tracking-wider text-white/50 mb-2">
+                    <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
                         Nama Lengkap
                     </label>
                     <input
@@ -80,7 +81,7 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                    <label className="block text-xs uppercase tracking-wider text-white/50 mb-2">
+                    <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
                         Email
                     </label>
                     <input
@@ -94,7 +95,7 @@ export default function ContactPage() {
                     </div>
 
                     <div>
-                    <label className="block text-xs uppercase tracking-wider text-white/50 mb-2">
+                    <label className="block text-xs uppercase tracking-wider text-gray-500 mb-2">
                         Pesan
                     </label>
                     <textarea
@@ -109,7 +110,7 @@ export default function ContactPage() {
 
                     <button
                     type="submit"
-                    className="w-full bg-[#f5f500] text-black font-black uppercase tracking-widest text-sm py-4 hover:bg-white transition-colors duration-200"
+                    className="w-full bg-yellow-500 text-black font-black uppercase tracking-widest text-sm py-4 hover:bg-black hover:text-white transition-colors duration-200"
                     >
                     Kirim Pesan →
                     </button>
@@ -119,32 +120,32 @@ export default function ContactPage() {
 
             {/* Info Kontak */}
             <div>
-                <h2 className="text-xl font-bold uppercase tracking-wider mb-8">
+                <h2 className="text-xl font-bold text-black uppercase tracking-wider mb-8">
                 Info Kontak
                 </h2>
                 <div className="space-y-4">
                 {contacts.map((c) => (
                     <div
                     key={c.label}
-                    className="flex items-start gap-4 border border-white/10 p-5 hover:border-[#f5f500]/40 transition-colors duration-200"
+                    className="flex items-start gap-4 border border-gray-200 bg-white p-5 hover:border-black transition-colors duration-200"
                     >
                     <span className="text-2xl">{c.icon}</span>
                     <div>
-                        <p className="text-xs uppercase tracking-wider text-white/40 mb-1">
+                        <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">
                         {c.label}
                         </p>
-                        <p className="text-white font-medium">{c.value}</p>
+                        <p className="text-black font-medium">{c.value}</p>
                     </div>
                     </div>
                 ))}
                 </div>
 
-                <div className="mt-8 border border-white/10 bg-white/[0.02] p-6">
-                <p className="text-xs uppercase tracking-wider text-[#f5f500] mb-3">
+                <div className="mt-8 border border-gray-200 bg-gray-50 p-6">
+                <p className="text-xs uppercase tracking-wider text-black font-bold mb-3">
                     Response Time
                 </p>
-                <p className="text-white/70 text-sm leading-relaxed">
-                    Kami biasanya merespons dalam <strong className="text-white">1×24 jam</strong> di
+                <p className="text-gray-600 text-sm leading-relaxed">
+                    Kami biasanya merespons dalam <strong className="text-black">1×24 jam</strong> di
                     hari kerja. Untuk pertanyaan mendesak, hubungi kami via WhatsApp.
                 </p>
                 </div>

@@ -1,38 +1,49 @@
+// app/orders/content.tsx (Sesuaikan dengan path Anda)
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Package, ArrowLeft, ChevronRight, RefreshCw, AlertCircle, Clock, CheckCircle2, Truck, XCircle } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { 
+  Package, 
+  ArrowLeft, 
+  RefreshCw, 
+  AlertCircle, 
+  Clock, 
+  CheckCircle2, 
+  Truck, 
+  XCircle,
+  Layers 
+} from "lucide-react";
 import { ordersService } from "@/lib/api/orders.service";
-import { formatPrice } from "@/lib/utils/formatPrice";
 import { cn } from "@/lib/utils/cn";
+import ProductOrderCard from "@/components/product/ProductOrderCard";
 
-// Helper for status badge colors and text
-const getStatusBadge = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "pending":
-      return { text: "Awaiting Payment", color: "bg-orange-100 text-[#FF6B00]", icon: Clock };
-    case "paid":
-    case "processing":
-      return { text: "Processing", color: "bg-blue-100 text-blue-700", icon: Package };
-    case "shipped":
-      return { text: "Shipped", color: "bg-purple-100 text-purple-700", icon: Truck };
-    case "completed":
-      return { text: "Completed", color: "bg-green-100 text-green-700", icon: CheckCircle2 };
-    case "cancelled":
-    case "expired":
-      return { text: "Cancelled", color: "bg-red-100 text-red-700", icon: XCircle };
-    default:
-      return { text: status, color: "bg-gray-100 text-gray-700", icon: Package };
-  }
-};
+const FILTER_TABS = [
+  { label: "All", value: "all", icon: Layers },
+  { label: "Pending", value: "pending", icon: Clock },
+  { label: "Processing", value: "processing", icon: Package },
+  { label: "Shipped", value: "shipped", icon: Truck },
+  { label: "Completed", value: "completed", icon: CheckCircle2 },
+  { label: "Cancelled", value: "cancelled", icon: XCircle },
+];
 
 export default function MyOrdersContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [orders, setOrders] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const getInitialTab = () => {
+    const query = searchParams.get("status");
+    if (query === "payment") return "pending";
+    if (query === "process") return "processing";
+    if (query === "shipping") return "shipped";
+    if (query === "receive") return "completed";
+    return "all";
+  };
+
+  const [activeTab, setActiveTab] = useState(getInitialTab());
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -45,9 +56,16 @@ export default function MyOrdersContent() {
         setIsLoading(false);
       }
     };
-
     fetchOrders();
   }, []);
+
+  const filteredOrders = orders.filter((order) => {
+    if (activeTab === "all") return true;
+    const status = order.status?.toLowerCase() || "";
+    if (activeTab === "processing") return status === "processing" || status === "paid";
+    if (activeTab === "cancelled") return status === "cancelled" || status === "expired";
+    return status === activeTab;
+  });
 
   if (isLoading) {
     return (
@@ -71,95 +89,89 @@ export default function MyOrdersContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F2F2F2] sm:py-10">
-      <div className="w-full max-w-2xl mx-auto min-h-screen sm:min-h-fit sm:rounded-2xl sm:shadow-sm sm:border sm:border-gray-200 flex flex-col overflow-hidden bg-[#F2F2F2]">
+    <div className="min-h-screen bg-[#F2F2F2] sm:py-8 lg:py-12">
+      <div className="w-full max-w-2xl lg:max-w-5xl mx-auto min-h-screen sm:min-h-fit sm:rounded-3xl sm:border sm:border-gray-200 flex flex-col overflow-hidden bg-[#F2F2F2]">
         
-        {/* HEADER */}
-        <header className="px-4 py-3 sm:py-4 flex items-center gap-3 bg-white/95 backdrop-blur-sm sticky top-0 z-20 border-b border-gray-100 sm:rounded-t-2xl">
-          <button 
-            onClick={() => router.back()} 
-            className="w-9 h-9 flex items-center justify-center -ml-1 rounded-full hover:bg-gray-100 transition-colors"
-            aria-label="Go back"
-          >
-            <ArrowLeft size={20} className="text-gray-900" />
-          </button>
-          <h1 className="text-base font-semibold text-gray-900">My Orders</h1>
-        </header>
+        {/* HEADER BLOCK */}
+        <div className="bg-white sticky top-0 z-20 shadow-sm">
+          <header className="flex lg:hidden px-4 py-4 lg:px-8 lg:py-6 items-center gap-4 border-b border-gray-100">
+            <button 
+              onClick={() => router.back()} 
+              className="w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="Go back"
+            >
+              <ArrowLeft size={22} className="text-gray-900" />
+            </button>
+            <p className="text-lg lg:text-2xl font-bold text-gray-900">My Orders</p>
+          </header>
 
-        {/* CONTENT */}
-        <div className="flex-1 p-4 sm:p-5 flex flex-col gap-4">
-          {orders.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-xl border border-gray-100">
-              <Package className="w-16 h-16 text-gray-300 mb-4" />
-              <h3 className="text-lg font-bold text-gray-900">No orders yet</h3>
-              <p className="text-sm text-gray-500 mt-2 mb-6">Let's start shopping and fill up your sneaker collection!</p>
-              <button 
-                onClick={() => router.push("/products")}
-                className="bg-[#1C1C1C] text-white hover:bg-black transition-colors px-6 py-3 rounded-xl font-bold"
-              >
-                Start Shopping
-              </button>
-            </div>
-          ) : (
-            orders.map((order) => {
-              const { text, color, icon: StatusIcon } = getStatusBadge(order.status);
-              
+          {/* FILTER TABS */}
+          <div className="flex overflow-x-auto [&::-webkit-scrollbar]:hidden px-2 lg:px-6 border-b border-gray-200 bg-white">
+            {FILTER_TABS.map((tab) => {
+              const Icon = tab.icon;
               return (
-                <div key={order.id} className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                  {/* Card Header (Status & Date) */}
-                  <div className="px-4 sm:px-5 py-3 border-b border-gray-50 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Package size={16} className="text-gray-400" />
-                      <span className="text-xs font-bold text-gray-500">{order.orderNumber}</span>
-                    </div>
-                    <div className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide", color)}>
-                      <StatusIcon size={12} />
-                      {text}
-                    </div>
-                  </div>
-
-                  {/* Card Body (Main Item) */}
-                  <div className="p-4 sm:p-5 flex gap-4">
-                    {/* Placeholder image jika tidak ada gambar spesifik di API */}
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 rounded-lg flex-shrink-0 relative overflow-hidden border border-gray-100">
-                      {order.orderItems?.[0]?.imageUrl ? (
-                        <img src={order.orderItems[0].imageUrl} alt="Product" className="object-cover w-full h-full" />
-                      ) : (
-                        <Package className="w-6 h-6 text-gray-300 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                      )}
-                    </div>
-                    
-                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                      <h4 className="text-sm sm:text-base font-bold text-gray-900 truncate">
-                        {order.orderItems?.[0]?.productName || "SneakerFlash Order"}
-                      </h4>
-                      <p className="text-xs sm:text-sm text-gray-500 mt-1">
-                        {order.orderItems?.length > 1 ? `+${order.orderItems.length - 1} other products` : `${order.orderItems?.[0]?.quantity || 1} items`}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Card Footer (Total & Action) */}
-                  <div className="px-4 sm:px-5 py-3.5 bg-gray-50 flex items-center justify-between border-t border-gray-50">
-                    <div>
-                      <p className="text-xs text-gray-500 font-medium">Total Amount</p>
-                      <p className="text-sm sm:text-base font-black text-gray-900">{formatPrice(order.total || order.finalAmount || 0)}</p>
-                    </div>
-                    
-                    <Link 
-                      href={`/orders/${order.id}/detail`}
-                      className="flex items-center gap-1 text-sm font-bold text-[#FF6B00] bg-white border border-gray-200 px-4 py-2 rounded-lg hover:bg-orange-50 active:scale-[0.98] transition-all"
-                    >
-                      View Details <ChevronRight size={16} />
-                    </Link>
-                  </div>
-                </div>
+                <button
+                  key={tab.value}
+                  onClick={() => setActiveTab(tab.value)}
+                  className={cn(
+                    "flex items-center gap-2 whitespace-nowrap px-4 py-4 lg:px-6 text-sm font-bold border-b-[3px] transition-all duration-200",
+                    activeTab === tab.value
+                      ? "border-[#FF6B00] text-[#FF6B00]"
+                      : "border-transparent text-gray-400 hover:text-gray-700 hover:bg-gray-50/50"
+                  )}
+                >
+                  <Icon size={18} className={activeTab === tab.value ? "text-[#FF6B00]" : "text-gray-300"} />
+                  {tab.label}
+                </button>
               );
-            })
-          )}
+            })}
+          </div>
         </div>
 
+        {/* CONTENT AREA */}
+        <div className="flex-1 p-4 sm:p-6 lg:p-8">
+          {filteredOrders.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center bg-white rounded-3xl border border-gray-100 shadow-sm">
+              <Package className="w-20 h-20 text-gray-200 mb-6" />
+              <h3 className="text-xl font-bold text-gray-900">
+                {activeTab === "all" ? "No orders yet" : `No ${activeTab} orders`}
+              </h3>
+              <p className="text-sm text-gray-500 mt-2 mb-8 max-w-xs mx-auto">
+                {activeTab === "all" 
+                  ? "Let's start shopping and fill up your sneaker collection!" 
+                  : `You don't have any orders with '${tabTitle(activeTab)}' status.`}
+              </p>
+              {activeTab === "all" ? (
+                <button 
+                  onClick={() => router.push("/products")}
+                  className="bg-[#1C1C1C] text-white hover:bg-black transition-all px-8 py-3.5 rounded-2xl font-bold shadow-lg shadow-gray-200 active:scale-95"
+                >
+                  Start Shopping
+                </button>
+              ) : (
+                <button 
+                  onClick={() => setActiveTab("all")}
+                  className="text-[#FF6B00] font-bold hover:underline py-2"
+                >
+                  View All Orders
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+              {/* Mapping Component yang sudah dipisah */}
+              {filteredOrders.map((order) => (
+                <ProductOrderCard key={order.id} order={order} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
+}
+
+function tabTitle(value: string) {
+  const tab = FILTER_TABS.find((t) => t.value === value);
+  return tab ? tab.label : value;
 }
