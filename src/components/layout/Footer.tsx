@@ -4,10 +4,12 @@ import { Instagram, Twitter, Youtube, Facebook } from "lucide-react";
 
 const FOOTER_LINKS = {
   Help: [
-    { label: "Contact Us",        href: "/contact"          },
-    { label: "Order Status",      href: "/account/orders"   },
+    { label: "Contact Us",        href: "/contact-us"          },
+    { label: "Order Status",      href: "/order-status"   },
     { label: "Shipping & Returns",href: "/shipping"         },
     { label: "Size Guide",        href: "/size-guide"       },
+    { label: "Flash Club",        href: "/flash-club"       },
+    { label: "Privacy Policy",    href: "/privacy-policy"       },
     { label: "FAQs",              href: "/faq"              },
   ],
   Company: [
