@@ -1,4 +1,4 @@
-// app/orders/content.tsx (Sesuaikan dengan path Anda)
+// app/orders/content.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -59,13 +59,22 @@ export default function MyOrdersContent() {
     fetchOrders();
   }, []);
 
-  const filteredOrders = orders.filter((order) => {
-    if (activeTab === "all") return true;
-    const status = order.status?.toLowerCase() || "";
-    if (activeTab === "processing") return status === "processing" || status === "paid";
-    if (activeTab === "cancelled") return status === "cancelled" || status === "expired";
-    return status === activeTab;
-  });
+const filteredOrders = orders.filter((order) => {
+  if (activeTab === "all") return true;
+  const status = order.status?.toLowerCase() || "";
+
+  if (activeTab === "pending") return status === "pending" || status === "waiting_payment";
+
+  if (activeTab === "processing") return status === "processing" || status === "paid";
+
+  if (activeTab === "shipped") return status === "shipped" || status === "delivered";
+
+  if (activeTab === "completed") return status === "completed";
+
+  if (activeTab === "cancelled") return status === "cancelled" || status === "returned" || status === "expired";
+
+  return status === activeTab;
+});
 
   if (isLoading) {
     return (
@@ -94,10 +103,10 @@ export default function MyOrdersContent() {
         
         {/* HEADER BLOCK */}
         <div className="bg-white sticky top-0 z-20 shadow-sm">
-          <header className="flex lg:hidden px-4 py-4 lg:px-8 lg:py-6 items-center gap-4 border-b border-gray-100">
+          <header className="flex px-4 py-4 lg:px-8 lg:py-6 items-center gap-4 border-b border-gray-100">
             <button 
               onClick={() => router.back()} 
-              className="w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-gray-100 transition-colors"
+              className="flex lg:hidden w-10 h-10 flex items-center justify-center -ml-2 rounded-full hover:bg-gray-100 transition-colors"
               aria-label="Go back"
             >
               <ArrowLeft size={22} className="text-gray-900" />
@@ -159,7 +168,6 @@ export default function MyOrdersContent() {
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-              {/* Mapping Component yang sudah dipisah */}
               {filteredOrders.map((order) => (
                 <ProductOrderCard key={order.id} order={order} />
               ))}
