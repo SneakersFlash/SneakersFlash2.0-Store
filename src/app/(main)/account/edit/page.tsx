@@ -1,4 +1,4 @@
-// src/app/setup-profile/page.tsx (or wherever this lives)
+// src/app/setup-profile/page.tsx
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -28,10 +28,9 @@ export default function SetupProfilePage() {
     }
   }, [profile]);
 
-  // This function is triggered when the AddressForm's internal submit button is clicked
   const handleCombineSubmit = async (addressData: CreateUserAddressDto) => {
     setSubmitError(null);
-    
+
     if (!firstName.trim()) {
       setSubmitError("First name is required.");
       return;
@@ -40,21 +39,16 @@ export default function SetupProfilePage() {
     const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
 
     try {
-      // 1. Update the core User Profile (Name + Phone)
-      // We take the phone number from the AddressForm payload so they stay in sync
-      await updateProfile.mutateAsync({ 
-        name: fullName, 
-        phone: addressData.phone 
+      await updateProfile.mutateAsync({
+        name: fullName,
+        phone: addressData.phone,
       });
 
-      // 2. Save the Address
-      // Ensure the very first address is always forced to be the default
       await addAddress.mutateAsync({
         ...addressData,
-        isDefault: true, 
+        isDefault: true,
       });
 
-      // 3. Redirect to account page on success
       router.push("/account");
     } catch (error) {
       console.error("Failed to setup profile:", error);
@@ -67,86 +61,117 @@ export default function SetupProfilePage() {
   if (profileLoading) {
     return (
       <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-[#FF6B00] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col font-sans text-gray-900 pb-10">
-      {/* Header */}
-      <header className="bg-white px-4 py-4 flex items-center gap-4 sticky top-0 z-10 border-b border-gray-100 shadow-sm">
-        <button onClick={() => router.back()} className="p-1">
-          <ArrowLeft className="w-6 h-6" strokeWidth={2} />
-        </button>
-        <p className="text-sm font-bold">Setup Profile</p>
-      </header>
+  const personalDetailsSection = (
+    <div className="space-y-4 border-b border-gray-100 pb-6">
+      <h4 className="font-bold text-gray-900 flex items-center gap-2">
+        <span className="bg-[#FFF0E6] text-[#FF6B00] w-6 h-6 rounded-full flex items-center justify-center text-xs">
+          1
+        </span>
+        Personal Details
+      </h4>
 
-      <main className="flex-1 p-4">
-        {submitError && (
-          <div className="mb-4 p-3 bg-red-50 border-2 border-red-200 rounded text-sm text-red-600 font-medium text-center">
-            {submitError}
-          </div>
-        )}
-
-        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 space-y-6">
-          
-          {/* ── Core Profile Info (Managed by this page) ── */}
-          <div className="space-y-4 border-b border-gray-100 pb-6">
-            <h4 className="font-bold text-gray-800 flex items-center gap-2">
-              <span className="bg-orange-100 text-orange-600 w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
-              Personal Details
-            </h4>
-
-            <div className="space-y-1">
-              <label className="text-[12px] font-reguler text-gray-700">
-                Your name <span className="text-red-500">*</span>
-              </label>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="text" placeholder="First Name" value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500"
-                />
-                <input
-                  type="text" placeholder="Last Name" value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[12px] font-reguler text-gray-700">Your email</label>
-              <input type="email" value={profile?.email ?? ""} disabled
-                className="w-full border-2 border-gray-200 bg-gray-50 rounded px-4 py-3 text-gray-500 cursor-not-allowed"
-              />
-              <p className="text-[10px] text-gray-400 mt-1">Email cannot be changed here.</p>
-            </div>
-          </div>
-
-          {/* ── Address Info (Delegated to AddressForm) ── */}
-          <div className="space-y-4">
-            <h4 className="font-bold text-gray-800 flex items-center gap-2">
-              <span className="bg-orange-100 text-orange-600 w-6 h-6 rounded-full flex items-center justify-center text-xs">2</span>
-              Delivery Address
-            </h4>
-            
-            <AddressForm 
-              // We pass the phone number down so the form initializes with it
-              initialData={{ 
-                phone: profile?.phone || "",
-                recipientName: profile?.name || "",
-                isDefault: true // Force the checkbox to be true visually
-              }} 
-              onSubmit={handleCombineSubmit} 
-              isLoading={isSaving} 
-              submitLabel="Complete Setup" 
-            />
-          </div>
-
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">
+          Your name <span className="text-red-500">*</span>
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <input
+            type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FF6B00]/20 focus:border-[#FF6B00] transition-colors"
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FF6B00]/20 focus:border-[#FF6B00] transition-colors"
+          />
         </div>
-      </main>
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-gray-700">Your email</label>
+        <input
+          type="email"
+          value={profile?.email ?? ""}
+          disabled
+          className="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 text-gray-500 cursor-not-allowed"
+        />
+        <p className="text-xs text-gray-400 mt-1">Email cannot be changed here.</p>
+      </div>
+    </div>
+  );
+
+  const addressSection = (
+    <div className="space-y-4">
+      <h4 className="font-bold text-gray-900 flex items-center gap-2">
+        <span className="bg-[#FFF0E6] text-[#FF6B00] w-6 h-6 rounded-full flex items-center justify-center text-xs">
+          2
+        </span>
+        Delivery Address
+      </h4>
+
+      <AddressForm
+        initialData={{
+          phone: profile?.phone || "",
+          recipientName: profile?.name || "",
+          isDefault: true,
+        }}
+        onSubmit={handleCombineSubmit}
+        isLoading={isSaving}
+        submitLabel="Complete Setup"
+      />
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#F8F9FA] pb-24 md:pb-0 md:py-10 text-gray-900 font-sans">
+      {/* CONTAINER: Max width 5xl, seragam dengan halaman Address/Orders */}
+      <div className="w-full max-w-6xl mx-auto min-h-screen md:min-h-fit md:rounded-2xl md:border md:border-gray-200 flex flex-col md:overflow-hidden md:bg-white md:shadow-sm">
+        
+        {/* HEADER BLOCK: Sticky di mobile, static di desktop */}
+        <div className="bg-white sticky top-0 z-10 shadow-sm md:shadow-none md:static border-b border-gray-100">
+          <header className="flex px-4 py-4 md:px-8 md:py-6 items-center gap-4">
+            <button 
+              onClick={() => router.back()} 
+              className="flex md:hidden w-10 h-10 items-center justify-center -ml-2 rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="Go back"
+            >
+              <ArrowLeft size={22} className="text-gray-900" />
+            </button>
+            
+            <div>
+              <h1 className="text-lg md:text-2xl font-bold text-gray-900 leading-none">Setup Profile</h1>
+              <p className="text-sm text-gray-400 mt-2 hidden md:block">
+                Complete your profile to get started
+              </p>
+            </div>
+          </header>
+        </div>
+
+        {/* CONTENT AREA */}
+        <div className="flex-1 p-4 md:p-6 lg:p-8 flex flex-col">
+          {submitError && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl text-sm text-red-600 font-medium flex items-center justify-center">
+              {submitError}
+            </div>
+          )}
+
+          {/* Wrapper form: card style di mobile, menyatu (tanpa border) di desktop */}
+          <div className="bg-white p-5 md:p-0 rounded-2xl shadow-sm border border-gray-100 md:border-none md:shadow-none space-y-6 md:space-y-8">
+            {personalDetailsSection}
+            {addressSection}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

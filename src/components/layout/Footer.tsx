@@ -42,32 +42,6 @@ export function Footer() {
   return (
     <footer className="bg-card border-t border-border mt-24">
 
-      {/* ── Newsletter band ── */}
-      <div className="bg-muted border-b border-border">
-        <div className="container-2xl py-10">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div>
-              <p className="font-display text-2xl uppercase tracking-wider font-bold">
-                Don't miss a drop
-              </p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Get exclusive access to new releases and member-only deals.
-              </p>
-            </div>
-            <div className="flex w-full md:w-auto gap-0">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="flex-1 md:w-72 bg-background border border-border px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-              />
-              <button className="bg-primary hover:bg-brand-yellowDark text-primary-foreground px-6 py-3 text-sm font-display uppercase tracking-widest transition-colors shrink-0">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* ── Main grid ── */}
       <div className="container-2xl py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">

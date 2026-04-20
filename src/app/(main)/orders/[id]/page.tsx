@@ -120,13 +120,8 @@ export default function OrderPaymentPage({ params }: { params: Promise<{ id: str
         <p className="text-[18px] font-bold text-black">Payment Status</p>
       </header>
 
-      {/* MAIN CONTAINER (Max-width dibatasi agar rapi di layar ultra-wide) */}
-      <main className="max-w-5xl mx-auto w-full p-0 sm:p-4 lg:p-6 flex flex-col lg:flex-row items-start gap-4 lg:gap-8 mt-0 lg:mt-4">
+      <main className="max-w-6xl mx-auto w-full p-0 sm:p-4 lg:p-6 flex flex-col lg:flex-row items-start gap-4 lg:gap-8 mt-0 lg:mt-4">
         
-        {/* =========================================================================
-            KOLOM KIRI (Timer & Metode Pembayaran)
-            Di mobile ini muncul pertama, di desktop ada di sebelah kiri.
-            ========================================================================= */}
         <div className="flex-1 w-full flex flex-col gap-2 sm:gap-4">
           
           {/* ORANGE BANNER TIMER */}

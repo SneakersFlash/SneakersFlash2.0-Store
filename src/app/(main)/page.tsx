@@ -32,18 +32,23 @@ const SECTION_COLORS = [
 
 export default async function HomePage() {
   // Fetch Data (Banners, Categories, & Active Campaigns)
-  const [banners, apiCategories, campaigns] = await Promise.all([
+  const [banners, apiCategories, campaigns, middleBanners] = await Promise.all([
     bannersService.getBanners("home_top").catch(() => []),
     categoriesService.getAll().catch(() => []), 
-    CampaignsService.getEvent().catch(()=> [])
+    CampaignsService.getEvent().catch(()=> []),
+    bannersService.getBanners("home_middle").catch(() => [])
   ]);
   
+  const sidebarBanner = middleBanners?.[0];
+
   const getCategoryImage = (categoryName: string) => {
     const foundCategory = (apiCategories as any[]).find(
       (c) => c.name.toLowerCase() === categoryName.toLowerCase()
     );
     return foundCategory?.imageUrl || "/placeholder.jpg";
   };
+  
+  console.log(banners);
   
   
   const firstGroup = [
@@ -107,8 +112,8 @@ export default async function HomePage() {
           {/* SIDE BANNER (Kiri) */}
           <div className="hidden lg:flex flex-col relative w-[280px] shrink-0 rounded-2xl overflow-hidden shadow-lg bg-[#001D4A] group">
             <Image 
-              src="/images/bgcampaignsf4.png" 
-              alt="Promo Sidebar"
+              src={sidebarBanner?.imageDesktopUrl || "/images/bgcampaignsf4.png"}
+              alt={sidebarBanner?.title || "Promo Sidebar"}
               fill
               className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
             />
