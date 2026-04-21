@@ -158,7 +158,7 @@ export default function VoucherClaimSection() {
                   >
                     <div className="w-[260px] md:w-[320px] bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-100 flex relative overflow-hidden h-[90px] md:h-[100px] hover:shadow-lg transition-shadow duration-300">
                       
-                      <div className="w-2 h-full bg-gradient-to-b from-[#FF6B00] to-[#FF8E3C]" />
+                      <div className="w-2 h-full bg-primary" />
 
                       <div className="flex-1 px-3 md:px-4 py-2.5 flex flex-col justify-center border-r-2 border-dashed border-gray-200 relative">
                         <div className="absolute -top-2 -right-2 w-4 h-4 bg-[#F5F5F5] rounded-full border-b border-l border-gray-100" />
@@ -181,18 +181,18 @@ export default function VoucherClaimSection() {
                         </p>
                       </div>
 
-                      <div className="w-[80px] md:w-[90px] bg-[#FFF8F3] flex flex-col items-center justify-center px-2 z-10">
+                      <div className="w-[80px] md:w-[90px] bg-white flex flex-col items-center justify-center px-2 z-10">
                         <motion.button
                           whileTap={isClaimed || isClaimingThis ? {} : { scale: 0.9 }}
                           onClick={() => handleClaim(voucher.id)}
                           disabled={isClaimed || isClaimingThis}
                           className={cn(
-                            "w-full py-1.5 md:py-2 rounded-full text-[10px] md:text-[11px] font-bold transition-all duration-300",
+                            "w-full py-1.5 md:py-2 shadow-lg rounded-full text-[10px] md:text-[11px] font-bold transition-all duration-300",
                             isClaimed 
                               ? "bg-gray-200 text-gray-500 cursor-not-allowed" 
                               : isClaimingThis
-                              ? "bg-[#FF6B00]/70 text-white cursor-wait"
-                              : "bg-[#FF6B00] text-white hover:bg-[#E65A00] shadow-sm shadow-orange-200"
+                              ? "bg-primary/70  cursor-wait"
+                              : "bg-primary/80  hover:bg-[#E65A00] shadow-sm shadow-orange-200"
                           )}
                         >
                           {isClaimingThis ? "..." : isClaimed ? "Diklaim" : "Klaim"}
