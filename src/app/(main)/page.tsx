@@ -1,19 +1,18 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import { Suspense } from "react";
+import Link from "next/link"; // Tambahkan import Link
 import { TrustRow }          from "@/components/home/TrustRow";
 import { HeroBanner }        from "@/components/home/HeroBanner";
 import { CategoryShortcuts } from "@/components/home/CategoryShortcuts";
 import { BrandCarousel }     from "@/components/home/BrandCarousel";
 import { ProductSection }    from "@/components/home/ProductSection";
-import { EventCampaignSection } from "@/components/home/EventCampaignSection"
-import VoucherClaimSection from "@/components/home/VoucherClaimSection";
-
+import { Suspense } from "react"; // 1. Add this import
 // Services
 import { bannersService } from "@/lib/api/banners.service";
 import { categoriesService } from "@/lib/api/categories.service";
 import CampaignsService from "@/lib/api/campaigns.service";
+import { EventCampaignSection } from "@/components/home/EventCampaignSection"
+import VoucherClaimSection from "@/components/home/VoucherClaimSection";
 
 export const metadata: Metadata = {
   title: "SneakersFlash — Premium Sneakers & Footwear",
@@ -32,6 +31,7 @@ const SECTION_COLORS = [
 ];
 
 export default async function HomePage() {
+  // Fetch Data (Banners, Categories, & Active Campaigns)
   const [banners, apiCategories, campaigns, middleBanners] = await Promise.all([
     bannersService.getBanners("home_top").catch(() => []),
     categoriesService.getAll().catch(() => []), 
@@ -47,6 +47,9 @@ export default async function HomePage() {
     );
     return foundCategory?.imageUrl || "/placeholder.jpg";
   };
+  
+  console.log(banners);
+  
   
   const firstGroup = [
     { 
@@ -87,23 +90,24 @@ export default async function HomePage() {
       <TrustRow />
       <HeroBanner banners={banners} />
       
-      {/* PERUBAHAN UTAMA: 
-        Menambahkan `flex flex-col gap-8 md:gap-10` untuk meratakan ritme vertikal antar komponen.
-      */}
-      <div className="container mx-auto px-4 max-w-7xl mt-8 flex flex-col gap-8 md:gap-10">
+      {/* ========================================== */}
+      {/* BAGIAN EVENT / CAMPAIGN (e.g. LAST DROP)   */}
+      {/* ========================================== */}
+      <div className="container mx-auto px-4 max-w-7xl mt-4">
 
         <Suspense fallback={<div className="h-32 w-full animate-pulse bg-gray-100 rounded-xl" />}>
           <VoucherClaimSection />
         </Suspense>
 
-        <EventCampaignSection campaigns={campaigns} />
-        
-        <CategoryShortcuts />
-        
-        <BrandCarousel />
+      <EventCampaignSection campaigns={campaigns} />
 
-        {/* KAWASAN PRODUK REGULER */}
-        <div className="flex flex-col lg:flex-row gap-8 items-stretch pt-2">
+      <CategoryShortcuts />
+      <BrandCarousel />
+
+        {/* ========================================== */}
+        {/* KAWASAN PRODUK REGULER (Footwear, dll)     */}
+        {/* ========================================== */}
+        <div className="flex flex-col lg:flex-row gap-8 items-stretch">
           
           {/* SIDE BANNER (Kiri) */}
           <div className="hidden lg:flex flex-col relative w-[280px] shrink-0 rounded-2xl overflow-hidden shadow-lg bg-[#001D4A] group">
@@ -141,8 +145,7 @@ export default async function HomePage() {
 
         {/* KUMPULAN PRODUCT SECTION SISANYA (Bawah) */}
         {restGroup.length > 0 && (
-          /* PERUBAHAN: Mengurangi mt-16 pt-16 menjadi pt-10 agar tidak terlalu bolong */
-          <div className="flex flex-col gap-12 pt-10 border-t border-gray-200">
+          <div className="flex flex-col gap-12 mt-16 pt-16 border-t border-gray-200">
             {restGroup.map((section, index) => {
               const bgColor = SECTION_COLORS[index % SECTION_COLORS.length];
               return (

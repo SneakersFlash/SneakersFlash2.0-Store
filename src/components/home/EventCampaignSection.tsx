@@ -13,7 +13,7 @@ export function EventCampaignSection({ campaigns }: EventCampaignSectionProps) {
   if (!campaigns || campaigns.length === 0) return null;
 
   return (
-    <div className="flex flex-col gap-10 mb-5">
+    <div className="flex flex-col gap-10 mb-2">
       {campaigns.map((campaign: any) => (
         <section 
           key={campaign.id} 
