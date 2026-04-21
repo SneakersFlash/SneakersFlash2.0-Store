@@ -107,7 +107,7 @@ export default async function HomePage() {
         {/* ========================================== */}
         {/* KAWASAN PRODUK REGULER (Footwear, dll)     */}
         {/* ========================================== */}
-        <div className="flex flex-col lg:flex-row gap-8 items-stretch">
+        <div className="flex flex-col lg:flex-row gap-4 items-stretch">
           
           {/* SIDE BANNER (Kiri) */}
           <div className="hidden lg:flex flex-col relative w-[280px] shrink-0 rounded-2xl overflow-hidden shadow-lg bg-[#001D4A] group">
@@ -130,7 +130,7 @@ export default async function HomePage() {
           </div>
 
           {/* KUMPULAN PRODUCT SECTION (Kanan) */}
-          <div className="flex-1 flex flex-col gap-10 w-full min-w-0">
+          <div className="flex-1 flex flex-col gap-4 w-full min-w-0">
             {firstGroup.map((section) => (
               <ProductSection
                 key={section.id}
@@ -145,7 +145,7 @@ export default async function HomePage() {
 
         {/* KUMPULAN PRODUCT SECTION SISANYA (Bawah) */}
         {restGroup.length > 0 && (
-          <div className="flex flex-col gap-12 mt-16 pt-16 border-t border-gray-200">
+          <div className="flex flex-col gap-4 pt-4 border-t border-gray-200">
             {restGroup.map((section, index) => {
               const bgColor = SECTION_COLORS[index % SECTION_COLORS.length];
               return (
