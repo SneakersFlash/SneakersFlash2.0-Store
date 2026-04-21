@@ -28,7 +28,7 @@ export default function VoucherSelector({ subtotal, appliedVoucher, onApply, onR
   useEffect(() => {
     if (isOpen && vouchers.length === 0) {
       setIsLoadingList(true);
-      vouchersService.getAvailableVouchers()
+      vouchersService.getMyWallet()
         .then((data) => setVouchers(data))
         .catch((err) => console.error("Gagal memuat voucher:", err))
         .finally(() => setIsLoadingList(false));
