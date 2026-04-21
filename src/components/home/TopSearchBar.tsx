@@ -58,7 +58,7 @@ function TopSearchBarInner() {
         ========================================= */}
         {isHome && (
           <div className="flex items-center gap-2.5 px-4 py-3">
-            <div className="w-8 h-8 relative">
+            <div className="w-12 h-12 relative">
               <Image
                 src="/images/logo_basic.png"
                 alt="Home"
