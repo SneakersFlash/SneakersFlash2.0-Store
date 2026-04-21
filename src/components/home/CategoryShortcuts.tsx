@@ -6,53 +6,53 @@ import { cn } from "@/lib/utils/cn";
 
 const SHORTCUTS = [
   { 
-    label: "NEW\nARRIVAL", 
+    label: "New Arrival", 
     href: "/products?sort=newest",   
-    isBold: true,
+    isBold: false,
     isRed: false,
-    textClass: "text-[11px] md:text-[13px] uppercase tracking-wide", // Sedikit diperbesar di dekstop
+    textClass: "text-[12px] md:text-[15px] tracking-wide", // Sedikit diperbesar di dekstop
   },
   { 
     label: "Best Seller", 
     href: "/products?sort=popular",  
     isBold: false,
     isRed: false,
-    textClass: "text-[13px] md:text-[15px]",
+    textClass: "text-[12px] md:text-[15px] tracking-wide",
   },
   { 
     label: "Last Call",   
     href: "/products?sale=true",     
-    isBold: true, 
+    isBold: false, 
     isRed: true,
-    textClass: "text-[13px] md:text-[15px]",
+    textClass: "text-[12px] md:text-[15px] tracking-wide",
   },
   { 
     label: "Man",         
     href: "/products?gender=men",    
     isBold: false,
     isRed: false,
-    textClass: "text-[13px] md:text-[15px]",
+    textClass: "text-[12px] md:text-[15px] tracking-wide",
   },
   { 
     label: "Woman",       
     href: "/products?gender=women",  
     isBold: false,
     isRed: false,
-    textClass: "text-[13px] md:text-[15px]",
+    textClass: "text-[12px] md:text-[15px] tracking-wide",
   },
   { 
     label: "Kids",        
     href: "/products?gender=kids",   
     isBold: false,
     isRed: false,
-    textClass: "text-[13px] md:text-[15px]",
+    textClass: "text-[12px] md:text-[15px] tracking-wide",
   },
 ];
 
 export function CategoryShortcuts() {
   return (
     // Tambahkan padding vertikal (py) yang lebih lega di desktop
-    <div className="px-4 py-3 md:py-6 w-full bg-[#F5F5F5]"> 
+    <div className="px-4 py-0.5 md:py-6 w-full bg-[#F5F5F5]"> 
       {/* PERUBAHAN UTAMA:
         - Mobile: grid-cols-3 (3 kolom, 2 baris)
         - Desktop: md:grid-cols-6 (6 kolom sejajar 1 baris)
@@ -72,7 +72,7 @@ export function CategoryShortcuts() {
             <Link
               href={item.href}
               // Di desktop, tinggi tombol (h) diperbesar dan ditambahkan efek hover (hover:-translate-y-1)
-              className="flex items-center justify-center bg-white rounded-xl md:rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-gray-100 h-[64px] md:h-[84px] px-2 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              className="flex items-center justify-center bg-white rounded-xl md:rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06)] border border-gray-100 h-[50px] md:h-[84px] px-2 hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
             >
               <span 
                 className={cn(

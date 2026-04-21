@@ -116,8 +116,8 @@ export default function VoucherClaimSection() {
   };
 
   return (
-    <section className="w-full bg-[#F5F5F5] py-4 md:py-6" ref={containerRef}>
-      <div className="container mx-auto px-4 max-w-7xl">
+    <section className="w-full bg-[#F5F5F5] pb-4 pt-2 md:py-6" ref={containerRef}>
+      <div className="container px-4 max-w-7xl">
         
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
