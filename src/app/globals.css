@@ -232,6 +232,10 @@
 ───────────────────────────────────────────────────────────────────────────── */
 @layer utilities {
 
+  /* Class baru untuk dipanggil di komponen */
+  .animate-lightning {
+    animation: lightning-flash 1.5s infinite;
+  }
   /* ── Gradient text ── */
   .text-gradient-yellow {
     background: linear-gradient(135deg, #FFF34D 0%, #F6E70A 60%, #D1C408 100%);
@@ -289,5 +293,34 @@
   }
   .scrollbar-none::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@keyframes lightning-flash {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.9); 
+    filter: drop-shadow(0 0 0px rgba(246, 231, 10, 0)); 
+  }
+  10% { 
+    opacity: 1; 
+    transform: scale(1.1); 
+    filter: drop-shadow(0 0 12px rgba(246, 231, 10, 0.8)); 
+  }
+  15% { 
+    opacity: 0; 
+    transform: scale(0.9); 
+  }
+  20% { 
+    opacity: 1; 
+    transform: scale(1.2); 
+    filter: drop-shadow(0 0 20px rgba(246, 231, 10, 1)); 
+  }
+  30% { 
+    opacity: 0; 
+    transform: scale(0.9); 
+  }
+  100% { 
+    opacity: 0; 
   }
 }

@@ -278,7 +278,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
 
             {/* Main Image Container */}
             <div
-              className="relative w-full aspect-[4/3] lg:aspect-square bg-[#F0F2F5] lg:rounded-3xl overflow-hidden"
+              className="relative w-full bg-white aspect-[4/3] lg:aspect-square bg-[#F0F2F5] lg:rounded-3xl overflow-hidden"
               onMouseMove={handleMouseMove}
               onMouseEnter={() => setZoomProps((p) => ({ ...p, isHovered: true }))}
               onMouseLeave={() => setZoomProps({ x: 0, y: 0, isHovered: false })}
@@ -298,7 +298,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
               />
               {/* Badge Promo */}
               {hasDiscount && (
-                <div className="absolute top-4 left-4 bg-green-200 text-green-500 text-xs lg:text-sm font-bold px-1.5 py-0.5 rounded">
+                <div className="absolute top-4 left-4 bg-green-100 text-green-500 text-xs lg:text-sm font-bold px-1.5 py-0.5 rounded">
                   Save {saving}%
                 </div>
               )}
@@ -400,7 +400,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-[10px] font-medium text-gray-900">Choose EUR Size</p>
-                  <button className="flex items-center gap-1 text-xs text-[#FF7500] hover:text-gray-900 transition-colors">
+                  <button className="flex items-center gap-1 text-xs text-gray-600 underline hover:text-gray-900 transition-colors">
                     Size Chart
                   </button>
                 </div>
@@ -624,7 +624,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                 {formatPrice(displayPrice)}
               </span>
               {hasDiscount && (
-                <span className="inline-flex items-center justify-center bg-green-200 text-green-500 text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded">
+                <span className="inline-flex items-center justify-center bg-green-100 text-green-500 text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded">
                   Save {saving}%
                 </span>
               )}

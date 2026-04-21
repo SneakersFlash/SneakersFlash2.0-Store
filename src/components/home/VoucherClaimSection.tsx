@@ -160,7 +160,7 @@ export default function VoucherClaimSection() {
                       
                       <div className="w-2 h-full bg-primary" />
 
-                      <div className="flex-1 px-3 md:px-4 py-2.5 flex flex-col justify-center border-r-2 border-dashed border-gray-200 relative">
+                      <div className="flex-1 px-1 md:px-4 py-2.5 flex flex-col justify-center border-r-2 border-dashed border-gray-200 relative">
                         <div className="absolute -top-2 -right-2 w-4 h-4 bg-[#F5F5F5] rounded-full border-b border-l border-gray-100" />
                         <div className="absolute -bottom-2 -right-2 w-4 h-4 bg-[#F5F5F5] rounded-full border-t border-l border-gray-100" />
 

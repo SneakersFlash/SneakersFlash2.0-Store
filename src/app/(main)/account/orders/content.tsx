@@ -11,11 +11,13 @@ import {
   CheckCircle2, 
   Truck, 
   XCircle,
-  Layers 
+  Layers, 
+  Zap
 } from "lucide-react";
 import { ordersService } from "@/lib/api/orders.service";
 import { cn } from "@/lib/utils/cn";
 import ProductOrderCard from "@/components/product/ProductOrderCard";
+import Image from "next/image";
 
 const FILTER_TABS = [
   { label: "All", value: "all", icon: Layers },
@@ -72,13 +74,20 @@ export default function MyOrdersContent() {
   });
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
-        <RefreshCw className="w-8 h-8 animate-spin text-[#FF6B00]" />
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
+      {/* Tambahkan class 'relative' pada div ini */}
+      <div className="relative w-[50px] h-[50px]">
+        <Image
+          src="/images/petir.svg"
+          alt="Loading"
+          fill
+          className="object-contain animate-bounce text-yellow-300"
+        />
       </div>
-    );
-  }
-
+    </div>
+  );
+}
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen text-center p-6 bg-[#F8F9FA]">
@@ -127,11 +136,11 @@ export default function MyOrdersContent() {
                   className={cn(
                     "flex items-center gap-2 whitespace-nowrap px-4 py-4 md:px-6 text-sm font-bold border-b-[3px] transition-all duration-200",
                     activeTab === tab.value
-                      ? "border-[#FF6B00] text-[#FF6B00]"
+                      ? "border-black text-black"
                       : "border-transparent text-gray-400 hover:text-gray-700 hover:bg-gray-50/50"
                   )}
                 >
-                  <Icon size={18} className={activeTab === tab.value ? "text-[#FF6B00]" : "text-gray-300"} />
+                  <Icon size={18} className={activeTab === tab.value ? "text-black" : "text-gray-300"} />
                   {tab.label}
                 </button>
               );

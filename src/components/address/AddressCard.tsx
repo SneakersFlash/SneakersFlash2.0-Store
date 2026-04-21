@@ -31,7 +31,7 @@ export function AddressCard({ address }: AddressCardProps) {
     return (
         <div
         className={`bg-white px-2 py-2 rounded-lg border-2 transition-all ${
-            address.isDefault ? "border-orange-500" : "border-gray-200"
+            address.isDefault ? "border-primary" : "border-gray-200"
         }`}
         >
         {/* Top Row: Label & Share */}
@@ -41,7 +41,7 @@ export function AddressCard({ address }: AddressCardProps) {
                 {address.label || "Address"}
             </h2>
             {address.isDefault && (
-                <span className="bg-[#FF6B00] text-white text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+                <span className="bg-primary font-bold text-[8px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
                 Utama
                 </span>
             )}
@@ -64,7 +64,7 @@ export function AddressCard({ address }: AddressCardProps) {
 
         {/* Map Pin */}
         <div className="flex items-center gap-1.5 mb-4">
-            <MapPin className="w-4 h-4 text-orange-500" strokeWidth={2} />
+            <MapPin className="w-4 h-4 text-yellow" strokeWidth={2} />
             <span className="text-[13px] font-medium text-gray-800">Pin Map</span>
         </div>
 

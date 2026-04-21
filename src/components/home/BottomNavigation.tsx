@@ -96,7 +96,7 @@ function BottomNavigationInner() {
                       size={22}
                       className={cn(
                         "transition-colors",
-                        isActive ? "text-[#FF6B00]" : "text-gray-400"
+                        isActive ? "text-black" : "text-gray-400"
                       )}
                       strokeWidth={isActive ? 2.5 : 1.8}
                     />
@@ -106,7 +106,7 @@ function BottomNavigationInner() {
                   <span
                     className={cn(
                       "text-[10px] font-medium tracking-wide",
-                      isActive ? "text-[#FF6B00]" : "text-gray-400"
+                      isActive ? "text-black" : "text-gray-400"
                     )}
                   >
                     {displayLabel}

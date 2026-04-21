@@ -62,25 +62,29 @@ export default function OrderCard({ order }: { order: any }) {
             <span className="text-[12px] font-medium text-gray-800">
               No. Order: {order.orderNumber}
             </span>
-            <button className="text-[#FFB020] hover:text-orange-500 transition-colors">
+            <button className="text-gray-500 hover:text-orange-500 transition-colors">
               <Copy size={16} strokeWidth={2.5} />
             </button>
           </div>
         </div>
         
         {/* Status Badge */}
-        <div className={`px-4 py-1.5 rounded-full text-[10px] font-medium capitalize tracking-wide ${
-          isCompleted 
-            ? 'bg-[#1C1C1C] text-white' 
-            : 'bg-[#FAEBE0] text-gray-900'
+        <div className={`px-4 py-1 rounded-full text-[10px] font-medium capitalize tracking-wide ${
+          isPending || isCancelled ?
+          'bg-red-200 text-white'
+          :
+          order.status === 'paid' ?
+          'bg-green-200 text-white'
+          :  
+          'bg-[#FAEBE0] text-gray-900'
         }`}>
-          {order.status.replace('_', ' ')}
+          {isPending ? 'Waiting Payment' : order.status.replace('_', ' ')}
         </div>
       </div>
 
       {/* --- COURIER INFO --- */}
       <div className="flex items-center gap-2 mb-4">
-        <Truck className="text-[#FFC107]" size={22} />
+        <Truck className="text-gray-500" size={22} />
         <span className="font-medium text-[12px] text-gray-900">
           {order.courierName} {order.courierService}
         </span>
@@ -139,7 +143,7 @@ export default function OrderCard({ order }: { order: any }) {
               <button className="px-4 py-2.5 bg-white border border-gray-300 text-gray-800 font-semibold text-[10px] rounded-lg hover:bg-gray-50 transition-colors">
                 Rate
               </button>
-              <button className="px-6 py-2.5 bg-[#FF7500] text-white font-semibold text-[10px] rounded-lg hover:bg-[#e66a00] transition-colors shadow-sm">
+              <button className="px-6 py-2.5 border border-[#F70000] text-[#F70000] font-semibold text-[10px] rounded-lg hover:bg-[#e66a00] transition-colors shadow-sm">
                 Buy Again
               </button>
             </div>
@@ -151,7 +155,7 @@ export default function OrderCard({ order }: { order: any }) {
               >
                 Detail Order
               </button>
-              <button className="flex-[2] py-2.5 bg-[#FF7500] text-white font-bold text-[12px] rounded-lg hover:bg-[#e66a00] transition-colors shadow-sm">
+              <button className="flex-[2] py-2.5 border border-[#F70000] text-[#F70000] font-bold text-[12px] rounded-lg hover:bg-[#e66a00] transition-colors shadow-sm">
                 Track My Order
               </button>
             </div>
@@ -180,7 +184,7 @@ export default function OrderCard({ order }: { order: any }) {
               </button>
               <button 
                 onClick={handleToPayment}
-                className="flex-1 py-2.5 bg-[#FF7500] text-white font-bold text-[12px] rounded-lg hover:bg-[#e66a00] transition-colors shadow-sm"
+                className="flex-1 py-2.5 bg-[#F70000] text-white font-bold text-[12px] rounded-lg hover:bg-[#e66a00] transition-colors shadow-sm"
               >
                 Pay Now
               </button>

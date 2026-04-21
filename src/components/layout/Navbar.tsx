@@ -137,7 +137,7 @@ function MegaMenu({ item }: { item: (typeof NAV_ITEMS)[number] }) {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors font-medium flex items-center gap-1.5"
+                      className="text-sm text-muted-foreground hover:text-gray-900 transition-colors font-medium flex items-center gap-1.5"
                     >
                       <span className="text-primary text-xs">⚡</span> {link.label}
                     </Link>
@@ -147,7 +147,7 @@ function MegaMenu({ item }: { item: (typeof NAV_ITEMS)[number] }) {
               <div className="mt-5 h-px bg-border" />
               <Link
                 href={item.href}
-                className="inline-block mt-4 text-xs font-bold uppercase tracking-widest text-primary hover:text-brand-yellowDark transition-colors"
+                className="inline-block mt-4 text-xs font-bold uppercase tracking-widest text-black hover:text-brand-yellowDark transition-colors"
               >
                 View All {item.label} →
               </Link>
@@ -304,7 +304,7 @@ function Logo() {
     <Link href="/" className="shrink-0 flex items-center">
       <div className="relative h-9 w-auto">
         <Image
-          src="/images/Logo Full Hitam.png"
+          src="/images/logo_basic.png"
           alt="Sneakers Flash"
           width={140}
           height={36}
@@ -437,7 +437,7 @@ function NavbarInner() {
                     className={cn(
                       "nav-link flex items-center gap-1 px-3 py-2",
                       (item as { isSale?: boolean }).isSale && "text-red-500 hover:text-red-400",
-                      (item as { isHot?: boolean }).isHot  && "text-primary",
+                      (item as { isHot?: boolean }).isHot  && "text-black",
                       pathname === item.href && "active"
                     )}
                   >

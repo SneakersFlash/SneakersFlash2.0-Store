@@ -117,10 +117,10 @@ function MapPicker({ coordinates, onCoordinatesChange }: { coordinates: Coordina
         <div className="space-y-2">
         <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-gray-700">
-            <MapPin className="w-5 h-5 text-orange-500" />
+            <MapPin className="w-5 h-5 " />
             <span className="text-sm italic font-medium">Pin your address</span>
             </div>
-            <button type="button" onClick={handleLocate} disabled={locating} className="flex items-center gap-1.5 text-xs text-orange-500 border border-orange-300 rounded-full px-3 py-1 hover:bg-orange-50 transition-colors disabled:opacity-50">
+            <button type="button" onClick={handleLocate} disabled={locating} className="flex items-center gap-1.5 text-xs shadow-sm bg-primary border  rounded-full px-3 py-1 hover:bg-orange-50 transition-colors disabled:opacity-50">
             <Navigation className="w-3.5 h-3.5" /> {locating ? "Locating…" : "Use my location"}
             </button>
         </div>
@@ -295,23 +295,23 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
                 <button
                 type="button" key={lbl} onClick={() => setSelectedLabel(lbl)}
                 className={`px-4 py-2 rounded text-sm whitespace-nowrap transition-colors border-2 ${
-                    selectedLabel === lbl ? "border-orange-500 text-orange-600 bg-orange-50 font-bold" : "border-gray-200 text-gray-600 hover:bg-gray-50"
-                }`}
+                    selectedLabel === lbl ? "border-primary text-primary-foreground bg-primary/10 font-bold" : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                } focus:outline-none focus:ring-0 focus:border-primary`}
                 >
                 {lbl}
                 </button>
             ))}
             {!isAddingLabel && (
-                <button type="button" onClick={() => setIsAddingLabel(true)} className="px-3 py-2 rounded border-2 border-dashed border-gray-300 text-gray-500 text-sm hover:bg-gray-50 flex items-center gap-1 whitespace-nowrap">
+                <button type="button" onClick={() => setIsAddingLabel(true)} className="px-3 py-2 rounded border-2 border-dashed border-gray-300 text-gray-500 text-sm hover:bg-gray-50 flex items-center gap-1 whitespace-nowrap focus:outline-none focus:ring-0 focus:border-primary">
                 <Plus className="w-4 h-4" /> 
                 </button>
             )}
             </div>
             {isAddingLabel && (
             <div className="flex items-center gap-2 mt-2">
-                <input type="text" value={newLabelInput} onChange={(e) => setNewLabelInput(e.target.value)} placeholder="e.g. Parent's House" className="flex-1 border-2 border-orange-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-orange-500" />
-                <button type="button" onClick={confirmAddLabel} className="p-2.5 rounded bg-orange-500 text-white hover:bg-orange-600"><Check className="w-4 h-4" /></button>
-                <button type="button" onClick={() => setIsAddingLabel(false)} className="p-2.5 rounded bg-gray-100 text-gray-600 hover:bg-gray-200"><X className="w-4 h-4" /></button>
+                <input type="text" value={newLabelInput} onChange={(e) => setNewLabelInput(e.target.value)} placeholder="e.g. Parent's House" className="flex-1 border-2 border-primary rounded px-3 py-2 text-sm focus:outline-none focus:ring-0 focus:border-primary" />
+                <button type="button" onClick={confirmAddLabel} className="p-2.5 rounded bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-0 focus:border-primary"><Check className="w-4 h-4" /></button>
+                <button type="button" onClick={() => setIsAddingLabel(false)} className="p-2.5 rounded bg-gray-100 text-gray-600 hover:bg-gray-200 focus:outline-none focus:ring-0 focus:border-primary"><X className="w-4 h-4" /></button>
             </div>
             )}
         </div>
@@ -320,12 +320,12 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
         <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
             <label className="text-[12px] font-reguler text-gray-700">Recipient Name <span className="text-red-500">*</span></label>
-            <input type="text" value={recipientName} onChange={(e) => { setRecipientName(e.target.value); setErrors(p => ({...p, recipientName: undefined})) }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500" placeholder="John Doe" />
+            <input type="text" value={recipientName} onChange={(e) => { setRecipientName(e.target.value); setErrors(p => ({...p, recipientName: undefined})) }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:ring-0 focus:border-primary" placeholder="John Doe" />
             {errors.recipientName && <p className="text-xs text-red-500">{errors.recipientName}</p>}
             </div>
             <div className="space-y-1">
             <label className="text-[12px] font-reguler text-gray-700">Phone Number <span className="text-red-500">*</span></label>
-            <input type="tel" value={phone} onChange={(e) => { setPhone(e.target.value); setErrors(p => ({...p, phone: undefined})) }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500" placeholder="0812..." />
+            <input type="tel" value={phone} onChange={(e) => { setPhone(e.target.value); setErrors(p => ({...p, phone: undefined})) }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:ring-0 focus:border-primary" placeholder="0812..." />
             {errors.phone && <p className="text-xs text-red-500">{errors.phone} <span className="text-red-500">*</span></p>}
             </div>
         </div>
@@ -337,7 +337,7 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
         <div className="space-y-3">
             <div className="flex items-center gap-2">
             <label className="text-[12px] font-reguler text-gray-700">Your Address <span className="text-red-500">*</span></label>
-            {geocoding && <span className="flex items-center gap-1 text-xs text-orange-500"><Loader2 className="w-3 h-3 animate-spin" /> Auto-filling...</span>}
+            {geocoding && <span className="flex items-center gap-1 text-xs text-primary"><Loader2 className="w-3 h-3 animate-spin" /> Auto-filling...</span>}
             </div>
             {geocodeError && !geocoding && (
             <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2">
@@ -348,7 +348,7 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
             <select value={provId} onChange={(e) => {
             setProvId(e.target.value); setCityId(""); setDistId(""); setSubdistId("");
             logisticsService.getCities(Number(e.target.value)).then(setCities);
-            }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500 bg-white">
+            }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:ring-0 focus:border-primary bg-white">
             <option value="">Select Province </option>
             {provinces.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
@@ -357,14 +357,14 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
             <select value={cityId} disabled={!provId} onChange={(e) => {
                 setCityId(e.target.value); setDistId(""); setSubdistId("");
                 logisticsService.getDistricts(Number(e.target.value)).then(setDistricts);
-            }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500 bg-white disabled:bg-gray-50 disabled:text-gray-400">
+            }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:ring-0 focus:border-primary bg-white disabled:bg-gray-50 disabled:text-gray-400">
                 <option value="">Select City</option>
                 {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
             <select value={distId} disabled={!cityId} onChange={(e) => {
                 setDistId(e.target.value); setSubdistId("");
                 logisticsService.getSubdistricts(Number(e.target.value)).then(setSubdistricts);
-            }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500 bg-white disabled:bg-gray-50 disabled:text-gray-400">
+            }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:ring-0 focus:border-primary bg-white disabled:bg-gray-50 disabled:text-gray-400">
                 <option value="">Select District</option>
                 {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
             </select>
@@ -375,25 +375,25 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
                 setSubdistId(e.target.value);
                 const match = subdistricts.find(s => String(s.id) === e.target.value);
                 setPostalCode(match?.zip_code || "");
-            }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500 bg-white disabled:bg-gray-50 disabled:text-gray-400">
+            }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:ring-0 focus:border-primary bg-white disabled:bg-gray-50 disabled:text-gray-400">
                 <option value="">Select Subdistrict</option>
                 {subdistricts.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
-            <input type="text" value={postalCode} readOnly placeholder="Postal Code" className="w-full border-2 border-gray-200 rounded px-4 py-3 bg-gray-50 text-gray-500 cursor-not-allowed" />
+            <input type="text" value={postalCode} readOnly placeholder="Postal Code" className="w-full border-2 border-gray-200 rounded px-4 py-3 bg-gray-50 text-gray-500 cursor-not-allowed focus:outline-none focus:ring-0 focus:border-primary" />
             </div>
         </div>
 
         <div className="space-y-1">
             <label className="text-[12px] font-reguler text-gray-700">Detailed Address</label>
-            <textarea rows={3} value={addressLine} onChange={(e) => setAddressLine(e.target.value)} placeholder="Street name, building, house number..." className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:border-orange-500 resize-none" />
+            <textarea rows={3} value={addressLine} onChange={(e) => setAddressLine(e.target.value)} placeholder="Street name, building, house number..." className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:ring-0 focus:border-primary resize-none" />
         </div>
 
         <div className="flex items-center gap-3 p-4 bg-gray-50 rounded border border-gray-200">
-            <input type="checkbox" id="isDefault" checked={isDefault} onChange={(e) => setIsDefault(e.target.checked)} className="w-5 h-5 text-orange-500 rounded focus:ring-orange-500 border-gray-300" />
+            <input type="checkbox" id="isDefault" checked={isDefault} onChange={(e) => setIsDefault(e.target.checked)} className="w-5 h-5 text-primary rounded focus:ring-primary focus:ring-offset-0 focus:outline-none border-gray-300" />
             <label htmlFor="isDefault" className="text-[12px] font-reguler text-gray-800 cursor-pointer">Set as Default Address</label>
         </div>
 
-        <button type="submit" disabled={isLoading} className="w-full bg-[#FF6B00] text-white font-bold py-4 rounded hover:bg-orange-600 transition-colors disabled:opacity-50">
+        <button type="submit" disabled={isLoading} className="w-full bg-primary text-primary-foreground font-bold py-4 rounded hover:bg-primary/90 transition-colors disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
             {isLoading ? "Saving..." : submitLabel}
         </button>
         </form>

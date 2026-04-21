@@ -119,13 +119,13 @@ function ShippingRow({ opt, isSelected, onSelect, disabled }: {
         disabled
           ? "border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed"
           : isSelected
-            ? "border-[#FF6B00] bg-orange-50/40 cursor-pointer"
+            ? "border-emerald-400 bg-emerald-50 cursor-pointer"
             : "border-gray-200 bg-white cursor-pointer hover:border-gray-300",
       )}
     >
       <div className="flex items-center gap-3">
         {isSelected && !disabled
-          ? <CheckCircle2 size={18} className="text-[#FF6B00] shrink-0" />
+          ? <CheckCircle2 size={18} className="text-green-500 shrink-0" />
           : <Circle      size={18} className="text-gray-300 shrink-0" />}
         <div>
           <p className="text-xs font-semibold text-gray-900">
@@ -134,11 +134,14 @@ function ShippingRow({ opt, isSelected, onSelect, disabled }: {
           </p>
           <p className="text-xs text-gray-400">
             Est. {opt.etd || "varies"}
-            {opt.is_cod_available && <span className="ml-2 text-[#FF6B00] font-bold">COD</span>}
+            {opt.is_cod_available && <span className="ml-2 text-primary font-bold">COD</span>}
           </p>
         </div>
       </div>
-      <span className="text-xs font-bold text-gray-900 shrink-0 ml-2">{formatPrice(opt.cost)}</span>
+      <span className="text-xs shrink-0 ml-2 flex flex-col">
+        <span className="font-bold text-gray-900">{formatPrice(0)}</span>
+        <span className="line-through text-gray-400">{formatPrice(opt.cost)}</span>
+      </span>
     </div>
   );
 }
@@ -199,21 +202,21 @@ function AddressSheet({
                 return (
                   <div key={addr.id} className={cn(
                     "rounded-xl border-2 overflow-hidden transition-all",
-                    isSel ? "border-[#FF6B00] bg-orange-50/20" : "border-gray-200 bg-white",
+                    isSel ? "border-primary bg-orange-50/20" : "border-gray-200 bg-white",
                   )}>
                     {/* Tap to select */}
                     <button type="button" onClick={() => { onSelect(addr); onClose(); }} className="w-full text-left p-4">
                       <div className="flex items-start gap-3">
                         <div className="mt-0.5 shrink-0">
                           {isSel
-                            ? <CheckCircle2 size={20} className="text-[#FF6B00]" />
+                            ? <CheckCircle2 size={20} className="text-primary" />
                             : <Circle      size={20} className="text-gray-300" />}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className={cn(
                               "inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full",
-                              isSel ? "bg-[#FF6B00] text-white" : "bg-gray-100 text-gray-600",
+                              isSel ? "bg-primary text-white" : "bg-gray-100 text-gray-600",
                             )}>
                               <LabelIcon label={addr.label || ''} />
                               {addr.label}
@@ -284,7 +287,7 @@ function AddressSheet({
             <div className="p-4 border-t border-gray-100 shrink-0">
               <button
                 onClick={onAddNew}
-                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 rounded-xl text-xs font-semibold text-gray-500 hover:border-[#FF6B00] hover:text-[#FF6B00] hover:bg-orange-50/30 transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-300 rounded-xl text-xs font-semibold text-gray-500 hover:border-primary hover:text-primary hover:bg-orange-50/30 transition-colors"
               >
                 <Plus size={15} /> Add New Address
               </button>
@@ -353,7 +356,7 @@ function SummaryBar({
                   )}
                   {pointsDiscount > 0 && (
                     <div className="flex justify-between text-xs text-amber-600">
-                      <span className="flex items-center gap-1"><Zap size={13} /> Flash Points</span>
+                      <span className="flex items-center gap-1 border border-primary rounded-full"><Zap size={13} /> Flash Points</span>
                       <span className="font-semibold">−{formatPrice(pointsDiscount)}</span>
                     </div>
                   )}
@@ -633,12 +636,12 @@ function CheckoutContent() {
         <section className="bg-white p-4 lg:rounded-xl lg:border lg:border-gray-200">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs font-bold flex items-center gap-2">
-              <MapPin size={16} className="text-[#FF6B00]" />
+              <MapPin size={16} className="" />
               Delivery Address
             </p>
             <button
               onClick={() => setIsAddressSheetOpen(true)}
-              className="text-xs font-bold text-[#FF6B00] border border-[#FF6B00] px-3 py-1 rounded-full hover:bg-orange-50 flex items-center gap-1 transition-colors"
+              className="text-xs font-bold text-black border px-3 py-1 rounded-full hover:bg-orange-50 flex items-center gap-1 transition-colors"
             >
               {selectedAddress ? "Change" : "Select"} <ChevronRight size={11} />
             </button>
@@ -652,7 +655,7 @@ function CheckoutContent() {
           ) : selectedAddress ? (
             <div className="pl-6">
               <div className="flex flex-wrap gap-2 mb-1.5">
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-[#FF6B00] text-white px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold border font-bold px-2 py-0.5 rounded-full">
                   <LabelIcon label={selectedAddress.label || ''} /> {selectedAddress.label}
                 </span>
                 {selectedAddress.isDefault && (
@@ -696,7 +699,7 @@ function CheckoutContent() {
           ) : (
             <button
               onClick={() => setIsAddressSheetOpen(true)}
-              className="ml-6 flex items-center gap-2 text-xs text-[#FF6B00] font-semibold"
+              className="ml-6 flex items-center gap-2 text-xs text-primary font-semibold"
             >
               <Plus size={15} /> Select a delivery address
             </button>
@@ -743,7 +746,7 @@ function CheckoutContent() {
             <div className="text-left">
               {isCalcShipping ? (
                 <span className="flex items-center gap-2 text-xs text-gray-400">
-                  <Loader2 size={13} className="animate-spin text-[#FF6B00]" /> Calculating rates…
+                  <Loader2 size={13} className="animate-spin text-primary" /> Calculating rates…
                 </span>
               ) : selectedCourier ? (
                 <>
@@ -819,7 +822,9 @@ function CheckoutContent() {
           {/* Flash Points */}
           <div className="flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
+              <div className="border border-primary rounded-full p-1">
               <Zap size={18} className="text-amber-400" />
+              </div>
               <div>
                 <p className="text-xs font-medium text-gray-800">Use Flash Points</p>
                 <p className="text-xs text-gray-400">{pointsBalance.toLocaleString()} pts · worth {formatPrice(Math.floor(pointsBalance))}</p>
@@ -827,7 +832,7 @@ function CheckoutContent() {
             </div>
             <button
               onClick={() => setUsePoints(!usePoints)}
-              className={cn("w-11 h-6 rounded-full transition-colors relative shrink-0", usePoints ? "bg-[#FF6B00]" : "bg-gray-200")}
+              className={cn("w-11 h-6 rounded-full transition-colors relative shrink-0", usePoints ? "bg-primary" : "bg-gray-200")}
             >
               <span className={cn("absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all", usePoints ? "left-5" : "left-0.5")} />
             </button>
@@ -862,7 +867,7 @@ function CheckoutContent() {
                               <span className="text-xs font-medium text-gray-900">{option.name}</span>
                             </div>
                             {selectedPayment === option.id
-                              ? <CheckCircle2 size={20} className="text-[#FF6B00]" />
+                              ? <CheckCircle2 size={20} className="text-primary" />
                               : <Circle      size={20} className="text-gray-300" />}
                           </div>
                         ))}
