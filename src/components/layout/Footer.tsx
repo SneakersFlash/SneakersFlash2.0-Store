@@ -51,7 +51,7 @@ export function Footer() {
             {/* Real logo */}
             <Link href="/" className="block mb-5">
               <Image
-                src="/images/logo_basic.png"
+                src="/images/Logo Full Hitam.png"
                 alt="Sneakers Flash"
                 width={160}
                 height={42}
