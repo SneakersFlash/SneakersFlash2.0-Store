@@ -163,9 +163,9 @@ export function CartSidebar() {
                             <div className="flex items-end justify-between mt-auto pt-2">
                               <span className="font-bold text-[12px] text-[#FF6B00]">{formatPrice(price)}</span>
                               <div className="flex items-center border border-gray-200 rounded-md h-7 overflow-hidden">
-                                <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-7 h-full flex items-center justify-center hover:bg-gray-100"><Minus size={12} /></button>
+                                <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-7 h-full flex items-center justify-center hover:bg-gray-100" disabled={item.quantity <= 1}><Minus size={12} /></button>
                                 <span className="w-8 text-center text-xs font-bold bg-gray-50 border-x border-gray-200">{item.quantity}</span>
-                                <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-7 h-full flex items-center justify-center hover:bg-gray-100"><Plus size={12} /></button>
+                                <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-7 h-full flex items-center justify-center hover:bg-gray-100" disabled={item.quantity >= item?.stock}><Plus size={12} /></button>
                               </div>
                             </div>
                           </div>

@@ -153,21 +153,25 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
 
   const [selectedSizeId,    setSelectedSizeId]    = useState<string | null>(null);
   const [activeImageIndex,  setActiveImageIndex]  = useState(0);
+  const [quantity,          setQuantity]          = useState(1);
   const [isAdding,          setIsAdding]          = useState(false);
   const [isInstallmentOpen, setIsInstallmentOpen] = useState(true);
   const [isReviewsOpen,     setIsReviewsOpen]     = useState(false);
   const [zoomProps,         setZoomProps]         = useState({ x: 0, y: 0, isHovered: false });
+  
 
   const ZOOM_LEVEL = 1.8;
 
   useEffect(() => {
     if (product) {
       const variants = product.variants || [];
-      if (variants.length === 1) {
+      // Auto-select jika varian cuma 1 DAN stoknya ada
+      if (variants.length === 1 && variants[0].stock > 0 && !selectedSizeId) {
         setSelectedSizeId(variants[0].id);
+        setQuantity(1); // Reset quantity ke 1
       }
     }
-  }, [product]);
+  }, [product, selectedSizeId]); // 👈 Pastikan selectedSizeId masuk dependency array
 
   // --- LOADING & ERROR STATE ---
   if (isProductLoading) {
@@ -222,7 +226,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
 
   const rating       = parseFloat(product.ratingAvg?.d[0] ?? "4.8");
   const reviewCount  = product.reviewCount ?? 98;
-  const earnedPoints = Math.floor(Number(displayPrice) * 0.033);
+  const earnedPoints = Math.floor(Number(displayPrice) * 0.001);
 
   // --- ACTIONS ---
   const handleAddToCart = async () => {
@@ -230,7 +234,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
     if (!isAuthenticated) return router.push("/login");
     try {
       setIsAdding(true);
-      await addItemToCart(Number(selectedVariant.id), 1);
+      await addItemToCart(Number(selectedVariant.id), quantity);
       openCart();
     } catch (error) {
       console.error("Gagal menambahkan ke keranjang", error);
@@ -244,7 +248,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
     if (!isAuthenticated) return router.push("/login");
     try {
       setIsAdding(true);
-      await addItemToCart(Number(selectedVariant.id), 1);
+      await addItemToCart(Number(selectedVariant.id), quantity);
       router.push("/checkout");
     } catch (error) {
       console.error("Gagal proses beli sekarang", error);
@@ -425,6 +429,41 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                       )}
                     </button>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* 👇 BLOK QUANTITY & VALIDASI STOK PER VARIAN 👇 */}
+            {selectedVariant && (
+              <div className="mb-4 mt-2">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] font-medium text-gray-900">Atur Jumlah</p>
+                  <p className="text-[10px] font-medium text-gray-500">
+                    Sisa stok: <span className="text-[#FF6B00] font-bold">{selectedVariant.stock}</span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center border border-gray-200 rounded-lg p-1 bg-white">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      // Validasi: Tidak boleh kurang dari 1
+                      disabled={quantity <= 1}
+                      className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      -
+                    </button>
+                    <span className="w-10 text-center font-bold text-sm text-gray-900">
+                      {quantity}
+                    </span>
+                    <button
+                      onClick={() => setQuantity(Math.min(selectedVariant.stock, quantity + 1))}
+                      // Validasi: Tombol mati jika quantity sudah sama dengan batas stok varian
+                      disabled={quantity >= selectedVariant.stock}
+                      className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-md disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
