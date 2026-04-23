@@ -24,16 +24,7 @@ export function EventCampaignSection({ campaigns }: EventCampaignSectionProps) {
           
           {/* BACKGROUND IMAGE & GRADIENT */}
           <div className="absolute inset-0 z-0">
-            {campaign.bannerDesktopUrl ? (
-              <Image 
-                src={campaign.bannerDesktopUrl} 
-                alt={campaign.title} 
-                fill 
-                className="object-cover object-center opacity-40 mix-blend-overlay" 
-              />
-            ) : (
-              <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
-            )}
+            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/80" />
           </div>
 

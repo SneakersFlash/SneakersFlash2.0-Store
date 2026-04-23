@@ -27,6 +27,10 @@ import type { UserAddress } from "@/types/user.types";
 import VoucherSelector from "@/components/voucher/VoucherSelector";
 import type { AppliedVoucher } from "@/types/voucher.types";
 
+// Import AddressForm
+import { AddressForm } from "@/components/address/AddressForm";
+import { useQueryClient } from "@tanstack/react-query";
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const ORIGIN_COORDS = { lat: -6.1752685, lng: 106.7720772 };
@@ -299,6 +303,89 @@ function AddressSheet({
   );
 }
 
+// ─── Address Form Modal ──────────────────────────────────────────────────────
+
+function AddressFormModal({
+  isOpen, onClose, onSaved,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (data: any) => {
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/users/addresses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.message || "Failed to save address");
+      }
+      onSaved();
+      onClose();
+    } catch (e: any) {
+      alert(e?.message || "Failed to save address.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          />
+
+          {/* Panel */}
+          <motion.div
+            initial={{ y: "100%", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ type: "spring", damping: 30, stiffness: 240 }}
+            className="relative bg-white w-full sm:w-[540px] sm:rounded-2xl rounded-t-2xl z-10 max-h-[92vh] flex flex-col shadow-2xl"
+          >
+            {/* Drag handle (mobile) */}
+            <div className="flex justify-center pt-3 pb-1 shrink-0 sm:hidden">
+              <div className="w-10 h-1 bg-gray-300 rounded-full" />
+            </div>
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
+              <h3 className="font-bold text-base">Add New Address</h3>
+              <button
+                onClick={onClose}
+                className="p-1.5 text-gray-400 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Scrollable form body */}
+            <div className="overflow-y-auto flex-1 px-5 py-5">
+              <AddressForm
+                onSubmit={handleSubmit}
+                isLoading={isSubmitting}
+                submitLabel="Save Address"
+              />
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 // ─── Checkout Summary Bar ─────────────────────────────────────────────────────
 
 function SummaryBar({
@@ -344,8 +431,8 @@ function SummaryBar({
                   </div>
                   <div className="flex justify-between text-xs text-gray-700">
                     <span>Shipping</span>
-                    <span className={cn("font-semibold", !shippingCost ? "text-gray-300 italic text-xs mt-0.5" : "")}>
-                      {shippingCost ? formatPrice(shippingCost) : "—"}
+                    <span className={cn("font-semibold", !shippingCost ? "text-green-300 line-through italic text-xs mt-0.5" : "")}>
+                      {shippingCost ? formatPrice(shippingCost) : "Rp 0"}
                     </span>
                   </div>
                   {voucherDiscount > 0 && (
@@ -427,15 +514,17 @@ function CheckoutContent() {
   const checkoutItems = items.filter((item) => selectedItemIds.includes(item.id));
 
   const { data: savedAddresses = [], isLoading: loadingAddresses } = useMyAddresses();
+  const queryClient = useQueryClient();
 
   // ── UI ────────────────────────────────────────────────────────────────────
-  const [isLoading,          setIsLoading]          = useState(false);
-  const [usePoints,          setUsePoints]          = useState(false);
-  const [selectedPayment,    setSelectedPayment]    = useState<string | null>(null);
-  const [isShippingOpen,     setIsShippingOpen]     = useState(false);
-  const [isPaymentOpen,      setIsPaymentOpen]      = useState(false);
-  const [isAddressSheetOpen, setIsAddressSheetOpen] = useState(false);
-  const [isSummaryOpen,      setIsSummaryOpen]      = useState(false);
+  const [isLoading,             setIsLoading]             = useState(false);
+  const [usePoints,             setUsePoints]             = useState(false);
+  const [selectedPayment,       setSelectedPayment]       = useState<string | null>(null);
+  const [isShippingOpen,        setIsShippingOpen]        = useState(false);
+  const [isPaymentOpen,         setIsPaymentOpen]         = useState(false);
+  const [isAddressSheetOpen,    setIsAddressSheetOpen]    = useState(false);
+  const [isAddressFormOpen,     setIsAddressFormOpen]     = useState(false);
+  const [isSummaryOpen,         setIsSummaryOpen]         = useState(false);
 
   // ── Address ───────────────────────────────────────────────────────────────
   const [selectedAddress, setSelectedAddress] = useState<any | null>(null);
@@ -475,7 +564,8 @@ function CheckoutContent() {
   // Menggunakan voucherDiscount dari objek voucher yang diaplikasikan
   const voucherDiscount = appliedVoucher?.discountAmount || 0; 
   const pointsEarned  = Math.floor(subtotal * 0.033);
-  const shippingCost  = selectedCourier?.cost ?? 0;
+  // Free shipping: always 0 for the customer. Real cost is passed to Komerce separately.
+  const shippingCost  = 0;
   
   // Pastikan grandTotal tidak kurang dari 0
   const calculatedTotal = subtotal + shippingCost - voucherDiscount - pointsDiscount;
@@ -889,8 +979,17 @@ function CheckoutContent() {
         addresses={savedAddresses}
         selectedId={selectedAddress?.id ?? null}
         onSelect={(addr) => { setSelectedAddress(addr); setSelectedCourier(null); setShippingOptions([]); }}
-        onAddNew={() => { setIsAddressSheetOpen(false); router.push("/account/addresses/add"); }}
+        onAddNew={() => { setIsAddressSheetOpen(false); setIsAddressFormOpen(true); }}
         distanceMap={distanceMap}
+      />
+
+      {/* ── ADDRESS FORM MODAL ────────────────────────────────────────────── */}
+      <AddressFormModal
+        isOpen={isAddressFormOpen}
+        onClose={() => setIsAddressFormOpen(false)}
+        onSaved={() => {
+          queryClient.invalidateQueries({ queryKey: ["myAddresses"] });
+        }}
       />
 
       {/* ── SUMMARY BAR ───────────────────────────────────────────────────── */}
@@ -912,4 +1011,4 @@ export default function CheckoutPage() {
       <CheckoutContent />
     </Suspense>
   );
-}
+} 

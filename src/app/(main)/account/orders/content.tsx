@@ -74,20 +74,20 @@ export default function MyOrdersContent() {
   });
 
   if (isLoading) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
-      {/* Tambahkan class 'relative' pada div ini */}
-      <div className="relative w-[50px] h-[50px]">
-        <Image
-          src="/images/petir.svg"
-          alt="Loading"
-          fill
-          className="object-contain animate-bounce text-yellow-300"
-        />
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
+        {/* Tambahkan class 'relative' pada div ini */}
+        <div className="relative w-[50px] h-[50px]">
+          <Image
+            src="/images/petir.svg"
+            alt="Loading"
+            fill
+            className="object-contain animate-bounce text-yellow-300"
+          />
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen text-center p-6 bg-[#F8F9FA]">

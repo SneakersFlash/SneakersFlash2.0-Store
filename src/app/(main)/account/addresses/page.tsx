@@ -6,6 +6,7 @@ import { ArrowLeft, Plus, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useMyAddresses } from "@/lib/hooks/useUsers";
 import { AddressCard } from "@/components/address/AddressCard";
+import Image from "next/image";
 
 export default function ListAddressPage() {
     const router = useRouter();
@@ -13,11 +14,19 @@ export default function ListAddressPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
-                <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
+                <div className="relative w-[50px] h-[50px]">
+                <Image
+                    src="/images/petir.svg"
+                    alt="Loading"
+                    fill
+                    className="object-contain animate-bounce text-yellow-300"
+                />
+                </div>
             </div>
         );
     }
+    
 
     if (error) {
         return (

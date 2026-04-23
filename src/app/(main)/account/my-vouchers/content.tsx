@@ -6,6 +6,7 @@ import { ArrowLeft, RefreshCw, AlertCircle, Ticket, Clock, Copy, Scissors } from
 import { vouchersService } from "@/lib/api/vouchers.service";
 import { cn } from "@/lib/utils/cn";
 import { toast } from "sonner";
+import Image from "next/image";
 
 const formatRp = (value: number) => {
   return new Intl.NumberFormat("id-ID", {
@@ -41,13 +42,20 @@ export default function MyVouchersContent() {
     toast.success(`Kode ${code} disalin ke clipboard!`);
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
-        <RefreshCw className="w-8 h-8 animate-spin text-[#FF6B00]" />
-      </div>
-    );
-  }
+   if (isLoading) {
+          return (
+              <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
+                  <div className="relative w-[50px] h-[50px]">
+                  <Image
+                      src="/images/petir.svg"
+                      alt="Loading"
+                      fill
+                      className="object-contain animate-bounce text-yellow-300"
+                  />
+                  </div>
+              </div>
+          );
+      }
 
   if (error) {
     return (

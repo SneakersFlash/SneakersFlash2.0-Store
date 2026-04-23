@@ -44,10 +44,10 @@ function SectionBannerHeader({
             sizes="(max-width: 768px) 100vw, 50vw"
           />
         ) : (
-          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
+          <div className="absolute inset-0 opacity-10 bg-black [background-size:16px_16px]" />
         )}
         
-        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
+        <div className="absolute inset-0 bg-black" />
 
         <div className="relative z-10 flex items-center justify-between w-full">
           <div className="flex flex-col">

@@ -56,6 +56,7 @@ export interface Product {
   variants: ProductVariant[];
   activeEvent: any
   wishlists: any[]
+  availableSizes?: string[];
   ratingAvg?: any;
   reviewCount?: number;
   createdAt: string;

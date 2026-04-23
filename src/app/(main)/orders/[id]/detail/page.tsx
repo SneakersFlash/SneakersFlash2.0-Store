@@ -81,11 +81,18 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5]">
-        <RefreshCw className="w-8 h-8 animate-spin text-[#FF6B00]" />
-      </div>
-    );
+      return (
+          <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
+              <div className="relative w-[50px] h-[50px]">
+              <Image
+                  src="/images/petir.svg"
+                  alt="Loading"
+                  fill
+                  className="object-contain animate-bounce text-yellow-300"
+              />
+              </div>
+          </div>
+      );
   }
 
   if (error || !order) {

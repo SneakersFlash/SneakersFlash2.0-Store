@@ -192,7 +192,7 @@ export default function VoucherClaimSection() {
                               ? "bg-gray-200 text-gray-500 cursor-not-allowed" 
                               : isClaimingThis
                               ? "bg-primary/70  cursor-wait"
-                              : "bg-primary/80  hover:bg-[#E65A00] shadow-sm shadow-orange-200"
+                              : "bg-primary/80  hover:bg-gray-100 shadow-sm shadow-orange-200"
                           )}
                         >
                           {isClaimingThis ? "..." : isClaimed ? "Diklaim" : "Klaim"}

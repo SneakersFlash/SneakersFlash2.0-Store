@@ -137,6 +137,9 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
           <p className="text-[10px] lg:text-[12px] font-normal text-black line-clamp-2 mb-2 lg:mb-3">
             {product.name.toUpperCase()}
           </p>
+          {/* <p className="text-[10px] lg:text-[12px] font-normal text-black line-clamp-2 mb-2 lg:mb-3">
+            {product.availableSizes product?.availableSizes.map((item:any) => item)}
+          </p> */}
           <div className="flex flex-col mt-auto">
             <span className="text-[14px] lg:text-[18px] font-bold leading-none tracking-tight mb-1.5 text-black">
               {formatPrice(displayPrice)}

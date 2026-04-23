@@ -35,7 +35,7 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
     <div className="min-h-screen bg-white pb-10">
     
       {/* === HEADER BANNER === */}
-      <div className="relative w-full overflow-hidden" style={{ backgroundColor: bgColor }}>
+      <div className="relative w-full overflow-hidden">
         {/* Tinggi disesuaikan (250px) agar tidak terlalu sempit di mobile */}
         <div className="relative h-[250px] md:h-[350px] w-full max-w-7xl mx-auto flex flex-col justify-center px-4 md:px-12">
           

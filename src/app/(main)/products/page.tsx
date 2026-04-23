@@ -30,7 +30,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     <div className="min-h-screen bg-[#F8F9FB] flex flex-col">
       {/* HEADER BANNER CATEGORY */}
       {categoryData?.imageUrl && (
-        <div className="relative w-full h-[25vh] min-h-[220px] md:h-[35vh] bg-[#001D4A] shrink-0 overflow-hidden">
+        <div className="relative w-full h-[25vh] min-h-[220px] md:h-[35vh] shrink-0 overflow-hidden">
           <Image
             src={categoryData.imageUrl}
             alt={categoryData.name}
