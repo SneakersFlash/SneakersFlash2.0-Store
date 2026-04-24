@@ -14,14 +14,14 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useCartStore } from "@/lib/store/cartStore";
 import { useAuthStore } from "@/lib/store/authStore";
-import { useMyAddresses } from "@/lib/hooks/useUsers";
+import { useAddAddress, useMyAddresses } from "@/lib/hooks/useUsers";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import { cn } from "@/lib/utils/cn";
 
 import { logisticsService } from "@/lib/api/logistics.service";
 import { ordersService } from "@/lib/api/orders.service";
-import type { UserAddress } from "@/types/user.types";
+import type { CreateUserAddressDto, UserAddress } from "@/types/user.types";
 
 // Import Voucher Components
 import VoucherSelector from "@/components/voucher/VoucherSelector";
@@ -312,28 +312,13 @@ function AddressFormModal({
   onClose: () => void;
   onSaved: () => void;
 }) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { mutate: addAddress, isPending } = useAddAddress();
 
-  const handleSubmit = async (data: any) => {
-    setIsSubmitting(true);
-    try {
-      const res = await fetch("/api/users/addresses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err?.message || "Failed to save address");
-      }
-      onSaved();
-      onClose();
-    } catch (e: any) {
-      alert(e?.message || "Failed to save address.");
-    } finally {
-      setIsSubmitting(false);
-    }
+  const handleSubmit = (data: CreateUserAddressDto) => {
+    addAddress(data, {
+      onSuccess: () => {onSaved(), onClose()},
+      onError: () => alert("Failed to save address. Please check your inputs.")
+    });
   };
 
   return (
@@ -375,7 +360,7 @@ function AddressFormModal({
             <div className="overflow-y-auto flex-1 px-5 py-5">
               <AddressForm
                 onSubmit={handleSubmit}
-                isLoading={isSubmitting}
+                isLoading={isPending}
                 submitLabel="Save Address"
               />
             </div>
