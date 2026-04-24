@@ -549,7 +549,7 @@ function CheckoutContent() {
   // ── Calculations (Updated) ────────────────────────────────────────────────
   const subtotal      = checkoutItems.reduce((s, i) => s + (Number(i.price) * i.quantity), 0);
   const totalWeight   = checkoutItems.reduce((s, i) => s + ((i.weightKilogram ?? 2) * i.quantity), 0);
-  const pointsBalance = 21560; // replace with auth store / profile
+  const pointsBalance = 0; // replace with auth store / profile
   const pointsDiscount = usePoints ? Math.min(pointsBalance, Math.floor(subtotal * 0.1)) : 0;
   
   // Menggunakan voucherDiscount dari objek voucher yang diaplikasikan
@@ -679,14 +679,14 @@ function CheckoutContent() {
 
   const paymentMethods = [
     { category: "Bank Transfer", options: [
-      { id: "bank_transfer", name: "Virtual Account (All Banks)", logo: "VA"       },
+      { id: "bank_transfer", name: "Virtual Account (All Banks)", logo: "VA", disabled: true }, // <-- Tambahkan disabled: true
       { id: "bca_va",        name: "BCA Virtual Account",         logo: "BCA"      },
       { id: "bni_va",        name: "BNI Virtual Account",         logo: "BNI"      },
       { id: "bri_va",        name: "BRI Virtual Account",         logo: "BRI"      },
     ]},
     { category: "e-Wallet", options: [
       { id: "gopay",     name: "GoPay",     logo: "GoPay"     },
-      { id: "shopeepay", name: "ShopeePay", logo: "ShopeePay" },
+      { id: "shopeepay", name: "ShopeePay", logo: "ShopeePay", disabled: true }, // <-- Tambahkan disabled: true
     ]},
     { category: "Other methods", options: [
       { id: "qris", name: "QRIS", logo: "QRIS" },
@@ -947,15 +947,37 @@ function CheckoutContent() {
                       <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">{group.category}</h3>
                       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100">
                         {group.options.map((option) => (
-                          <div key={option.id} onClick={() => { setSelectedPayment(option.id); setIsPaymentOpen(false); }}
-                            className="flex items-center justify-between p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
+                          <div 
+                            key={option.id} 
+                            onClick={() => { 
+                              if (option.disabled) return; // <-- Cegah klik jika disabled
+                              setSelectedPayment(option.id); 
+                              setIsPaymentOpen(false); 
+                            }}
+                            className={cn(
+                              "flex items-center justify-between p-3.5 transition-colors",
+                              option.disabled 
+                                ? "opacity-50 cursor-not-allowed bg-gray-50" // <-- Style untuk disabled
+                                : "cursor-pointer hover:bg-gray-50"
+                            )}
+                          >
                             <div className="flex items-center gap-3">
-                              <span className="text-[10px] font-black text-blue-800 italic w-14 text-center bg-gray-100 py-1.5 rounded-lg">{option.logo}</span>
-                              <span className="text-xs font-medium text-gray-900">{option.name}</span>
+                              <span className="text-[10px] font-black text-blue-800 italic w-14 text-center bg-gray-100 py-1.5 rounded-lg">
+                                {option.logo}
+                              </span>
+                              <span className="text-xs font-medium text-gray-900">
+                                {option.name}
+                                {/* Label opsional untuk memperjelas status */}
+                                {option.disabled && <span className="ml-2 text-[10px] font-normal text-red-500 italic">Maintenance</span>}
+                              </span>
                             </div>
-                            {selectedPayment === option.id
-                              ? <CheckCircle2 size={20} className="text-primary" />
-                              : <Circle      size={20} className="text-gray-300" />}
+                            
+                            {/* Sembunyikan radio button jika disabled */}
+                            {!option.disabled && (
+                              selectedPayment === option.id
+                                ? <CheckCircle2 size={20} className="text-primary" />
+                                : <Circle size={20} className="text-gray-300" />
+                            )}
                           </div>
                         ))}
                       </div>

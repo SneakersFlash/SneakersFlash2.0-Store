@@ -110,7 +110,7 @@ export default function OrderPaymentPage({ params }: { params: Promise<{ id: str
     );
   }
 
-  const isQris = order.paymentMethod === 'qris';
+  const isQrPayment = order.paymentMethod === 'qris' || order.paymentMethod === 'gopay';
   const paymentMethodName = order.paymentMethod.replace('_va', ' Bank Transfer').toUpperCase();
 
   return (
@@ -150,7 +150,7 @@ export default function OrderPaymentPage({ params }: { params: Promise<{ id: str
             <div className="px-5 py-5 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="px-3 py-1.5 bg-blue-50 border border-blue-100 text-blue-700 font-black italic text-[11px] rounded uppercase tracking-wide">
-                  {isQris ? 'QRIS' : paymentMethodName.split(' ')[0]}
+                  {isQrPayment ? order.paymentMethod.toUpperCase() : paymentMethodName.split(' ')[0]}
                 </div>
                 <div className="flex flex-col">
                   <span className="font-bold text-[15px]">{paymentMethodName}</span>
@@ -168,7 +168,7 @@ export default function OrderPaymentPage({ params }: { params: Promise<{ id: str
             {isInstructionOpen && (
               <div className="px-5 py-5 bg-gray-50/50 border-t border-gray-100 text-[14px] text-gray-600 leading-relaxed">
                 <p className="font-bold text-gray-800 mb-3">Cara Pembayaran:</p>
-                {isQris ? (
+                {isQrPayment ? (
                   <ol className="list-decimal pl-5 space-y-2">
                     <li>Buka aplikasi m-Banking atau e-Wallet Anda.</li>
                     <li>Pilih menu <strong>Scan QR</strong>.</li>
@@ -233,7 +233,7 @@ export default function OrderPaymentPage({ params }: { params: Promise<{ id: str
             <hr className="border-gray-100 border-dashed" />
 
             {/* KONDISIONAL: QRIS / VA Section */}
-            {isQris ? (
+            {isQrPayment ? (
               <div className="flex flex-col items-center justify-center py-2">
                 <p className="text-[13px] text-gray-500 mb-4">Scan QR Code di bawah ini</p>
                 <div className="w-56 h-56 relative border border-gray-200 rounded-2xl overflow-hidden p-2 bg-white shadow-inner">

@@ -17,6 +17,7 @@ interface CartStore {
   toggleCart: () => void;
 
   // Selection Actions (Checkbox)
+  setSelectedItemIds: (ids: any[]) => void; // <--- TAMBAHKAN BARIS INI
   toggleSelectItem: (itemId: string) => void;
   selectAll: () => void;
   deselectAll: () => void;
@@ -41,6 +42,7 @@ export const useCartStore = create<CartStore>()(
       toggleCart: () => set((s) => ({ isOpen: !s.isOpen })),
 
       // --- LOGIKA CHECKBOX ---
+      setSelectedItemIds: (ids: any) => set({ selectedItemIds: ids }),
       toggleSelectItem: (itemId) => {
         const { selectedItemIds } = get();
         if (selectedItemIds.includes(itemId)) {

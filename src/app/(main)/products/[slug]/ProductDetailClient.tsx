@@ -149,7 +149,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
   // --- STATE & HOOKS ---
   const { data: product, isLoading: isProductLoading } = useProduct(slug);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const { openCart, addItemToCart } = useCartStore();
+  const { openCart, addItemToCart, setSelectedItemIds } = useCartStore();
 
   const [selectedSizeId,    setSelectedSizeId]    = useState<string | null>(null);
   const [activeImageIndex,  setActiveImageIndex]  = useState(0);
@@ -246,10 +246,33 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
   const handleBuyNow = async () => {
     if (!selectedVariant) return;
     if (!isAuthenticated) return router.push("/login");
+    
     try {
       setIsAdding(true);
+      
+      // 1. Masukkan item ke cart database & refresh state global
       await addItemToCart(Number(selectedVariant.id), quantity);
+      
+      // 2. Ambil state cart terbaru langsung dari store tanpa menunggu re-render
+      const currentItems = useCartStore.getState().items;
+      
+      // 3. Cari cart item yang baru saja ditambahkan
+      // Kita cek berdasarkan variant ID (atau fallback menggunakan pencocokan nama & ukuran)
+      const addedItem = currentItems.find(
+        (item: any) => 
+          item.productVariantId === Number(selectedVariant.id) || 
+          item.variantId === Number(selectedVariant.id) ||
+          (item.productName === product.name && item.size === selectedVariant.size)
+      );
+
+      // 4. Jika item ketemu, set item ini sebagai satu-satunya yang di-checkout
+      if (addedItem) {
+        setSelectedItemIds([addedItem.id]);
+      }
+
+      // 5. Eksekusi redirect ke checkout
       router.push("/checkout");
+      
     } catch (error) {
       console.error("Gagal proses beli sekarang", error);
     } finally {
