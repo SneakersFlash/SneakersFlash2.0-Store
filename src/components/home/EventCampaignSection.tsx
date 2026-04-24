@@ -145,6 +145,12 @@ export function EventCampaignSection({ campaigns }: EventCampaignSectionProps) {
                           <p className="text-[12px] font-medium text-gray-900 line-clamp-2">
                             {p.name}
                           </p>
+                          {p.availableSizes && p.availableSizes.length > 0 && (
+                            <p className="text-[10px] lg:text-[11px] text-[#888888] mb-2 lg:mb-3 line-clamp-1">
+                              Sizes: {p.availableSizes.slice(0, 5).join(", ")}
+                              {p.availableSizes.length > 5 && "..."}
+                            </p>
+                          )}
                           <p className="font-bold text-[14px] lg:text-[18px]">
                             Rp {p.finalPrice?.toLocaleString('id-ID')}
                           </p>

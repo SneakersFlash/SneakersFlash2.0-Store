@@ -146,7 +146,7 @@ export default function VoucherClaimSection() {
                 // Evaluasi status klaim (cek array state lokal)
                 // Kita tidak perlu lagi mengecek !!voucher.userId di sini karena endpoint `/claimable` backend
                 // sudah memfilter voucher yang sudah di-lock oleh user lain.
-                const isClaimed = claimedVouchers.includes(voucher.id);
+                const isClaimed = voucher.isClaimed || claimedVouchers.includes(voucher.id);
                 const isClaimingThis = claimingId === voucher.id;
 
                 return (
@@ -188,11 +188,11 @@ export default function VoucherClaimSection() {
                           disabled={isClaimed || isClaimingThis}
                           className={cn(
                             "w-full py-1.5 md:py-2 shadow-lg rounded-full text-[10px] md:text-[11px] font-bold transition-all duration-300",
-                            isClaimed 
-                              ? "bg-gray-200 text-gray-500 cursor-not-allowed" 
+                            isClaimed
+                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                               : isClaimingThis
-                              ? "bg-primary/70  cursor-wait"
-                              : "bg-primary/80  hover:bg-gray-100 shadow-sm shadow-orange-200"
+                              ? "bg-primary/70 text-white cursor-wait"
+                              : "bg-primary text-white hover:bg-primary/90 shadow-sm shadow-orange-200"
                           )}
                         >
                           {isClaimingThis ? "..." : isClaimed ? "Diklaim" : "Klaim"}

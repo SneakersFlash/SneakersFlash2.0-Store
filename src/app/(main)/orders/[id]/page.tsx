@@ -105,7 +105,7 @@ export default function OrderPaymentPage({ params }: { params: Promise<{ id: str
         <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
         <h2 className="text-lg font-bold">Gagal Memuat Pesanan</h2>
         <p className="text-gray-500 mt-2">{error}</p>
-        <button onClick={() => router.push('/orders')} className="mt-6 text-[#E05600] font-bold">Kembali ke Pesanan Saya</button>
+        <button onClick={() => router.push('/')} className="mt-6 text-[#E05600] font-bold">Kembali ke Pesanan Saya</button>
       </div>
     );
   }

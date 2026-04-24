@@ -78,7 +78,7 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
         href={`/products/${product.slug}`}
         className="block h-full bg-white border border-[#E5E5E5] rounded-[12px] sm:rounded-[20px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col relative pb-3 sm:pb-5"
       >
-        {/* ── Image Container (Tanpa padding, dengan overflow-hidden) ── */}
+        {/* ── Image Container ── */}
         <div className="relative w-full aspect-square sm:aspect-[5/4] bg-[#F5F5F5] shrink-0 overflow-hidden">
           <button
             onClick={handleWishlistToggle}
@@ -100,7 +100,6 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            // Fit gambar ke tepi dan kunci porsi atas
             className={cn(
               "object-cover object-top transition-all duration-700 ease-out",
               secondaryImage ? "group-hover:opacity-0 group-hover:scale-105" : "group-hover:scale-105"
@@ -115,20 +114,28 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
               alt={`${product.name} — alternate view`}
               fill
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-              // Fit gambar kedua
               className="object-cover object-top opacity-0 scale-105 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-100"
             />
           )}
         </div>
 
-        {/* ── Product Info (Menambahkan padding top di sini) ── */}
+        {/* ── Product Info ── */}
         <div className="pt-3 sm:pt-4 px-3 sm:px-4 md:px-5 flex flex-col flex-1">
           <h3 className="text-[10px] sm:text-[12px] font-bold tracking-tight text-black mb-0.5">
             {product.brand?.name ?? "Nike"}
           </h3>
-          <p className="text-[10px] sm:text-[12px] leading-snug font-normal text-black line-clamp-2 mb-1.5 sm:mb-2">
+          <p className="text-[10px] sm:text-[12px] leading-snug font-normal text-black line-clamp-2 mb-1">
             {product.name.toUpperCase()}
           </p>
+          
+          {/* Penambahan Available Sizes */}
+          {product.availableSizes && product.availableSizes.length > 0 && (
+            <p className="text-[10px] sm:text-[11px] text-[#888888] mb-1.5 sm:mb-2 line-clamp-1">
+              Sizes: {product.availableSizes.slice(0, 5).join(", ")}
+              {product.availableSizes.length > 5 && "..."}
+            </p>
+          )}
+
           <div className="flex flex-col mt-auto">
             <span className="text-[14px] lg:text-[18px] font-bold leading-none tracking-tight mb-1.5 text-black">
               {formatPrice(displayPrice)}
@@ -144,7 +151,7 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
               </div>
             )}
           </div>
-          <StarRating rating={parseFloat(product?.ratingAvg ?? '4') ?? 4} count={product?.reviewCount ?? 78} />
+          <StarRating rating={parseFloat(product?.ratingAvg?.toString() ?? '4') ?? 4} count={product?.reviewCount ?? 78} />
         </div>
       </Link>
     </motion.div>

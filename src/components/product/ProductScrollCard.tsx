@@ -48,10 +48,7 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
   const { mutate: add, isPending: isAdding } = useAddWishlist();
   const { mutate: remove, isPending: isRemoving } = useRemoveWishlist();
 
-  // Mengambil gambar utama
   const primaryImage = getProductImageUrl(product.variants?.[0]?.imageUrl);
-  
-  // Mengambil gambar sekunder jika tersedia lebih dari 1 gambar
   const secondaryImage = product.variants?.[0]?.imageUrl?.length > 1
     ? getProductImageUrl([product.variants[0].imageUrl[1]])
     : null;
@@ -87,7 +84,7 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
         href={`/products/${product.slug}`} 
         className="block h-full bg-white border border-[#E5E5E5] rounded-[20px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col relative pb-4 lg:pb-5"
       >
-        {/* ── Image container (Tanpa padding, dengan overflow-hidden) ── */}
+        {/* ── Image container ── */}
         <div className="relative w-full aspect-[5/4] bg-[#F5F5F5] shrink-0 overflow-hidden">
           <button
             onClick={handleWishlistToggle}
@@ -104,7 +101,6 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
             />
           </button>
           
-          {/* Gambar Pertama (Akan menghilang perlahan jika ada gambar kedua) */}
           <Image
             src={imgError ? "/images/placeholder-product.svg" : primaryImage}
             alt={product.name}
@@ -117,7 +113,6 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
             onError={() => setImgError(true)}
           />
 
-          {/* Gambar Kedua (Akan muncul perlahan saat di-hover) */}
           {secondaryImage && !imgError && (
             <Image
               src={secondaryImage}
@@ -134,12 +129,18 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
           <h3 className="text-[10px] lg:text-[12px] font-bold tracking-tight text-black mb-0.5">
             {product.brand?.name ?? "Nike"}
           </h3>
-          <p className="text-[10px] lg:text-[12px] font-normal text-black line-clamp-2 mb-2 lg:mb-3">
+          <p className="text-[10px] lg:text-[12px] font-normal text-black line-clamp-2 mb-1">
             {product.name.toUpperCase()}
           </p>
-          {/* <p className="text-[10px] lg:text-[12px] font-normal text-black line-clamp-2 mb-2 lg:mb-3">
-            {product.availableSizes product?.availableSizes.map((item:any) => item)}
-          </p> */}
+
+          {/* Penambahan Available Sizes */}
+          {product.availableSizes && product.availableSizes.length > 0 && (
+            <p className="text-[10px] lg:text-[11px] text-[#888888] mb-2 lg:mb-3 line-clamp-1">
+              Sizes: {product.availableSizes.slice(0, 5).join(", ")}
+              {product.availableSizes.length > 5 && "..."}
+            </p>
+          )}
+
           <div className="flex flex-col mt-auto">
             <span className="text-[14px] lg:text-[18px] font-bold leading-none tracking-tight mb-1.5 text-black">
               {formatPrice(displayPrice)}
@@ -155,7 +156,7 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
               </div>
             )}
           </div>
-          <StarRating rating={parseFloat(product?.ratingAvg ?? '4') ?? 4} count={product?.reviewCount ?? 78} />
+          <StarRating rating={parseFloat(product?.ratingAvg?.toString() ?? '4') ?? 4} count={product?.reviewCount ?? 78} />
         </div>
       </Link>
     </motion.div>

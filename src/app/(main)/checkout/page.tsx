@@ -30,6 +30,7 @@ import type { AppliedVoucher } from "@/types/voucher.types";
 // Import AddressForm
 import { AddressForm } from "@/components/address/AddressForm";
 import { useQueryClient } from "@tanstack/react-query";
+import { cartService } from "@/lib/api/cart.service";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -138,7 +139,6 @@ function ShippingRow({ opt, isSelected, onSelect, disabled }: {
           </p>
           <p className="text-xs text-gray-400">
             Est. {opt.etd || "varies"}
-            {opt.is_cod_available && <span className="ml-2 text-primary font-bold">COD</span>}
           </p>
         </div>
       </div>
@@ -534,6 +534,12 @@ function CheckoutContent() {
 
   // ── Voucher (Updated State) ───────────────────────────────────────────────
   const [appliedVoucher, setAppliedVoucher] = useState<AppliedVoucher | null>(null);
+  useEffect(() => {
+    const saved = cartService.loadAppliedVoucher();
+    if (saved) {
+      setAppliedVoucher(saved);
+    }
+  }, []);
 
   // ── Shipping ──────────────────────────────────────────────────────────────
   const [shippingOptions,  setShippingOptions]  = useState<any[]>([]);
@@ -828,7 +834,7 @@ function CheckoutContent() {
                   <p className="text-xs font-semibold text-gray-900">
                     {selectedCourier.courier_name || selectedCourier.courier} · {selectedCourier.service}
                   </p>
-                  <p className="text-xs text-gray-400">Est. {selectedCourier.etd || "varies"} · <span className="font-semibold text-gray-700">{formatPrice(selectedCourier.cost)}</span></p>
+                  <p className="text-xs text-gray-400">Est. {selectedCourier.etd || "varies"} · <span className="font-semibold text-gray-700 line-through">{formatPrice(selectedCourier.cost)}</span></p>
                 </>
               ) : (
                 <p className="text-xs text-gray-400">Select shipping method</p>
@@ -890,8 +896,14 @@ function CheckoutContent() {
           <VoucherSelector 
             subtotal={subtotal} 
             appliedVoucher={appliedVoucher} 
-            onApply={(voucher) => setAppliedVoucher(voucher)} 
-            onRemove={() => setAppliedVoucher(null)} 
+            onApply={(voucher) => {
+              setAppliedVoucher(voucher);
+              cartService.saveAppliedVoucher(voucher);
+            }} 
+            onRemove={() => {
+              setAppliedVoucher(null);
+              cartService.saveAppliedVoucher(null); 
+            }}
           />
 
           {/* Flash Points */}

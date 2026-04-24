@@ -377,7 +377,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                   ?.join(' / ')}
               </p>
               <p className="text-[18px] lg:text-[20px] font-semibold font-black text-gray-900 leading-tight">
-                {product.name}
+                {product.name} - Size {product.variants && product.variants.length === 1 ? product.variants[0].size : ''} 
               </p>
             </div>
 
