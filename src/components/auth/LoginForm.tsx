@@ -105,9 +105,9 @@ export default function LoginForm() {
       <div className="flex-1 flex flex-col px-5 pt-6 pb-10 max-w-md mx-auto w-full">
 
         {/* Hero illustration */}
-        <div className="relative w-full h-56 md:h-80 mb-8 rounded-2xl overflow-hidden shadow-sm">
+        <div className="relative w-full h-80 md:h-80 mb-8 rounded-2xl overflow-hidden shadow-sm">
           <Image
-            src="/images/sneakers-hero.jpeg"
+            src="/images/PAYDAY.jpeg"
             alt="Sneakers Flash"
             fill
             className="object-cover hover:scale-105 transition-transform duration-500"

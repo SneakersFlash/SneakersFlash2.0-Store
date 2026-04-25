@@ -33,13 +33,23 @@ export function useAuthGMutations() {
 
   const registerMutation = useMutation({
     mutationFn: (dto: RegisterDto) => authService.register(dto),
+  });
+
+  const verifyOtpMutation = useMutation({
+    mutationFn: (data: { email: string; otp: string }) => authService.verifyOtp(data),
     onSuccess: handleSuccess,
-  })
+  });
+
+  const resendOtpMutation = useMutation({
+    mutationFn: (data: { email: string }) => authService.resendOtp(data),
+  });
 
   return {
     loginMutation,
     googleLoginMutation,
     appleLoginMutation,
-    registerMutation
+    registerMutation,
+    verifyOtpMutation,
+    resendOtpMutation
   };
 }

@@ -11,9 +11,19 @@ export const authService = {
     return data;
   },
 
-  async register(dto: RegisterDto): Promise<AuthResponse> {
-    const { data } = await apiClient.post<AuthResponse>("/auth/register", dto);
-    return data;
+  register: async (dto: RegisterDto): Promise<{ success: boolean; message: string }> => {
+    const response = await apiClient.post('/auth/register', dto);
+    return response.data;
+  },
+
+  verifyOtp: async (data: { email: string; otp: string }): Promise<AuthResponse> => {
+    const response = await apiClient.post('/auth/verify-otp', data);
+    return response.data;
+  },
+
+  resendOtp: async (data: { email: string }): Promise<{ success: boolean; message: string }> => {
+    const response = await apiClient.post('/auth/resend-otp', data);
+    return response.data;
   },
 
   // --- OAuth ---

@@ -2,16 +2,17 @@
 
 import { useState, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { validateEmail, validatePassword, validateName } from "@/lib/auth-validation";
 import AuthInput from "@/components/auth/AuthInput";
-import SocialLoginButton from "../../../../validation/SocialLoginButton";
+import SocialLoginButton from "../../../../validation/SocialLoginButton"; // Sesuaikan jika path berbeda
 import Image from "next/image";
 
 interface FormState {
   name: string;
   email: string;
+  phone: string;
   password: string;
   confirmPassword: string;
 }
@@ -19,6 +20,7 @@ interface FormState {
 interface FormErrors {
   name?: string | null;
   email?: string | null;
+  phone?: string | null;
   password?: string | null;
   confirmPassword?: string | null;
   general?: string | null;
@@ -26,12 +28,22 @@ interface FormErrors {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams(); 
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const { register, loginWithGoogle, loginWithApple } = useAuth();
 
-  const [form, setForm] = useState<FormState>({ name: "", email: "", password: "", confirmPassword: "" });
+  const [form, setForm] = useState<FormState>({ name: "", email: "", phone: "", password: "", confirmPassword: "" });
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [socialLoading, setSocialLoading] = useState<"google" | "apple" | null>(null);
+
+  // Tombol hanya aktif jika semua field terisi
+  const isFilled = 
+    form.name.trim().length > 0 && 
+    form.email.trim().length > 0 && 
+    form.phone.trim().length > 0 && 
+    form.password.length > 0 && 
+    form.confirmPassword.length > 0;
 
   const handleChange = useCallback(
     (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,11 +57,19 @@ export default function RegisterPage() {
     const nameError = validateName(form.name);
     const emailError = validateEmail(form.email);
     const passwordError = validatePassword(form.password);
-    const confirmError =
-      form.confirmPassword !== form.password ? "Passwords do not match." : null;
-    const newErrors = { name: nameError, email: emailError, password: passwordError, confirmPassword: confirmError };
+    const phoneError = form.phone.trim().length < 10 ? "Invalid phone number." : null;
+    const confirmError = form.confirmPassword !== form.password ? "Passwords do not match." : null;
+    
+    const newErrors = { 
+      name: nameError, 
+      email: emailError, 
+      phone: phoneError,
+      password: passwordError, 
+      confirmPassword: confirmError 
+    };
     setErrors(newErrors);
-    return !nameError && !emailError && !passwordError && !confirmError;
+    
+    return !nameError && !emailError && !phoneError && !passwordError && !confirmError;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,32 +77,28 @@ export default function RegisterPage() {
     if (!validateForm()) return;
     setIsSubmitting(true);
 
-    // Smart split of the "Full name" input to satisfy your RegisterDto
-    const nameParts = form.name.trim().split(" ");
-    const firstName = nameParts[0] || "";
-    // If they only enter one name (e.g., "John"), use it for both to prevent backend errors.
-    // Otherwise, join the rest of the words as the last name.
-    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(" ") : firstName;
-
+    // Payload dikirim persis sesuai dengan RegisterDto NestJS Anda
     const result = await register({
-      email: form.email,
+      name: form.name.trim(),
+      email: form.email.trim(),
       password: form.password,
-      firstName: firstName,
-      lastName: lastName,
-      // Note: 'phone' is optional in your DTO, so it is perfectly fine to omit it here!
+      phone: form.phone.trim(),
     });
     
     setIsSubmitting(false);
     
-    if (result.success) router.push("/");
-    else setErrors({ general: result.error ?? "Registration failed." });
+    if (result.success) {
+      router.push(`/verify-otp?email=${encodeURIComponent(form.email.trim())}&callbackUrl=${encodeURIComponent(callbackUrl)}`);
+    } else {
+      setErrors({ general: result.error ?? "Registration failed. Please try again." });
+    }
   };
 
   const handleGoogle = async () => {
     setSocialLoading("google");
     const result = await loginWithGoogle();
     setSocialLoading(null);
-    if (result.success) router.push("/");
+    if (result.success) router.push(callbackUrl);
     else setErrors({ general: result.error ?? "Google login failed." });
   };
 
@@ -90,12 +106,11 @@ export default function RegisterPage() {
     setSocialLoading("apple");
     const result = await loginWithApple();
     setSocialLoading(null);
-    if (result.success) router.push("/");
+    if (result.success) router.push(callbackUrl);
     else setErrors({ general: result.error ?? "Apple login failed." });
   };
 
   const isAnyLoading = isSubmitting || socialLoading !== null;
-  const isFilled = form.name && form.email && form.password && form.confirmPassword;
 
   return (
     <div className="min-h-screen bg-[#F2F2F2] flex flex-col">
@@ -113,16 +128,20 @@ export default function RegisterPage() {
         <h1 className="text-base font-semibold text-gray-900">Create Account</h1>
       </div>
 
-      <div className="relative w-full h-56 md:h-80 mb-8 rounded-2xl overflow-hidden shadow-sm">
-        <Image
-          src="/images/sneakers-hero.jpeg"
-          alt="Sneakers Flash"
-          fill
-          className="object-cover hover:scale-105 transition-transform duration-500"
-          priority
-        />
-      </div>
+      {/* Content wrapper */}
       <div className="flex-1 flex flex-col px-5 pt-6 pb-10 max-w-md mx-auto w-full">
+        
+        {/* Hero illustration */}
+        <div className="relative w-full h-80 md:h-80 mb-8 rounded-2xl overflow-hidden shadow-sm">
+          <Image
+            src="/images/PAYDAY.jpeg"
+            alt="Sneakers Flash"
+            fill
+            className="object-cover hover:scale-105 transition-transform duration-500"
+            priority
+          />
+        </div>
+
         <h2 className="text-xl font-bold text-gray-900 text-center mb-2">
           Join Sneaker Flash
         </h2>
@@ -131,8 +150,12 @@ export default function RegisterPage() {
         </p>
 
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3">
+          {/* General error banner */}
           {errors.general && (
-            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600">
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 flex items-center gap-2">
+              <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
               {errors.general}
             </div>
           )}
@@ -157,8 +180,18 @@ export default function RegisterPage() {
             disabled={isAnyLoading}
           />
           <AuthInput
+            type="tel"
+            placeholder="Phone number"
+            value={form.phone}
+            onChange={handleChange("phone")}
+            error={errors.phone}
+            autoComplete="tel"
+            inputMode="tel"
+            disabled={isAnyLoading}
+          />
+          <AuthInput
             type="password"
-            placeholder="Password (min 8 characters)"
+            placeholder="Password (min 6 characters)"
             value={form.password}
             onChange={handleChange("password")}
             error={errors.password}
@@ -183,10 +216,17 @@ export default function RegisterPage() {
               "focus:outline-none focus:ring-2 focus:ring-orange-300 disabled:cursor-not-allowed",
               isFilled
                 ? "bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 shadow-lg shadow-orange-200"
-                : "bg-white text-gray-800 border border-gray-200",
+                : "bg-white text-gray-800 border border-gray-200 hover:border-gray-300",
             ].join(" ")}
           >
-            {isSubmitting ? "Creating account..." : "Create Account"}
+            {isSubmitting ? (
+              <span className="flex items-center justify-center gap-2">
+                <LoadingSpinner color={isFilled ? "white" : "gray"} />
+                Creating account...
+              </span>
+            ) : (
+              "Create Account"
+            )}
           </button>
 
           <div className="flex items-center gap-3 my-1">
@@ -207,5 +247,18 @@ export default function RegisterPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+function LoadingSpinner({ color }: { color: "white" | "gray" }) {
+  return (
+    <svg
+      className={`animate-spin w-4 h-4 ${color === "white" ? "text-white" : "text-gray-400"}`}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
   );
 }

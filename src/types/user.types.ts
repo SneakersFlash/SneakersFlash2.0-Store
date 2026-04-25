@@ -22,11 +22,10 @@ export interface LoginDto {
 }
 
 export interface RegisterDto {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
   password: string;
-  phone?: string;
+  phone: string; // Sekarang wajib (tidak ada tanda '?')
 }
 
 export interface OAuthLoginDto {
