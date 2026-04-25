@@ -29,7 +29,6 @@ export function useAuthMutations() {
 
   const registerMutation = useMutation({
     mutationFn: (dto: RegisterDto) => authService.register(dto),
-    onSuccess: handleAuthSuccess,
   });
 
   const googleLoginMutation = useMutation({
