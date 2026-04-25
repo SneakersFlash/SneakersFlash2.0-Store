@@ -324,3 +324,7 @@
     opacity: 0; 
   }
 }
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.35s ease-out;
+}

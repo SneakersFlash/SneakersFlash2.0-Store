@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { Heart, Star } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
@@ -25,7 +24,7 @@ function StarRating({ rating = 4, count = 78 }: { rating?: number; count?: numbe
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
-            size={13} 
+            size={13}
             className={cn(
               "transition-colors",
               i < full ? "text-black fill-black" : "text-black fill-transparent"
@@ -73,15 +72,19 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-20px" }}
-      transition={{ duration: 0.35, delay: index * 0.06 }}
-      className={cn("group relative h-full font-sans", isScroll ? "w-[160px] lg:w-[230px]" : "w-full")}
+    // ✅ Ganti motion.div → div biasa dengan CSS animation
+    // Framer Motion gesture detection (drag/pan) penyebab card bisa digeser/diputar
+    <div
+      className={cn(
+        "group relative h-full font-sans",
+        // Animasi entrance via CSS keyframe — aman dari gesture conflict
+        "animate-fadeInUp",
+        isScroll ? "w-[160px] lg:w-[230px]" : "w-full"
+      )}
+      style={{ animationDelay: `${index * 60}ms`, animationFillMode: "both" }}
     >
-      <Link 
-        href={`/products/${product.slug}`} 
+      <Link
+        href={`/products/${product.slug}`}
         className="block h-full bg-white border border-[#E5E5E5] rounded-[20px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col relative pb-4 lg:pb-5"
       >
         {/* ── Image container ── */}
@@ -97,17 +100,23 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
             aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
             <Heart
-              className={cn("w-4 h-4 sm:w-5 sm:h-5 transition-colors", isProcessing && "animate-pulse", isWishlisted && "fill-[#FF0000]")}
+              className={cn(
+                "w-4 h-4 sm:w-5 sm:h-5 transition-colors",
+                isProcessing && "animate-pulse",
+                isWishlisted && "fill-[#FF0000]"
+              )}
             />
           </button>
-          
+
           <Image
             src={imgError ? "/images/placeholder-product.svg" : primaryImage}
             alt={product.name}
             fill
             className={cn(
               "object-cover object-top transition-all duration-700 ease-out",
-              secondaryImage && !imgError ? "group-hover:opacity-0 group-hover:scale-105" : "group-hover:scale-105"
+              secondaryImage && !imgError
+                ? "group-hover:opacity-0 group-hover:scale-105"
+                : "group-hover:scale-105"
             )}
             sizes="(max-width: 640px) 160px, (max-width: 1024px) 230px, 280px"
             onError={() => setImgError(true)}
@@ -133,7 +142,6 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
             {product.name.toUpperCase()}
           </p>
 
-          {/* Penambahan Available Sizes */}
           {product.availableSizes && product.availableSizes.length > 0 && (
             <p className="text-[10px] lg:text-[11px] text-[#888888] mb-2 lg:mb-3 line-clamp-1">
               Sizes: {product.availableSizes.slice(0, 5).join(", ")}
@@ -156,9 +164,12 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
               </div>
             )}
           </div>
-          <StarRating rating={parseFloat(product?.ratingAvg?.toString() ?? '4') ?? 4} count={product?.reviewCount ?? 78} />
+          {/* <StarRating
+            rating={parseFloat(product?.ratingAvg?.toString() ?? "4") ?? 4}
+            count={product?.reviewCount ?? 78}
+          /> */}
         </div>
       </Link>
-    </motion.div>
+    </div>
   );
 }

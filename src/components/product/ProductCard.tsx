@@ -151,7 +151,7 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
               </div>
             )}
           </div>
-          <StarRating rating={parseFloat(product?.ratingAvg?.toString() ?? '4') ?? 4} count={product?.reviewCount ?? 78} />
+          {/* <StarRating rating={parseFloat(product?.ratingAvg?.toString() ?? '4') ?? 4} count={product?.reviewCount ?? 78} /> */}
         </div>
       </Link>
     </motion.div>

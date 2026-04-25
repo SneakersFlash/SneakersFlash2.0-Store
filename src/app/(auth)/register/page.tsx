@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,7 +26,7 @@ interface FormErrors {
   general?: string | null;
 }
 
-export default function RegisterPage() {
+function RegisterContent() {
   const router = useRouter();
   const searchParams = useSearchParams(); 
   const callbackUrl = searchParams.get("callbackUrl") || "/";
@@ -247,6 +247,18 @@ export default function RegisterPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#F2F2F2] flex items-center justify-center">
+        <LoadingSpinner color="gray" />
+      </div>
+    }>
+      <RegisterContent />
+    </Suspense>
   );
 }
 
