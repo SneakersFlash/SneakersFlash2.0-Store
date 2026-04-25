@@ -36,9 +36,10 @@ export function Providers({ children }: ProvidersProps) {
     <GoogleOAuthProvider clientId={googleClientId}>
       <ThemeProvider
         attribute="class"
+        forcedTheme="light"
         defaultTheme="light"
         enableSystem={false}
-        themes={["dark", "light"]}
+        themes={["light"]}
       >
         <QueryClientProvider client={queryClient}>
           {/* Bungkus children dengan AuthProvider di dalam QueryClientProvider 

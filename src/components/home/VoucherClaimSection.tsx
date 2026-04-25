@@ -113,8 +113,13 @@ export default function VoucherClaimSection() {
     },
   };
 
+  const isFirstStep = (v: any) =>
+  v.code?.toUpperCase().includes("FIRSTSTEP") ||
+  v.name?.toUpperCase().includes("FIRST STEP") ||
+  v.name?.toUpperCase().includes("FIRSTSTEP");
+
   const displayVouchers = !isAuthenticated
-    ? [MOCK_FIRSTSTEP_VOUCHER, ...vouchers]
+    ? [MOCK_FIRSTSTEP_VOUCHER, ...vouchers.filter(v => !isFirstStep(v))]
     : vouchers;
 
   return (
