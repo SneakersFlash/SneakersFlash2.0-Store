@@ -6,12 +6,19 @@ import type { LoginDto, AuthResponse, RegisterDto } from "@/types/user.types";
 export function useAuthGMutations() {
   const queryClient = useQueryClient();
   const setAuth = useAuthStore((state) => state.setAuth);
+  const setWelcomeVoucher = useAuthStore((state) => state.setWelcomeVoucher);
 
   const handleSuccess = (data: AuthResponse) => {
-    // 1. Simpan user & token ke Zustand (otomatis masuk localStorage & interceptor Axios)
+    // 1. Simpan user & token ke Zustand (otomatis masuk sessionStorage & interceptor Axios)
     setAuth(data.user, data.access_token);
-    
-    // 2. Bersihkan/refresh cache data user & cart
+
+    // 2. Jika backend mengembalikan welcome voucher (user baru), simpan ke store
+    //    → ClientLayoutWrapper di route (main) akan menampilkan WelcomeVoucherPopup
+    if (data.welcomeVoucher) {
+      setWelcomeVoucher(data.welcomeVoucher);
+    }
+
+    // 3. Bersihkan/refresh cache data user & cart
     queryClient.invalidateQueries({ queryKey: ["cart"] });
     queryClient.invalidateQueries({ queryKey: ["user"] });
   };
@@ -50,6 +57,6 @@ export function useAuthGMutations() {
     appleLoginMutation,
     registerMutation,
     verifyOtpMutation,
-    resendOtpMutation
+    resendOtpMutation,
   };
 }

@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { User } from "@/types/user.types";
+import type { User, WelcomeVoucher } from "@/types/user.types";
 import { registerTokenGetter, registerUnauthorizedHandler } from "@/lib/api/client";
 
 interface AuthState {
@@ -10,11 +10,15 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isHydrated: boolean;
+  /** Voucher selamat datang — diset saat login pertama, dikosongkan setelah popup ditutup */
+  welcomeVoucher: WelcomeVoucher | null;
 
   // Actions
   setAuth: (user: User, token: string) => void;
   clearAuth: () => void;
   setHydrated: () => void;
+  setWelcomeVoucher: (voucher: WelcomeVoucher) => void;
+  clearWelcomeVoucher: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -24,6 +28,7 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isAuthenticated: false,
       isHydrated: false,
+      welcomeVoucher: null,
 
       setAuth: (user, token) => {
         set({ user, token, isAuthenticated: true });
@@ -34,14 +39,19 @@ export const useAuthStore = create<AuthState>()(
       },
 
       setHydrated: () => set({ isHydrated: true }),
+
+      setWelcomeVoucher: (voucher) => set({ welcomeVoucher: voucher }),
+
+      clearWelcomeVoucher: () => set({ welcomeVoucher: null }),
     }),
     {
       name: "sf-auth",
       storage: createJSONStorage(() => sessionStorage),
-      partialize: (state) => ({ 
-        user: state.user, 
+      partialize: (state) => ({
+        user: state.user,
         token: state.token,
-        isAuthenticated: state.isAuthenticated 
+        isAuthenticated: state.isAuthenticated,
+        // welcomeVoucher sengaja TIDAK di-persist agar tidak muncul ulang setelah refresh
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {

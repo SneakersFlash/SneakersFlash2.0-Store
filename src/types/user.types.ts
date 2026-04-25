@@ -32,9 +32,20 @@ export interface OAuthLoginDto {
   token: string; // Token ID yang didapat dari Google/Apple SDK di frontend
 }
 
+export interface WelcomeVoucher {
+  code: string;
+  name: string;
+  description?: string;
+  discountType: string;
+  discountValue: number;
+  minPurchaseAmount: number;
+  expiresAt: string;
+}
+
 export interface AuthResponse {
   access_token: string;
   user: User;
+  welcomeVoucher?: WelcomeVoucher;
 }
 
 export interface UserProfile {
