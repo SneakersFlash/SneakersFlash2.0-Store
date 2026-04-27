@@ -1,3 +1,5 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import CampaignsService from "@/lib/api/campaigns.service";
@@ -10,21 +12,60 @@ type EventPageProps = {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-export default async function EventDetailPage({ params, searchParams }: EventPageProps) {
+// ── React.cache agar API tidak dipanggil 2x (sekali di generateMetadata, sekali di page) ──
+const getEventData = cache(async (slug: string, page: number = 1) => {
+    return CampaignsService.getEventBySlug(slug, { page, limit: 16 });
+});
+
+// ── generateMetadata: inject <head> dinamis dari data backend ──
+export async function generateMetadata({ params }: EventPageProps): Promise<Metadata> {
     const resolvedParams = await params;
-    const resolvedSearchParams = await searchParams;
-    
-    // Tangkap halaman aktif dari URL (misal: ?page=2)
-    const currentPage = resolvedSearchParams.page ? Number(resolvedSearchParams.page) : 1;
-    
+
     let eventData;
     try {
-        eventData = await CampaignsService.getEventBySlug(resolvedParams.slug, { 
-        page: currentPage, 
-        limit: 16 // Set mau berapa produk per halaman
-        });
+        eventData = await getEventData(resolvedParams.slug);
+    } catch {
+        return { title: "Event Tidak Ditemukan" };
+    }
+
+    const title       = eventData.metaTitle       || eventData.title;
+    const description = eventData.metaDescription || "";
+    const ogImage     = eventData.ogImageUrl       || eventData.bannerDesktopUrl || "";
+    const url         = `https://sneakersflash.com/events/${eventData.slug}`;
+
+    return {
+        title,
+        description,
+        alternates: { canonical: url },
+        robots: { index: true, follow: true },
+        openGraph: {
+            title,
+            description,
+            url,
+            type: "website",
+            images: ogImage ? [{ url: ogImage, width: 1200, height: 630, alt: title }] : [],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description,
+            images: ogImage ? [ogImage] : [],
+        },
+    };
+}
+
+export default async function EventDetailPage({ params, searchParams }: EventPageProps) {
+    const resolvedParams      = await params;
+    const resolvedSearchParams = await searchParams;
+
+    const currentPage = resolvedSearchParams.page ? Number(resolvedSearchParams.page) : 1;
+
+    let eventData;
+    try {
+        // Pakai getEventData yang sudah di-cache — tidak ada double request
+        eventData = await getEventData(resolvedParams.slug, currentPage);
     } catch (error) {
-        notFound(); 
+        notFound();
     }
 
     if (!eventData) return notFound();
@@ -36,7 +77,6 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
     
       {/* === HEADER BANNER === */}
       <div className="relative w-full overflow-hidden">
-        {/* Tinggi disesuaikan (250px) agar tidak terlalu sempit di mobile */}
         <div className="relative h-[250px] md:h-[350px] w-full max-w-7xl mx-auto flex flex-col justify-center px-4 md:px-12">
           
           {eventData.bannerDesktopUrl ? (
@@ -52,7 +92,6 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-          {/* flex-col di mobile dengan gap agar elemen tidak berdesakan */}
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6 mt-auto pb-6 md:pb-12 w-full">
             <div className="w-full md:w-auto">
               <span className="inline-flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm font-bold bg-white text-black px-2.5 py-1 md:px-3 md:py-1.5 rounded-md uppercase tracking-widest mb-2 md:mb-3 shadow-lg">
@@ -62,7 +101,6 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
                 </span>
                 {eventData.isActive ? "Live Event" : "Event Berakhir"}
               </span>
-              {/* text-2xl/3xl di mobile agar judul panjang tidak patah berantakan */}
               <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight drop-shadow-lg line-clamp-2 md:line-clamp-none">
                 {eventData.title}
               </h1>
@@ -89,8 +127,7 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
         </div>
       )}
 
-      {/* === AREA PRODUK & FILTER/PAGINATION === */}
-      {/* Tambah sedikit padding-x di mobile (px-3) agar tidak mentok layar */}
+      {/* === AREA PRODUK & PAGINATION === */}
       <div className="max-w-7xl mx-auto px-3 sm:px-4 mt-8">
         <div className="flex items-center justify-between border-b border-gray-100 pb-4">
           <div className="flex items-center gap-2 md:gap-3">
@@ -101,7 +138,6 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
           </div>
         </div>
 
-        {/* Render Komponen Grid Client */}
         <EventGridClient 
           products={eventData.products} 
           meta={eventData.meta} 
