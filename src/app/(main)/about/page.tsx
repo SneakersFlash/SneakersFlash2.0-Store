@@ -47,7 +47,7 @@ export default function AboutPage() {
         <PageLayout>
         <PageHeader
             title="About SneakersFlash"
-            subtitle="Lahir dari passion, tumbuh bersama komunitas. Ini adalah cerita kami."
+            subtitle="Lahir dari passion. Tumbuh selama satu dekade. Inilah perjalanan kami."
             accentWord="Flash"
         />
 

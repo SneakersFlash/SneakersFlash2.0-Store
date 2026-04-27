@@ -60,8 +60,11 @@ export function Footer() {
             </Link>
 
             <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
-              Indonesia's home for authentic sneakers and streetwear.
-              New drops every Friday. Always legit. ⚡
+              At Sneakers Flash, every activation is built with one goal:
+              <br />to convert attention into measurable business results.
+              <br />
+              From offline events to digital channels, we focus on
+              creating impact that goes beyond visibility. ⚡
             </p>
 
             {/* Social */}
