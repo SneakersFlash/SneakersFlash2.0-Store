@@ -53,9 +53,19 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
     ? getProductImageUrl([product.variants[0].imageUrl[1]])
     : null;
 
-  const hasDiscount = Boolean(product.variants?.[0]?.price && product.variants[0].price < product.basePrice);
-  const displayPrice = product.variants?.[0]?.price ?? product.basePrice;
-  const saving = hasDiscount ? discountPercent(product.basePrice, product.variants[0].price) : 0;
+  const hasEvent = Boolean(product.activeEvent?.specialPrice);
+  const eventPrice = hasEvent ? product.activeEvent!.specialPrice! : null;
+  const eventName = product.activeEvent?.eventName ?? null;
+
+  const hasDiscount = hasEvent
+    ? true
+    : Boolean(product.variants?.[0]?.price && product.variants[0].price < product.basePrice);
+  const displayPrice = hasEvent
+    ? eventPrice!
+    : (product.variants?.[0]?.price ?? product.basePrice);
+  const saving = hasDiscount
+    ? discountPercent(product.basePrice, displayPrice)
+    : 0;
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -80,6 +90,15 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
       >
         {/* ── Image Container ── */}
         <div className="relative w-full aspect-square sm:aspect-[5/4] bg-[#F5F5F5] shrink-0 overflow-hidden">
+        {/* ── Event Badge ── */}
+          {eventName && (
+            <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
+              <span className="inline-flex items-center px-2 py-1 rounded-md bg-black text-white text-[9px] sm:text-[10px] font-bold tracking-wide uppercase leading-none shadow-sm">
+                {eventName}
+              </span>
+            </div>
+          )}
+
           <button
             onClick={handleWishlistToggle}
             disabled={isProcessing}
@@ -145,7 +164,12 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
                 <span className="text-[11px] lg:text-[13px] text-[#888888] line-through font-normal">
                   {formatPrice(product.basePrice)}
                 </span>
-                <span className="inline-flex items-center justify-center bg-green-200 text-green-500 text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded">
+                <span className={cn(
+                  "inline-flex items-center justify-center text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded",
+                  hasEvent
+                    ? "bg-black text-white"
+                    : "bg-green-200 text-green-500"
+                )}>
                   Save {saving}%
                 </span>
               </div>
