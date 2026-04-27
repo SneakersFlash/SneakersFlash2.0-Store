@@ -41,4 +41,11 @@ export const productsService = {
     });
     return data;
   },
+
+  async getSitemapSlugs(): Promise<{ slug: string; updatedAt: string }[]> {
+    const { data } = await apiClient.get<{ slug: string; updatedAt: string }[]>(
+      "/products/sitemap"
+    );
+    return data;
+  },
 };
