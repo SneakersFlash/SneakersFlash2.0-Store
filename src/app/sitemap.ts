@@ -20,6 +20,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/products`, lastModified: new Date(), priority: 0.9, changeFrequency: "daily"   },
     { url: `${BASE_URL}/events`,   lastModified: new Date(), priority: 0.8, changeFrequency: "weekly"  },
     { url: `${BASE_URL}/about`,    lastModified: new Date(), priority: 0.5, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/contact-us`,    lastModified: new Date(), priority: 0.5, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/faq`,    lastModified: new Date(), priority: 0.5, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/flash-club`,    lastModified: new Date(), priority: 0.5, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/privacy-policy`,    lastModified: new Date(), priority: 0.5, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/shipping`,    lastModified: new Date(), priority: 0.5, changeFrequency: "monthly" },
+    { url: `${BASE_URL}/size-guide`,    lastModified: new Date(), priority: 0.5, changeFrequency: "monthly" },
   ];
 
   let eventPages: MetadataRoute.Sitemap = [];
