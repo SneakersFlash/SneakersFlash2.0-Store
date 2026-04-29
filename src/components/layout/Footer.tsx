@@ -4,19 +4,20 @@ import { Instagram, Twitter, Youtube, Facebook } from "lucide-react";
 
 const FOOTER_LINKS = {
   Help: [
-    { label: "Contact Us",        href: "/contact-us"          },
-    { label: "Order Status",      href: "/order-status"   },
+    { label: "Contact Us",        href: "/contact-us"       },
+    { label: "Order Status",      href: "/order-status"     },
     { label: "Shipping & Returns",href: "/shipping"         },
     { label: "Size Guide",        href: "/size-guide"       },
     { label: "Flash Club",        href: "/flash-club"       },
-    { label: "Privacy Policy",    href: "/privacy-policy"       },
+    { label: "Privacy Policy",    href: "/privacy-policy"   },
     { label: "FAQs",              href: "/faq"              },
+    { label: "Term & Condition",  href: "/term-condition"   },
   ],
   Company: [
-    { label: "About Sneakers Flash", href: "/about"            },
-    { label: "Careers",           href: "/careers"          },
-    { label: "Press",             href: "/press"            },
-    { label: "Sustainability",    href: "/sustainability"   },
+    { label: "About Sneakers Flash",  href: "/about"            },
+    { label: "Careers",               href: "/careers"          },
+    { label: "Press",                 href: "/press"            },
+    { label: "Sustainability",        href: "/sustainability"   },
   ],
   Shop: [
     { label: "New Arrivals",      href: "/products?sort=newest"  },
@@ -28,10 +29,10 @@ const FOOTER_LINKS = {
 };
 
 const SOCIAL_LINKS = [
-  { icon: Instagram, label: "Instagram", href: "https://instagram.com/snkrsflash" },
-  { icon: Twitter,   label: "X / Twitter",href: "https://twitter.com/snkrsflash"  },
-  { icon: Youtube,   label: "YouTube",   href: "https://youtube.com/@snkrsflash"  },
-  { icon: Facebook,  label: "Facebook",  href: "https://facebook.com/snkrsflash"  },
+  { icon: Instagram, label: "Instagram", href: "https://instagram.com/sneakers_flash" },
+  { icon: Twitter,   label: "Threads",href: "https://twitter.com/sneakers_flash"  },
+  { icon: Youtube,   label: "YouTube",   href: "https://www.youtube.com/@SneakersFlash"  },
+  { icon: Facebook,  label: "Facebook",  href: "https://facebook.com/sneakersflash"  },
 ];
 
 const PAYMENT_METHODS = ["VISA", "MC", "BCA", "BNI", "GoPay", "OVO", "Dana"];

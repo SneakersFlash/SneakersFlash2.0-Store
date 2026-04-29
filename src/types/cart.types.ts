@@ -16,6 +16,8 @@ export interface CartItem {
   size?: string;       //
   weight?: number
   weightKilogram?: number
+  originalPrice?: number;   // ← tambah ini
+  isEventPrice?: boolean;   
 }
 
 export interface Cart {

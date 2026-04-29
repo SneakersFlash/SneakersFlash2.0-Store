@@ -216,6 +216,11 @@ export function CartSidebar() {
     // Applied voucher sudah tersimpan di localStorage, dibaca oleh checkout
   };
 
+  const eventSavings = selectedItems.reduce((sum, item) => {
+    if (!item.isEventPrice || !item.originalPrice) return sum;
+    return sum + (Number(item.originalPrice) - Number(item.price)) * item.quantity;
+  }, 0);
+
   return (
     <AnimatePresence>
       {isOpen && isAuthenticated && (
@@ -338,7 +343,17 @@ export function CartSidebar() {
                             </div>
 
                             <div className="flex items-end justify-between mt-auto pt-2">
-                              <span className="font-bold text-[12px] text-[#F70000]">{formatPrice(price)}</span>
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                {item.isEventPrice && (
+                                  <span className="inline-flex items-center gap-0.5 bg-amber-100 text-amber-600 text-[9px] font-bold px-1.5 py-0.5 rounded">
+                                    <Zap size={8} fill="currentColor" /> Flash
+                                  </span>
+                                )}
+                                <span className="font-bold text-[12px] text-[#F70000]">{formatPrice(price)}</span>
+                                {item.isEventPrice && item.originalPrice && (
+                                  <span className="text-[10px] text-gray-400 line-through">{formatPrice(item.originalPrice)}</span>
+                                )}
+                              </div>
                               <div
                                 onClick={(e) => e.stopPropagation()}
                                 className="flex items-center border border-gray-200 rounded-md h-7 overflow-hidden"
@@ -420,6 +435,15 @@ export function CartSidebar() {
                     <span className="text-[12px] font-bold text-gray-500">Subtotal</span>
                     <span className="font-bold text-[13px] text-gray-900">{formatPrice(subtotal)}</span>
                   </div>
+
+                  {eventSavings > 0 && (
+                    <div className="flex items-center justify-between text-amber-600">
+                      <span className="text-[12px] font-bold flex items-center gap-1">
+                        <Zap size={12} fill="currentColor" /> Hemat Event
+                      </span>
+                      <span className="font-bold text-[13px]">-{formatPrice(eventSavings)}</span>
+                    </div>
+                  )}
 
                   {appliedVoucher && discountAmount > 0 && (
                     <div className="flex items-center justify-between text-[#F70000]">
