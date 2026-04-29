@@ -34,3 +34,35 @@ export interface CheckoutResponse {
     snapToken: string | null;
     discountTotal: number;
 }
+
+export interface TrackingManifest {
+  manifest_code:        string;
+  manifest_description: string;
+  manifest_date:        string;
+  manifest_time:        string;
+  city_name:            string;
+}
+ 
+export interface TrackingResult {
+  delivered: boolean;
+  summary: {
+    courier_code:   string;
+    courier_name:   string;
+    waybill_number: string;
+    service_code:   string;
+    waybill_date:   string;
+    shipper_name:   string;
+    receiver_name:  string;
+    origin:         string;
+    destination:    string;
+    status:         string;
+  };
+  details:         any;
+  delivery_status: {
+    status:       string;
+    pod_receiver: string;
+    pod_date:     string;
+    pod_time:     string;
+  };
+  manifest: TrackingManifest[]; // diurutkan terbaru di atas oleh backend
+}
