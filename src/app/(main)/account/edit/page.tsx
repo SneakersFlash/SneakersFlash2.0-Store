@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import PageLoader from "@/components/common/PageLoader";
 import { useMyProfile, useUpdateProfile, useAddAddress } from "@/lib/hooks/useUsers";
 import { AddressForm } from "@/components/address/AddressForm";
 import type { CreateUserAddressDto } from "@/types/user.types";
@@ -59,11 +60,7 @@ export default function SetupProfilePage() {
   const isSaving = updateProfile.isPending || addAddress.isPending;
 
   if (profileLoading) {
-    return (
-      <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-[#FF6B00] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   const personalDetailsSection = (

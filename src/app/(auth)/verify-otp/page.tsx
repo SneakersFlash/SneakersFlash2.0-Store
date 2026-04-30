@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
+import PageLoader from "@/components/common/PageLoader";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthInput from "@/components/auth/AuthInput";
@@ -164,11 +165,7 @@ function VerifyOtpContent() {
 
 export default function VerifyOtpPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#F2F2F2] flex items-center justify-center">
-        <LoadingSpinner color="gray" />
-      </div>
-    }>
+    <Suspense fallback={<PageLoader />}>
       <VerifyOtpContent />
     </Suspense>
   );

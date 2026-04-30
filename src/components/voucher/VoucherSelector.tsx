@@ -13,9 +13,10 @@ interface VoucherSelectorProps {
   appliedVoucher: AppliedVoucher | null;
   onApply: (voucher: AppliedVoucher) => void;
   onRemove: () => void;
+  disabled?: boolean;
 }
 
-export default function VoucherSelector({ subtotal, appliedVoucher, onApply, onRemove }: VoucherSelectorProps) {
+export default function VoucherSelector({ subtotal, appliedVoucher, onApply, onRemove, disabled }: VoucherSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [vouchers, setVouchers] = useState<any[]>([]); // Menggunakan any[] sementara untuk menampung properti tambahan
   const [isLoadingList, setIsLoadingList] = useState(false);
@@ -54,11 +55,25 @@ export default function VoucherSelector({ subtotal, appliedVoucher, onApply, onR
     }
   };
 
+  if (disabled) {
+    return (
+      <div className="w-full flex items-center justify-between p-4 opacity-50 cursor-not-allowed">
+        <div className="flex items-center gap-3">
+          <Ticket size={18} className="text-gray-400" />
+          <div className="text-left">
+            <span className="text-sm font-medium text-gray-400">Voucher tidak tersedia</span>
+            <p className="text-xs text-gray-400 mt-0.5">Produk event tidak dapat menggunakan voucher</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
       {/* Tombol Header (Trigger) */}
-      <button 
-        onClick={() => setIsOpen(!isOpen)} 
+      <button
+        onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
       >
         <div className="flex items-center gap-3">
@@ -76,7 +91,7 @@ export default function VoucherSelector({ subtotal, appliedVoucher, onApply, onR
         </div>
         <div className="flex items-center gap-2">
           {appliedVoucher && (
-            <span 
+            <span
               onClick={(e) => { e.stopPropagation(); onRemove(); }}
               className="text-xs text-gray-400 hover:text-red-500 bg-gray-100 hover:bg-red-50 px-2 py-1 rounded-md"
             >

@@ -10,6 +10,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useProduct } from "@/lib/hooks/useProducts";
+import PageLoader from "@/components/common/PageLoader";
 import { useCartStore } from "@/lib/store/cartStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
@@ -175,11 +176,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
 
   // --- LOADING & ERROR STATE ---
   if (isProductLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh]">
-        <Loader2 size={40} className="animate-spin text-[#FF6B00]" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   if (!product) {
@@ -222,6 +219,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
   const hasDiscount = Boolean(eventPrice || (product.variants?.[0]?.price && product.variants[0].price < product.basePrice));
   
   const saving = hasDiscount ? discountPercent(product.basePrice, displayPrice) : 0;
+  const isSoldOut = product.variants?.length > 0 && product.variants.every((v: any) => v.stock === 0);
   // ================================================
 
   const rating       = parseFloat(product.ratingAvg?.d[0] ?? "4.8");
@@ -325,6 +323,17 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                   Save {saving}%
                 </div>
               )}
+
+              {/* Sold Out Overlay */}
+              {isSoldOut && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-black/60 backdrop-blur-[2px] px-6 py-2.5 rotate-[-12deg]">
+                    <span className="text-white text-xl lg:text-2xl font-black uppercase tracking-[0.2em]">
+                      Sold Out
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Thumbnail strip - Dynamically scales depending on count */}
@@ -400,7 +409,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                   ?.join(' / ')}
               </p>
               <p className="text-[18px] lg:text-[20px] font-semibold font-black text-gray-900 leading-tight">
-                {product.name} - Size {product.variants && product.variants.length === 1 ? product.variants[0].size : ''} 
+                {product.name} {product.variants && product.variants.length === 1 ? `Size - ${product.variants[0].size}` : ''} 
               </p>
             </div>
 
@@ -715,13 +724,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
 
 export function ProductDetailClient({ slug }: ProductDetailClientProps) {
   return (
-    <Suspense
-      fallback={
-        <div className="flex flex-col items-center justify-center min-h-[70vh]">
-          <Loader2 size={40} className="animate-spin text-[#FF6B00]" />
-        </div>
-      }
-    >
+    <Suspense fallback={<PageLoader />}>
       <ProductDetailClientInner slug={slug} />
     </Suspense>
   );

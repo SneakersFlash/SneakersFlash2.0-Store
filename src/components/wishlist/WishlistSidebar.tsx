@@ -1,7 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Heart, Loader2, Trash2 } from "lucide-react";
+import { X, Heart, Trash2 } from "lucide-react";
+import PageLoader from "@/components/common/PageLoader";
 import Link from "next/link";
 import Image from "next/image";
 import { useWishlists, useRemoveWishlist } from "@/lib/hooks/useWishlist"; // Sesuaikan path jika berbeda
@@ -58,11 +59,10 @@ export function WishlistSidebar({ isOpen, onClose }: WishlistSidebarProps) {
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6 scrollbar-none">
               {isLoading ? (
-                <div className="flex flex-col items-center justify-center h-full gap-3 text-muted-foreground">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                  <p className="text-sm uppercase tracking-widest font-medium">Memuat wishlist...</p>
+                <div className="flex items-center justify-center h-full">
+                  <PageLoader />
                 </div>
-              ) : wishlistItems.length === 0 ? (
+              ) :wishlistItems.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-center gap-4">
                   <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-2">
                     <Heart className="w-8 h-8 text-muted-foreground" />

@@ -2,6 +2,7 @@
 
 // components/product/TrackOrderSheet.tsx
 import React, { useEffect, useRef, useState } from "react";
+import PageLoader from "@/components/common/PageLoader";
 import {
   X,
   Truck,
@@ -274,9 +275,8 @@ export default function TrackOrderSheet({
         <div className="overflow-y-auto flex-1 px-5 py-5">
           {/* LOADING */}
           {state === "loading" && (
-            <div className="flex flex-col items-center justify-center py-16 gap-4">
-              <div className="w-10 h-10 border-4 border-gray-100 border-t-[#F70000] rounded-full animate-spin" />
-              <p className="text-sm text-gray-400">Memuat status pengiriman…</p>
+            <div className="flex items-center justify-center py-16">
+              <PageLoader />
             </div>
           )}
 

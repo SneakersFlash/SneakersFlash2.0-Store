@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, Suspense } from "react";
+import PageLoader from "@/components/common/PageLoader";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -252,11 +253,7 @@ function RegisterContent() {
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#F2F2F2] flex items-center justify-center">
-        <LoadingSpinner color="gray" />
-      </div>
-    }>
+    <Suspense fallback={<PageLoader />}>
       <RegisterContent />
     </Suspense>
   );

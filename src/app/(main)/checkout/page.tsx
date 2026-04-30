@@ -31,6 +31,7 @@ import type { AppliedVoucher } from "@/types/voucher.types";
 import { AddressForm } from "@/components/address/AddressForm";
 import { useQueryClient } from "@tanstack/react-query";
 import { cartService } from "@/lib/api/cart.service";
+import PageLoader from "@/components/common/PageLoader";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -533,13 +534,18 @@ function CheckoutContent() {
   const instantBlocked = selectedDistKm !== null && selectedDistKm > INSTANT_DISTANCE_LIMIT_KM;
 
   // ── Voucher (Updated State) ───────────────────────────────────────────────
+  const hasEventItem = checkoutItems.some((i) => i.isEventPrice);
+
   const [appliedVoucher, setAppliedVoucher] = useState<AppliedVoucher | null>(null);
   useEffect(() => {
-    const saved = cartService.loadAppliedVoucher();
-    if (saved) {
-      setAppliedVoucher(saved);
+    if (hasEventItem) {
+      setAppliedVoucher(null);
+      cartService.saveAppliedVoucher(null);
+      return;
     }
-  }, []);
+    const saved = cartService.loadAppliedVoucher();
+    if (saved) setAppliedVoucher(saved);
+  }, [hasEventItem]);
 
   // ── Shipping ──────────────────────────────────────────────────────────────
   const [shippingOptions,  setShippingOptions]  = useState<any[]>([]);
@@ -893,16 +899,17 @@ function CheckoutContent() {
         <section className="bg-white lg:rounded-xl lg:border lg:border-gray-200 overflow-hidden divide-y divide-gray-100">
 
           {/* Voucher */}
-          <VoucherSelector 
-            subtotal={subtotal} 
-            appliedVoucher={appliedVoucher} 
+          <VoucherSelector
+            subtotal={subtotal}
+            appliedVoucher={appliedVoucher}
+            disabled={hasEventItem}
             onApply={(voucher) => {
               setAppliedVoucher(voucher);
               cartService.saveAppliedVoucher(voucher);
-            }} 
+            }}
             onRemove={() => {
               setAppliedVoucher(null);
-              cartService.saveAppliedVoucher(null); 
+              cartService.saveAppliedVoucher(null);
             }}
           />
 
@@ -1026,7 +1033,7 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div>Loading checkout...</div>}>
+    <Suspense fallback={<PageLoader />}>
       <CheckoutContent />
     </Suspense>
   );
