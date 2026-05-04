@@ -28,7 +28,7 @@ export default function AuthHeroBanner() {
     : FALLBACK_IMAGE;
 
   return (
-    <div className="relative w-full h-80 mb-8 rounded-2xl overflow-hidden shadow-sm bg-gray-200">
+    <div className="relative w-full aspect-[128/93] mb-8 rounded-2xl overflow-hidden shadow-sm bg-gray-200">
       {!ready && (
         <div className="absolute inset-0 animate-pulse bg-gray-300 rounded-2xl" />
       )}
