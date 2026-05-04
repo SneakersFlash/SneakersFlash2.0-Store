@@ -101,11 +101,6 @@
 
   p { @apply leading-relaxed; }
 
-  /* prevent iOS Safari auto-zoom on input focus (triggered when font-size < 16px) */
-  input, textarea, select {
-    font-size: 16px;
-  }
-
   :focus-visible {
     @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
   }
@@ -328,6 +323,11 @@
   100% { 
     opacity: 0; 
   }
+}
+
+/* iOS Safari zoom prevention — must be outside @layer to win over Tailwind utilities */
+input, textarea, select {
+  font-size: 16px !important;
 }
 
 .animate-fadeInUp {

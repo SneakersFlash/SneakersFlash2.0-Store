@@ -20,7 +20,7 @@ const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             ref={ref}
             type={resolvedType}
             className={[
-              "w-full bg-white rounded-xl px-4 py-4 text-sm text-gray-800 placeholder-gray-400",
+              "w-full bg-white rounded-xl px-4 py-4 text-base text-gray-800 placeholder-gray-400",
               "border transition-all duration-200 outline-none",
               "focus:border-orange-400 focus:ring-2 focus:ring-orange-100",
               error

@@ -309,7 +309,7 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
             </div>
             {isAddingLabel && (
             <div className="flex items-center gap-2 mt-2">
-                <input type="text" value={newLabelInput} onChange={(e) => setNewLabelInput(e.target.value)} placeholder="e.g. Parent's House" className="flex-1 border-2 border-primary rounded px-3 py-2 text-sm focus:outline-none focus:ring-0 focus:border-primary" />
+                <input type="text" value={newLabelInput} onChange={(e) => setNewLabelInput(e.target.value)} placeholder="e.g. Parent's House" className="flex-1 border-2 border-primary rounded px-3 py-2 text-base focus:outline-none focus:ring-0 focus:border-primary" />
                 <button type="button" onClick={confirmAddLabel} className="p-2.5 rounded bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-0 focus:border-primary"><Check className="w-4 h-4" /></button>
                 <button type="button" onClick={() => setIsAddingLabel(false)} className="p-2.5 rounded bg-gray-100 text-gray-600 hover:bg-gray-200 focus:outline-none focus:ring-0 focus:border-primary"><X className="w-4 h-4" /></button>
             </div>

@@ -121,7 +121,7 @@ export default function VoucherSelector({ subtotal, appliedVoucher, onApply, onR
                     placeholder="Masukkan Kode Voucher" 
                     value={manualCode}
                     onChange={(e) => setManualCode(e.target.value.toUpperCase())}
-                    className="flex-1 p-2.5 border border-gray-300 rounded-lg text-sm font-bold uppercase tracking-widest focus:border-primary outline-none"
+                    className="flex-1 p-2.5 border border-gray-300 rounded-lg text-base font-bold uppercase tracking-widest focus:border-primary outline-none"
                   />
                   <button 
                     disabled={isApplying || !manualCode}
