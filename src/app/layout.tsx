@@ -38,8 +38,15 @@ export const metadata: Metadata = {
     template: "%s | SneakersFlash",
   },
   icons: {
-    icon: '/icon.png',
-    apple: '/icon.png',
+    icon: [
+      { url: '/images/petir.svg', type: 'image/svg+xml' },
+      { url: '/images/petir.png', sizes: '32x32', type: 'image/png' },
+      { url: '/images/petir.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/images/petir.png', sizes: '180x180', type: 'image/png' },
+    ],
+    shortcut: '/images/petir.svg',
   },
   description:
     "Shop the latest sneakers, running shoes, and streetwear. New drops every week. Free shipping on orders over Rp 500k.",
