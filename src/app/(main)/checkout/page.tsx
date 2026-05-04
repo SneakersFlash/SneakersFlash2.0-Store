@@ -591,8 +591,11 @@ function CheckoutContent() {
 
     logisticsService.calculateShipping(payload)
     .then((data) => {
-      setShippingOptions(data ?? []);
-      const eligible = (data ?? []).filter((o: any) => instantBlocked ? !isInstantCourier(o) : true);
+      const options: any[] = Array.isArray(data)
+        ? data
+        : Object.values(data ?? {}).filter((v: any) => v && typeof v === "object" && v.courier);
+      setShippingOptions(options);
+      const eligible = options.filter((o: any) => instantBlocked ? !isInstantCourier(o) : true);
       setSelectedCourier(eligible[0] ?? null);
     })
     .catch(console.error)
@@ -699,11 +702,13 @@ function CheckoutContent() {
     ]},
   ];
 
+  console.log(shippingOptions);
   const regularOptions = shippingOptions.filter((o) => !isInstantCourier(o));
   const instantOptions = shippingOptions.filter((o) =>  isInstantCourier(o));
 
   const canPay = !!(selectedPayment && selectedCourier && selectedAddress && !isCalcShipping);
 
+  
   // ─── Render ────────────────────────────────────────────────────────────────
 
   return (
