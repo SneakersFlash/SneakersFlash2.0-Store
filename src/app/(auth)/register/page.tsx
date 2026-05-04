@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { validateEmail, validatePassword, validateName } from "@/lib/auth-validation";
 import AuthInput from "@/components/auth/AuthInput";
 import SocialLoginButton from "../../../../validation/SocialLoginButton"; // Sesuaikan jika path berbeda
-import Image from "next/image";
+import AuthHeroBanner from "@/components/auth/AuthHeroBanner";
 
 interface FormState {
   name: string;
@@ -133,15 +133,7 @@ function RegisterContent() {
       <div className="flex-1 flex flex-col px-5 pt-6 pb-10 max-w-md mx-auto w-full">
         
         {/* Hero illustration */}
-        <div className="relative w-full h-80 md:h-80 mb-8 rounded-2xl overflow-hidden shadow-sm">
-          <Image
-            src="/images/PAYDAY.jpeg"
-            alt="Sneakers Flash"
-            fill
-            className="object-cover hover:scale-105 transition-transform duration-500"
-            priority
-          />
-        </div>
+        <AuthHeroBanner />
 
         <h2 className="text-xl font-bold text-gray-900 text-center mb-2">
           Join Sneaker Flash
