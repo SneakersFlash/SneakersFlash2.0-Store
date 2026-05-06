@@ -143,10 +143,16 @@ function ShippingRow({ opt, isSelected, onSelect, disabled }: {
           </p>
         </div>
       </div>
-      <span className="text-xs shrink-0 ml-2 flex flex-col">
-        <span className="font-bold text-gray-900">{formatPrice(0)}</span>
-        <span className="line-through text-gray-400">{formatPrice(opt.cost)}</span>
-      </span>
+{(() => {
+        const subsidy = Math.min(Number(opt.cost), 50000);
+        const customerCost = Math.max(0, Number(opt.cost) - subsidy);
+        return (
+          <span className="text-xs shrink-0 ml-2 flex flex-col items-end">
+            <span className="font-bold text-emerald-600">{customerCost === 0 ? 'GRATIS' : formatPrice(customerCost)}</span>
+            <span className="line-through text-gray-400 text-[10px]">{formatPrice(opt.cost)}</span>
+          </span>
+        );
+      })()}
     </div>
   );
 }
@@ -376,12 +382,12 @@ function AddressFormModal({
 
 function SummaryBar({
   isOpen, onToggle,
-  subtotal, shippingCost, voucherDiscount, pointsDiscount,
+  subtotal, shippingCost, shippingSubsidy, voucherDiscount, pointsDiscount,
   grandTotal, pointsEarned, itemCount,
   canPay, isLoading, onPay,
 }: {
   isOpen: boolean; onToggle: () => void;
-  subtotal: number; shippingCost: number;
+  subtotal: number; shippingCost: number; shippingSubsidy: number;
   voucherDiscount: number; pointsDiscount: number;
   grandTotal: number; pointsEarned: number; itemCount: number;
   canPay: boolean; isLoading: boolean; onPay: () => void;
@@ -416,11 +422,15 @@ function SummaryBar({
                     <span className="font-semibold">{formatPrice(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-xs text-gray-700">
-                    <span>Shipping</span>
-                    <span className={cn("font-semibold", !shippingCost ? "text-green-300 line-through italic text-xs mt-0.5" : "")}>
-                      {shippingCost ? formatPrice(shippingCost) : "Rp 0"}
-                    </span>
+                    <span>Ongkir</span>
+                    <span className="font-semibold line-through text-gray-400">{formatPrice(shippingCost + shippingSubsidy)}</span>
                   </div>
+                  {shippingSubsidy > 0 && (
+                    <div className="flex justify-between text-xs text-emerald-600">
+                      <span className="flex items-center gap-1"><Truck size={13} /> Subsidi Ongkir</span>
+                      <span className="font-semibold">−{formatPrice(shippingSubsidy)}</span>
+                    </div>
+                  )}
                   {voucherDiscount > 0 && (
                     <div className="flex justify-between text-xs text-emerald-600">
                       <span className="flex items-center gap-1"><Tag size={13} /> Voucher</span>
@@ -559,14 +569,16 @@ function CheckoutContent() {
   const pointsDiscount = usePoints ? Math.min(pointsBalance, Math.floor(subtotal * 0.1)) : 0;
   
   // Menggunakan voucherDiscount dari objek voucher yang diaplikasikan
-  const voucherDiscount = appliedVoucher?.discountAmount || 0; 
-  const pointsEarned  = Math.floor(subtotal * 0.033);
-  // Free shipping: always 0 for the customer. Real cost is passed to Komerce separately.
-  const shippingCost  = 0;
-  
+  const voucherDiscount   = appliedVoucher?.discountAmount || 0;
+  const pointsEarned      = Math.floor(subtotal * 0.033);
+
+  const SHIPPING_SUBSIDY_MAX = 50000;
+  const realShippingCost     = selectedCourier ? Number(selectedCourier.cost) : 0;
+  const shippingSubsidy      = Math.min(realShippingCost, SHIPPING_SUBSIDY_MAX); // subsidi aktual
+  const customerShippingCost = Math.max(0, realShippingCost - shippingSubsidy);  // yang dibayar customer
+
   // Pastikan grandTotal tidak kurang dari 0
-  const calculatedTotal = subtotal + shippingCost - voucherDiscount - pointsDiscount;
-  const grandTotal    = Math.max(0, calculatedTotal);
+  const grandTotal = Math.max(0, subtotal + customerShippingCost - voucherDiscount - pointsDiscount);
 
   // ── Fetch shipping ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -655,7 +667,8 @@ function CheckoutContent() {
         courier: { 
           name: selectedCourier.courier_name || selectedCourier.courier, 
           service: selectedCourier.service, 
-          cost: selectedCourier.cost 
+          cost: selectedCourier.cost,
+          cashback: selectedCourier.cashback
         },
         paymentMethod: selectedPayment,
         voucherCode:   appliedVoucher?.code || undefined,
@@ -702,7 +715,6 @@ function CheckoutContent() {
     ]},
   ];
 
-  console.log(shippingOptions);
   const regularOptions = shippingOptions.filter((o) => !isInstantCourier(o));
   const instantOptions = shippingOptions.filter((o) =>  isInstantCourier(o));
 
@@ -1026,7 +1038,7 @@ function CheckoutContent() {
       {/* ── SUMMARY BAR ───────────────────────────────────────────────────── */}
       <SummaryBar
         isOpen={isSummaryOpen} onToggle={() => setIsSummaryOpen(!isSummaryOpen)}
-        subtotal={subtotal} shippingCost={shippingCost}
+        subtotal={customerShippingCost} shippingSubsidy={shippingSubsidy} shippingCost={realShippingCost}
         voucherDiscount={voucherDiscount} pointsDiscount={pointsDiscount}
         grandTotal={grandTotal} pointsEarned={pointsEarned}
         itemCount={checkoutItems.length}
@@ -1042,4 +1054,4 @@ export default function CheckoutPage() {
       <CheckoutContent />
     </Suspense>
   );
-} 
+}
