@@ -1,38 +1,59 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Instagram, Twitter, Youtube, Facebook } from "lucide-react";
+import { MessageCircle, Instagram, Mail } from "lucide-react";
 
-const FOOTER_LINKS = {
-  Help: [
-    { label: "Contact Us",        href: "/contact-us"       },
-    { label: "Order Status",      href: "/order-status"     },
-    { label: "Shipping & Returns",href: "/shipping"         },
-    { label: "Size Guide",        href: "/size-guide"       },
-    { label: "Flash Club",        href: "/flash-club"       },
-    { label: "Privacy Policy",    href: "/privacy-policy"   },
-    { label: "FAQs",              href: "/faq"              },
-    { label: "Term & Condition",  href: "/term-condition"   },
-  ],
-  Company: [
-    { label: "About Sneakers Flash",  href: "/about"            },
-    { label: "Careers",               href: "/careers"          },
-    { label: "Press",                 href: "/press"            },
-    { label: "Sustainability",        href: "/sustainability"   },
-  ],
-  Shop: [
-    { label: "New Arrivals",      href: "/products?sort=newest"  },
-    { label: "Best Sellers",      href: "/products?sort=popular" },
-    { label: "Sale",              href: "/products?sale=true"    },
-    { label: "All Brands",        href: "/brands"                },
-    { label: "Gift Cards",        href: "/gift-cards"            },
-  ],
-};
+// TikTok tidak ada di lucide-react, pakai custom SVG
+function TikTokIcon({ size = 15 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.16 8.16 0 0 0 4.77 1.52V6.74a4.85 4.85 0 0 1-1-.05z" />
+    </svg>
+  );
+}
 
-const SOCIAL_LINKS = [
-  { icon: Instagram, label: "Instagram", href: "https://instagram.com/sneakers_flash" },
-  { icon: Twitter,   label: "Threads",href: "https://twitter.com/sneakers_flash"  },
-  { icon: Youtube,   label: "YouTube",   href: "https://www.youtube.com/@SneakersFlash"  },
-  { icon: Facebook,  label: "Facebook",  href: "https://facebook.com/sneakersflash"  },
+const CONTACT_LINKS = [
+  {
+    icon: MessageCircle,
+    label: "WhatsApp",
+    href: "https://wa.me/6281313911391",
+    display: "WhatsApp",
+  },
+  {
+    icon: Instagram,
+    label: "Instagram",
+    href: "https://instagram.com/sneakers_flash",
+    display: "Instagram",
+  },
+  {
+    icon: TikTokIcon,
+    label: "TikTok",
+    href: "https://www.tiktok.com/@sneakers_flash",
+    display: "TikTok",
+  },
+  {
+    icon: Mail,
+    label: "Email",
+    href: "mailto:hello@sneakersflash.com",
+    display: "Email",
+  },
+];
+
+const INFORMATION_LINKS = [
+  { label: "Track Order",      href: "/order-status" },
+  { label: "Return & Refunds", href: "/shipping"     },
+  { label: "Size Guide",       href: "/size-guide"   },
+];
+
+const SUPPORT_LINKS = [
+  { label: "Privacy Policy",    href: "/privacy-policy"  },
+  { label: "FAQ",               href: "/faq"             },
+  { label: "Term & Conditions", href: "/term-condition"  },
 ];
 
 const PAYMENT_METHODS = ["VISA", "MC", "BCA", "BNI", "GoPay", "OVO", "Dana"];
@@ -45,11 +66,17 @@ export function Footer() {
 
       {/* ── Main grid ── */}
       <div className="container-2xl py-12">
+        {/*
+          5 kolom:
+          col-1 & col-2 → Brand (lg:col-span-2)
+          col-3         → Contact Us
+          col-4         → Information
+          col-5         → Support
+        */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
 
           {/* Brand col */}
           <div className="lg:col-span-2">
-            {/* Real logo */}
             <Link href="/" className="block mb-5">
               <Image
                 src="/images/Logo Full Hitam.png"
@@ -60,49 +87,69 @@ export function Footer() {
               />
             </Link>
 
-            <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
               At Sneakers Flash, every activation is built with one goal:
               <br />to convert attention into measurable business results.
               <br />
               From offline events to digital channels, we focus on
               creating impact that goes beyond visibility. ⚡
             </p>
-
-            {/* Social */}
-            <div className="flex items-center gap-2">
-              {SOCIAL_LINKS.map(({ icon: Icon, label, href }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="w-9 h-9 bg-background border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-all duration-200"
-                >
-                  <Icon size={15} />
-                </a>
-              ))}
-            </div>
           </div>
 
-          {/* Link columns */}
-          {Object.entries(FOOTER_LINKS).map(([title, links]) => (
-            <div key={title}>
-              <p className="label text-black font-semibold text-sm mb-4">{title}</p>
-              <ul className="space-y-2.5">
-                {links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Contact Us */}
+          <div>
+            <p className="font-semibold text-sm text-foreground mb-4">Contact Us</p>
+            <ul className="space-y-2.5">
+              {CONTACT_LINKS.map(({ icon: Icon, label, href, display }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target={href.startsWith("mailto") ? undefined : "_blank"}
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Icon size={14} className="shrink-0" />
+                    {display}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Information */}
+          <div>
+            <p className="font-semibold text-sm text-foreground mb-4">Information</p>
+            <ul className="space-y-2.5">
+              {INFORMATION_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Support */}
+          <div>
+            <p className="font-semibold text-sm text-foreground mb-4">Support</p>
+            <ul className="space-y-2.5">
+              {SUPPORT_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
         </div>
       </div>
 

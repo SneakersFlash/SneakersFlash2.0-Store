@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils/cn";
 import { MobileMenu } from "./MobileMenu";
 import { CartSidebar } from "../cart/CartSidebar";
 import { WishlistSidebar } from "../wishlist/WishlistSidebar";
+import CampaignsService from "@/lib/api/campaigns.service";
 
 // ─── Nav data ─────────────────────────────────────────────────────────────────
 
@@ -32,11 +33,7 @@ export const NAV_ITEMS = [
     megaMenu: {
       featured: {
         label: "Trending Now",
-        items: [
-          { label: "Air Jordan 1",  href: "/products?q=air+jordan+1" },
-          { label: "Yeezy Boost",   href: "/products?q=yeezy"        },
-          { label: "NMD R1",        href: "/products?q=nmd"          },
-        ],
+        items: [], // populated dynamically from active campaign event
       },
       columns: [
         {
@@ -74,46 +71,43 @@ export const NAV_ITEMS = [
   {
     label: "Apparel",
     href: "/products?category=apparel",
-    megaMenu: {
-      featured: null,
-      columns: [
-        {
-          title: "Tops",
-          links: [
-            { label: "T-Shirts", href: "/products?category=tshirts" },
-            { label: "Hoodies",  href: "/products?category=hoodies" },
-            { label: "Jackets",  href: "/products?category=jackets" },
-            { label: "Jerseys",  href: "/products?category=jerseys" },
-          ],
-        },
-        {
-          title: "Bottoms",
-          links: [
-            { label: "Pants",   href: "/products?category=pants"   },
-            { label: "Shorts",  href: "/products?category=shorts"  },
-            { label: "Joggers", href: "/products?category=joggers" },
-          ],
-        },
-        {
-          title: "Accessories",
-          links: [
-            { label: "Hats & Caps", href: "/products?category=hats"  },
-            { label: "Socks",       href: "/products?category=socks" },
-            { label: "Bags",        href: "/products?category=bags"  },
-          ],
-        },
-      ],
-    },
+    megaMenu: null,
   },
-  { label: "Brands", href: "/brands",             megaMenu: null },
-  { label: "Sale",   href: "/products?sale=true", megaMenu: null, isSale: true },
+  { label: "Brands", href: "/brands", megaMenu: null },
 ];
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────
 
-function MegaMenu({ item }: { item: (typeof NAV_ITEMS)[number] }) {
+function MegaMenu({
+  item,
+  featuredItems,
+}: {
+  item: (typeof NAV_ITEMS)[number];
+  featuredItems?: { label: string; href: string }[];
+}) {
   if (!item.megaMenu) return null;
   const { megaMenu } = item;
+
+  // Merge dynamic items into featured when provided and available
+  const resolvedFeatured = megaMenu.featured
+    ? {
+        ...megaMenu.featured,
+        items: featuredItems && featuredItems.length > 0
+          ? featuredItems
+          : megaMenu.featured.items,
+      }
+    : null;
+
+  // Don't render featured column if there are no items at all
+  const showFeatured = resolvedFeatured && resolvedFeatured.items.length > 0;
+
+  // Total columns to determine grid
+  const colCount = (showFeatured ? 1 : 0) + megaMenu.columns.length;
+  const gridCols =
+    colCount === 1 ? "grid-cols-1 max-w-xs" :
+    colCount === 2 ? "grid-cols-2 max-w-md"  :
+    colCount === 3 ? "grid-cols-3"            :
+                     "grid-cols-[180px_1fr_1fr_1fr]";
 
   return (
     <motion.div
@@ -125,21 +119,19 @@ function MegaMenu({ item }: { item: (typeof NAV_ITEMS)[number] }) {
       style={{ top: "96px" }}
     >
       <div className="container-2xl py-8">
-        <div className={cn(
-          "grid gap-8",
-          megaMenu.featured ? "grid-cols-[180px_1fr_1fr_1fr]" : "grid-cols-3"
-        )}>
-          {megaMenu.featured && (
+        <div className={cn("grid gap-8", gridCols)}>
+          {showFeatured && resolvedFeatured && (
             <div>
-              <p className="label mb-4">{megaMenu.featured.label}</p>
+              <p className="label mb-4">{resolvedFeatured.label}</p>
               <ul className="space-y-2.5">
-                {megaMenu.featured.items.map((link) => (
+                {resolvedFeatured.items.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground hover:text-gray-900 transition-colors font-medium flex items-center gap-1.5"
+                      className="text-sm text-muted-foreground hover:text-gray-900 transition-colors font-medium flex items-center gap-1.5 min-w-0"
                     >
-                      <span className="text-primary text-xs">⚡</span> {link.label}
+                      <span className="text-primary text-xs shrink-0">⚡</span>
+                      <span className="truncate">{link.label}</span>
                     </Link>
                   </li>
                 ))}
@@ -171,6 +163,7 @@ function MegaMenu({ item }: { item: (typeof NAV_ITEMS)[number] }) {
               </ul>
             </div>
           ))}
+
         </div>
       </div>
     </motion.div>
@@ -353,7 +346,53 @@ function NavbarInner() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isScrolled,   setIsScrolled]   = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [trendingItems,  setTrendingItems]  = useState<{ label: string; href: string }[]>([]);
+  const [campaignItems,  setCampaignItems]  = useState<{ label: string; href: string }[]>([]);
   const navRef = useRef<HTMLDivElement>(null);
+
+  // Single fetch: events → trending products (Shoes) + campaign list (Sale)
+  useEffect(() => {
+    async function loadCampaignData() {
+      try {
+        const events = await CampaignsService.getEvent();
+        if (!events || events.length === 0) return;
+
+        // All active campaigns → Sale dropdown
+        setCampaignItems(
+          events.map((e: any) => ({
+            label: e.name ?? e.title ?? "Campaign",
+            href:  e.slug
+              ? `/event/${e.slug}`
+              : `/products?sale=true&event=${e.id}`,
+          }))
+        );
+
+        // Products from the first event → Shoes "Trending Now"
+        const { data: products } = await CampaignsService.getEventProducts(
+          events[0].id,
+          { per_page: 3, page: 1 }
+        );
+
+        if (!products || products.length === 0) return;
+
+        console.log(products);
+        
+        setTrendingItems(
+          products.slice(0, 3).map((p: any) => {
+            // Strip trailing " - SKU" (e.g. "ADIDAS NMD R1 - HQ4247" → "ADIDAS NMD R1")
+            const name = (p.productName ?? "Product").replace(/\s*-\s*\S+$/, "").trim();
+            return {
+              label: name,
+              href:  `/products/${p.productId}`,
+            };
+          })
+        );
+      } catch {
+        // silently fall back — both states remain empty arrays
+      }
+    }
+    loadCampaignData();
+  }, []);
 
   const items = useCartStore((state) => state.items);
   const { openCart } = useCartStore();
@@ -436,8 +475,7 @@ function NavbarInner() {
                     href={item.href}
                     className={cn(
                       "nav-link flex items-center gap-1 px-3 py-2",
-                      (item as { isSale?: boolean }).isSale && "text-red-500 hover:text-red-400",
-                      (item as { isHot?: boolean }).isHot  && "text-black",
+                      (item as { isHot?: boolean }).isHot && "text-black",
                       pathname === item.href && "active"
                     )}
                   >
@@ -458,9 +496,26 @@ function NavbarInner() {
                     )}
                   </Link>
                   <AnimatePresence>
-                    {activeMenu === item.label && <MegaMenu item={item} />}
+                    {activeMenu === item.label && (
+                      <MegaMenu
+                        item={item}
+                        featuredItems={item.label === "Shoes" ? trendingItems : undefined}
+                      />
+                    )}
                   </AnimatePresence>
                 </div>
+              ))}
+
+              {/* Active campaigns — flat nav links, no dropdown */}
+              {campaignItems.map((campaign) => (
+                <Link
+                  key={campaign.href}
+                  href={campaign.href}
+                  className="nav-link px-3 py-2 text-red-500 hover:text-red-400 truncate max-w-[140px]"
+                  title={campaign.label}
+                >
+                  {campaign.label.length > 18 ? campaign.label.slice(0, 18) + "…" : campaign.label}
+                </Link>
               ))}
             </nav>
 
