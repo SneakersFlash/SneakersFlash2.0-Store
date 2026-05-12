@@ -362,7 +362,7 @@ function NavbarInner() {
           events.map((e: any) => ({
             label: e.name ?? e.title ?? "Campaign",
             href:  e.slug
-              ? `/event/${e.slug}`
+              ? `/events/${e.slug}`
               : `/products?sale=true&event=${e.id}`,
           }))
         );
