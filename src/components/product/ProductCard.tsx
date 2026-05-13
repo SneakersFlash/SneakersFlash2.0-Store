@@ -150,7 +150,7 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
           {/* Penambahan Available Sizes */}
           {product.availableSizes && product.availableSizes.length > 0 && (
             <p className="text-[10px] sm:text-[11px] text-[#888888] mb-1.5 sm:mb-2 line-clamp-1">
-              Sizes: {product.availableSizes.slice(0, 5).join(", ")}
+              Size : {product.availableSizes.slice(0, 5).join(", ")}
               {product.availableSizes.length > 5 && "..."}
             </p>
           )}

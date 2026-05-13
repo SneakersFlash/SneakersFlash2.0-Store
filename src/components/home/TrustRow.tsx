@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
 
 const TRUST_ITEMS = [
-  "100% Authentic",
-  "Best Price",
-  "Excelent Service",
+  "100% Ori",
+  "Gratis Ongkir",
+  "Garansi Penukuran",
 ];
 
 export function TrustRow() {

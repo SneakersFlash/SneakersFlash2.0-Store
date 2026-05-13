@@ -1,97 +1,94 @@
-// ─── Product Types ────────────────────────────────────────────────────────────
+// ─── Sort ─────────────────────────────────────────────────────────────────────
 
-export interface Brand {
-  id: string;
-  name: string;
-  slug: string;
-  isActive?: boolean
-  logoUrl?: string;
-}
+/** Dari FilterModal → langsung ke BE */
+export type PriceSort = "high-to-low" | "low-to-high";
 
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  imageUrl?: string;
-  description?: string;
-  parentId?: string;
-  children?: Category[];
-  _count?: { products: number };
-}
+/** Dari Navbar ?sort=newest (dipetakan ke sortBy+sortOrder di productsService) */
+export type NavbarSort = "newest" | "price-asc" | "price-desc" | "name";
 
-export interface ProductVariant {
-  id: string;
-  size: string;
-  price: number;
-  stock: number;
-  sku: string;
-  isFlashSale?: boolean;
-  specialPrice?: number;
-  eventQuotaLimit?: number;
-  eventQuotaSold?: number;
-  imageUrl: string[]
-}
-
-export interface ProductImage {
-  id: string;
-  url: string;
-  alt?: string;
-  order: number;
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  basePrice: number;
-  salePrice?: number;
-  weightGrams?: number;
-  sku: string;
-  isActive: boolean;
-  isFeatured: boolean;
-  brand: Brand;
-  categories: Category[];
-  images: ProductImage[];
-  variants: ProductVariant[];
-  activeEvent: any
-  wishlists: any[]
-  availableSizes?: string[];
-  ratingAvg?: any;
-  reviewCount?: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Meta {
-  total: number;
-  page: number;
-  limit: number;
-  lastPage: number;
-}
-export interface ProductListResponse {
-  data: Product[];
-  meta: Meta
-}
+// ─── Filters ──────────────────────────────────────────────────────────────────
 
 export interface ProductFilters {
-  categoryName?: string;
-  category?: string;
-  brandName?: string;
-  subCategory?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  sizes?: string[];
-  sort?: ProductSortOption;
-  page?: number;
+  // ── Pagination ──────────────────────────────────────────────────────────────
+  page?:  number;
   limit?: number;
+
+  // ── Search ──────────────────────────────────────────────────────────────────
   search?: string;
+
+  // ── Category ────────────────────────────────────────────────────────────────
+  // Dari Navbar      : ?category=shoes | running | lifestyle | apparel | ...
+  // Dari FilterModal : ?category=new | deals
+  // Dari subCategory tab di ProductListingClient → di-assign ke sini
+  category?: string;
+
+  // ── Brand ───────────────────────────────────────────────────────────────────
+  // Dari FilterModal (multi) → dikirim ke BE sebagai comma-separated "Nike,Puma"
+  brands?: string[];
+  // Dari Navbar (single slug) → "nike" | "new-balance"
+  brand?: string;
+
+  // ── Gender (Navbar only) ────────────────────────────────────────────────────
+  // ?gender=men | women | kids | unisex
+  gender?: string;
+
+  // ── Sort ────────────────────────────────────────────────────────────────────
+  // Dari FilterModal langsung
+  priceSort?: PriceSort;
+  // Fallback manual / hasil mapping dari Navbar ?sort=newest
+  sortBy?:    "createdAt" | "price" | "name";
+  sortOrder?: "asc" | "desc";
+
+  // ── Reserved (BE belum implement, tapi field tetap dipertahankan) ───────────
+  minPrice?:          number;
+  maxPrice?:          number;
+  sizes?:             string[];
   excludeCategories?: string;
 }
 
-export type ProductSortOption =
-  | "newest"
-  | "price_asc"
-  | "price_desc"
-  | "popular"
-  | "name_asc";
+// ─── Response ─────────────────────────────────────────────────────────────────
+
+export interface ProductMeta {
+  total:       number;
+  page:        number;
+  limit:       number;
+  lastPage:    number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
+export interface ProductVariant {
+  id:       string;
+  sku:      string;
+  price:    number;
+  stock:    number;
+  imageUrl: string[];
+  size?:    string;
+}
+
+export interface ActiveEvent {
+  eventName:    string | null;
+  specialPrice: number | null;
+  quotaLimit:   number | null;
+  quotaSold:    number;
+}
+
+export interface Product {
+  id:             string;
+  name:           string;
+  slug:           string;
+  basePrice:      number;
+  weightGrams:    number;
+  brandId:        string | null;
+  brand?:         { id: string; name: string };
+  categories:     { id: string; name: string; slug: string }[];
+  availableSizes: string[];
+  totalStock:     number;
+  activeEvent:    ActiveEvent | null;
+  variants:       ProductVariant[];
+}
+
+export interface ProductsResponse {
+  data: Product[];
+  meta: ProductMeta;
+}

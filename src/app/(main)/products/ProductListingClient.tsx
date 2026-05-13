@@ -5,7 +5,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { SlidersHorizontal } from "lucide-react";
 import { useProducts } from "@/lib/hooks/useProducts";
 import { ProductGrid } from "@/components/product/ProductGrid";
-import { FilterModal } from "@/components/common/FIlterModal";
+import { FilterModal, FilterState } from "@/components/common/FIlterModal";
 import { cn } from "@/lib/utils/cn";
 import type { ProductFilters } from "@/types/product.types";
 import { Pagination } from "@/components/common/Pagination";
@@ -21,45 +21,78 @@ interface ProductListingClientProps {
   subCategories?: SubCategory[];
 }
 
-// ─── Inner component: everything that needs useSearchParams ───────────────────
+// ─── Inner component ──────────────────────────────────────────────────────────
 function ProductListingClientInner({
   categoryName,
   subCategories = [],
 }: ProductListingClientProps) {
-  const router = useRouter();
-  const pathname = usePathname();
+  const router    = useRouter();
+  const pathname  = usePathname();
   const searchParams = useSearchParams();
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
-  const categoryFromUrl = searchParams.get("category");
+  // ── Baca URL params ────────────────────────────────────────────────────────
+  const categoryFromUrl    = searchParams.get("category");
   const subCategoryFromUrl = searchParams.get("subCategory") || "all";
-  const brandFromUrl =
-    searchParams.get("brand") || searchParams.get("brandName");
-  const searchFromUrl = searchParams.get("search") || searchParams.get("q");
-  const sortFromUrl: any = searchParams.get("sort");
-  const pageFromUrl = Number(searchParams.get("page")) || 1;
+  const brandFromUrl       = searchParams.get("brand");
+  const brandsFromUrl      = searchParams.get("brands");        // multi-brand dari FilterModal
+  const searchFromUrl      = searchParams.get("search") || searchParams.get("q");
+  const priceSortFromUrl   = searchParams.get("priceSort");     // dari FilterModal
+  const sortFromUrl        = searchParams.get("sort");          // dari Navbar (?sort=newest)
+  const genderFromUrl      = searchParams.get("gender");        // dari Navbar (?gender=men)
+  const pageFromUrl        = Number(searchParams.get("page")) || 1;
 
+  // ── Bangun ProductFilters dari URL → dikirim ke useProducts ───────────────
   const currentFilters: ProductFilters = {
-    page: pageFromUrl,
+    page:  pageFromUrl,
     limit: 12,
   };
 
-  if (subCategoryFromUrl !== "all")
-    currentFilters.categoryName = subCategoryFromUrl;
-  else if (categoryFromUrl) currentFilters.categoryName = categoryFromUrl;
+  // Category: subCategory tab diprioritaskan, lalu ?category dari URL
+  if (subCategoryFromUrl !== "all") {
+    currentFilters.category = subCategoryFromUrl;
+  } else if (categoryFromUrl) {
+    currentFilters.category = categoryFromUrl;
+  }
 
-  if (brandFromUrl) currentFilters.brandName = brandFromUrl;
-  if (searchFromUrl) {
-      (currentFilters as any).search = searchFromUrl; 
-    }
-  if (sortFromUrl) currentFilters.sort = sortFromUrl;
+  // Brand: multi (FilterModal) diprioritaskan, lalu single (Navbar)
+  if (brandsFromUrl) {
+    currentFilters.brands = brandsFromUrl.split(",").map(b => b.trim()).filter(Boolean);
+  } else if (brandFromUrl) {
+    currentFilters.brand = brandFromUrl;
+  }
+
+  // Search
+  if (searchFromUrl) currentFilters.search = searchFromUrl;
+
+  // Gender (dari Navbar)
+  if (genderFromUrl) currentFilters.gender = genderFromUrl;
+
+  // Price sort:
+  //   FilterModal → ?priceSort=high-to-low | low-to-high (langsung)
+  //   Navbar      → ?sort=newest / price-asc / price-desc (perlu mapping)
+  if (priceSortFromUrl === "high-to-low" || priceSortFromUrl === "low-to-high") {
+    currentFilters.priceSort = priceSortFromUrl;
+  } else if (sortFromUrl) {
+    if (sortFromUrl === "newest")     { currentFilters.sortBy = "createdAt"; currentFilters.sortOrder = "desc"; }
+    if (sortFromUrl === "price-asc")  { currentFilters.priceSort = "low-to-high"; }
+    if (sortFromUrl === "price-desc") { currentFilters.priceSort = "high-to-low"; }
+    if (sortFromUrl === "name")       { currentFilters.sortBy = "name"; currentFilters.sortOrder = "asc"; }
+  }
 
   const { data, isLoading } = useProducts(currentFilters);
-  const products = data?.data || [];
-  const totalProducts = data?.meta.total || 0;
-  const totalPages = data?.meta.lastPage || 1;
+  const products      = data?.data        || [];
+  const totalProducts = data?.meta.total  || 0;
+  const totalPages    = data?.meta.lastPage || 1;
 
+  // ── Cek ada filter aktif (untuk dot badge di tombol) ──────────────────────
+  const hasActiveFilter = Boolean(
+    brandsFromUrl || brandFromUrl || priceSortFromUrl ||
+    (categoryFromUrl && categoryFromUrl !== categoryName) // filter beda dari default page
+  );
+
+  // ── Helper: update URL ─────────────────────────────────────────────────────
   const updateUrlParams = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(updates).forEach(([key, value]) => {
@@ -69,6 +102,7 @@ function ProductListingClientInner({
     router.replace(`${pathname}?${params.toString()}`);
   };
 
+  // ── Handler: klik tab subkategori ──────────────────────────────────────────
   const handleTabChange = (slug: string) => {
     updateUrlParams({
       subCategory: slug === "all" ? null : slug,
@@ -76,39 +110,60 @@ function ProductListingClientInner({
     });
   };
 
+  // ── Handler: ganti halaman ─────────────────────────────────────────────────
   const handlePageChange = (newPage: number) => {
     if (newPage < 1 || newPage > totalPages) return;
     updateUrlParams({ page: newPage.toString() });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleApplyFilter = (modalFilters: any) => {
+  // ── Handler: FilterModal.onApply ───────────────────────────────────────────
+  //
+  // FilterState dari FilterModal:
+  //   { isAllProduct, category: "new"|"deals"|null, priceSort: "high-to-low"|null, brands: string[] }
+  //
+  // Tulis ke URL dengan field yang sama persis seperti yang BE terima.
+  //
+  const handleApplyFilter = (modalFilters: FilterState) => {
+    if (modalFilters.isAllProduct) {
+      // Reset semua filter → hapus semua param filter, pertahankan search & subCategory
+      updateUrlParams({
+        category:  null,
+        brands:    null,
+        brand:     null,
+        priceSort: null,
+        page:      "1",
+      });
+      return;
+    }
+
     updateUrlParams({
-      brand:
-        modalFilters.brands?.length > 0
-          ? modalFilters.brands.join(",")
-          : null,
-      sort:
-        modalFilters.priceSort === "high-to-low"
-          ? "desc"
-          : modalFilters.priceSort === "low-to-high"
-          ? "asc"
-          : null,
+      // category: "new" | "deals" | null
+      category: modalFilters.category ?? null,
+
+      // brands: ["Nike","Puma"] → "Nike,Puma" (BE split kembali ke array)
+      brands: modalFilters.brands.length > 0 ? modalFilters.brands.join(",") : null,
+
+      // priceSort: langsung tulis, BE mengerti "high-to-low" / "low-to-high"
+      priceSort: modalFilters.priceSort ?? null,
+
+      // Reset pagination
       page: "1",
     });
   };
 
+  // ── Display title ──────────────────────────────────────────────────────────
   const displayTitle = searchFromUrl
     ? `Search: "${searchFromUrl}"`
     : brandFromUrl
-    ? `${brandFromUrl.toUpperCase()}`
+    ? brandFromUrl.replace(/-/g, " ").toUpperCase()
     : categoryName || "All Footwear";
 
   return (
     <div className="flex flex-col flex-1 pb-2">
       <div className="container mx-auto max-w-7xl px-4 py-6 md:py-10">
 
-        {/* HEADER TITLE & FILTER BUTTON */}
+        {/* HEADER: TITLE & FILTER BUTTON */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6 md:mb-8">
           <button
             onClick={() => setIsFilterModalOpen(true)}
@@ -119,7 +174,8 @@ function ProductListingClientInner({
               className="text-gray-500 group-hover:text-gray-900 transition-colors"
             />
             Filter & Sort
-            {(brandFromUrl || sortFromUrl) && (
+            {/* Dot: muncul jika ada filter aktif dari FilterModal */}
+            {hasActiveFilter && (
               <span className="w-2 h-2 bg-[#FF6B00] rounded-full ml-1" />
             )}
           </button>
@@ -132,7 +188,7 @@ function ProductListingClientInner({
           </div>
         </div>
 
-        {/* HORIZONTAL FILTER TABS (SUBCATEGORY) */}
+        {/* SUBCATEGORY TABS */}
         {subCategories.length > 0 && !brandFromUrl && !searchFromUrl && (
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-4 mb-4 border-b border-gray-200/60">
             <button
@@ -193,7 +249,7 @@ function ProductListingClientInner({
   );
 }
 
-// ─── Public export: wraps inner component in Suspense ────────────────────────
+// ─── Public export ────────────────────────────────────────────────────────────
 export function ProductListingClient(props: ProductListingClientProps) {
   return (
     <Suspense

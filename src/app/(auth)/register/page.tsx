@@ -136,7 +136,7 @@ function RegisterContent() {
         <AuthHeroBanner />
 
         <h2 className="text-xl font-bold text-gray-900 text-center mb-2">
-          Join Sneaker Flash
+          Registration Sneakers Flash
         </h2>
         <p className="text-sm text-gray-500 text-center mb-6">
           Create an account to start shopping

@@ -144,7 +144,7 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
 
           {product.availableSizes && product.availableSizes.length > 0 && (
             <p className="text-[10px] lg:text-[11px] text-[#888888] mb-2 lg:mb-3 line-clamp-1">
-              Sizes: {product.availableSizes.slice(0, 5).join(", ")}
+              Size : {product.availableSizes.slice(0, 5).join(", ")}
               {product.availableSizes.length > 5 && "..."}
             </p>
           )}

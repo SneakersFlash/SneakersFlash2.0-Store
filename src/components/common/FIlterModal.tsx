@@ -4,20 +4,68 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // --- Tipe Data ---
-interface FilterState {
+export interface FilterState {
   isAllProduct: boolean;
-  category: string | null;
+  category: "new" | "deals" | null;
   priceSort: "high-to-low" | "low-to-high" | null;
   brands: string[];
 }
 
+/**
+ * Konversi FilterState → URLSearchParams untuk dikirim ke BE.
+ *
+ * Pemakaian di parent component:
+ *   const params = buildFilterParams(filters);
+ *   const res = await fetch(`/api/products?${params}`);
+ */
+export function buildFilterParams(
+  filters: FilterState,
+  base: Record<string, string> = {}
+): URLSearchParams {
+  const params = new URLSearchParams(base);
+
+  // Reset ke default jika isAllProduct
+  if (filters.isAllProduct) {
+    return params;
+  }
+
+  // category: "new" | "deals"
+  if (filters.category) {
+    params.set("category", filters.category);
+  }
+
+  // priceSort: langsung cocok dengan field BE
+  if (filters.priceSort) {
+    params.set("priceSort", filters.priceSort);
+  }
+
+  // brands: join array → comma-separated string
+  // BE akan split kembali menjadi array dan filter OR
+  if (filters.brands.length > 0) {
+    params.set("brands", filters.brands.join(","));
+  }
+
+  return params;
+}
+
+// --- Props ---
 interface FilterModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Dipanggil dengan FilterState yang sudah dipilih user */
   onApply: (filters: FilterState) => void;
+  /** Daftar brand yang tersedia (ambil dari API atau hardcode) */
+  availableBrands?: string[];
 }
 
-export function FilterModal({ isOpen, onClose, onApply }: FilterModalProps) {
+const DEFAULT_BRANDS = ["Nike", "Puma", "Skechers", "Adidas", "Converse", "Asics"];
+
+export function FilterModal({
+  isOpen,
+  onClose,
+  onApply,
+  availableBrands = DEFAULT_BRANDS,
+}: FilterModalProps) {
   const [filters, setFilters] = useState<FilterState>({
     isAllProduct: true,
     category: null,
@@ -50,6 +98,24 @@ export function FilterModal({ isOpen, onClose, onApply }: FilterModalProps) {
     });
   };
 
+  const handleSetCategory = (cat: "new" | "deals") => {
+    setFilters((prev) => ({
+      ...prev,
+      // Toggle: klik lagi → deselect
+      category: prev.category === cat ? null : cat,
+      isAllProduct: false,
+    }));
+  };
+
+  const handleSetPriceSort = (sort: "high-to-low" | "low-to-high") => {
+    setFilters((prev) => ({
+      ...prev,
+      // Toggle: klik lagi → deselect
+      priceSort: prev.priceSort === sort ? null : sort,
+      isAllProduct: false,
+    }));
+  };
+
   const handleReset = () => {
     setFilters({
       isAllProduct: true,
@@ -59,13 +125,17 @@ export function FilterModal({ isOpen, onClose, onApply }: FilterModalProps) {
     });
   };
 
+  // Hitung jumlah filter aktif untuk badge
+  const activeFilterCount =
+    (filters.category ? 1 : 0) +
+    (filters.priceSort ? 1 : 0) +
+    filters.brands.length;
+
   return (
-    // AnimatePresence mendeteksi kapan elemen di dalamnya di-unmount 
-    // sehingga animasi 'exit' bisa dijalankan
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop Gelap (Opsional, mempertegas modal jika di layar besar) */}
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -76,7 +146,6 @@ export function FilterModal({ isOpen, onClose, onApply }: FilterModalProps) {
 
           {/* Kontainer Modal */}
           <motion.div
-            // Animasi meluncur dari bawah (y: "100%") ke posisi normal (y: 0)
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
@@ -110,10 +179,17 @@ export function FilterModal({ isOpen, onClose, onApply }: FilterModalProps) {
               >
                 Filter
               </p>
+              {/* Badge jumlah filter aktif */}
+              {activeFilterCount > 0 && (
+                <span className="ml-2 flex items-center justify-center w-5 h-5 rounded-full bg-[#FF6B00] text-white text-xs font-bold">
+                  {activeFilterCount}
+                </span>
+              )}
             </div>
 
             {/* --- BODY (Scrollable) --- */}
             <div className="flex-1 overflow-y-auto p-5 pb-32">
+              {/* All Product */}
               <button
                 onClick={handleReset}
                 className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all ${
@@ -125,6 +201,7 @@ export function FilterModal({ isOpen, onClose, onApply }: FilterModalProps) {
                 All Product
               </button>
 
+              {/* Categories */}
               <div className="mt-8">
                 <h3
                   className="text-sm font-black uppercase tracking-wider text-zinc-900 mb-4"
@@ -137,25 +214,26 @@ export function FilterModal({ isOpen, onClose, onApply }: FilterModalProps) {
                     label="New Product"
                     icon="🔥"
                     isActive={filters.category === "new"}
-                    onClick={() =>
-                      setFilters({ ...filters, category: "new", isAllProduct: false })
-                    }
+                    onClick={() => handleSetCategory("new")}
                   />
                   <FilterPill
                     label="Best Deals"
                     icon={
-                      <svg className="w-4 h-4 text-[#FF6B00]" viewBox="0 0 24 24" fill="currentColor">
+                      <svg
+                        className="w-4 h-4 text-[#FF6B00]"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
                         <path d="M12 2l3.09 2.26L18.98 4l.64 3.76L22 10.5l-2.38 2.89L20.26 17l-3.64 1.28L15.09 22 12 20.35 8.91 22l-1.53-3.72L3.74 17l.64-3.61L2 10.5l2.38-2.89L3.74 4l3.64-1.28L8.91 2 12 20.35zM10.5 9.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-4.3-5.2l5.6 5.6 1.4-1.4-5.6-5.6-1.4 1.4z" />
                       </svg>
                     }
                     isActive={filters.category === "deals"}
-                    onClick={() =>
-                      setFilters({ ...filters, category: "deals", isAllProduct: false })
-                    }
+                    onClick={() => handleSetCategory("deals")}
                   />
                 </div>
               </div>
 
+              {/* Price Sort */}
               <div className="mt-8">
                 <h3
                   className="text-sm font-black uppercase tracking-wider text-zinc-900 mb-4"
@@ -167,20 +245,17 @@ export function FilterModal({ isOpen, onClose, onApply }: FilterModalProps) {
                   <FilterPill
                     label="High to Low"
                     isActive={filters.priceSort === "high-to-low"}
-                    onClick={() =>
-                      setFilters({ ...filters, priceSort: "high-to-low", isAllProduct: false })
-                    }
+                    onClick={() => handleSetPriceSort("high-to-low")}
                   />
                   <FilterPill
                     label="Low to High"
                     isActive={filters.priceSort === "low-to-high"}
-                    onClick={() =>
-                      setFilters({ ...filters, priceSort: "low-to-high", isAllProduct: false })
-                    }
+                    onClick={() => handleSetPriceSort("low-to-high")}
                   />
                 </div>
               </div>
 
+              {/* Brands */}
               <div className="mt-8">
                 <h3
                   className="text-sm font-black uppercase tracking-wider text-zinc-900 mb-4"
@@ -189,7 +264,7 @@ export function FilterModal({ isOpen, onClose, onApply }: FilterModalProps) {
                   Brand
                 </h3>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {["Nike", "Puma", "Skechers", "Adidas", "Converse", "Asics"].map((brand) => (
+                  {availableBrands.map((brand) => (
                     <FilterPill
                       key={brand}
                       label={brand}
@@ -202,7 +277,7 @@ export function FilterModal({ isOpen, onClose, onApply }: FilterModalProps) {
               </div>
             </div>
 
-            {/* --- FOOTER (Fixed Bottom) --- */}
+            {/* --- FOOTER --- */}
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white grid grid-cols-2 gap-3 pb-safe z-10 sm:rounded-b-2xl">
               <button
                 onClick={handleReset}
@@ -239,7 +314,7 @@ interface FilterPillProps {
 function FilterPill({ label, icon, isActive, onClick, className = "" }: FilterPillProps) {
   return (
     <motion.button
-      whileTap={{ scale: 0.95 }} // Tambahan efek membal sedikit saat pill ditekan
+      whileTap={{ scale: 0.95 }}
       onClick={onClick}
       className={`flex items-center gap-2 px-5 py-2.5 rounded-full border text-sm font-semibold transition-all ${
         isActive
