@@ -1,25 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { 
-  UserCircle, 
-  ChevronRight, 
-  Wallet, 
-  Package, 
-  Truck, 
-  ShoppingBag, 
-  Ticket, 
-  MapPin, 
-  Heart, 
-  Clock, 
-  Star, 
-  Store, 
-  HelpCircle, 
-  MessageSquare, 
+import { useRouter } from "next/navigation";
+import {
+  UserCircle,
+  ChevronRight,
+  Wallet,
+  Package,
+  Truck,
+  ShoppingBag,
+  Ticket,
+  MapPin,
+  Heart,
+  Clock,
+  Star,
+  Store,
+  HelpCircle,
+  MessageSquare,
   FileText,
   LucideIcon
 } from "lucide-react";
 import { useMyProfile } from "@/lib/hooks/useUsers";
+import { useAuthStore } from "@/lib/store/authStore";
 import { AccountSkeleton } from "./AccountSkeleton";
 
 const PURCHASE_STATUS = [
@@ -49,7 +51,14 @@ const HELP_MENU = [
 ];
 
 export default function MyAccountPage() {
+  const router = useRouter();
+  const { clearAuth } = useAuthStore();
   const { data: profile, isLoading, error } = useMyProfile();
+
+  const handleLogout = () => {
+    clearAuth();
+    router.push("/login");
+  };
 
   if (isLoading) return <AccountSkeleton />;
   
@@ -148,7 +157,7 @@ export default function MyAccountPage() {
         {/* Logout - Mobile */}
         <div className="bg-white mt-2">
           <button
-            onClick={() => console.log('Handle logout')}
+            onClick={handleLogout}
             className="w-full py-4 text-center font-bold text-orange-500"
           >
             Log out
@@ -207,7 +216,7 @@ export default function MyAccountPage() {
               {/* Logout */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <button
-                  onClick={() => console.log('Handle logout')}
+                  onClick={handleLogout}
                   className="w-full py-4 text-center font-bold text-orange-500 hover:bg-orange-50 transition-colors"
                 >
                   Log out from Account

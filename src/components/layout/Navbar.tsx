@@ -375,8 +375,6 @@ function NavbarInner() {
 
         if (!products || products.length === 0) return;
 
-        console.log(products);
-        
         setTrendingItems(
           products.slice(0, 3).map((p: any) => {
             // Strip trailing " - SKU" (e.g. "ADIDAS NMD R1 - HQ4247" → "ADIDAS NMD R1")

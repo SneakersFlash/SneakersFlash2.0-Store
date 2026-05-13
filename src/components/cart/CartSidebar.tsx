@@ -175,7 +175,7 @@ export function CartSidebar() {
     (acc, item) => {
       const price  = Number(item.price);
       const qty    = item.quantity;
-      const points = Math.floor(price * 0.033);
+      const points = Math.floor(price * 0.01);
       return {
         totalItems:  acc.totalItems + qty,
         subtotal:    acc.subtotal + price * qty,

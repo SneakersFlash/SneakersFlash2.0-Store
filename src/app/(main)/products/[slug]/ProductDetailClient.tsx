@@ -224,7 +224,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
 
   const rating       = product.ratingAvg != null ? parseFloat(String(product.ratingAvg)) : 4.8;
   const reviewCount  = product.reviewCount ?? 98;
-  const earnedPoints = Math.floor(Number(displayPrice) * 0.001);
+  const earnedPoints = Math.floor(Number(displayPrice) * 0.01);
 
   // --- ACTIONS ---
   const handleAddToCart = async () => {

@@ -39,9 +39,6 @@ export default async function HomePage() {
     bannersService.getBanners("home_middle").catch(() => [])
   ]);
 
-  console.log(apiCategories);
-  
-  
   const sidebarBanner = middleBanners?.[0];
 
   const getCategoryImage = (categoryName: string) => {
