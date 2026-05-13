@@ -91,7 +91,7 @@ export default function MyAccountPage() {
           {/* Membership Card */}
           <div className="bg-gradient-to-r from-orange-400 via-orange-600 to-amber-800 rounded-xl p-4 text-white relative overflow-hidden h-[80px] flex flex-col justify-center shadow-lg shadow-orange-100">
             <div className="relative z-10">
-              <p className="font-bold text-lg">{profile.customerTier}</p>
+              <p className="font-bold text-lg">{profile.customerTier.toUpperCase()}</p>
               <p className="text-[12px] opacity-90">
                 Flash Poin {Number(profile.pointsBalance?.d?.[0] || 0).toLocaleString('id-ID')}
               </p>

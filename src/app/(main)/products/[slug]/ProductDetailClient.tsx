@@ -222,7 +222,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
   const isSoldOut = product.variants?.length > 0 && product.variants.every((v: any) => v.stock === 0);
   // ================================================
 
-  const rating       = product.ratingAvg != null ? product.ratingAvg : 4.8;
+  const rating       = product.ratingAvg != null ? parseFloat(String(product.ratingAvg)) : 4.8;
   const reviewCount  = product.reviewCount ?? 98;
   const earnedPoints = Math.floor(Number(displayPrice) * 0.001);
 

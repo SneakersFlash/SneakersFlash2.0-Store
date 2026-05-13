@@ -38,6 +38,9 @@ export default async function HomePage() {
     CampaignsService.getEvent().catch(()=> []),
     bannersService.getBanners("home_middle").catch(() => [])
   ]);
+
+  console.log(apiCategories);
+  
   
   const sidebarBanner = middleBanners?.[0];
 
@@ -48,40 +51,37 @@ export default async function HomePage() {
     return foundCategory?.imageUrl || "/placeholder.jpg";
   };
   
-  console.log(banners);
-  
-  
   const firstGroup = [
-    { 
-      id: "footwear", 
-      title: "Footwear", 
-      filters: { categoryName: "Footwear", limit: 8 }, 
+    {
+      id: "footwear",
+      title: "Footwear",
+      filters: { category: "Footwear", limit: 8 },
       href: "/products?category=footwear" ,
       bgImage: getCategoryImage("Footwear")
     },
-    { 
-      id: "lifestyle-casual", 
-      title: "Lifestyle/Casual", 
-      filters: { categoryName: "Lifestyle/Casual", limit: 8, page: 2, excludeCategories: 'Footwear' }, 
-      href: "/products?category=lifestyle-casual", 
+    {
+      id: "lifestyle-casual",
+      title: "Lifestyle/Casual",
+      filters: { category: "Lifestyle/Casual", limit: 8, page: 2 },
+      href: "/products?category=lifestyle-casual",
       bgImage: getCategoryImage("Lifestyle/Casual")
     }
   ];
 
   const restGroup = [
-    { 
-      id: "womens", 
-      title: "Womens", 
-      filters: { categoryName: 'Womens', limit: 8, excludeCategories: "Footwear,Lifestyle/Casual" }, 
+    {
+      id: "womens",
+      title: "Womens",
+      filters: { category: 'Womens', limit: 8 },
       href: "/products?category=womens",
-      bgImage: getCategoryImage("Womens") 
+      bgImage: getCategoryImage("Womens")
     },
-    { 
-      id: "apparel", 
-      title: "Apparel", 
-      filters: { categoryName: "Apparel", limit: 8, excludeCategories: "Footwear,Lifestyle/Casual" }, 
-      href: "/products?category=apparel",
-      bgImage: getCategoryImage("Apparel")
+    {
+      id: "running",
+      title: "Running",
+      filters: { category: "Running", limit: 8 },
+      href: "/products?category=running",
+      bgImage: getCategoryImage("Running")
     }
   ];  
 

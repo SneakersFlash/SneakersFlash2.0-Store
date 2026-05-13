@@ -6,7 +6,7 @@ import { CheckCircle } from "lucide-react";
 const TRUST_ITEMS = [
   "100% Ori",
   "Gratis Ongkir",
-  "Garansi Penukuran",
+  "Garansi Penukaran",
 ];
 
 export function TrustRow() {
