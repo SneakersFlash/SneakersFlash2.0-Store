@@ -206,7 +206,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
 
   const selectedVariant = product.variants?.find((v: any) => v.id === selectedSizeId);
   const activeEvent = product.activeEvent;
-  const isEventActive = activeEvent && (activeEvent.quotaLimit === 0 || activeEvent.quotaSold < activeEvent.quotaLimit);
+  const isEventActive = activeEvent && (activeEvent.quotaLimit === null || activeEvent.quotaLimit === 0 || activeEvent.quotaSold < (activeEvent.quotaLimit ?? Infinity));
   const eventPrice = isEventActive && activeEvent.specialPrice ? activeEvent.specialPrice : null;
 
   // Harga dasar sebelum diskon event
@@ -222,7 +222,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
   const isSoldOut = product.variants?.length > 0 && product.variants.every((v: any) => v.stock === 0);
   // ================================================
 
-  const rating       = parseFloat(product.ratingAvg?.d[0] ?? "4.8");
+  const rating       = product.ratingAvg != null ? product.ratingAvg : 4.8;
   const reviewCount  = product.reviewCount ?? 98;
   const earnedPoints = Math.floor(Number(displayPrice) * 0.001);
 
@@ -327,8 +327,8 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
               {/* Sold Out Overlay */}
               {isSoldOut && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-black/60 backdrop-blur-[2px] px-6 py-2.5 rotate-[-12deg]">
-                    <span className="text-white text-xl lg:text-2xl font-black uppercase tracking-[0.2em]">
+                  <div className="bg-black/60 backdrop-blur-[2px] w-32 h-32 lg:w-32 lg:h-32 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs lg:text-sm font-black uppercase tracking-[0.2em] text-center leading-tight">
                       Sold Out
                     </span>
                   </div>

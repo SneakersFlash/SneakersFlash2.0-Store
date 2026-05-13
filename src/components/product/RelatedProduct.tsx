@@ -9,7 +9,7 @@ interface RelatedProductsProps {
 }
 
 export function RelatedProducts({ categoryName, currentProductId }: RelatedProductsProps) {
-  const { data, isLoading } = useProducts({ categoryName, limit: 5 });
+  const { data, isLoading } = useProducts({ category: categoryName, limit: 5 });
     
   const products = (data?.data || [])
     .filter((p) => p.id !== currentProductId)
