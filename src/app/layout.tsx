@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Oswald, Barlow, Inter } from "next/font/google";
 import Script from "next/script";
 import { Providers } from "@/components/common/Providers";
+import { ChatWidget } from "@/components/chat/ChatWidget";
 import "./globals.css";
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
@@ -93,6 +94,7 @@ export default function RootLayout({
 
         <Providers>
           {children}
+          <ChatWidget />
         </Providers>
 
         {/* ── Google Tag Manager (script) ── */}
