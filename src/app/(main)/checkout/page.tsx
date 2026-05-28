@@ -380,6 +380,7 @@ function CheckoutContent(){
   const[destinationText,setDestinationText]=useState<string|null>(null);
   const[pointsBalance,setPointsBalance]=useState(0);
   const hasEventItem=checkoutItems.some(i=>i.isEventPrice);
+  const hasNRItem=checkoutItems.some(i=>i.variantSku?.includes("/"));
   const[appliedVoucher,setAppliedVoucher]=useState<AppliedVoucher|null>(null);
 
   useEffect(()=>{if(savedAddresses.length>0&&!selectedAddress)setSelectedAddress(savedAddresses.find(a=>a.isDefault)??savedAddresses[0]);},[savedAddresses,selectedAddress]);
@@ -411,7 +412,7 @@ function CheckoutContent(){
   const distanceMap:Record<number,number>={};
   savedAddresses.forEach(a=>{if(a.latitude&&a.longitude)distanceMap[a.id]=haversineKm(ORIGIN_COORDS.lat,ORIGIN_COORDS.lng,a.latitude,a.longitude);});
   const selectedDistKm=selectedAddress?.latitude&&selectedAddress?.longitude?haversineKm(ORIGIN_COORDS.lat,ORIGIN_COORDS.lng,selectedAddress.latitude,selectedAddress.longitude):null;
-  const instantBlocked=selectedDistKm!==null&&selectedDistKm>INSTANT_DISTANCE_LIMIT_KM;
+  const instantBlocked=hasNRItem||(selectedDistKm!==null&&selectedDistKm>INSTANT_DISTANCE_LIMIT_KM);
 
   const subtotal=checkoutItems.reduce((s,i)=>s+Number(i.price)*i.quantity,0);
   const totalWeight=checkoutItems.reduce((s,i)=>s+(i.weightKilogram??2)*i.quantity,0);
@@ -523,7 +524,7 @@ function CheckoutContent(){
               {selectedDistKm!==null&&(
                 <div className="flex items-center gap-2 flex-wrap mt-2">
                   <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full",instantBlocked?"bg-amber-50 text-amber-700 border border-amber-200":"bg-green-50 text-green-700 border border-green-200")}>{selectedDistKm.toFixed(1)} km from store</span>
-                  {instantBlocked&&<span className="text-[10px] text-amber-600 flex items-center gap-0.5 font-medium"><AlertTriangle size={11}/>Instant tidak tersedia (&gt;{INSTANT_DISTANCE_LIMIT_KM} km)</span>}
+                  {instantBlocked&&<span className="text-[10px] text-amber-600 flex items-center gap-0.5 font-medium"><AlertTriangle size={11}/>Instant tidak tersedia ({hasNRItem?"barang NR":`>${INSTANT_DISTANCE_LIMIT_KM} km`})</span>}
                 </div>
               )}
               {selectedAddress.latitude&&selectedAddress.longitude&&(<div className="mt-3 h-28 rounded-xl overflow-hidden border border-gray-200"><MiniMap lat={selectedAddress.latitude} lng={selectedAddress.longitude}/></div>)}
@@ -571,7 +572,7 @@ function CheckoutContent(){
               <div className="px-4 pb-4 pt-3 space-y-5 border-t border-gray-100 bg-gray-50/60">
                 {shippingOptions.length===0&&!isCalcShipping&&<p className="text-xs text-gray-400 text-center py-4">Tidak ada kurir tersedia.</p>}
                 {regularOptions.length>0&&(<div><p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2.5">Reguler & Hari Berikutnya</p><div className="space-y-2">{regularOptions.map((opt,i)=><ShippingRow key={i} opt={opt} isSelected={selectedCourier?.service===opt.service&&selectedCourier?.courier===opt.courier} onSelect={()=>setSelectedCourier(opt)} disabled={false}/>)}</div></div>)}
-                {instantOptions.length>0&&(<div><div className="flex items-center gap-2 mb-2.5"><p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Instant & Same Day</p>{instantBlocked&&<span className="text-[10px] bg-amber-100 text-amber-700 font-semibold px-2 py-0.5 rounded-full flex items-center gap-1"><AlertTriangle size={10}/>&gt;{INSTANT_DISTANCE_LIMIT_KM} km</span>}</div><div className="space-y-2">{instantOptions.map((opt,i)=><ShippingRow key={i} opt={opt} isSelected={!instantBlocked&&selectedCourier?.service===opt.service&&selectedCourier?.courier===opt.courier} onSelect={()=>setSelectedCourier(opt)} disabled={instantBlocked}/>)}</div></div>)}
+                {instantOptions.length>0&&(<div><div className="flex items-center gap-2 mb-2.5"><p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Instant & Same Day</p>{instantBlocked&&<span className="text-[10px] bg-amber-100 text-amber-700 font-semibold px-2 py-0.5 rounded-full flex items-center gap-1"><AlertTriangle size={10}/>{hasNRItem?"Barang NR":`>${INSTANT_DISTANCE_LIMIT_KM} km`}</span>}</div><div className="space-y-2">{instantOptions.map((opt,i)=><ShippingRow key={i} opt={opt} isSelected={!instantBlocked&&selectedCourier?.service===opt.service&&selectedCourier?.courier===opt.courier} onSelect={()=>setSelectedCourier(opt)} disabled={instantBlocked}/>)}</div></div>)}
               </div>
             </motion.div>
           )}</AnimatePresence>
