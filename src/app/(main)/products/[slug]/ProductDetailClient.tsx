@@ -409,7 +409,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                   ?.join(' / ')}
               </p>
               <p className="text-[18px] lg:text-[20px] font-semibold font-black text-gray-900 leading-tight">
-                {product.name} {product.variants && product.variants.length === 1 ? `Size - ${product.variants[0].size}` : ''} 
+                {product.name}
               </p>
             </div>
 
@@ -428,7 +428,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
             </div>
 
             {/* Size selector */}
-            {product.variants && product.variants.length > 1 && (
+            {product.variants && product.variants.length >= 1 && (
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <p className="text-[10px] font-medium text-gray-900">Choose EUR Size</p>
@@ -437,7 +437,9 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {product.variants.map((variant: any) => (
+                  {[...product.variants]
+                    .sort((a: any, b: any) => parseFloat(b.size) - parseFloat(a.size))
+                    .map((variant: any) => (
                     <button
                       key={variant.id}
                       onClick={() =>
