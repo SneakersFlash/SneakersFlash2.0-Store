@@ -473,8 +473,7 @@ function NavbarInner() {
                   <Link
                     href={item.href}
                     className={cn(
-                      "nav-link flex items-center gap-1 px-3 py-2",
-                      (item as { isHot?: boolean }).isHot && "text-black",
+                      "nav-link flex items-center gap-1 px-3 py-2 text-black font-bold",
                       pathname === item.href && "active"
                     )}
                   >

@@ -438,7 +438,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {[...product.variants]
-                    .sort((a: any, b: any) => parseFloat(b.size) - parseFloat(a.size))
+                    .sort((a: any, b: any) => parseFloat(a.size) - parseFloat(b.size))
                     .map((variant: any) => (
                     <button
                       key={variant.id}
