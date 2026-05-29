@@ -132,6 +132,9 @@ export interface ProductFilters {
   // Array → dikirim ke BE sebagai "Mens,Womens"
   categories?: string[];
 
+  // ── Exclude IDs ──────────────────────────────────────────────────────────
+  excludeIds?: string[];
+
   // ── Brand ───────────────────────────────────────────────────────────────────
   // Dari FilterModal (multi) → brands[] → dikirim ke BE sebagai "Nike,Puma"
   brands?: string[];
