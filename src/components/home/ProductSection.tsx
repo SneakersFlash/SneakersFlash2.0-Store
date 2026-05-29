@@ -7,7 +7,7 @@ import { motion, useInView } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { ProductScrollCard } from "@/components/product/ProductScrollCard";
 import { useProducts } from "@/lib/hooks/useProducts";
-import type { Product, ProductFilters } from "@/types/product.types";
+import type { ProductFilters } from "@/types/product.types";
 
 interface ProductSectionProps {
   title: string;
@@ -15,7 +15,6 @@ interface ProductSectionProps {
   backgroundImage?: string | null;
   bgColor?: string;
   viewAllHref?: string;
-  preloadedProducts?: Product[];
 }
 
 // ─── Section banner header ────────────────────────────────────────────────────
@@ -90,17 +89,13 @@ export function ProductSection({
   backgroundImage,
   bgColor,
   viewAllHref,
-  preloadedProducts,
 }: ProductSectionProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
   const href = viewAllHref ?? `/products`;
 
   const { data, isLoading } = useProducts({ ...filters, limit: filters.limit ?? 10 });
-
-  // Prioritaskan preloaded data; jika ada, skip hasil hook
-  const products = preloadedProducts ?? data?.data ?? [];
-  const loading  = preloadedProducts !== undefined ? false : isLoading;
+  const products = data?.data ?? [];
 
   return (
     <motion.section
@@ -117,14 +112,16 @@ export function ProductSection({
         bgColor={bgColor}
       />
 
-      {loading ? (
+      {isLoading ? (
         <ScrollSkeleton />
       ) : products.length === 0 ? (
         <PlaceholderCards />
       ) : (
+        /* GABUNGAN: Scroll Horizontal yang berlaku untuk Mobile (lg:hidden tidak ada) dan Desktop */
         <div className="flex gap-3 lg:gap-4 py-2 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none">
           {products.map((product, i) => (
             <div key={product.id} className="snap-start shrink-0">
+              {/* Memastikan variannya adalah scroll untuk semua platform */}
               <ProductScrollCard product={product} index={i} variant="scroll" />
             </div>
           ))}

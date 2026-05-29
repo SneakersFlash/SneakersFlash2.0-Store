@@ -23,8 +23,6 @@ export const productsService = {
         // ── Categories (multi OR) ──────────────────────────────────────────────
         ...(filters.categories?.length && { categories: filters.categories.join(',') }),
 
-        // ── Exclude IDs ────────────────────────────────────────────────────────
-        ...(filters.excludeIds?.length && { excludeIds: filters.excludeIds.join(',') }),
 
         // ── Brand ──────────────────────────────────────────────────────────────
         // Multi (FilterModal): brands[] → join jadi "Nike,Puma"
