@@ -286,7 +286,7 @@ export function CartSidebar() {
                           ? getProductImageUrl([item.image[0]])
                           : "/placeholder-image.jpg";
                       const price  = Number(item.price);
-                      const points = Math.floor(price * 0.001);
+                      const points = Math.floor(price * 0.01);
 
                       return (
                         <li

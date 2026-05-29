@@ -34,7 +34,7 @@ import PageLoader from "@/components/common/PageLoader";
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
 
-const ORIGIN_COORDS = { lat: -6.1752685, lng: 106.7720772 };
+const ORIGIN_COORDS = { lat: -6.1690336, lng: 106.7755197 };
 const ORIGIN_PIN = `${ORIGIN_COORDS.lat},${ORIGIN_COORDS.lng}`;
 const INSTANT_DISTANCE_LIMIT_KM = 15;
 const INSTANT_KEYWORDS = ["gosend","grabexpress","grab express","go-send","instant","same day"];
