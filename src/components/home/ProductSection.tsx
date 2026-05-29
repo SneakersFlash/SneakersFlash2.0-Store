@@ -7,7 +7,7 @@ import { motion, useInView } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { ProductScrollCard } from "@/components/product/ProductScrollCard";
 import { useProducts } from "@/lib/hooks/useProducts";
-import type { Product, ProductFilters } from "@/types/product.types";
+import type { ProductFilters } from "@/types/product.types";
 
 interface ProductSectionProps {
   title: string;
@@ -15,7 +15,6 @@ interface ProductSectionProps {
   backgroundImage?: string | null;
   bgColor?: string;
   viewAllHref?: string;
-  products?: Product[];
 }
 
 // ─── Section banner header ────────────────────────────────────────────────────
@@ -90,15 +89,14 @@ export function ProductSection({
   backgroundImage,
   bgColor,
   viewAllHref,
-  products: preloadedProducts,
 }: ProductSectionProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
   const href = viewAllHref ?? `/products`;
 
-  const skip = preloadedProducts !== undefined;
-  const { data, isLoading } = useProducts({ ...filters, limit: filters.limit ?? 10 }, { enabled: !skip });
-  const products = preloadedProducts ?? data?.data ?? [];
+  // Karena ini scroll, kita bisa tarik lebih banyak limit (misal: 10-12 produk)
+  const { data, isLoading } = useProducts({ ...filters, limit: filters.limit ?? 10 });
+  const products = data?.data ?? [];
 
   return (
     <motion.section
