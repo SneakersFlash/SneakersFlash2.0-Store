@@ -11,8 +11,10 @@ import { Suspense } from "react"; // 1. Add this import
 import { bannersService } from "@/lib/api/banners.service";
 import { categoriesService } from "@/lib/api/categories.service";
 import CampaignsService from "@/lib/api/campaigns.service";
+import { productsService } from "@/lib/api/products.service";
 import { EventCampaignSection } from "@/components/home/EventCampaignSection"
 import VoucherClaimSection from "@/components/home/VoucherClaimSection";
+import type { Product } from "@/types/product.types";
 
 export const metadata: Metadata = {
   title: "SneakersFlash — Premium Sneakers & Footwear",
@@ -31,13 +33,35 @@ const SECTION_COLORS = [
 ];
 
 export default async function HomePage() {
-  // Fetch Data (Banners, Categories, & Active Campaigns)
-  const [banners, apiCategories, campaigns, middleBanners] = await Promise.all([
+  // Fetch Data (Banners, Categories, Active Campaigns, & Products per section)
+  const SECTION_LIMIT = 10;
+  const [banners, apiCategories, campaigns, middleBanners, rawUnisex, rawMens, rawWomens, rawLifestyle, rawRunning] = await Promise.all([
     bannersService.getBanners("home_top").catch(() => []),
-    categoriesService.getAll().catch(() => []), 
-    CampaignsService.getEvent().catch(()=> []),
-    bannersService.getBanners("home_middle").catch(() => [])
+    categoriesService.getAll().catch(() => []),
+    CampaignsService.getEvent().catch(() => []),
+    bannersService.getBanners("home_middle").catch(() => []),
+    productsService.getProducts({ category: "Unisex",        limit: SECTION_LIMIT }).catch(() => ({ data: [] as Product[] })),
+    productsService.getProducts({ category: "Mens",          limit: SECTION_LIMIT }).catch(() => ({ data: [] as Product[] })),
+    productsService.getProducts({ category: "Womens",        limit: SECTION_LIMIT }).catch(() => ({ data: [] as Product[] })),
+    productsService.getProducts({ category: "Lifestyle/Casual", limit: SECTION_LIMIT }).catch(() => ({ data: [] as Product[] })),
+    productsService.getProducts({ category: "Running",       limit: SECTION_LIMIT }).catch(() => ({ data: [] as Product[] })),
   ]);
+
+  // Deduplicate: setiap section hanya boleh menampilkan produk yang belum muncul di section sebelumnya
+  const seenIds = new Set<string>();
+  function dedup(products: Product[]): Product[] {
+    return products.filter((p) => {
+      if (seenIds.has(p.id)) return false;
+      seenIds.add(p.id);
+      return true;
+    });
+  }
+
+  const productsUnisex    = dedup(rawUnisex.data    ?? []);
+  const productsMens      = dedup(rawMens.data      ?? []);
+  const productsWomens    = dedup(rawWomens.data    ?? []);
+  const productsLifestyle = dedup(rawLifestyle.data ?? []);
+  const productsRunning   = dedup(rawRunning.data   ?? []);
 
   const sidebarBanner = middleBanners?.[0];
 
@@ -47,40 +71,55 @@ export default async function HomePage() {
     );
     return foundCategory?.imageUrl || "/placeholder.jpg";
   };
-  
+
+  const unisexGroup = [
+    {
+      id: "unisex",
+      title: "Unisex",
+      filters: { category: "Unisex", limit: SECTION_LIMIT },
+      href: "/products?category=unisex",
+      bgImage: getCategoryImage("Unisex"),
+      products: productsUnisex,
+    }
+  ];
+
   const firstGroup = [
     {
-      id: "footwear",
-      title: "Footwear",
-      filters: { category: "Footwear", limit: 8 },
-      href: "/products?category=footwear" ,
-      bgImage: getCategoryImage("Footwear")
+      id: "mens",
+      title: "Mens",
+      filters: { category: "Mens", limit: SECTION_LIMIT },
+      href: "/products?category=mens",
+      bgImage: getCategoryImage("Mens"),
+      products: productsMens,
     },
     {
-      id: "lifestyle-casual",
-      title: "Lifestyle/Casual",
-      filters: { category: "Lifestyle/Casual", limit: 8, page: 2 },
-      href: "/products?category=lifestyle-casual",
-      bgImage: getCategoryImage("Lifestyle/Casual")
+      id: "womens",
+      title: "Womens",
+      filters: { category: "Womens", limit: SECTION_LIMIT },
+      href: "/products?category=womens",
+      bgImage: getCategoryImage("Womens"),
+      products: productsWomens,
     }
   ];
 
   const restGroup = [
     {
-      id: "womens",
-      title: "Womens",
-      filters: { category: 'Womens', limit: 8 },
-      href: "/products?category=womens",
-      bgImage: getCategoryImage("Womens")
+      id: "lifestyle-casual",
+      title: "Lifestyle/Casual",
+      filters: { category: "Lifestyle/Casual", limit: SECTION_LIMIT },
+      href: "/products?category=lifestyle-casual",
+      bgImage: getCategoryImage("Lifestyle/Casual"),
+      products: productsLifestyle,
     },
     {
       id: "running",
       title: "Running",
-      filters: { category: "Running", limit: 8 },
+      filters: { category: "Running", limit: SECTION_LIMIT },
       href: "/products?category=running",
-      bgImage: getCategoryImage("Running")
+      bgImage: getCategoryImage("Running"),
+      products: productsRunning,
     }
-  ];  
+  ];
 
   return (
     <>
@@ -102,7 +141,24 @@ export default async function HomePage() {
       <BrandCarousel />
 
         {/* ========================================== */}
-        {/* KAWASAN PRODUK REGULER (Footwear, dll)     */}
+        {/* UNISEX SECTION (di atas side banner)       */}
+        {/* ========================================== */}
+        <div className="flex flex-col gap-4 pb-4">
+          {unisexGroup.map((section, index) => (
+            <ProductSection
+              key={section.id}
+              title={section.title}
+              filters={section.filters}
+              bgColor={SECTION_COLORS[index % SECTION_COLORS.length]}
+              viewAllHref={section.href}
+              backgroundImage={section.bgImage}
+              products={section.products}
+            />
+          ))}
+        </div>
+
+        {/* ========================================== */}
+        {/* KAWASAN PRODUK REGULER (Mens, Womens)      */}
         {/* ========================================== */}
         <div className="flex flex-col lg:flex-row gap-4 items-stretch">
           
@@ -135,6 +191,7 @@ export default async function HomePage() {
                 filters={section.filters}
                 viewAllHref={section.href}
                 backgroundImage={section.bgImage}
+                products={section.products}
               />
             ))}
           </div>
@@ -153,6 +210,7 @@ export default async function HomePage() {
                   bgColor={bgColor}
                   viewAllHref={section.href}
                   backgroundImage={section.bgImage}
+                  products={section.products}
                 />
               )
             })}

@@ -333,15 +333,6 @@ export function ChatWidget() {
                   <div className="bg-zinc-100 rounded-2xl rounded-bl-[4px]">
                     <TypingDots />
                   </div>
-                  {loadingSlow && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-[10px] text-zinc-400 pl-1"
-                    >
-                      Lagi diproses, sebentar ya kak...
-                    </motion.p>
-                  )}
                 </div>
               )}
 
@@ -379,7 +370,7 @@ export function ChatWidget() {
                 </button>
               </div>
               <p className="mt-1.5 text-center text-[10px] text-zinc-300 tracking-wide">
-                Powered by Sneakers Flash CS AI
+                Sneakers Flash Customer Service
               </p>
             </div>
           </motion.div>

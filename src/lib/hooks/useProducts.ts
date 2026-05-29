@@ -19,12 +19,13 @@ export const productKeys = {
 /**
  * Paginated product list with filters.
  */
-export function useProducts(filters: ProductFilters = {}) {
+export function useProducts(filters: ProductFilters = {}, options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: productKeys.list(filters),
     queryFn: () => productsService.getProducts(filters),
-    placeholderData: (prev) => prev, // keep previous data while loading
-    staleTime: 1000 * 60 * 3, // 3 min
+    placeholderData: (prev) => prev,
+    staleTime: 1000 * 60 * 3,
+    enabled: options.enabled ?? true,
   });
 }
 
