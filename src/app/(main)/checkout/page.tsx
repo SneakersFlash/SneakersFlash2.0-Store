@@ -444,7 +444,7 @@ function CheckoutContent(){
     setIsCalcShipping(true);setSelectedCourier(null);
     const destPin=selectedAddress.latitude&&selectedAddress.longitude?formatPin(selectedAddress.latitude,selectedAddress.longitude):undefined;
     logisticsService.calculateShipping({destinationSubdistrictId:Number(selectedAddress.subdistrictId),weightGrams:totalWeight,courier:"",itemValue:subtotal,isCod:"no",originPinPoint:ORIGIN_PIN,...(destPin?{destinationPinPoint:destPin}:{}),...(destinationText?{destinationText}:{})})
-      .then(data=>{if(typeof data?.pointsBalance==="number")setPointsBalance(data.pointsBalance);const opts:any[]=Array.isArray(data)?data:Object.values(data??{}).filter((v:any)=>v&&typeof v==="object"&&v.courier);setShippingOptions(opts);const el=opts.filter(o=>instantBlocked?!isInstantCourier(o):true);setSelectedCourier(el[0]??null);})
+      .then(data=>{if(typeof data?.pointsBalance==="number")setPointsBalance(data.pointsBalance);const opts:any[]=data?.options??(Array.isArray(data)?data:[]);setShippingOptions(opts);const el=opts.filter(o=>instantBlocked?!isInstantCourier(o):true);setSelectedCourier(el[0]??null);})
       .catch(console.error).finally(()=>setIsCalcShipping(false));
   },[selectedAddress?.subdistrictId,totalWeight,destinationText]);
 
