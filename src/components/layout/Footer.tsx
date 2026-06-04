@@ -48,6 +48,7 @@ const INFORMATION_LINKS = [
   { label: "Track Order",      href: "/order-status" },
   { label: "Return & Refunds", href: "/shipping"     },
   { label: "Size Guide",       href: "/size-guide"   },
+  { label: "Blog",          href: "/blog", },
 ];
 
 const SUPPORT_LINKS = [

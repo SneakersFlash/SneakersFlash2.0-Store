@@ -72,7 +72,7 @@ export function HeroBanner({ banners }: HeroBannerProps) {
             animate="center"
             exit="exit"
             transition={{
-              x: { type: "tween", duration: 0.4, ease: "easeInOut" },
+              x: { type: "tween", duration: 0.6, ease: "easeInOut" },
             }}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}

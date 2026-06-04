@@ -46,8 +46,9 @@ export const ordersService = {
     shippingProvider?: ShippingProvider;
     lastPhone?: string;
   }) {
-    const { awb, courier, shippingProvider, lastPhone } = params;
-    if (shippingProvider === 'LION_PARCEL') return this.trackLionParcelShipment(awb);
+    const { awb, courier, lastPhone } = params;
+    // LION_PARCEL disabled — backend belum siap, pakai Raja Ongkir dulu
+    // if (shippingProvider === 'LION_PARCEL') return this.trackLionParcelShipment(awb);
     return this.trackShipment(awb, courier, lastPhone);
   },
 };

@@ -128,6 +128,11 @@ export interface ProductFilters {
   // Dari subCategory tab : slug di-assign ke sini
   category?: string;
 
+  // ── Categories (multi OR) ────────────────────────────────────────────────
+  // Array → dikirim ke BE sebagai "Mens,Womens"
+  categories?: string[];
+
+
   // ── Brand ───────────────────────────────────────────────────────────────────
   // Dari FilterModal (multi) → brands[] → dikirim ke BE sebagai "Nike,Puma"
   brands?: string[];

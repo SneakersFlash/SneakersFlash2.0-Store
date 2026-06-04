@@ -40,7 +40,7 @@ const MOCK_FIRSTSTEP_VOUCHER = {
   name: "Registration Bonus",
   description: "Khusus member baru! Daftar sekarang dan dapatkan voucher ini.",
   discountType: "FIXED" as DiscountType,
-  discountValue: 200000,
+  discountValue: 100000,
   minPurchaseAmount: 1000000,
   maxDiscountAmount: null,
   expiresAt: "2030-12-31T23:59:59.000Z",

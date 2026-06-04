@@ -29,8 +29,10 @@ function getPhone(order: any): string {
   return order?.address?.phone || order?.user?.phone || "";
 }
 
-function isLionParcelOrder(order: any): boolean {
-  return order?.shippingProvider === "LION_PARCEL";
+// LION_PARCEL disabled — backend belum siap, pakai Raja Ongkir dulu
+function isLionParcelOrder(_order: any): boolean {
+  return false;
+  // return order?.shippingProvider === "LION_PARCEL";
 }
 
 // ── sub-component: timeline RajaOngkir (Komerce) ─────────────────────────────

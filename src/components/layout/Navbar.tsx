@@ -128,9 +128,9 @@ function MegaMenu({
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground hover:text-gray-900 transition-colors font-medium flex items-center gap-1.5 min-w-0"
+                      className="text-sm text-black hover:text-gray-900 transition-colors font-bold flex items-center gap-1.5 min-w-0"
                     >
-                      <span className="text-primary text-xs shrink-0">⚡</span>
+                      <span className="text-black text-xs shrink-0">⚡</span>
                       <span className="truncate">{link.label}</span>
                     </Link>
                   </li>
@@ -154,7 +154,7 @@ function MegaMenu({
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      className="text-sm font-bold text-black hover:text-foreground transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -186,12 +186,12 @@ function SearchBar({ onClose }: { onClose: () => void }) {
     >
       <div className="container-2xl py-5">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black" size={18} />
           <input
             ref={inputRef}
             type="search"
             placeholder="Search sneakers, brands, styles…"
-            className="w-full bg-background border border-border pl-12 pr-12 py-4 text-foreground placeholder:text-muted-foreground font-sans focus:outline-none focus:border-primary transition-colors text-base"
+            className="w-full bg-background border border-border pl-12 pr-12 py-4 text-foreground placeholder:text-muted-foreground font-bold focus:outline-none focus:border-primary transition-colors text-base"
             onKeyDown={(e) => {
               if (e.key === "Escape") onClose();
               if (e.key === "Enter") {
@@ -202,12 +202,12 @@ function SearchBar({ onClose }: { onClose: () => void }) {
           />
           <button
             onClick={onClose}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-black hover:text-foreground"
           >
             <X size={18} />
           </button>
         </div>
-        <p className="text-xs text-muted-foreground mt-2.5">
+        <p className="text-xs font-bold text-muted-foreground mt-2.5">
           Press <kbd className="px-1.5 py-0.5 bg-muted border border-border text-xs font-mono">Enter</kbd> to search ·{" "}
           <kbd className="px-1.5 py-0.5 bg-muted border border-border text-xs font-mono">Esc</kbd> to close
         </p>
@@ -231,19 +231,19 @@ function AccountDropdown({ onClose, pathname }: { onClose: () => void; pathname:
     >
       {!isAuthenticated ? (
         <div className="p-4">
-          <p className="text-sm text-muted-foreground mb-3">Sign in to your account</p>
+          <p className="text-sm font-bold text-muted-foreground mb-3">Sign in to your account</p>
           <div className="space-y-2">
             <Link
               href={pathname === "/" ? "/login" : `/login?callbackUrl=${encodeURIComponent(pathname)}`}
               onClick={onClose}
-              className="block w-full text-center bg-primary hover:bg-brand-yellowDark text-primary-foreground py-2.5 text-sm font-display uppercase tracking-wider transition-colors"
+              className="block w-full text-center bg-primary hover:bg-brand-yellowDark text-primary-foreground py-2.5 text-sm font-display font-bold uppercase tracking-wider transition-colors"
             >
               Sign In
             </Link>
             <Link
               href={pathname === "/" ? "/register" : `/register?callbackUrl=${encodeURIComponent(pathname)}`}
               onClick={onClose}
-              className="block w-full text-center border border-border hover:border-primary text-foreground py-2.5 text-sm font-display uppercase tracking-wider transition-colors"
+              className="block w-full text-center border border-border hover:border-primary text-foreground py-2.5 text-sm font-display font-bold uppercase tracking-wider transition-colors"
             >
               Create Account
             </Link>
@@ -256,8 +256,8 @@ function AccountDropdown({ onClose, pathname }: { onClose: () => void; pathname:
               {user?.firstName?.[0]}{user?.lastName?.[0]}
             </div>
             <div>
-              <p className="font-display text-sm uppercase tracking-wider">{user?.firstName} {user?.lastName}</p>
-              <p className="text-xs text-muted-foreground">{user?.email}</p>
+              <p className="font-display font-bold text-sm uppercase tracking-wider">{user?.firstName} {user?.lastName}</p>
+              <p className="text-xs font-bold text-muted-foreground">{user?.email}</p>
             </div>
           </div>
           <ul className="py-2">
@@ -269,18 +269,18 @@ function AccountDropdown({ onClose, pathname }: { onClose: () => void; pathname:
                 <Link
                   href={href}
                   onClick={onClose}
-                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-black hover:text-foreground hover:bg-muted transition-colors"
                 >
-                  <Icon size={14} /> {label}
+                  <Icon size={14} className="text-black" /> {label}
                 </Link>
               </li>
             ))}
             <li className="border-t border-border mt-2 pt-2">
               <button
                 onClick={() => { clearAuth(); onClose(); }}
-                className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-muted-foreground hover:text-primary hover:bg-muted transition-colors"
+                className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-bold text-black hover:text-primary hover:bg-muted transition-colors"
               >
-                <LogOut size={14} /> Sign Out
+                <LogOut size={14} className="text-black" /> Sign Out
               </button>
             </li>
           </ul>
@@ -375,8 +375,6 @@ function NavbarInner() {
 
         if (!products || products.length === 0) return;
 
-        console.log(products);
-        
         setTrendingItems(
           products.slice(0, 3).map((p: any) => {
             // Strip trailing " - SKU" (e.g. "ADIDAS NMD R1 - HQ4247" → "ADIDAS NMD R1")
@@ -453,7 +451,7 @@ function NavbarInner() {
             {/* Mobile hamburger */}
             <button
               onClick={() => setIsMobileOpen(true)}
-              className="lg:hidden p-1.5 text-foreground"
+              className="lg:hidden p-1.5 text-black"
               aria-label="Open menu"
             >
               <Menu size={22} />
@@ -474,8 +472,7 @@ function NavbarInner() {
                   <Link
                     href={item.href}
                     className={cn(
-                      "nav-link flex items-center gap-1 px-3 py-2",
-                      (item as { isHot?: boolean }).isHot && "text-black",
+                      "nav-link flex items-center gap-1 px-3 py-2 text-black font-bold",
                       pathname === item.href && "active"
                     )}
                   >
@@ -511,7 +508,7 @@ function NavbarInner() {
                 <Link
                   key={campaign.href}
                   href={campaign.href}
-                  className="nav-link px-3 py-2 text-red-500 hover:text-red-400 truncate max-w-[140px]"
+                  className="nav-link px-3 py-2 font-bold text-red-500 hover:text-red-400 truncate max-w-[140px]"
                   title={campaign.label}
                 >
                   {campaign.label.length > 18 ? campaign.label.slice(0, 18) + "…" : campaign.label}
@@ -525,7 +522,7 @@ function NavbarInner() {
               {/* Search */}
               <button
                 onClick={() => { setShowSearch(!showSearch); setShowAccount(false); }}
-                className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                className="p-2 text-black hover:text-foreground transition-colors"
                 aria-label="Search"
               >
                 <Search size={19} />
@@ -540,14 +537,14 @@ function NavbarInner() {
                   className="p-2 hover:bg-muted rounded-full transition-colors"
                   aria-label="Wishlist"
                 >
-                  <Heart className="w-5 h-5" />
+                  <Heart className="w-5 h-5 text-black" />
                 </button>
               </div>
               {/* Account */}
               <div className="relative">
                 <button
                   onClick={() => { setShowAccount(!showAccount); setShowSearch(false); }}
-                  className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="p-2 text-black hover:text-foreground transition-colors"
                   aria-label="Account"
                 >
                   <User size={19} />
@@ -577,7 +574,7 @@ function NavbarInner() {
                   setShowSearch(false);
                   setShowAccount(false);
                 }}
-                className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
+                className="relative p-2 text-black hover:text-foreground transition-colors"
                 aria-label={`Cart (${cartCount} items)`}
               >
                 <ShoppingBag size={19} />

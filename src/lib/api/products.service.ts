@@ -20,6 +20,10 @@ export const productsService = {
         // "new" | "deals" dari FilterModal, atau nama kategori dari Navbar/tab
         ...(filters.category && { category: filters.category }),
 
+        // ── Categories (multi OR) ──────────────────────────────────────────────
+        ...(filters.categories?.length && { categories: filters.categories.join(',') }),
+
+
         // ── Brand ──────────────────────────────────────────────────────────────
         // Multi (FilterModal): brands[] → join jadi "Nike,Puma"
         ...(filters.brands?.length && { brands: filters.brands.join(",") }),

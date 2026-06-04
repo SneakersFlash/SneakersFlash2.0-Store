@@ -13,6 +13,9 @@ interface FormErrors { recipientName?: string; phone?: string; province?: string
 const DEFAULT_LABELS = ["Home", "Work"];
 const DEFAULT_COORDS: Coordinates = { lat: -6.2088, lng: 106.8456 }; // Jakarta
 
+const sortByName = (arr: LocationOption[]): LocationOption[] =>
+    [...arr].sort((a, b) => a.name.localeCompare(b.name));
+
 async function reverseGeocode(lat: number, lng: number) {
     try {
         const res = await fetch(
@@ -177,11 +180,11 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
     // Fetch initial dropdown data if editing
     useEffect(() => {
         setLoadingProvinces(true);
-        logisticsService.getProvinces().then(setProvinces).finally(() => setLoadingProvinces(false));
-        
+        logisticsService.getProvinces().then(p => setProvinces(sortByName(p))).finally(() => setLoadingProvinces(false));
+
         if (initialData?.provinceId) logisticsService.getCities(initialData.provinceId).then(setCities);
-        if (initialData?.cityId) logisticsService.getDistricts(initialData.cityId).then(setDistricts);
-        if (initialData?.districtId) logisticsService.getSubdistricts(initialData.districtId).then(setSubdistricts);
+        if (initialData?.cityId) logisticsService.getDistricts(initialData.cityId).then(d => setDistricts(sortByName(d)));
+        if (initialData?.districtId) logisticsService.getSubdistricts(initialData.districtId).then(s => setSubdistricts(sortByName(s)));
     }, [initialData]);
 
     const handleCoordinatesChange = async (coords: Coordinates, userInitiated: boolean) => {
@@ -221,7 +224,7 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
 
         setCityId(String(matchedCity.id));
         const fetchedDistricts = await logisticsService.getDistricts(matchedCity.id);
-        setDistricts(fetchedDistricts);
+        setDistricts(sortByName(fetchedDistricts));
 
         const matchedDist = findBestMatch(result.district, fetchedDistricts);
         if (!matchedDist) {
@@ -232,7 +235,7 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
 
         setDistId(String(matchedDist.id));
         const fetchedSubdistricts = await logisticsService.getSubdistricts(matchedDist.id);
-        setSubdistricts(fetchedSubdistricts);
+        setSubdistricts(sortByName(fetchedSubdistricts));
 
         const matchedSubdist = findBestMatch(result.subdistrict, fetchedSubdistricts);
         if (matchedSubdist) {
@@ -356,14 +359,14 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
             <div className="grid grid-cols-2 gap-3">
             <select value={cityId} disabled={!provId} onChange={(e) => {
                 setCityId(e.target.value); setDistId(""); setSubdistId("");
-                logisticsService.getDistricts(Number(e.target.value)).then(setDistricts);
+                logisticsService.getDistricts(Number(e.target.value)).then(d => setDistricts(sortByName(d)));
             }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:ring-0 focus:border-primary bg-white disabled:bg-gray-50 disabled:text-gray-400">
                 <option value="">Select City</option>
                 {cities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
             <select value={distId} disabled={!cityId} onChange={(e) => {
                 setDistId(e.target.value); setSubdistId("");
-                logisticsService.getSubdistricts(Number(e.target.value)).then(setSubdistricts);
+                logisticsService.getSubdistricts(Number(e.target.value)).then(s => setSubdistricts(sortByName(s)));
             }} className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:ring-0 focus:border-primary bg-white disabled:bg-gray-50 disabled:text-gray-400">
                 <option value="">Select District</option>
                 {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}

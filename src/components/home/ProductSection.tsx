@@ -94,7 +94,6 @@ export function ProductSection({
   const isInView = useInView(ref, { once: true, margin: "-60px" });
   const href = viewAllHref ?? `/products`;
 
-  // Karena ini scroll, kita bisa tarik lebih banyak limit (misal: 10-12 produk)
   const { data, isLoading } = useProducts({ ...filters, limit: filters.limit ?? 10 });
   const products = data?.data ?? [];
 
@@ -104,7 +103,7 @@ export function ProductSection({
       initial={{ opacity: 0, y: 20 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.45, ease: "easeOut" }}
-      className="w-full" 
+      className="w-full"
     >
       <SectionBannerHeader
         title={title}
