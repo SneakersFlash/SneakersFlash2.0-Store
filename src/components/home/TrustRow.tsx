@@ -21,7 +21,7 @@ export function TrustRow() {
           className="flex items-center gap-1.5 shrink-0"
         >
           <CheckCircle size={13} className="shrink-0" />
-          <span className="text-[11px]  text-muted-foreground whitespace-nowrap font-medium">
+          <span className="text-[12px]  text-muted-foreground whitespace-nowrap font-bold">
             {item}
           </span>
         </motion.div>

@@ -74,7 +74,6 @@ export const NAV_ITEMS = [
     megaMenu: null,
   },
   { label: "Brands", href: "/brands", megaMenu: null },
-  { label: "Journal", href: "/blog", megaMenu: null },
 ];
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────
