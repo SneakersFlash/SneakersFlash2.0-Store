@@ -416,11 +416,9 @@ function CheckoutContent(){
 
   const subtotal=checkoutItems.reduce((s,i)=>s+Number(i.price)*i.quantity,0);
   const totalWeight=checkoutItems.reduce((s,i)=>s+(i.weightKilogram??2)*i.quantity,0);
-  const pointsDiscount=usePoints?Math.min(pointsBalance,Math.floor(subtotal*0.1)):0;
   const voucherDiscount=appliedVoucher?.discountAmount??0,pointsEarned=Math.floor(subtotal*0.01);
   const SHIPPING_SUBSIDY_MAX=50000,realShippingCost=selectedCourier?Number(selectedCourier.cost):0;
   const shippingSubsidy=Math.min(realShippingCost,SHIPPING_SUBSIDY_MAX),customerShippingCost=Math.max(0,realShippingCost-shippingSubsidy);
-  // Cap sama dengan BE: baseAmount - Rp1.000 (Midtrans minimum), tidak melebihi saldo
   const baseForPoints=subtotal+customerShippingCost-voucherDiscount;
   const maxRedeemablePoints=Math.max(0,baseForPoints-1000);
   const pointsDiscount=usePoints?Math.min(pointsBalance,maxRedeemablePoints):0;
