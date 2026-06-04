@@ -11,8 +11,8 @@ export const logisticsService = {
     isCod?: string | boolean;
     originPinPoint?: string;
     destinationPinPoint?: string;
-    // destinationText?: string;   // [BARU] format "KELURAHAN, KOTA" untuk Lion Parcel
-  }): Promise<ShippingOption[] & { pointsBalance?: number }> => {
+    destinationText?: string;
+  }): Promise<ShippingOption[] & { options?: ShippingOption[]; pointsBalance?: number }> => {
     const response = await apiClient.post('/logistics/calculate', payload);
     return response.data;
   },
