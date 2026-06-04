@@ -85,27 +85,88 @@ export interface TrackingResult {
 }
 
 // [BARU] Tracking via Lion Parcel (untuk kurir reguler)
-// Format disesuaikan dengan response /v3/stt/track Lion Parcel
-export interface LionParcelTrackingEvent {
-  date:        string;
-  time:        string;
-  status:      string;
-  description: string;
-  location:    string;
+// Shape disesuaikan dengan response backend /logistics/track-lion/:stt
+export interface LionParcelHistoryItem {
+  row:              number;
+  datetime:         string;   // ISO: "2026-05-08T11:28:54+07:00"
+  status_code:      string;   // "BKD", "DLV", "POD", dll
+  current_status:   string;
+  location:         string;   // kode kota: "CGK"
+  city:             string;   // nama kota: "JAKARTA"
+  remarks:          string;
+  stt_journey_type: string;
+  proof?: {
+    name:     string;
+    relation: string;
+  };
 }
 
 export interface LionParcelTrackingResult {
   provider:       'LION_PARCEL';
-  stt_number:     string;
-  status:         string;           // e.g. "ON PROCESS", "DELIVERED"
-  delivered:      boolean;
-  origin:         string;
+  stt_no:         string;          // "99LP1778214534665"
+  sender_name:    string;
+  recipient_name: string;
+  origin:         string;          // "KEBON JERUK, JAKARTA BARAT"
   destination:    string;
-  service:        string;
-  shipper_name:   string;
-  receiver_name:  string;
-  weight:         number;
-  events:         LionParcelTrackingEvent[];
+  current_status: string;          // "BKD", "DLV", dll
+  status_code:    string;
+  product_type:   string;          // "REGPACK", "JAGOPACK", dll
+  gross_weight:   number;
+  history:        LionParcelHistoryItem[];
 }
 
 export type AnyTrackingResult = TrackingResult | LionParcelTrackingResult;
+
+// ─── Order entity (response dari GET /orders/:id) ──────────────────────────────
+
+export interface Order {
+  id:             string;
+  orderNumber:    string;
+  status:         string;
+  paymentMethod:  string;
+  finalAmount?:   number;
+  total?:         number;
+  subtotal:       number;
+  shippingCost:   number;
+  discountAmount: number;
+  createdAt:      string;
+  paidAt?:        string | null;
+
+  // ─── Shipping provider fields ────────────────────────────────────────────
+  komerceOrderId?:    string | null;
+  lionParcelSttId?:   string | null;
+  shippingProvider?:  ShippingProvider;
+  awb?:               string | null;
+  trackingNumber?:    string | null;
+  pointsRedeemed?:    number;
+
+  courierName?:    string;
+  courierService?: string;
+  courier?: {
+    name:           string;
+    service:        string;
+    cost:           number;
+    trackingNumber?: string;
+  };
+  address?: {
+    recipientName: string;
+    phone:         string;
+    street?:       string;
+    city:          string;
+    province?:     string;
+    postalCode:    string;
+  };
+  user?: {
+    name:   string;
+    email:  string;
+    phone?: string;
+  } | null;
+  items?: Array<{
+    id:          string;
+    productName: string;
+    quantity:    number;
+    unitPrice:   number;
+    subtotal:    number;
+    imageUrl?:   string | string[] | null;
+  }>;
+}
