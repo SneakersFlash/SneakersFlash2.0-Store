@@ -322,14 +322,21 @@ function SummaryBar({isOpen,onToggle,subtotal,actSubtotal,shippingCost,shippingS
               {voucherDiscount>0&&(<div className="flex justify-between text-xs text-emerald-600"><span className="flex items-center gap-1"><Tag size={13}/>Voucher</span><span className="font-semibold">−{formatPrice(voucherDiscount)}</span></div>)}
               {pointsDiscount>0&&(<div className="flex justify-between text-xs text-amber-600"><span className="flex items-center gap-1"><Zap size={13}/>Flash Points</span><span className="font-semibold">−{formatPrice(pointsDiscount)}</span></div>)}
             </div>
-            <div className="border-t border-dashed border-gray-200 mt-3 pt-3 flex justify-between items-baseline">
-              <span className="text-xs font-bold text-gray-900">Grand Total</span>
-              <span className="text-xl font-extrabold text-gray-900">
-                <p className="line-through text-gray-400 text-[10px]">
-                  {formatPrice(actSubtotal)}
-                </p>
-                {formatPrice(grandTotal)}</span>
+            <div className="border-t border-dashed border-gray-200 mt-3 pt-3 flex justify-between items-start">
+            <span className="text-xs font-bold text-gray-900">
+              Grand Total
+            </span>
+
+            <div className="flex flex-col items-end text-right">
+              <span className="line-through text-gray-400 text-[10px] leading-none">
+                {formatPrice(actSubtotal)}
+              </span>
+
+              <span className="text-xl font-extrabold text-gray-900 leading-tight">
+                {formatPrice(grandTotal)}
+              </span>
             </div>
+          </div>
             {pointsEarned>0&&(<p className="text-[11px] text-amber-500 font-semibold flex items-center gap-1 mt-2"><Star size={11} className="fill-amber-400 text-amber-400"/>+{pointsEarned.toLocaleString()} Flash Points</p>)}
           </motion.div>
         )}</AnimatePresence>
