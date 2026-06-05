@@ -29,8 +29,8 @@ export interface Voucher {
 }
 
 const formatRp = (value: number) => {
-  if (value >= 1_000_000) return `Rp${value / 1_000_000}jt`;
-  if (value >= 1_000)     return `Rp${value / 1_000}rb`;
+  if (value >= 1_000_000) return `Rp${value / 1_000_000}M`;
+  if (value >= 1_000)     return `Rp${value / 1_000}k`;
   return `Rp${value.toLocaleString("id-ID")}`;
 };
 
@@ -132,7 +132,7 @@ export default function VoucherClaimSection() {
           className="flex items-center justify-between mb-3 md:mb-4"
         >
           <p className="text-[18px] md:text-[22px] font-black tracking-tight text-gray-900">
-            Klaim Voucher Belanja
+            Claim Shopping Vouchers
           </p>
         </motion.div>
 
@@ -186,7 +186,7 @@ export default function VoucherClaimSection() {
                       {/* Badge "Member Baru" hanya di mock */}
                       {isMock && (
                         <span className="self-start text-[8px] font-black bg-red-50 text-red-500 border border-red-100 rounded-full px-2 py-0.5 uppercase tracking-wider mb-1">
-                          Member Baru
+                          NEW MEMBER
                         </span>
                       )}
 
@@ -195,7 +195,7 @@ export default function VoucherClaimSection() {
                       </h4>
 
                       <p className="text-[10px] md:text-[11px] text-gray-500 font-medium">
-                        Min. Blnj {formatRp(voucher.minPurchaseAmount)}
+                        Min. spend {formatRp(voucher.minPurchaseAmount)}
                         {voucher.maxDiscountAmount ? ` • S/d ${formatRp(voucher.maxDiscountAmount)}` : ""}
                       </p>
 

@@ -300,8 +300,8 @@ function AddressFormModal({isOpen,onClose,onSaved}:{isOpen:boolean;onClose:()=>v
 // Summary Bar
 // ─────────────────────────────────────────────────────────────────────────────
 
-function SummaryBar({isOpen,onToggle,subtotal,shippingCost,shippingSubsidy,voucherDiscount,pointsDiscount,grandTotal,pointsEarned,itemCount,canPay,isLoading,onPay}:{
-  isOpen:boolean;onToggle:()=>void;subtotal:number;shippingCost:number;shippingSubsidy:number;
+function SummaryBar({isOpen,onToggle,subtotal,actSubtotal,shippingCost,shippingSubsidy,voucherDiscount,pointsDiscount,grandTotal,pointsEarned,itemCount,canPay,isLoading,onPay}:{
+  isOpen:boolean;onToggle:()=>void;subtotal:number;actSubtotal:number;shippingCost:number;shippingSubsidy:number;
   voucherDiscount:number;pointsDiscount:number;grandTotal:number;pointsEarned:number;itemCount:number;
   canPay:boolean;isLoading:boolean;onPay:()=>void;
 }){
@@ -324,7 +324,11 @@ function SummaryBar({isOpen,onToggle,subtotal,shippingCost,shippingSubsidy,vouch
             </div>
             <div className="border-t border-dashed border-gray-200 mt-3 pt-3 flex justify-between items-baseline">
               <span className="text-xs font-bold text-gray-900">Grand Total</span>
-              <span className="text-xl font-extrabold text-gray-900">{formatPrice(grandTotal)}</span>
+              <span className="text-xl font-extrabold text-gray-900">
+                <p className="line-through text-gray-400 text-[10px]">
+                  {formatPrice(actSubtotal)}
+                </p>
+                {formatPrice(grandTotal)}</span>
             </div>
             {pointsEarned>0&&(<p className="text-[11px] text-amber-500 font-semibold flex items-center gap-1 mt-2"><Star size={11} className="fill-amber-400 text-amber-400"/>+{pointsEarned.toLocaleString()} Flash Points</p>)}
           </motion.div>
@@ -415,6 +419,7 @@ function CheckoutContent(){
   const instantBlocked=hasNRItem||(selectedDistKm!==null&&selectedDistKm>INSTANT_DISTANCE_LIMIT_KM);
 
   const subtotal=checkoutItems.reduce((s,i)=>s+Number(i.price)*i.quantity,0);
+  const actSubtotal=checkoutItems.reduce((s,i)=>s+Number(i.originalPrice)*i.quantity,0);
   const totalWeight=checkoutItems.reduce((s,i)=>s+(i.weightKilogram??2)*i.quantity,0);
   const voucherDiscount=appliedVoucher?.discountAmount??0,pointsEarned=Math.floor(subtotal*0.01);
   const SHIPPING_SUBSIDY_MAX=50000,realShippingCost=selectedCourier?Number(selectedCourier.cost):0;
@@ -643,6 +648,7 @@ function CheckoutContent(){
       <SummaryBar isOpen={isSummaryOpen} onToggle={()=>setIsSummaryOpen(!isSummaryOpen)}
         subtotal={subtotal} shippingSubsidy={shippingSubsidy} shippingCost={realShippingCost}
         voucherDiscount={voucherDiscount} pointsDiscount={pointsDiscount}
+        actSubtotal={actSubtotal}
         grandTotal={grandTotal} pointsEarned={pointsEarned} itemCount={checkoutItems.length}
         canPay={canPay} isLoading={isLoading||isTokenizing} onPay={handleCheckout}/>
     </div>
