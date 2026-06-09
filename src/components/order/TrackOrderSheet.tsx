@@ -13,10 +13,13 @@ import type { TrackingResult, LionParcelTrackingResult } from "@/types/order.typ
 // ── helpers ───────────────────────────────────────────────────────────────────
 
 function getAwb(order: any): string {
+  if (order?.shippingProvider === "LION_PARCEL") {
+    return order?.trackingNumber || order?.courier?.trackingNumber || order?.awbTrackingNumber || "";
+  }
   return (
     order?.trackingNumber ||
-    order?.lionParcelSttId ||   // [BARU] field Lion Parcel
     order?.courier?.trackingNumber ||
+    order?.awbTrackingNumber ||
     ""
   );
 }
@@ -29,10 +32,13 @@ function getPhone(order: any): string {
   return order?.address?.phone || order?.user?.phone || "";
 }
 
-// LION_PARCEL disabled — backend belum siap, pakai Raja Ongkir dulu
-function isLionParcelOrder(_order: any): boolean {
-  return false;
-  // return order?.shippingProvider === "LION_PARCEL";
+function isLionParcelOrder(order: any): boolean {
+  return order?.shippingProvider === "LION_PARCEL";
+}
+
+function isInstantCourier(order: any): boolean {
+  const name = (order?.courierName || order?.courier?.name || "").toUpperCase();
+  return name.includes("GOSEND") || name.includes("GRAB");
 }
 
 // ── sub-component: timeline RajaOngkir (Komerce) ─────────────────────────────
@@ -510,6 +516,12 @@ export default function TrackOrderSheet({ order, isOpen, onClose }: TrackOrderSh
   useEffect(() => {
     if (!isOpen || !order) return;
 
+    // Instant courier: tampilkan deeplink, tidak perlu tracking API
+    if (isInstantCourier(order)) {
+      setState(order?.deeplinkUrl ? "success" : "no_awb");
+      return;
+    }
+
     const awb    = getAwb(order);
     const courier = getCourierCode(order);
 
@@ -524,7 +536,6 @@ export default function TrackOrderSheet({ order, isOpen, onClose }: TrackOrderSh
     setTrackingData(null);
     setErrorMsg("");
 
-    // [DIUBAH] Pakai trackAny() agar otomatis routing ke provider yang benar
     ordersService
       .trackAny({
         awb,
@@ -635,8 +646,37 @@ export default function TrackOrderSheet({ order, isOpen, onClose }: TrackOrderSh
             </div>
           )}
 
-          {/* [DIUBAH] Render timeline berdasarkan provider */}
-          {state === "success" && trackingData && (
+          {/* Instant courier: tampilkan tombol link tracking */}
+          {state === "success" && isInstantCourier(order) && (
+            <div className="flex flex-col items-center gap-5 py-8 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-orange-50 flex items-center justify-center">
+                <Truck size={32} className="text-orange-500" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-gray-900 mb-1">
+                  Lacak di Aplikasi {(order?.courier?.name || order?.courierName || "Kurir").toUpperCase()}
+                </p>
+                <p className="text-xs text-gray-400 max-w-[240px]">
+                  Pesanan ini dikirim via kurir instan. Klik tombol di bawah untuk melihat status pengiriman.
+                </p>
+              </div>
+              {order?.deeplinkUrl ? (
+                <a
+                  href={order.deeplinkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full max-w-[280px] py-3.5 bg-[#F70000] text-white font-bold text-[13px] rounded-2xl flex items-center justify-center gap-2 hover:bg-red-600 active:scale-[0.98] transition-all"
+                >
+                  <MapPin size={16} /> Lacak Pengiriman
+                </a>
+              ) : (
+                <p className="text-xs text-gray-400 italic">Link tracking belum tersedia. Hubungi penjual.</p>
+              )}
+            </div>
+          )}
+
+          {/* LP / Komerce timeline */}
+          {state === "success" && !isInstantCourier(order) && trackingData && (
             isLionParcelOrder(order)
               ? <LionParcelTimeline data={trackingData as LionParcelTrackingResult} />
               : <RajaOngkirTimeline data={trackingData as TrackingResult} />
