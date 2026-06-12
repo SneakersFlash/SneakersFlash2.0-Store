@@ -499,6 +499,7 @@ function CheckoutContent(){
         currency: 'IDR',
         num_items: checkoutItems.length,
         content_ids: checkoutItems.map(i=>i.variantSku||i.id),
+        event_id: res.id,  // deduplikasi dengan CAPI server-side
       });
       router.push(`/orders/${res.id}`);
     }catch(err:any){alert(err?.response?.data?.message||"Terjadi kesalahan. Coba lagi.");}

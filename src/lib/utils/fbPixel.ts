@@ -20,7 +20,8 @@ export const pixel = {
   initiateCheckout(p: { num_items: number; value: number; currency: string }) {
     fbq('track', 'InitiateCheckout', p);
   },
-  purchase(p: { value: number; currency: string; num_items: number; content_ids?: string[] }) {
-    fbq('track', 'Purchase', { ...p, content_type: 'product' });
+  purchase(p: { value: number; currency: string; num_items: number; content_ids?: string[]; event_id?: string }) {
+    const { event_id, ...rest } = p;
+    fbq('track', 'Purchase', { ...rest, content_type: 'product' }, event_id ? { eventID: event_id } : undefined);
   },
 };
