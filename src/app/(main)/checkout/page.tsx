@@ -29,6 +29,7 @@ import { AddressForm } from "@/components/address/AddressForm";
 import { useQueryClient } from "@tanstack/react-query";
 import { cartService } from "@/lib/api/cart.service";
 import PageLoader from "@/components/common/PageLoader";
+import { pixel } from "@/lib/utils/fbPixel";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -373,6 +374,7 @@ function CheckoutContent(){
   const{data:savedAddresses=[],isLoading:loadingAddresses}=useMyAddresses();
   const queryClient=useQueryClient();
 
+  const hasFiredInitCheckout=useRef(false);
   const[isLoading,setIsLoading]=useState(false);
   const[isTokenizing,setIsTokenizing]=useState(false);
   const[usePoints,setUsePoints]=useState(false);
@@ -397,6 +399,13 @@ function CheckoutContent(){
   useEffect(()=>{if(savedAddresses.length>0&&!selectedAddress)setSelectedAddress(savedAddresses.find(a=>a.isDefault)??savedAddresses[0]);},[savedAddresses,selectedAddress]);
   useEffect(()=>{if(hasEventItem){setAppliedVoucher(null);cartService.saveAppliedVoucher(null);return;}const s=cartService.loadAppliedVoucher();if(s)setAppliedVoucher(s);},[hasEventItem]);
   useEffect(()=>{if(!isAuthenticated)router.push("/login");else if(checkoutItems.length===0)router.push("/");},[isAuthenticated,checkoutItems.length,router]);
+
+  useEffect(()=>{
+    if(checkoutItems.length===0||hasFiredInitCheckout.current)return;
+    hasFiredInitCheckout.current=true;
+    const subtotalNow=checkoutItems.reduce((s,i)=>s+Number(i.price)*i.quantity,0);
+    pixel.initiateCheckout({num_items:checkoutItems.length,value:subtotalNow,currency:'IDR'});
+  },[checkoutItems.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load Midtrans.js untuk credit card
   useEffect(()=>{
@@ -485,6 +494,12 @@ function CheckoutContent(){
       const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:selectedPayment,voucherCode:appliedVoucher?.code||undefined,usePoints,pointsToRedeem:usePoints?pointsDiscount:undefined,...(cardToken?{cardToken}:{})};
       const finalPayload=isBuyNowFlow?{...basePayload,cartItemIds:[],buyNowVariantId:buyNowVariantId as string,buyNowQuantity:Number(buyNowQuantity)}:{...basePayload,cartItemIds:selectedItemIds.map(id=>id.toString())};
       const res=await ordersService.checkout(finalPayload);
+      pixel.purchase({
+        value: grandTotal,
+        currency: 'IDR',
+        num_items: checkoutItems.length,
+        content_ids: checkoutItems.map(i=>i.variantSku||i.id),
+      });
       router.push(`/orders/${res.id}`);
     }catch(err:any){alert(err?.response?.data?.message||"Terjadi kesalahan. Coba lagi.");}
     finally{setIsLoading(false);}

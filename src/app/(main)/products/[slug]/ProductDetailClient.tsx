@@ -17,6 +17,7 @@ import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import { cn } from "@/lib/utils/cn";
 import { RelatedProducts } from "@/components/product/RelatedProduct";
+import { pixel } from "@/lib/utils/fbPixel";
 
 interface ProductDetailClientProps {
   slug: string;
@@ -174,6 +175,21 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
     }
   }, [product, selectedSizeId]); // 👈 Pastikan selectedSizeId masuk dependency array
 
+  useEffect(() => {
+    if (!product) return;
+    const variants = product.variants ?? [];
+    const baseP = variants[0]?.price ?? product.basePrice;
+    const ev = product.activeEvent;
+    const evActive = ev && (ev.quotaLimit == null || ev.quotaLimit === 0 || ev.quotaSold < (ev.quotaLimit ?? Infinity));
+    const evPrice = evActive && ev?.specialPrice ? ev.specialPrice : null;
+    pixel.viewContent({
+      content_ids: [String(product.id)],
+      content_name: product.name,
+      value: Number(evPrice ?? baseP),
+      currency: 'IDR',
+    });
+  }, [product?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // --- LOADING & ERROR STATE ---
   if (isProductLoading) {
     return <PageLoader />;
@@ -234,6 +250,12 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
       setIsAdding(true);
       await addItemToCart(Number(selectedVariant.id), quantity);
       openCart();
+      pixel.addToCart({
+        content_ids: [String(product.id)],
+        content_name: product.name,
+        value: Number(displayPrice) * quantity,
+        currency: 'IDR',
+      });
     } catch (error) {
       console.error("Gagal menambahkan ke keranjang", error);
     } finally {
