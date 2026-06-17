@@ -8,32 +8,32 @@ const CATEGORIES = [
   {
     label: "WOMEN",
     href: "/products?gender=women",
-    image: "https://res.cloudinary.com/ds2hpv3bl/image/upload/v1777357503/women_gb9k0i.jpg",
+    image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/women.jpg.jpeg",
     span: "col-span-1",
   },
   {
     label: "KIDS",
     href: "/products?gender=kids",
-    image: "https://res.cloudinary.com/ds2hpv3bl/image/upload/v1777357502/kids_02_iyv40w.jpg",
+    image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/kids.jpg.jpeg",
     span: "col-span-1",
   },
   {
     label: "MEN",
     href: "/products?gender=men",
-    image: "https://res.cloudinary.com/ds2hpv3bl/image/upload/v1777357498/mens_01_b5okfb.jpg",
+    image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/mens.jpg.jpeg",
     span: "col-span-1",
   },
   {
     label: "CASUAL",
     href: "/products?category=lifestyle-casual",
-    image: "https://res.cloudinary.com/ds2hpv3bl/image/upload/v1777357502/casual_o12kkq.jpg",
+    image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/casual.jpg.jpeg",
     span: "col-span-1 md:col-span-1",        // di mobile 1 kolom, di desktop tetap
     tall: true,                               // kartu bawah lebih tinggi
   },
   {
     label: "SPORTS",
     href: "/products?category=sports",
-    image: "https://res.cloudinary.com/ds2hpv3bl/image/upload/v1777357500/sports_dmnujz.jpg",
+    image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/sports.jpg.jpeg",
     span: "col-span-1 md:col-span-1",
     tall: true,
   },
