@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { StoreHydration } from "@/components/common/StoreHydration";
 import "@/lib/store/authStore"; // registers token getter with Axios
 
 interface ProvidersProps {
@@ -45,6 +46,7 @@ export function Providers({ children }: ProvidersProps) {
           {/* Bungkus children dengan AuthProvider di dalam QueryClientProvider 
               agar AuthContext bisa menggunakan hooks React Query */}
           <AuthProvider>
+            <StoreHydration />
             {children}
           </AuthProvider>
 
