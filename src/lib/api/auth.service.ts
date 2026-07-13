@@ -26,6 +26,23 @@ export const authService = {
     return response.data;
   },
 
+  // --- Password Reset (OTP) ---
+  // Responsnya seragam walau email tidak terdaftar — jangan dipakai untuk
+  // menyimpulkan apakah sebuah email punya akun.
+  forgotPassword: async (data: { email: string }): Promise<{ success: boolean; message: string }> => {
+    const response = await apiClient.post('/auth/forgot-password', data);
+    return response.data;
+  },
+
+  resetPassword: async (data: {
+    email: string;
+    otp: string;
+    newPassword: string;
+  }): Promise<{ success: boolean; message: string }> => {
+    const response = await apiClient.post('/auth/reset-password', data);
+    return response.data;
+  },
+
   // --- OAuth ---
   async loginWithGoogle(dto: OAuthLoginDto): Promise<AuthResponse> {
     const { data } = await apiClient.post<AuthResponse>("/auth/google", dto);
