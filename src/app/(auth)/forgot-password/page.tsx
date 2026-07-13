@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { validateEmail, validatePassword } from "@/lib/auth-validation";
 import AuthInput from "@/components/auth/AuthInput";
+import AuthHeroBanner from "@/components/auth/AuthHeroBanner";
 import { authService } from "@/lib/api/auth.service";
 
 type Step = "email" | "otp" | "done";
@@ -116,17 +116,9 @@ export default function ForgotPasswordPage() {
         <h1 className="text-base font-semibold text-gray-900">Forgot Password</h1>
       </div>
 
-      <div className="relative w-full h-56 md:h-80 mb-8 rounded-2xl overflow-hidden shadow-sm">
-        <Image
-          src="/images/sneakers-hero.jpeg"
-          alt="Sneakers Flash"
-          fill
-          className="object-cover hover:scale-105 transition-transform duration-500"
-          priority
-        />
-      </div>
+      <div className="flex-1 flex flex-col px-5 pt-6 pb-10 max-w-md mx-auto w-full">
+        <AuthHeroBanner />
 
-      <div className="flex-1 flex flex-col px-5 pt-10 pb-10 max-w-md mx-auto w-full">
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 flex items-center gap-2 mb-4">
             <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
