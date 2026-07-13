@@ -142,6 +142,10 @@ export interface ProductFilters {
   // ── Gender (Navbar only) ────────────────────────────────────────────────────
   gender?: string;
 
+  // ── Product Type facet (AND) ────────────────────────────────────────────────
+  // ?type=Footwear → batasi hasil ke sepatu saja (home page highlight).
+  type?: string;
+
   // ── Sort ────────────────────────────────────────────────────────────────────
   // Dari FilterModal
   priceSort?: PriceSort;

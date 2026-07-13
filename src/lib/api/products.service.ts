@@ -33,6 +33,9 @@ export const productsService = {
         // ── Gender (Navbar) ────────────────────────────────────────────────────
         ...(filters.gender && { gender: filters.gender }),
 
+        // ── Product Type facet (AND) — mis. "Footwear" untuk highlight sepatu ──
+        ...(filters.type && { type: filters.type }),
+
         // ── Sort ───────────────────────────────────────────────────────────────
         ...(filters.priceSort && { priceSort: filters.priceSort }),
         ...(filters.sortBy    && { sortBy:    filters.sortBy    }),

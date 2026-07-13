@@ -51,12 +51,13 @@ export default async function HomePage() {
   // Mens   = page 2 dari Mens  → produk berbeda dari yang sudah muncul di Unisex
   // Womens = page 2 dari Womens → idem
   // Lifestyle & Running = page 1 (tidak overlap dengan Mens/Womens)
+  // Home page highlight: HANYA sepatu (type=Footwear), tanpa apparel/bags/dll.
   const unisexGroup = [
     {
       id: "unisex",
       title: "Unisex",
-      filters: { categories: ["Mens", "Womens"], limit: 10, page: 1 },
-      href: "/products?categories=Mens,Womens",
+      filters: { categories: ["Mens", "Womens"], type: "Footwear", limit: 10, page: 1 },
+      href: "/products?categories=Mens,Womens&type=Footwear",
       bgImage: getCategoryImage("Mens"),
     }
   ];
@@ -65,15 +66,15 @@ export default async function HomePage() {
     {
       id: "mens",
       title: "Mens",
-      filters: { category: "Mens", limit: 10, page: 2 },
-      href: "/products?category=mens",
+      filters: { category: "Mens", type: "Footwear", limit: 10, page: 2 },
+      href: "/products?category=mens&type=Footwear",
       bgImage: getCategoryImage("Mens"),
     },
     {
       id: "womens",
       title: "Womens",
-      filters: { category: "Womens", limit: 10, page: 2 },
-      href: "/products?category=womens",
+      filters: { category: "Womens", type: "Footwear", limit: 10, page: 2 },
+      href: "/products?category=womens&type=Footwear",
       bgImage: getCategoryImage("Womens"),
     }
   ];
@@ -82,15 +83,15 @@ export default async function HomePage() {
     {
       id: "lifestyle-casual",
       title: "Lifestyle/Casual",
-      filters: { category: "Lifestyle/Casual", limit: 10, page: 1 },
-      href: "/products?category=lifestyle-casual",
+      filters: { category: "Lifestyle/Casual", type: "Footwear", limit: 10, page: 1 },
+      href: "/products?category=lifestyle-casual&type=Footwear",
       bgImage: getCategoryImage("Lifestyle/Casual"),
     },
     {
       id: "running",
       title: "Running",
-      filters: { category: "Running", limit: 10, page: 1 },
-      href: "/products?category=running",
+      filters: { category: "Running", type: "Footwear", limit: 10, page: 1 },
+      href: "/products?category=running&type=Footwear",
       bgImage: getCategoryImage("Running"),
     }
   ];
