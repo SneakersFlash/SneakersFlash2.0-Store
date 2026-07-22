@@ -59,8 +59,16 @@ export default async function HomePage() {
   // Tiap section diambil SECTION_SIZE item pertama yang belum dipakai section
   // sebelumnya, jadi urutan array ini menentukan siapa yang dapat duluan.
   const SECTION_SIZE = 10;
-  // Buffer: ~20% hasil fetch kebuang karena stok habis, sisanya kepotong dedupe.
-  const FETCH_SIZE = 40;
+  // Buffer harus JAUH lebih besar dari SECTION_SIZE, bukan sekadar sedikit lebih.
+  // Dua hal menggerusnya sekaligus:
+  //   1) ~25% hasil fetch kebuang karena stok habis;
+  //   2) keempat section non-Running mengembalikan daftar yang praktis IDENTIK
+  //      (taxonomy faceted: satu sepatu sekaligus Mens + Womens + Lifestyle, dan
+  //      kurasi hype bikin urutannya makin seragam), jadi dedupe memakan
+  //      SECTION_SIZE item untuk SETIAP section sebelumnya.
+  // Dengan 40, section keempat (Lifestyle/Casual) cuma kebagian 1 produk:
+  // 31 in-stock dikurangi 30 yang sudah diambil unisex/mens/womens.
+  const FETCH_SIZE = 120;
 
   const sectionDefs = [
     {
