@@ -28,9 +28,14 @@ export interface Voucher {
   isActive: boolean;
 }
 
+// "jt", BUKAN "M": dalam bahasa Indonesia M dibaca miliar, jadi "Rp1M" untuk
+// 1.000.000 justru menyesatkan (kebaca 1 miliar). Pecahan pakai koma sesuai
+// locale id-ID, jadi 1.500.000 tampil "Rp1,5jt" bukan "Rp1.5jt".
 const formatRp = (value: number) => {
-  if (value >= 1_000_000) return `Rp${value / 1_000_000}M`;
-  if (value >= 1_000)     return `Rp${value / 1_000}k`;
+  const ringkas = (n: number) =>
+    n.toLocaleString("id-ID", { maximumFractionDigits: 1 });
+  if (value >= 1_000_000) return `Rp${ringkas(value / 1_000_000)}jt`;
+  if (value >= 1_000)     return `Rp${ringkas(value / 1_000)}k`;
   return `Rp${value.toLocaleString("id-ID")}`;
 };
 
