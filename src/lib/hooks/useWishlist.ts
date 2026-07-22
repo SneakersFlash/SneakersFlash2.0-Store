@@ -1,11 +1,20 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { wishlistService } from "@/lib/api/wishlist.service";
-import type { AddWishlistDto, WishlistQueryDto } from "@/types/wishlist.types";
+import { useAuthStore } from "@/lib/store/authStore";
+import type {
+  AddWishlistDto,
+  WishlistQueryDto,
+  CheckWishlistResponse,
+} from "@/types/wishlist.types";
+
+// Backend nge-cap limit wishlist di 100 item per halaman (wishlist.service.ts).
+const STATUS_MAP_LIMIT = 100;
 
 export const wishlistKeys = {
   all: ["wishlists"] as const,
   list: (params: WishlistQueryDto) => [...wishlistKeys.all, "list", params] as const,
   check: (productId: number) => [...wishlistKeys.all, "check", productId] as const,
+  statusMap: () => [...wishlistKeys.all, "status-map"] as const,
 };
 
 // ── Queries ──
@@ -17,12 +26,40 @@ export function useWishlists(params: WishlistQueryDto = {}) {
   });
 }
 
-export function useCheckWishlist(productId: number, variantId?: number) {
+// Satu query dipakai bareng semua kartu produk di halaman — React Query nge-dedupe
+// lewat queryKey, jadi 20 kartu tetap cuma 1 request. Sebelumnya tiap kartu nembak
+// /wishlists/check/:id sendiri-sendiri, dan buat visitor yang belum login semuanya
+// balik 401 sampai kena rate limit nginx.
+function useWishlistStatusMap() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
   return useQuery({
-    queryKey: wishlistKeys.check(productId),
-    queryFn: () => wishlistService.check(productId, variantId),
-    enabled: !!productId, // Hanya fetch jika productId ada
+    queryKey: wishlistKeys.statusMap(),
+    queryFn: async () => {
+      const res = await wishlistService.findAll({ page: 1, limit: STATUS_MAP_LIMIT });
+
+      const map = new Map<number, number>();
+      for (const item of res.data) {
+        // Semua id di backend BigInt, jadi kekirim sebagai string di JSON.
+        const productId = Number(item.product?.id);
+        const wishlistId = Number(item.id);
+        if (Number.isFinite(productId) && Number.isFinite(wishlistId)) {
+          map.set(productId, wishlistId);
+        }
+      }
+      return map;
+    },
+    enabled: isAuthenticated, // Jangan pernah nembak API kalau belum login
   });
+}
+
+export function useCheckWishlist(productId: number) {
+  const { data: statusMap, isLoading } = useWishlistStatusMap();
+
+  const wishlistId = statusMap?.get(Number(productId)) ?? null;
+  const data: CheckWishlistResponse = { wishlisted: wishlistId !== null, wishlistId };
+
+  return { data, isLoading };
 }
 
 // ── Mutations ──

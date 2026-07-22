@@ -3,12 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Heart, Star } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import type { Product } from "@/types/product.types";
 import { useAddWishlist, useCheckWishlist, useRemoveWishlist } from "@/lib/hooks/useWishlist";
+import { useAuthStore } from "@/lib/store/authStore";
 
 interface ProductScrollCardProps {
   product: Product;
@@ -41,6 +43,8 @@ function StarRating({ rating = 4, count = 78 }: { rating?: number; count?: numbe
 
 export function ProductScrollCard({ product, index = 0, variant = "scroll" }: ProductScrollCardProps) {
   const [imgError, setImgError] = useState(false);
+  const router = useRouter();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const productId = Number(product.id);
   const { data: checkData, isLoading: isChecking } = useCheckWishlist(productId);
@@ -64,6 +68,8 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    // Tanpa ini, visitor yang belum login kena 401 lalu ke-logout paksa sama interceptor
+    if (!isAuthenticated) return router.push("/login");
     if (isWishlisted && wishlistId) {
       remove({ id: wishlistId, productId });
     } else {
