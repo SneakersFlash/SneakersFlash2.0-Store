@@ -370,7 +370,7 @@ function NavbarInner() {
         // Products from the first event → Shoes "Trending Now"
         const { data: products } = await CampaignsService.getEventProducts(
           events[0].id,
-          { per_page: 3, page: 1 }
+          { per_page: 3, page: 1, curated: true }
         );
 
         if (!products || products.length === 0) return;

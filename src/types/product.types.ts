@@ -145,6 +145,8 @@ export interface ProductFilters {
   // ── Product Type facet (AND) ────────────────────────────────────────────────
   // ?type=Footwear → batasi hasil ke sepatu saja (home page highlight).
   type?: string;
+  /** Home page: dahulukan model hype, bukan hasil sync terbaru. */
+  curated?: boolean;
 
   // ── Sort ────────────────────────────────────────────────────────────────────
   // Dari FilterModal

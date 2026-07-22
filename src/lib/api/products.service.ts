@@ -36,6 +36,11 @@ export const productsService = {
         // ── Product Type facet (AND) — mis. "Footwear" untuk highlight sepatu ──
         ...(filters.type && { type: filters.type }),
 
+        // ── Kurasi home page ───────────────────────────────────────────────────
+        // Backend mendahulukan model hype (NB 2002R, Samba, Dunk, dst) daripada
+        // sekadar produk hasil sync terbaru.
+        ...(filters.curated && { curated: true }),
+
         // ── Sort ───────────────────────────────────────────────────────────────
         ...(filters.priceSort && { priceSort: filters.priceSort }),
         ...(filters.sortBy    && { sortBy:    filters.sortBy    }),
