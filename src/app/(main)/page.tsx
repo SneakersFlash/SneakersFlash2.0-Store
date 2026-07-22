@@ -59,7 +59,8 @@ export default async function HomePage() {
   // Tiap section diambil SECTION_SIZE item pertama yang belum dipakai section
   // sebelumnya, jadi urutan array ini menentukan siapa yang dapat duluan.
   const SECTION_SIZE = 10;
-  const FETCH_SIZE = 30; // buffer supaya tiap section tetap penuh setelah dedupe
+  // Buffer: ~20% hasil fetch kebuang karena stok habis, sisanya kepotong dedupe.
+  const FETCH_SIZE = 40;
 
   const sectionDefs = [
     {
@@ -105,10 +106,14 @@ export default async function HomePage() {
     ),
   );
 
+  // Produk yang stoknya habis tidak ditampilkan — percuma makan slot highlight
+  // karena tetap tidak bisa dibeli. totalStock dihitung backend dari stok varian.
+  const isAvailable = (p: any) => Number(p?.totalStock ?? 0) > 0;
+
   const takenProductIds = new Set<string>();
   const sections = sectionDefs.map((def, i) => {
     const picked = (sectionResults[i]?.data ?? [])
-      .filter((p: any) => !takenProductIds.has(String(p.id)))
+      .filter((p: any) => isAvailable(p) && !takenProductIds.has(String(p.id)))
       .slice(0, SECTION_SIZE);
     picked.forEach((p: any) => takenProductIds.add(String(p.id)));
     return { ...def, products: picked };
