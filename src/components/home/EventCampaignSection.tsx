@@ -10,11 +10,21 @@ interface EventCampaignSectionProps {
 }
 
 export function EventCampaignSection({ campaigns }: EventCampaignSectionProps) {
-  if (!campaigns || campaigns.length === 0) return null;
+  // Produk yang stoknya habis tidak ditampilkan sama sekali di section event —
+  // sebelumnya cuma dikasih badge "Sold Out" tapi tetap makan slot. Campaign yang
+  // jadi kosong ikut disembunyikan supaya tidak nyisa banner event tanpa produk.
+  const visibleCampaigns = (campaigns ?? [])
+    .map((campaign: any) => ({
+      ...campaign,
+      products: (campaign.products ?? []).filter((p: any) => !p.isSoldOut),
+    }))
+    .filter((campaign: any) => campaign.products.length > 0);
+
+  if (visibleCampaigns.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-10 mb-4">
-      {campaigns.map((campaign: any) => (
+      {visibleCampaigns.map((campaign: any) => (
         <section 
           key={campaign.id} 
           // 1. Hapus class 'group' dari section ini agar tidak mengganggu hover produk
