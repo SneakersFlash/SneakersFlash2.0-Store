@@ -10,6 +10,7 @@ import { Suspense } from "react";
 // Services
 import { bannersService } from "@/lib/api/banners.service";
 import { categoriesService } from "@/lib/api/categories.service";
+import { productsService } from "@/lib/api/products.service";
 import CampaignsService from "@/lib/api/campaigns.service";
 import { EventCampaignSection } from "@/components/home/EventCampaignSection"
 import VoucherClaimSection from "@/components/home/VoucherClaimSection";
@@ -47,54 +48,76 @@ export default async function HomePage() {
     return foundCategory?.imageUrl || "/placeholder.jpg";
   };
 
-  // Unisex = page 1 dari gabungan Mens+Womens
-  // Mens   = page 2 dari Mens  → produk berbeda dari yang sudah muncul di Unisex
-  // Womens = page 2 dari Womens → idem
-  // Lifestyle & Running = page 1 (tidak overlap dengan Mens/Womens)
-  // Home page highlight: HANYA sepatu (type=Footwear), tanpa apparel/bags/dll.
-  const unisexGroup = [
+  // Home page highlight: HANYA sepatu (type=Footwear) — tanpa apparel/bags/dll.
+  //
+  // Produk sengaja di-fetch DI SERVER, bukan di tiap ProductSection, supaya bisa
+  // di-dedupe lintas section. Taxonomy-nya faceted (satu sepatu bisa sekaligus
+  // Mens + Running + Lifestyle/Casual), jadi tanpa dedupe barang yang sama pasti
+  // nongol di beberapa section. Cara lama mengakalinya dengan page:2 untuk
+  // Mens/Womens — itu cuma menggeser offset dan tidak pernah menjamin apa pun.
+  //
+  // Tiap section diambil SECTION_SIZE item pertama yang belum dipakai section
+  // sebelumnya, jadi urutan array ini menentukan siapa yang dapat duluan.
+  const SECTION_SIZE = 10;
+  const FETCH_SIZE = 30; // buffer supaya tiap section tetap penuh setelah dedupe
+
+  const sectionDefs = [
     {
       id: "unisex",
       title: "Unisex",
-      filters: { categories: ["Mens", "Womens"], type: "Footwear", limit: 10, page: 1 },
+      filters: { categories: ["Mens", "Womens"], type: "Footwear", limit: FETCH_SIZE, page: 1 },
       href: "/products?categories=Mens,Womens&type=Footwear",
       bgImage: getCategoryImage("Mens"),
-    }
-  ];
-
-  const firstGroup = [
+    },
     {
       id: "mens",
       title: "Mens",
-      filters: { category: "Mens", type: "Footwear", limit: 10, page: 2 },
+      filters: { category: "Mens", type: "Footwear", limit: FETCH_SIZE, page: 1 },
       href: "/products?category=mens&type=Footwear",
       bgImage: getCategoryImage("Mens"),
     },
     {
       id: "womens",
       title: "Womens",
-      filters: { category: "Womens", type: "Footwear", limit: 10, page: 2 },
+      filters: { category: "Womens", type: "Footwear", limit: FETCH_SIZE, page: 1 },
       href: "/products?category=womens&type=Footwear",
       bgImage: getCategoryImage("Womens"),
-    }
-  ];
-
-  const restGroup = [
+    },
     {
       id: "lifestyle-casual",
       title: "Lifestyle/Casual",
-      filters: { category: "Lifestyle/Casual", type: "Footwear", limit: 10, page: 1 },
+      filters: { category: "Lifestyle/Casual", type: "Footwear", limit: FETCH_SIZE, page: 1 },
       href: "/products?category=lifestyle-casual&type=Footwear",
       bgImage: getCategoryImage("Lifestyle/Casual"),
     },
     {
       id: "running",
       title: "Running",
-      filters: { category: "Running", type: "Footwear", limit: 10, page: 1 },
+      filters: { category: "Running", type: "Footwear", limit: FETCH_SIZE, page: 1 },
       href: "/products?category=running&type=Footwear",
       bgImage: getCategoryImage("Running"),
-    }
+    },
   ];
+
+  const sectionResults = await Promise.all(
+    sectionDefs.map((s) =>
+      productsService.getProducts(s.filters).catch(() => ({ data: [] as any[] })),
+    ),
+  );
+
+  const takenProductIds = new Set<string>();
+  const sections = sectionDefs.map((def, i) => {
+    const picked = (sectionResults[i]?.data ?? [])
+      .filter((p: any) => !takenProductIds.has(String(p.id)))
+      .slice(0, SECTION_SIZE);
+    picked.forEach((p: any) => takenProductIds.add(String(p.id)));
+    return { ...def, products: picked };
+  });
+
+  const bySectionId = (id: string) => sections.find((s) => s.id === id)!;
+  const unisexGroup = [bySectionId("unisex")];
+  const firstGroup = [bySectionId("mens"), bySectionId("womens")];
+  const restGroup = [bySectionId("lifestyle-casual"), bySectionId("running")];
 
   return (
     <>
@@ -118,7 +141,7 @@ export default async function HomePage() {
             <ProductSection
               key={section.id}
               title={section.title}
-              filters={section.filters}
+              products={section.products}
               bgColor={SECTION_COLORS[index % SECTION_COLORS.length]}
               viewAllHref={section.href}
               backgroundImage={section.bgImage}
@@ -155,7 +178,7 @@ export default async function HomePage() {
               <ProductSection
                 key={section.id}
                 title={section.title}
-                filters={section.filters}
+                products={section.products}
                 viewAllHref={section.href}
                 backgroundImage={section.bgImage}
               />
@@ -170,7 +193,7 @@ export default async function HomePage() {
               <ProductSection
                 key={section.id}
                 title={section.title}
-                filters={section.filters}
+                products={section.products}
                 bgColor={SECTION_COLORS[index % SECTION_COLORS.length]}
                 viewAllHref={section.href}
                 backgroundImage={section.bgImage}

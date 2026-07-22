@@ -6,12 +6,13 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { ProductScrollCard } from "@/components/product/ProductScrollCard";
-import { useProducts } from "@/lib/hooks/useProducts";
-import type { ProductFilters } from "@/types/product.types";
+import type { Product } from "@/types/product.types";
 
 interface ProductSectionProps {
   title: string;
-  filters: ProductFilters;
+  // Produk di-fetch di server (page.tsx) supaya antar-section bisa di-dedupe.
+  // Kalau tiap section fetch sendiri, barang yang sama bisa muncul berkali-kali.
+  products: Product[];
   backgroundImage?: string | null;
   bgColor?: string;
   viewAllHref?: string;
@@ -67,25 +68,10 @@ function SectionBannerHeader({
 }
 
 // ─── Skeleton scroll cards ────────────────────────────────────────────────────
-function ScrollSkeleton() {
-  return (
-    <div className="flex gap-3 lg:gap-4 overflow-hidden py-2">
-      {[...Array(6)].map((_, i) => (
-        // Diubah: Ditambahkan lg:w-[220px] agar di PC ukurannya tetap
-        <div key={i} className="w-[155px] lg:w-[220px] shrink-0 space-y-2">
-          <div className="skeleton w-full aspect-square rounded-xl bg-gray-200 animate-pulse" />
-          <div className="skeleton h-3 w-3/4 bg-gray-200 animate-pulse rounded" />
-          <div className="skeleton h-4 w-1/2 bg-gray-200 animate-pulse rounded" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
 // ─── Main ProductSection ──────────────────────────────────────────────────────
 export function ProductSection({
   title,
-  filters,
+  products,
   backgroundImage,
   bgColor,
   viewAllHref,
@@ -93,9 +79,6 @@ export function ProductSection({
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
   const href = viewAllHref ?? `/products`;
-
-  const { data, isLoading } = useProducts({ ...filters, limit: filters.limit ?? 10 });
-  const products = data?.data ?? [];
 
   return (
     <motion.section
@@ -112,9 +95,7 @@ export function ProductSection({
         bgColor={bgColor}
       />
 
-      {isLoading ? (
-        <ScrollSkeleton />
-      ) : products.length === 0 ? (
+      {products.length === 0 ? (
         <PlaceholderCards />
       ) : (
         /* GABUNGAN: Scroll Horizontal yang berlaku untuk Mobile (lg:hidden tidak ada) dan Desktop */
