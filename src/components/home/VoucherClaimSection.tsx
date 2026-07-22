@@ -42,7 +42,7 @@ const formatRp = (value: number) => {
 const MOCK_FIRSTSTEP_VOUCHER = {
   id: "__mock_firststep__",
   code: "FIRSTSTEP-••••",
-  name: "Registration Bonus",
+  name: "Voucher Registrasi",
   description: "Khusus member baru! Daftar sekarang dan dapatkan voucher ini.",
   discountType: "FIXED" as DiscountType,
   discountValue: 100000,
@@ -200,7 +200,7 @@ export default function VoucherClaimSection() {
                       </h4>
 
                       <p className="text-[10px] md:text-[11px] text-gray-500 font-medium">
-                        Min. spend {formatRp(voucher.minPurchaseAmount)}
+                        Min. Pembelian {formatRp(voucher.minPurchaseAmount)}
                         {voucher.maxDiscountAmount ? ` • S/d ${formatRp(voucher.maxDiscountAmount)}` : ""}
                       </p>
 
