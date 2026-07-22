@@ -1,24 +1,15 @@
 import apiClient from "./client";
-import type { 
-  AddWishlistDto, 
-  WishlistQueryDto, 
-  WishlistListResponse, 
-  CheckWishlistResponse, 
-  WishlistItem 
+import type {
+  AddWishlistDto,
+  WishlistQueryDto,
+  WishlistListResponse,
+  WishlistItem
 } from "@/types/wishlist.types";
 
 export const wishlistService = {
   // GET /wishlists?page=1&limit=20
   async findAll(params?: WishlistQueryDto): Promise<WishlistListResponse> {
     const { data } = await apiClient.get<WishlistListResponse>("/wishlists", { params });
-    return data;
-  },
-
-  // GET /wishlists/check/:productId?variantId=1
-  async check(productId: number, variantId?: number): Promise<CheckWishlistResponse> {
-    const { data } = await apiClient.get<CheckWishlistResponse>(`/wishlists/check/${productId}`, {
-      params: variantId ? { variantId } : undefined,
-    });
     return data;
   },
 
