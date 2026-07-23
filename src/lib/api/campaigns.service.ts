@@ -8,7 +8,7 @@ const CampaignsService = {
     },
 
     async getEventProducts(eventId: string | number, params?: any): Promise<{ data: any[], meta: any }> {
-        const response = await apiClient.get(`/marketing/events/admin/${eventId}/products`, {
+        const response = await apiClient.get(`/marketing/events/${eventId}/products`, {
         params: params
         });
         return response.data;
