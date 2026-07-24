@@ -127,6 +127,19 @@ export default async function HomePage() {
     return { ...def, products: picked };
   });
 
+  // Kalau SEMUA section kosong, penyebabnya hampir pasti backend sedang tidak
+  // bisa dihubungi (deploy/restart) — bukan katalog yang benar-benar habis:
+  // tiap fetch di atas punya .catch() yang mengembalikan array kosong.
+  // Melempar error di sini penting: dengan ISR, render yang gagal membuat Next
+  // mempertahankan halaman baik yang terakhir dan mencoba lagi nanti. Kalau
+  // dibiarkan lolos, halaman kosong itu justru tersimpan di cache dan disajikan
+  // ke pengunjung sampai revalidasi berikutnya berhasil.
+  if (sections.every((s) => s.products.length === 0)) {
+    throw new Error(
+      "Home page: semua section kosong — backend produk kemungkinan tidak bisa dihubungi",
+    );
+  }
+
   const bySectionId = (id: string) => sections.find((s) => s.id === id)!;
   const unisexGroup = [bySectionId("unisex")];
   const firstGroup = [bySectionId("mens"), bySectionId("womens")];
