@@ -14,12 +14,19 @@ import type { TrackingResult, LionParcelTrackingResult } from "@/types/order.typ
 
 function getAwb(order: any): string {
   if (order?.shippingProvider === "LION_PARCEL") {
+    // Lion: STT number ada di trackingNumber (99LP...), BUKAN di lionParcelSttId
+    // (itu id internal, dijawab 404 sama Lion).
     return order?.trackingNumber || order?.courier?.trackingNumber || order?.awbTrackingNumber || "";
   }
+  // Komerce: `awb` = resi kurir asli, baru terisi setelah admin request pickup.
+  // Harus didahulukan — courier.trackingNumber cuma order_no Komerce ("KOM...")
+  // yang bukan resi dan selalu ditolak /logistics/track.
+  // Sisanya tetap fallback untuk order lama yang menyimpan AWB di trackingNumber.
   return (
+    order?.awb ||
+    order?.awbTrackingNumber ||
     order?.trackingNumber ||
     order?.courier?.trackingNumber ||
-    order?.awbTrackingNumber ||
     ""
   );
 }
