@@ -21,7 +21,7 @@ function BrandRow({ brand, index }: { brand: Brand; index: number }) {
       transition={{ duration: 0.3, delay: index * 0.04, ease: "easeOut" }}
     >
       <Link
-        href={`/products?brandName=${cleanSlug}`}
+        href={`/products?search=${cleanSlug}`}
         className="flex items-center gap-4 py-2.5 px-4 active:bg-gray-50 transition-colors duration-150"
       >
         {/* Logo Box */}
