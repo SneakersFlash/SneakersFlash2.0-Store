@@ -23,6 +23,10 @@ export const productsService = {
         // ── Categories (multi OR) ──────────────────────────────────────────────
         ...(filters.categories?.length && { categories: filters.categories.join(',') }),
 
+        // ── Daftar kode artikel pilihan tangan (home page) ─────────────────────
+        // Urutan array dipertahankan backend sebagai urutan tayang.
+        ...(filters.skus?.length && { skus: filters.skus.join(',') }),
+
 
         // ── Brand ──────────────────────────────────────────────────────────────
         // Multi (FilterModal): brands[] → join jadi "Nike,Puma"

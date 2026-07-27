@@ -106,7 +106,15 @@ export default function BrandsPage() {
     const fetchBrands = async () => {
       try {
         const data = await brandsService.getAll();
-        setBrands((data as Brand[]).filter((b) => b.isActive));
+        // Brand tanpa produk disembunyikan: mendaftarkannya hanya mengantar
+        // pengunjung ke "NO PRODUCTS FOUND". `productCount` sudah dihitung
+        // backend sesuai storefront. Brand dari respons lama yang belum punya
+        // field ini tetap ditampilkan agar tidak hilang massal.
+        setBrands(
+          (data as Brand[]).filter(
+            (b) => b.isActive && (b.productCount ?? 1) > 0,
+          ),
+        );
       } catch (error) {
         console.error("Failed to fetch brands:", error);
       } finally {

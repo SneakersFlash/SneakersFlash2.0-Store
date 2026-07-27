@@ -35,7 +35,11 @@ function ProductListingClientInner({
   // ── Baca URL params ────────────────────────────────────────────────────────
   const categoryFromUrl    = searchParams.get("category");
   const subCategoryFromUrl = searchParams.get("subCategory") || "all";
-  const brandFromUrl       = searchParams.get("brand");
+  // ?brandName= adalah bentuk lama yang masih hidup di iklan, bookmark, dan
+  // tautan yang terlanjur tersebar. Tanpa alias ini parameternya diabaikan
+  // diam-diam: pengunjung mengira sedang memfilter satu brand, padahal yang
+  // tampil seluruh katalog.
+  const brandFromUrl       = searchParams.get("brand") || searchParams.get("brandName");
   const brandsFromUrl      = searchParams.get("brands");        // multi-brand dari FilterModal
   const searchFromUrl      = searchParams.get("search") || searchParams.get("q");
   const priceSortFromUrl   = searchParams.get("priceSort");     // dari FilterModal

@@ -160,8 +160,10 @@ export function Footer() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
               <span>© {year} Sneakers Flash. All rights reserved.</span>
-              <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-              <Link href="/terms"   className="hover:text-foreground transition-colors">Terms</Link>
+              {/* Rute aslinya /privacy-policy dan /term-condition; /privacy dan
+                  /terms tidak pernah ada sehingga dua tautan ini 404. */}
+              <Link href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy</Link>
+              <Link href="/term-condition" className="hover:text-foreground transition-colors">Terms</Link>
             </div>
 
             {/* Payment methods */}

@@ -6,6 +6,11 @@ export interface Brand {
   slug: string;
   isActive?: boolean;
   logoUrl?: string;
+  /**
+   * Jumlah produk aktif brand ini di storefront yang sedang dibuka. Dihitung
+   * backend; dipakai /brands untuk menyembunyikan brand yang sudah kosong.
+   */
+  productCount?: number;
 }
 
 // ─── Category ─────────────────────────────────────────────────────────────────
@@ -147,6 +152,12 @@ export interface ProductFilters {
   type?: string;
   /** Home page: dahulukan model hype, bukan hasil sync terbaru. */
   curated?: boolean;
+  /**
+   * Home page: daftar kode artikel (sku_parent) pilihan tangan. Hanya produk
+   * ini yang tampil, dengan urutan persis seperti isi array. Kalau diisi,
+   * `curated` diabaikan backend.
+   */
+  skus?: string[];
 
   // ── Sort ────────────────────────────────────────────────────────────────────
   // Dari FilterModal

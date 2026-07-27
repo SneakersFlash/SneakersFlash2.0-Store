@@ -29,7 +29,10 @@ export const NAV_ITEMS = [
   },
   {
     label: "Shoes",
-    href: "/products?category=shoes",
+    // Slug katalog yang benar adalah "footwear" (876 produk). "shoes" tidak
+    // pernah ada sebagai kategori maupun slug, jadi menu utama ini selama ini
+    // selalu mendarat di "NO PRODUCTS FOUND".
+    href: "/products?category=footwear",
     megaMenu: {
       featured: {
         label: "Trending Now",
@@ -37,13 +40,14 @@ export const NAV_ITEMS = [
       },
       columns: [
         {
+          // Hanya kategori yang benar-benar berisi. Basketball, Training, dan
+          // Skateboarding tidak pernah ada di katalog (0 produk), sedangkan
+          // "lifestyle" salah slug — yang benar "lifestylecasual", TANPA tanda
+          // hubung. Lihat tabel categories: name "Lifestyle/Casual".
           title: "By Sport",
           links: [
-            { label: "Running",       href: "/products?category=running"       },
-            { label: "Basketball",    href: "/products?category=basketball"    },
-            { label: "Training",      href: "/products?category=training"      },
-            { label: "Lifestyle",     href: "/products?category=lifestyle"     },
-            { label: "Skateboarding", href: "/products?category=skateboarding" },
+            { label: "Running",          href: "/products?category=running"          },
+            { label: "Lifestyle/Casual", href: "/products?category=lifestylecasual"  },
           ],
         },
         {
@@ -59,20 +63,19 @@ export const NAV_ITEMS = [
         {
           title: "By Gender",
           links: [
+            // Kids' dibuang: katalog SF tidak punya satu pun produk anak
+            // (semua ejaan gender/category/type sudah dicek, nihil).
             { label: "Men's",   href: "/products?gender=men"    },
             { label: "Women's", href: "/products?gender=women"  },
-            { label: "Kids'",   href: "/products?gender=kids"   },
             { label: "Unisex",  href: "/products?gender=unisex" },
           ],
         },
       ],
     },
   },
-  {
-    label: "Apparel",
-    href: "/products?category=apparel",
-    megaMenu: null,
-  },
+  // "Apparel" dihapus dari menu utama: katalog SF berisi 0 apparel setelah
+  // pembersihan katalog, jadi menu ini selalu berujung "NO PRODUCTS FOUND".
+  // Kembalikan entri ini kalau stok apparel sudah masuk lagi.
   { label: "Brands", href: "/brands", megaMenu: null },
 ];
 

@@ -11,12 +11,9 @@ const CATEGORIES = [
     image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/women.jpg.jpeg",
     span: "col-span-1",
   },
-  {
-    label: "KIDS",
-    href: "/products?gender=kids",
-    image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/kids.jpg.jpeg",
-    span: "col-span-1",
-  },
+  // Kartu KIDS dihapus: katalog SF tidak punya satu pun produk anak, jadi
+  // kartunya selalu mendarat di halaman kosong. Kembalikan kalau stok anak
+  // sudah masuk (baris pertama tinggal dikembalikan ke 3 kolom).
   {
     label: "MEN",
     href: "/products?gender=men",
@@ -25,14 +22,17 @@ const CATEGORIES = [
   },
   {
     label: "CASUAL",
-    href: "/products?category=lifestyle-casual",
+    // Slug katalognya "lifestylecasual", tanpa tanda hubung.
+    href: "/products?category=lifestylecasual",
     image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/casual.jpg.jpeg",
     span: "col-span-1 md:col-span-1",        // di mobile 1 kolom, di desktop tetap
     tall: true,                               // kartu bawah lebih tinggi
   },
   {
-    label: "SPORTS",
-    href: "/products?category=sports",
+    // Kategori "sports" tidak ada di katalog (0 produk). Diarahkan ke Running,
+    // satu-satunya kategori olahraga yang benar-benar terisi (110 produk).
+    label: "RUNNING",
+    href: "/products?category=running",
     image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/sports.jpg.jpeg",
     span: "col-span-1 md:col-span-1",
     tall: true,
@@ -44,17 +44,17 @@ export function CategoryShortcuts() {
     <div className="w-full px-4 py-4 md:py-6 bg-[#F5F5F5]">
       <div className="max-w-7xl mx-auto">
 
-        {/* Baris 1 — 3 kartu sejajar */}
-        <div className="grid grid-cols-3 gap-2 md:gap-3 mb-2 md:mb-3">
-          {CATEGORIES.slice(0, 3).map((cat, i) => (
+        {/* Baris 1 — 2 kartu sejajar (dulu 3, sebelum kartu KIDS dihapus) */}
+        <div className="grid grid-cols-2 gap-2 md:gap-3 mb-2 md:mb-3">
+          {CATEGORIES.slice(0, 2).map((cat, i) => (
             <CategoryCard key={cat.label} cat={cat} index={i} height="h-[140px] md:h-[280px]" />
           ))}
         </div>
 
         {/* Baris 2 — 2 kartu lebih lebar */}
         <div className="grid grid-cols-2 gap-2 md:gap-3">
-          {CATEGORIES.slice(3).map((cat, i) => (
-            <CategoryCard key={cat.label} cat={cat} index={i + 3} height="h-[180px] md:h-[360px]" />
+          {CATEGORIES.slice(2).map((cat, i) => (
+            <CategoryCard key={cat.label} cat={cat} index={i + 2} height="h-[180px] md:h-[360px]" />
           ))}
         </div>
 

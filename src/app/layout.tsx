@@ -31,8 +31,13 @@ const inter = Inter({
 // ─── Metadata ─────────────────────────────────────────────────────────────────
 
 export const metadata: Metadata = {
+  // Fallback WAJIB domain produksi, bukan localhost. NEXT_PUBLIC_* dibakar saat
+  // build, jadi kalau variabelnya lupa di-set di tahap build, seluruh URL absolut
+  // (og:image paling terasa) ikut menunjuk localhost dan setiap share ke
+  // WhatsApp/Instagram tampil tanpa gambar. Untuk dev, isi NEXT_PUBLIC_SITE_URL
+  // di .env.local.
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://sneakersflash.com"
   ),
   title: {
     default: "SneakersFlash — Premium Sneakers & Footwear",
@@ -56,7 +61,11 @@ export const metadata: Metadata = {
     type: "website",
     locale: "id_ID",
     siteName: "SneakersFlash",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+    // /og-image.jpg TIDAK PERNAH ADA di public/ — preview share selama ini
+    // menunjuk berkas 404. Pakai aset yang benar-benar ada; ukurannya di bawah
+    // 1200x630 anjuran, tapi masih jauh di atas ambang minimum dan akan
+    // di-crop rapi oleh WhatsApp/Facebook.
+    images: [{ url: "/images/sneakers-hero.jpeg", width: 824, height: 661 }],
   },
   twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },

@@ -48,61 +48,79 @@ export default async function HomePage() {
     return foundCategory?.imageUrl || "/placeholder.jpg";
   };
 
-  // Home page highlight: HANYA sepatu (type=Footwear) — tanpa apparel/bags/dll.
+  // Kurasi home page: daftar KODE ARTIKEL pilihan tangan, satu daftar per
+  // section. Urutan array = urutan tayang (dijaga backend lewat ?skus=).
   //
-  // Produk sengaja di-fetch DI SERVER, bukan di tiap ProductSection, supaya bisa
-  // di-dedupe lintas section. Taxonomy-nya faceted (satu sepatu bisa sekaligus
-  // Mens + Running + Lifestyle/Casual), jadi tanpa dedupe barang yang sama pasti
-  // nongol di beberapa section. Cara lama mengakalinya dengan page:2 untuk
-  // Mens/Womens — itu cuma menggeser offset dan tidak pernah menjamin apa pun.
+  // Menggantikan heuristik `curated`, yang menebak isi section dengan
+  // mencocokkan nama produk ke daftar model hype. Heuristik itu memaksa adanya
+  // dedupe antar-section karena taxonomy-nya faceted — satu sepatu bisa
+  // sekaligus Mens + Running + Lifestyle/Casual, sehingga section non-Running
+  // mengembalikan daftar yang praktis identik. Daftar eksplisit menghapus
+  // seluruh persoalan itu: tidak ada tebakan nama, tidak ada tumpang tindih tak
+  // disengaja, dan isian sheet tidak bisa lagi menggeser apa yang tampil.
   //
-  // Tiap section diambil SECTION_SIZE item pertama yang belum dipakai section
-  // sebelumnya, jadi urutan array ini menentukan siapa yang dapat duluan.
-  const SECTION_SIZE = 10;
-  // Buffer harus JAUH lebih besar dari SECTION_SIZE, bukan sekadar sedikit lebih.
-  // Dua hal menggerusnya sekaligus:
-  //   1) ~25% hasil fetch kebuang karena stok habis;
-  //   2) keempat section non-Running mengembalikan daftar yang praktis IDENTIK
-  //      (taxonomy faceted: satu sepatu sekaligus Mens + Womens + Lifestyle, dan
-  //      kurasi hype bikin urutannya makin seragam), jadi dedupe memakan
-  //      SECTION_SIZE item untuk SETIAP section sebelumnya.
-  // Dengan 40, section keempat (Lifestyle/Casual) cuma kebagian 1 produk:
-  // 31 in-stock dikurangi 30 yang sudah diambil unisex/mens/womens.
-  const FETCH_SIZE = 120;
+  // Menambah/mengurangi barang = cukup sunting daftar di bawah. Kode artikel
+  // yang tidak ada di katalog SF (salah ketik, produk nonaktif, atau milik
+  // platform lain) dilewati diam-diam oleh backend: section memendek, bukan
+  // error. Produk yang stoknya habis juga disaring di bawah.
+  const SECTION_SKUS = {
+    unisex: [
+      "JI3218", "1203A574001", "CT8532080", "U20026PU",
+      "M1000LA", "DM0211100", "FZ2068100", "39884686",
+    ],
+    mens: [
+      "JP7676", "1203A896750", "BB550VGC", "ML574EVW",
+      "IB8182100", "553558145", "39652001", "39684101",
+    ],
+    womens: [
+      "JS0682", "JP5330", "WL574CUL", "WRCXCS4",
+      "IH7318677", "FZ5778004", "DD8959001", "39934801",
+    ],
+    lifestyleCasual: [
+      "JQ7643", "IH4771", "1203A740101", "1203A574001",
+      "M475VTH", "U200210D", "IB8174100", "FZ4110103",
+    ],
+    running: [
+      "JH6206", "JP7149", "1147851NKV", "1147930WTTR",
+      "M108014C", "MFCXCE4", "M86014G", "JH9184",
+    ],
+  };
 
   const sectionDefs = [
     {
       id: "unisex",
       title: "Unisex",
-      filters: { categories: ["Mens", "Womens"], type: "Footwear", curated: true, limit: FETCH_SIZE, page: 1 },
+      filters: { skus: SECTION_SKUS.unisex, limit: SECTION_SKUS.unisex.length, page: 1 },
       href: "/products?categories=Mens,Womens&type=Footwear",
       bgImage: getCategoryImage("Mens"),
     },
     {
       id: "mens",
       title: "Mens",
-      filters: { category: "Mens", type: "Footwear", curated: true, limit: FETCH_SIZE, page: 1 },
+      filters: { skus: SECTION_SKUS.mens, limit: SECTION_SKUS.mens.length, page: 1 },
       href: "/products?category=mens&type=Footwear",
       bgImage: getCategoryImage("Mens"),
     },
     {
       id: "womens",
       title: "Womens",
-      filters: { category: "Womens", type: "Footwear", curated: true, limit: FETCH_SIZE, page: 1 },
+      filters: { skus: SECTION_SKUS.womens, limit: SECTION_SKUS.womens.length, page: 1 },
       href: "/products?category=womens&type=Footwear",
       bgImage: getCategoryImage("Womens"),
     },
     {
       id: "lifestyle-casual",
       title: "Lifestyle/Casual",
-      filters: { category: "Lifestyle/Casual", type: "Footwear", curated: true, limit: FETCH_SIZE, page: 1 },
-      href: "/products?category=lifestyle-casual&type=Footwear",
+      filters: { skus: SECTION_SKUS.lifestyleCasual, limit: SECTION_SKUS.lifestyleCasual.length, page: 1 },
+      // Slug katalognya "lifestylecasual" TANPA tanda hubung; bentuk
+      // "lifestyle-casual" tidak cocok dengan apa pun dan menghasilkan 0 produk.
+      href: "/products?category=lifestylecasual&type=Footwear",
       bgImage: getCategoryImage("Lifestyle/Casual"),
     },
     {
       id: "running",
       title: "Running",
-      filters: { category: "Running", type: "Footwear", curated: true, limit: FETCH_SIZE, page: 1 },
+      filters: { skus: SECTION_SKUS.running, limit: SECTION_SKUS.running.length, page: 1 },
       href: "/products?category=running&type=Footwear",
       bgImage: getCategoryImage("Running"),
     },
@@ -118,14 +136,14 @@ export default async function HomePage() {
   // karena tetap tidak bisa dibeli. totalStock dihitung backend dari stok varian.
   const isAvailable = (p: any) => Number(p?.totalStock ?? 0) > 0;
 
-  const takenProductIds = new Set<string>();
-  const sections = sectionDefs.map((def, i) => {
-    const picked = (sectionResults[i]?.data ?? [])
-      .filter((p: any) => isAvailable(p) && !takenProductIds.has(String(p.id)))
-      .slice(0, SECTION_SIZE);
-    picked.forEach((p: any) => takenProductIds.add(String(p.id)));
-    return { ...def, products: picked };
-  });
+  // Sengaja TIDAK ada dedupe antar-section. Dulu itu wajib karena keempat
+  // section non-Running mengembalikan daftar yang nyaris sama. Sekarang isinya
+  // dipilih tangan, jadi kalau satu kode artikel ditulis di dua section, memang
+  // begitulah yang diinginkan.
+  const sections = sectionDefs.map((def, i) => ({
+    ...def,
+    products: (sectionResults[i]?.data ?? []).filter(isAvailable),
+  }));
 
   // Kalau SEMUA section kosong, penyebabnya hampir pasti backend sedang tidak
   // bisa dihubungi (deploy/restart) — bukan katalog yang benar-benar habis:
