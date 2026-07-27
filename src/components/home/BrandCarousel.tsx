@@ -29,7 +29,7 @@ function BrandCard({ brand, index }: { brand: Brand; index: number }) {
       className="w-[140px] md:w-[180px] shrink-0 snap-start" 
     >
       <Link
-        href={`/products?brandName=${cleanSlug}`}
+        href={`/products?brand=${cleanSlug}`}
         className="group flex items-center justify-center bg-white border border-[#E5E5E5] shadow-sm rounded-[16px] h-[80px] md:h-[100px] hover:border-gray-300 hover:shadow-md transition-all duration-300 relative overflow-hidden px-4 py-3"
       >
         {brand.logoUrl ? (
