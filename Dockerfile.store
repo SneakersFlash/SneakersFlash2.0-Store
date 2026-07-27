@@ -1,0 +1,67 @@
+FROM node:20-alpine AS base
+
+# ─── 1. Dependencies ───────────────────────────────────────────────────────────
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# ─── 2. Builder ────────────────────────────────────────────────────────────────
+FROM base AS builder
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Env saat build time
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_APP_NAME
+ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
+
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME
+ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN npm run build
+
+# ─── 3. Runner ─────────────────────────────────────────────────────────────────
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+
+RUN mkdir .next && chown nextjs:nodejs .next
+
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+
+# Hasil build TIDAK langsung ditaruh di .next/static, karena path itu jadi mount
+# point volume persisten `store_static` (biar chunk build lama tetap tersaji
+# setelah deploy — lihat docker-entrypoint.sh). Isinya disalin masuk saat start.
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static-dist
+
+# chown WAJIB sebelum USER nextjs: volume kosong mewarisi kepemilikan direktori
+# ini saat pertama dibuat. Kalau kelewat, volume jadi milik root dan container
+# (uid 1001) gagal menyalin.
+RUN mkdir -p .next/static && chown nextjs:nodejs .next/static
+
+COPY --chown=nextjs:nodejs docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
+
+USER nextjs
+
+EXPOSE 3001
+
+ENV PORT=3001
+ENV HOSTNAME="0.0.0.0"
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD ["node", "server.js"]
