@@ -2,22 +2,20 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Brand } from "@/types/product.types";
 import { brandsService } from "@/lib/api/brands.service";
+import { useAutoScroll } from "@/lib/hooks/useAutoScroll";
 
-// List brand yang ingin ditampilkan (sesuaikan dengan slug di database Anda)
-const SELECTED_BRAND_SLUGS = [
-  "adidas",
-  "nike",
-  "new-balance",
-  "vans",
-  "puma",
-  "converse"
-];
+// Home page menampilkan SEMUA brand yang punya barang, kecuali yang di bawah
+// ini. Dulu sebaliknya — daftar putih berisi 6 slug — sehingga brand baru tidak
+// pernah muncul sampai ada yang ingat menyuntingnya di sini.
+const EXCLUDED_BRAND_SLUGS = ["reebok", "skechers", "sandalboyz", "air-jordan"];
 
 function BrandCard({ brand, index }: { brand: Brand; index: number }) {
-  const cleanSlug = brand.slug.startsWith("/") ? brand.slug.substring(1) : brand.slug;
+  const cleanSlug = brand.slug.startsWith("/")
+    ? brand.slug.substring(1)
+    : brand.slug;
 
   return (
     <motion.div
@@ -26,7 +24,7 @@ function BrandCard({ brand, index }: { brand: Brand; index: number }) {
       viewport={{ once: true, margin: "-20px" }}
       transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
       whileTap={{ scale: 0.95 }}
-      className="w-[140px] md:w-[180px] shrink-0 snap-start" 
+      className="w-[140px] md:w-[180px] shrink-0 snap-start"
     >
       <Link
         href={`/products?brand=${cleanSlug}`}
@@ -51,24 +49,28 @@ function BrandCard({ brand, index }: { brand: Brand; index: number }) {
 export function BrandCarousel() {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Ref untuk mengontrol elemen carousel
-  const carouselRef = useRef<HTMLDivElement>(null);
+
+  const carouselRef = useAutoScroll<HTMLDivElement>({
+    enabled: brands.length > 0,
+  });
 
   useEffect(() => {
     const fetchBrands = async () => {
       try {
         const data = await brandsService.getAll();
-        
-        // Filter: Hanya ambil brand yang ada di list SELECTED_BRAND_SLUGS dan aktif
-        const filtered: any = data
-          .filter(b => b.isActive && SELECTED_BRAND_SLUGS.includes(b.slug.toLowerCase().replace(/^\//, "")))
-          // Urutkan sesuai urutan di SELECTED_BRAND_SLUGS
-          .sort((a, b) => {
-            const slugA = a.slug.toLowerCase().replace(/^\//, "");
-            const slugB = b.slug.toLowerCase().replace(/^\//, "");
-            return SELECTED_BRAND_SLUGS.indexOf(slugA) - SELECTED_BRAND_SLUGS.indexOf(slugB);
-          });
+
+        // Brand tanpa produk ikut disembunyikan, sama seperti halaman /brands:
+        // menampilkannya cuma mengantar pengunjung ke "NO PRODUCTS FOUND".
+        // `productCount` dihitung backend sesuai storefront; respons lama yang
+        // belum punya field itu tetap ditampilkan agar tidak hilang massal.
+        const filtered = (data as Brand[]).filter((b) => {
+          const slug = b.slug.toLowerCase().replace(/^\//, "");
+          return (
+            b.isActive &&
+            (b.productCount ?? 1) > 0 &&
+            !EXCLUDED_BRAND_SLUGS.includes(slug)
+          );
+        });
 
         setBrands(filtered);
       } catch (error) {
@@ -81,30 +83,6 @@ export function BrandCarousel() {
     fetchBrands();
   }, []);
 
-  // Effect untuk Auto-Scroll
-  useEffect(() => {
-    // Jangan jalankan jika data belum ada
-    if (brands.length === 0) return;
-
-    const scrollInterval = setInterval(() => {
-      if (carouselRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = carouselRef.current;
-        
-        // Cek apakah sudah mencapai ujung paling kanan (dengan sedikit toleransi px)
-        if (scrollLeft + clientWidth >= scrollWidth - 5) {
-          // Kembali ke awal dengan mulus
-          carouselRef.current.scrollTo({ left: 0, behavior: "smooth" });
-        } else {
-          // Geser ke kanan kurang lebih sejauh 1 card (otomatis akan di-snap oleh CSS)
-          carouselRef.current.scrollBy({ left: 200, behavior: "smooth" });
-        }
-      }
-    }, 3000); // Angka 3000 = bergeser setiap 3 detik. Silakan disesuaikan.
-
-    // Bersihkan interval ketika komponen di-unmount
-    return () => clearInterval(scrollInterval);
-  }, [brands]);
-
   if (isLoading) {
     return (
       <div className="py-4 container mx-auto max-w-7xl px-4 animate-pulse">
@@ -113,7 +91,10 @@ export function BrandCarousel() {
         </div>
         <div className="flex gap-3 md:gap-4 overflow-hidden mb-4 md:mb-5">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-[80px] md:h-[100px] bg-gray-100 rounded-[16px] w-[140px] md:w-[180px] shrink-0" />
+            <div
+              key={i}
+              className="h-[80px] md:h-[100px] bg-gray-100 rounded-[16px] w-[140px] md:w-[180px] shrink-0"
+            />
           ))}
         </div>
       </div>
@@ -125,13 +106,12 @@ export function BrandCarousel() {
   return (
     <div className="relative w-full py-4 font-sans">
       <div className="container mx-auto px-4 max-w-7xl flex flex-col">
-        
         <div className="flex justify-between items-center mb-4 md:mb-5">
           <p className="text-[20px] md:text-[24px] font-bold text-[#1A1A1A] tracking-tight">
             Shop by Brand
           </p>
-          <Link 
-            href="/brands" 
+          <Link
+            href="/brands"
             className="block text-[#1E1E1E] hover:text-[#FF6B00] text-[15px] font-bold transition-colors"
           >
             View All
@@ -139,7 +119,7 @@ export function BrandCarousel() {
         </div>
 
         {/* Menambahkan properti ref={carouselRef} ke container ini */}
-        <div 
+        <div
           ref={carouselRef}
           className="flex overflow-x-auto snap-x snap-mandatory gap-3 md:gap-4 pb-4 -mx-4 px-4 md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         >
@@ -147,7 +127,6 @@ export function BrandCarousel() {
             <BrandCard key={brand.id} brand={brand} index={i} />
           ))}
         </div>
-        
       </div>
     </div>
   );
