@@ -36,7 +36,24 @@ export const NAV_ITEMS = [
     megaMenu: {
       featured: {
         label: "Trending Now",
-        items: [], // populated dynamically from active campaign event
+        // Kurasi manual. Sebelumnya diisi otomatis dari produk event pertama,
+        // tapi href-nya dibangun pakai productId (`/products/<id>`) padahal
+        // route detail produk butuh SLUG (backend: `/products/slug/<slug>`),
+        // jadi semua link trending selalu 404. Di sini pakai slug asli.
+        items: [
+          {
+            label: "ADIDAS ADIZERO EVO SL WHITE BLACK",
+            href:  "/products/adidas-adizero-evo-sl-white-black-jh6206-jh6206",
+          },
+          {
+            label: "PUMA SPEEDCAT OG BORDEAUX RED BLACK",
+            href:  "/products/puma-speedcat-og-bordeaux-red-black-39884686-39884686",
+          },
+          {
+            label: "SALOMON XT 6 BLACK PHANTOM",
+            href:  "/products/salomon-xt-6-black-phantom-410866-410866",
+          },
+        ],
       },
       columns: [
         {
@@ -81,25 +98,11 @@ export const NAV_ITEMS = [
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────
 
-function MegaMenu({
-  item,
-  featuredItems,
-}: {
-  item: (typeof NAV_ITEMS)[number];
-  featuredItems?: { label: string; href: string }[];
-}) {
+function MegaMenu({ item }: { item: (typeof NAV_ITEMS)[number] }) {
   if (!item.megaMenu) return null;
   const { megaMenu } = item;
 
-  // Merge dynamic items into featured when provided and available
-  const resolvedFeatured = megaMenu.featured
-    ? {
-        ...megaMenu.featured,
-        items: featuredItems && featuredItems.length > 0
-          ? featuredItems
-          : megaMenu.featured.items,
-      }
-    : null;
+  const resolvedFeatured = megaMenu.featured;
 
   // Don't render featured column if there are no items at all
   const showFeatured = resolvedFeatured && resolvedFeatured.items.length > 0;
@@ -349,11 +352,11 @@ function NavbarInner() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isScrolled,   setIsScrolled]   = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
-  const [trendingItems,  setTrendingItems]  = useState<{ label: string; href: string }[]>([]);
   const [campaignItems,  setCampaignItems]  = useState<{ label: string; href: string }[]>([]);
   const navRef = useRef<HTMLDivElement>(null);
 
-  // Single fetch: events → trending products (Shoes) + campaign list (Sale)
+  // Fetch events → campaign list (Sale). "Trending Now" di menu Shoes sekarang
+  // dikurasi manual di NAV_ITEMS, jadi tidak lagi ambil produk event.
   useEffect(() => {
     async function loadCampaignData() {
       try {
@@ -369,27 +372,8 @@ function NavbarInner() {
               : `/products?sale=true&event=${e.id}`,
           }))
         );
-
-        // Products from the first event → Shoes "Trending Now"
-        const { data: products } = await CampaignsService.getEventProducts(
-          events[0].id,
-          { per_page: 3, page: 1, curated: true }
-        );
-
-        if (!products || products.length === 0) return;
-
-        setTrendingItems(
-          products.slice(0, 3).map((p: any) => {
-            // Strip trailing " - SKU" (e.g. "ADIDAS NMD R1 - HQ4247" → "ADIDAS NMD R1")
-            const name = (p.productName ?? "Product").replace(/\s*-\s*\S+$/, "").trim();
-            return {
-              label: name,
-              href:  `/products/${p.productId}`,
-            };
-          })
-        );
       } catch {
-        // silently fall back — both states remain empty arrays
+        // silently fall back — campaignItems tetap array kosong
       }
     }
     loadCampaignData();
@@ -497,10 +481,7 @@ function NavbarInner() {
                   </Link>
                   <AnimatePresence>
                     {activeMenu === item.label && (
-                      <MegaMenu
-                        item={item}
-                        featuredItems={item.label === "Shoes" ? trendingItems : undefined}
-                      />
+                      <MegaMenu item={item} />
                     )}
                   </AnimatePresence>
                 </div>
