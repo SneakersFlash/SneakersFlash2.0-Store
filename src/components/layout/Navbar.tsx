@@ -42,8 +42,8 @@ export const NAV_ITEMS = [
         // jadi semua link trending selalu 404. Di sini pakai slug asli.
         items: [
           {
-            label: "ADIDAS ADIZERO EVO SL WHITE BLACK",
-            href:  "/products/adidas-adizero-evo-sl-white-black-jh6206-jh6206",
+            label: "ADIDAS ADIZERO EVO SL BLACK WHITE",
+            href:  "/products/adidas-adizero-evo-sl-black-white-jp7149-jp7149",
           },
           {
             label: "PUMA SPEEDCAT OG BORDEAUX RED BLACK",
