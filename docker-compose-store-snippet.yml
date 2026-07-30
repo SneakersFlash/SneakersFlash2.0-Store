@@ -1,0 +1,24 @@
+# Tambahkan service ini ke docker-compose.production.yml
+# di bawah service "app" (NestJS)
+
+  store:
+    build:
+      context: ./store
+      dockerfile: Dockerfile.store
+      args:
+        NEXT_PUBLIC_API_URL: https://api.sneakersflash.com/api/v1
+        NEXT_PUBLIC_APP_NAME: SneakersFlash
+    container_name: sneakers_store_prod
+    restart: unless-stopped
+    expose:
+      - "3001"
+    networks:
+      - sneakers_network
+    depends_on:
+      - app
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health-check"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
