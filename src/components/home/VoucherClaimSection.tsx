@@ -32,30 +32,29 @@ export interface Voucher {
 // "jt", BUKAN "M": dalam bahasa Indonesia M dibaca miliar, jadi "Rp1M" untuk
 // 1.000.000 justru menyesatkan (kebaca 1 miliar). Pecahan pakai koma sesuai
 // locale id-ID, jadi 1.500.000 tampil "Rp1,5jt" bukan "Rp1.5jt".
+const ringkas = (n: number) =>
+  n.toLocaleString("id-ID", { maximumFractionDigits: 1 });
+
 const formatRp = (value: number | string) => {
   const angka = Number(value) || 0;
-  const ringkas = (n: number) =>
-    n.toLocaleString("id-ID", { maximumFractionDigits: 1 });
-  if (angka >= 1_000_000) return `Rp${ringkas(angka / 1_000_000)}jt`;
-  if (angka >= 1_000)     return `Rp${ringkas(angka / 1_000)}k`;
+  if (angka >= 1_000_000) return `Rp${ringkas(angka / 1_000_000)}JT`;
+  if (angka >= 1_000)     return `Rp${ringkas(angka / 1_000)}RB`;
   return `Rp${angka.toLocaleString("id-ID")}`;
 };
 
-// Nilai potongan HARUS ikut discountType: voucher persen menyimpan "4" di
-// discountValue, kalau dipaksa rupiah tampil jadi "Rp4" (bukan "4%").
+// Versi kolom kanan: tanpa "Rp" dan dieja penuh biar nendang seperti banner
+// promo — 150.000 → "150RIBU", 1.500.000 → "1,5JUTA".
+const formatNominal = (value: number | string) => {
+  const angka = Number(value) || 0;
+  if (angka >= 1_000_000) return `${ringkas(angka / 1_000_000)}JUTA`;
+  if (angka >= 1_000)     return `${ringkas(angka / 1_000)}RIBU`;
+  return `Rp${angka.toLocaleString("id-ID")}`;
+};
+
 // Decimal(15,2) dari backend bisa berupa 4 atau 4.00, jadi pecahan .00 dibuang
 // dan sisanya pakai koma id-ID (12.5 → "12,5%").
-const formatDiscount = (type: string | undefined, value: number | string) => {
-  const angka = Number(value) || 0;
-  switch (type?.toLowerCase()) {
-    case "percentage":
-      return `${angka.toLocaleString("id-ID", { maximumFractionDigits: 2 })}%`;
-    case "free_shipping":
-      return "GRATIS ONGKIR";
-    default:
-      return formatRp(angka);
-  }
-};
+const formatPersen = (value: number | string) =>
+  `${(Number(value) || 0).toLocaleString("id-ID", { maximumFractionDigits: 2 })}%`;
 
 const MOCK_FIRSTSTEP_VOUCHER = {
   id: "__mock_firststep__",
@@ -177,12 +176,41 @@ export default function VoucherClaimSection() {
               const isClaimed = !isMock && (voucher.isClaimed || claimedVouchers.includes(voucher.id));
               const isClaimingThis = claimingId === voucher.id;
 
-              const discountLabel = formatDiscount(
-                voucher.discountType,
-                voucher.discountValue,
-              );
-              // "GRATIS ONGKIR" kepanjangan buat kolom 80–90px, jadi dikecilkan.
-              const isLabelPanjang = discountLabel.length > 8;
+              const tipeDiskon = voucher.discountType?.toLowerCase();
+              const batasDiskon = voucher.maxDiscountAmount
+                ? Number(voucher.maxDiscountAmount)
+                : null;
+
+              // "Diskon 4% s.d. Rp150RB Min. Blj Rp2JT"
+              const deskripsiDiskon = [
+                tipeDiskon === "free_shipping"
+                  ? "Gratis Ongkir"
+                  : `Diskon ${
+                      tipeDiskon === "percentage"
+                        ? formatPersen(voucher.discountValue)
+                        : formatRp(voucher.discountValue)
+                    }`,
+                tipeDiskon === "percentage" && batasDiskon
+                  ? `s.d. ${formatRp(batasDiskon)}`
+                  : "",
+                `Min. Blj ${formatRp(voucher.minPurchaseAmount)}`,
+              ]
+                .filter(Boolean)
+                .join(" ");
+
+              // Kolom kanan pasang angka rupiah terbesar yang bisa didapat:
+              // voucher persen dipatok batasnya ("UP TO 150RIBU"), bukan "4%"
+              // yang tak berarti apa-apa sebagai headline.
+              const pakaiUpTo = tipeDiskon === "percentage" && !!batasDiskon;
+              const nilaiUtama = pakaiUpTo
+                ? formatNominal(batasDiskon as number)
+                : tipeDiskon === "percentage"
+                  ? formatPersen(voucher.discountValue)
+                  : tipeDiskon === "free_shipping"
+                    ? "GRATIS ONGKIR"
+                    : formatNominal(voucher.discountValue);
+              // Label panjang dikecilkan supaya muat kolom 80–90px.
+              const isLabelPanjang = nilaiUtama.length > 8;
 
               // Warna: merah untuk mock, orange (primary) untuk reguler
               const accentStrip  = isMock ? "bg-red-500"              : "bg-primary";
@@ -224,12 +252,10 @@ export default function VoucherClaimSection() {
                         {voucher.name}
                       </h4>
 
-                      {/* Voucher persen hampir selalu punya batas potongan, jadi
-                          teksnya dipendekkan supaya tetap muat satu baris. */}
-                      <p className="text-[10px] md:text-[11px] text-gray-500 font-medium truncate">
-                        {voucher.maxDiscountAmount
-                          ? `Min. ${formatRp(voucher.minPurchaseAmount)} • Maks. ${formatRp(voucher.maxDiscountAmount)}`
-                          : `Min. Pembelian ${formatRp(voucher.minPurchaseAmount)}`}
+                      {/* Sengaja tanpa truncate: di layar kecil baris ini wrap
+                          jadi dua baris, dan tinggi kartu masih cukup. */}
+                      <p className="text-[10px] md:text-[11px] text-gray-500 font-medium leading-snug">
+                        {deskripsiDiskon}
                       </p>
 
                       {/* Blurred code teaser untuk mock, expired date untuk reguler */}
@@ -248,16 +274,24 @@ export default function VoucherClaimSection() {
 
                     {/* Right action */}
                     <div className="w-[80px] md:w-[90px] bg-white flex flex-col items-center justify-center px-2 z-10">
-                      <p
-                        className={cn(
-                          "font-black text-gray-900 mb-1.5 text-center leading-tight",
-                          isLabelPanjang
-                            ? "text-[9px] md:text-[10px]"
-                            : "text-[13px] md:text-[15px]",
+                      <div className="mb-1.5 text-center leading-none">
+                        {pakaiUpTo && (
+                          <p className="text-[7px] md:text-[8px] font-bold uppercase tracking-wider text-gray-400">
+                            Up To
+                          </p>
                         )}
-                      >
-                        {discountLabel}
-                      </p>
+                        <p
+                          className={cn(
+                            "font-black text-gray-900 leading-tight",
+                            pakaiUpTo && "mt-0.5",
+                            isLabelPanjang
+                              ? "text-[9px] md:text-[10px]"
+                              : "text-[12px] md:text-[14px]",
+                          )}
+                        >
+                          {nilaiUtama}
+                        </p>
+                      </div>
                       <motion.button
                         whileTap={isClaimed || isClaimingThis ? {} : { scale: 0.9 }}
                         onClick={() => handleClaim(voucher.id, isMock || undefined)}
