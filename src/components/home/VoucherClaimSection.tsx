@@ -8,7 +8,8 @@ import { vouchersService } from "@/lib/api/vouchers.service";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
-export type DiscountType = "PERCENTAGE" | "FIXED";
+// Sama persis dengan enum DiscountType di Prisma (huruf kecil, snake_case).
+export type DiscountType = "percentage" | "fixed_amount" | "free_shipping";
 
 export interface Voucher {
   id: string;
@@ -31,12 +32,29 @@ export interface Voucher {
 // "jt", BUKAN "M": dalam bahasa Indonesia M dibaca miliar, jadi "Rp1M" untuk
 // 1.000.000 justru menyesatkan (kebaca 1 miliar). Pecahan pakai koma sesuai
 // locale id-ID, jadi 1.500.000 tampil "Rp1,5jt" bukan "Rp1.5jt".
-const formatRp = (value: number) => {
+const formatRp = (value: number | string) => {
+  const angka = Number(value) || 0;
   const ringkas = (n: number) =>
     n.toLocaleString("id-ID", { maximumFractionDigits: 1 });
-  if (value >= 1_000_000) return `Rp${ringkas(value / 1_000_000)}jt`;
-  if (value >= 1_000)     return `Rp${ringkas(value / 1_000)}k`;
-  return `Rp${value.toLocaleString("id-ID")}`;
+  if (angka >= 1_000_000) return `Rp${ringkas(angka / 1_000_000)}jt`;
+  if (angka >= 1_000)     return `Rp${ringkas(angka / 1_000)}k`;
+  return `Rp${angka.toLocaleString("id-ID")}`;
+};
+
+// Nilai potongan HARUS ikut discountType: voucher persen menyimpan "4" di
+// discountValue, kalau dipaksa rupiah tampil jadi "Rp4" (bukan "4%").
+// Decimal(15,2) dari backend bisa berupa 4 atau 4.00, jadi pecahan .00 dibuang
+// dan sisanya pakai koma id-ID (12.5 → "12,5%").
+const formatDiscount = (type: string | undefined, value: number | string) => {
+  const angka = Number(value) || 0;
+  switch (type?.toLowerCase()) {
+    case "percentage":
+      return `${angka.toLocaleString("id-ID", { maximumFractionDigits: 2 })}%`;
+    case "free_shipping":
+      return "GRATIS ONGKIR";
+    default:
+      return formatRp(angka);
+  }
 };
 
 const MOCK_FIRSTSTEP_VOUCHER = {
@@ -44,7 +62,7 @@ const MOCK_FIRSTSTEP_VOUCHER = {
   code: "FIRSTSTEP-••••",
   name: "Voucher Registrasi",
   description: "Khusus member baru! Daftar sekarang dan dapatkan voucher ini.",
-  discountType: "FIXED" as DiscountType,
+  discountType: "fixed_amount" as DiscountType,
   discountValue: 100000,
   minPurchaseAmount: 1000000,
   maxDiscountAmount: null,
@@ -159,6 +177,13 @@ export default function VoucherClaimSection() {
               const isClaimed = !isMock && (voucher.isClaimed || claimedVouchers.includes(voucher.id));
               const isClaimingThis = claimingId === voucher.id;
 
+              const discountLabel = formatDiscount(
+                voucher.discountType,
+                voucher.discountValue,
+              );
+              // "GRATIS ONGKIR" kepanjangan buat kolom 80–90px, jadi dikecilkan.
+              const isLabelPanjang = discountLabel.length > 8;
+
               // Warna: merah untuk mock, orange (primary) untuk reguler
               const accentStrip  = isMock ? "bg-red-500"              : "bg-primary";
               const buttonClass  = isMock
@@ -199,9 +224,12 @@ export default function VoucherClaimSection() {
                         {voucher.name}
                       </h4>
 
-                      <p className="text-[10px] md:text-[11px] text-gray-500 font-medium">
-                        Min. Pembelian {formatRp(voucher.minPurchaseAmount)}
-                        {voucher.maxDiscountAmount ? ` • S/d ${formatRp(voucher.maxDiscountAmount)}` : ""}
+                      {/* Voucher persen hampir selalu punya batas potongan, jadi
+                          teksnya dipendekkan supaya tetap muat satu baris. */}
+                      <p className="text-[10px] md:text-[11px] text-gray-500 font-medium truncate">
+                        {voucher.maxDiscountAmount
+                          ? `Min. ${formatRp(voucher.minPurchaseAmount)} • Maks. ${formatRp(voucher.maxDiscountAmount)}`
+                          : `Min. Pembelian ${formatRp(voucher.minPurchaseAmount)}`}
                       </p>
 
                       {/* Blurred code teaser untuk mock, expired date untuk reguler */}
@@ -220,8 +248,15 @@ export default function VoucherClaimSection() {
 
                     {/* Right action */}
                     <div className="w-[80px] md:w-[90px] bg-white flex flex-col items-center justify-center px-2 z-10">
-                      <p className="text-[13px] md:text-[15px] font-black text-gray-900 mb-1.5">
-                        {formatRp(voucher.discountValue)}
+                      <p
+                        className={cn(
+                          "font-black text-gray-900 mb-1.5 text-center leading-tight",
+                          isLabelPanjang
+                            ? "text-[9px] md:text-[10px]"
+                            : "text-[13px] md:text-[15px]",
+                        )}
+                      >
+                        {discountLabel}
                       </p>
                       <motion.button
                         whileTap={isClaimed || isClaimingThis ? {} : { scale: 0.9 }}
