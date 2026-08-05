@@ -212,15 +212,13 @@ export default function VoucherClaimSection() {
               // Label panjang dikecilkan supaya muat kolom 80–90px.
               const isLabelPanjang = nilaiUtama.length > 8;
 
-              // Warna: merah untuk mock, orange (primary) untuk reguler
-              const accentStrip  = isMock ? "bg-red-500"              : "bg-primary";
-              const buttonClass  = isMock
-                ? "bg-red-500 text-white hover:bg-red-600 shadow-sm shadow-red-200"
-                : isClaimed
-                  ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  : isClaimingThis
-                    ? "bg-primary/70 text-white cursor-wait"
-                    : "bg-primary text-white hover:bg-primary/90 shadow-sm shadow-orange-200";
+              // Semua kartu merah seperti kartu mock — tidak ada lagi varian orange.
+              const accentStrip = "bg-red-500";
+              const buttonClass = isClaimed
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : isClaimingThis
+                  ? "bg-red-500/70 text-white cursor-wait"
+                  : "bg-red-500 text-white hover:bg-red-600 shadow-sm shadow-red-200";
 
               return (
                 <motion.div
