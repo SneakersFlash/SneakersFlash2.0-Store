@@ -45,9 +45,14 @@ export default async function HomePage() {
   ]);
 
   // Produk habis stok tidak ditampilkan di panel campaign.
-  const produk88 = (hasil88?.data ?? []).filter(
-    (p: any) => Number(p?.totalStock ?? 0) > 0,
-  );
+  //
+  // Pemotongan dilakukan di sini, BUKAN lewat ?limit=: backend mengabaikan
+  // limit begitu ?skus= dipakai (25 kode artikel dengan limit=10 tetap
+  // mengembalikan 25), jadi panel beranda ikut kepanjangan kalau hanya
+  // mengandalkan parameter itu.
+  const produk88 = (hasil88?.data ?? [])
+    .filter((p: any) => Number(p?.totalStock ?? 0) > 0)
+    .slice(0, JUMLAH_SOROTAN_BERANDA);
 
   const sidebarBanner = middleBanners?.[0];
 
