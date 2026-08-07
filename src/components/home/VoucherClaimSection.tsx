@@ -228,7 +228,7 @@ export default function VoucherClaimSection({
               const isLabelPanjang = nilaiUtama.length > 8;
 
               // Semua kartu merah seperti kartu mock — tidak ada lagi varian orange.
-              const accentStrip = "bg-red-500";
+              const accentStrip = "bg-gray-700";
               const buttonClass = isClaimed
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : isClaimingThis

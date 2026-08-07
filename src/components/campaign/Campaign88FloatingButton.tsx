@@ -48,7 +48,7 @@ export function Campaign88FloatingButton() {
         "transition-all duration-300 ease-out hover:bg-red-600 active:scale-95",
         // Di layar kecil bottom-nav (~64px) menutupi kanan bawah, jadi tombol
         // digeser naik di atasnya; desktop tidak punya bottom-nav.
-        "bottom-20 lg:bottom-6",
+        "bottom-30 lg:bottom-15",
         tampil
           ? "opacity-100 translate-y-0 pointer-events-auto"
           : "opacity-0 translate-y-3 pointer-events-none",

@@ -70,7 +70,7 @@ export default async function Campaign88Page() {
           }
         >
           <VoucherClaimSection
-            title="Endless Discount Voucher"
+            title="Endless Voucher 300k Off"
             subtitle="Klaim voucher sebelum belanja, lalu gunakan kodenya saat checkout. Satu kode berlaku untuk satu akun dengan kuota terbatas setiap hari."
           />
         </Suspense>

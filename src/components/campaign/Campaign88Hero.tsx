@@ -50,7 +50,6 @@ export function Campaign88Hero() {
         <section className="relative w-full rounded-[20px] md:rounded-[24px] overflow-hidden shadow-lg bg-[#1A1A1A]">
           {/* Latar: pola titik + gradasi, sama seperti section event beranda */}
           <div className="absolute inset-0 z-0" aria-hidden="true">
-            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/80" />
           </div>
 
