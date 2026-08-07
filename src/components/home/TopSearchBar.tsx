@@ -34,6 +34,12 @@ function TopSearchBarInner() {
   const isProductList = pathname === "/products";
   const isProductDetail = pathname.startsWith("/products/") && pathname !== "/products";
 
+  // Halaman selain daftar/detail produk memakai header yang sama dengan home.
+  // Sebelumnya hanya `isHome` yang punya cabang, sehingga halaman lain
+  // (mis. /8-8-sale, /brands, /blog, /faq) merender bar sticky KOSONG — di
+  // layar kecil terlihat seperti navbar-nya hilang.
+  const isUmum = !isProductList && !isProductDetail;
+
   const handleSearch = () => {
     const q = query.trim();
     if (q) router.push(`/products?search=${encodeURIComponent(q)}`);
@@ -56,7 +62,7 @@ function TopSearchBarInner() {
         {/* =========================================
             1. TAMPILAN UNTUK HOME PAGE
         ========================================= */}
-        {isHome && (
+        {isUmum && (
           <div className="flex items-center gap-2.5 px-4 py-3">
             <div className="w-14 h-14 relative">
               <Image

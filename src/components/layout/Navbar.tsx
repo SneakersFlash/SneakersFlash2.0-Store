@@ -97,8 +97,15 @@ export const NAV_ITEMS = [
   // Halaman campaign tanggal kembar. Ditulis di sini, bukan diambil dari
   // CampaignsService, karena ini halaman kurasi tangan di /8-8-sale — bukan
   // event katalog yang punya slug sendiri di /events/<slug>.
-  { label: "Infinite Deals 8.8", href: "/8-8-sale", megaMenu: null, isHot: true },
+  { label: "8.8 Sale", href: "/8-8-sale", megaMenu: null, isSale: true },
 ];
+
+/**
+ * Campaign yang tautannya disembunyikan dari navbar (cocokkan huruf kecil).
+ * Halaman /events/<slug>-nya TETAP hidup dan tetap bisa dibuka langsung —
+ * ini murni menyembunyikan menunya, bukan menonaktifkan campaign di admin.
+ */
+const CAMPAIGN_DISEMBUNYIKAN = ["clearance sale"];
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────
 
@@ -369,12 +376,17 @@ function NavbarInner() {
 
         // All active campaigns → Sale dropdown
         setCampaignItems(
-          events.map((e: any) => ({
-            label: e.name ?? e.title ?? "Campaign",
-            href:  e.slug
-              ? `/events/${e.slug}`
-              : `/products?sale=true&event=${e.id}`,
-          }))
+          events
+            .filter((e: any) => {
+              const nama = (e.name ?? e.title ?? "").trim().toLowerCase();
+              return !CAMPAIGN_DISEMBUNYIKAN.includes(nama);
+            })
+            .map((e: any) => ({
+              label: e.name ?? e.title ?? "Campaign",
+              href: e.slug
+                ? `/events/${e.slug}`
+                : `/products?sale=true&event=${e.id}`,
+            })),
         );
       } catch {
         // silently fall back — campaignItems tetap array kosong
@@ -463,7 +475,10 @@ function NavbarInner() {
                   <Link
                     href={item.href}
                     className={cn(
-                      "nav-link flex items-center gap-1 px-3 py-2 text-black font-bold",
+                      "nav-link flex items-center gap-1 px-3 py-2 font-bold",
+                      (item as { isSale?: boolean }).isSale
+                        ? "text-red-500 hover:text-red-400"
+                        : "text-black",
                       pathname === item.href && "active"
                     )}
                   >

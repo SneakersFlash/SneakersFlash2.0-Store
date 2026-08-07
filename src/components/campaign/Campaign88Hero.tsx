@@ -93,7 +93,11 @@ export function Campaign88Hero() {
             <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/80" />
           </div>
 
-          <div className="relative z-10 p-5 md:p-8 lg:p-10 flex flex-col gap-6">
+          {/* Di layar kecil panel sengaja dibuat lebih jangkung dan isinya
+              direnggangkan (justify-between), supaya ada ruang nganggur di
+              bawah dan banner tidak terlihat sesak. Dari md ke atas tingginya
+              kembali mengikuti isi. */}
+          <div className="relative z-10 p-5 pb-7 md:p-8 lg:p-10 flex flex-col gap-6 min-h-[460px] justify-between md:min-h-0 md:justify-start">
             <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
               {/* ── Kiri: judul & ajakan ── */}
               <div className="flex flex-col items-start gap-3.5">
