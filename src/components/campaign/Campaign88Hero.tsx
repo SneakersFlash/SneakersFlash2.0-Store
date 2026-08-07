@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { CountdownTimer } from "@/components/home/CountdownTimer";
+import { useFaseCampaign88 } from "./useFaseCampaign88";
 
 /**
  * Hero campaign 08.08.
@@ -12,11 +12,6 @@ import { CountdownTimer } from "@/components/home/CountdownTimer";
  * pola titik, gradasi hitam, sudut 20–24px) supaya halaman ini tidak terasa
  * seperti template asing yang ditempel ke toko.
  */
-
-// WIB = UTC+7, ditulis eksplisit supaya tidak ikut zona waktu server/perangkat:
-// kontainer app berjalan di UTC, selisihnya 7 jam.
-const MULAI    = "2026-08-08T00:00:00+07:00";
-const BERAKHIR = "2026-08-10T23:59:59+07:00";
 
 const KEUNGGULAN = [
   "100% Original",
@@ -31,42 +26,8 @@ const STRIP = [
   "100% Original",
 ];
 
-type Fase = "pra" | "berjalan" | "selesai";
-
-/**
- * Fase dihitung setelah mount, bukan saat render. Kalau dihitung langsung,
- * server dan klien bisa menghasilkan label berbeda dan React melempar
- * hydration mismatch.
- */
-function useFaseCampaign(): Fase | null {
-  const [fase, setFase] = useState<Fase | null>(null);
-
-  useEffect(() => {
-    const hitung = (): Fase => {
-      const now = Date.now();
-      if (now < Date.parse(MULAI)) return "pra";
-      if (now < Date.parse(BERAKHIR)) return "berjalan";
-      return "selesai";
-    };
-
-    setFase(hitung());
-    const timer = setInterval(() => setFase(hitung()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return fase;
-}
-
 export function Campaign88Hero() {
-  const fase = useFaseCampaign();
-
-  const label =
-    fase === "pra"      ? "Dimulai Dalam:"
-    : fase === "berjalan" ? "Berakhir Dalam:"
-    : fase === "selesai"  ? "Sale Sudah Berakhir"
-    : "";
-
-  const target = fase === "pra" ? MULAI : BERAKHIR;
+  const { fase, label, target } = useFaseCampaign88();
 
   return (
     <>
@@ -113,7 +74,7 @@ export function Campaign88Hero() {
                   Infinite Deals 8.8
                 </h1>
 
-                <p className="text-base md:text-lg text-white/80 max-w-md leading-relaxed">
+                <p className="teks-ringan text-base md:text-lg text-white/80 max-w-md leading-relaxed">
                   Keuntungan Tanpa Batas Belanja Makin Puas
                 </p>
 

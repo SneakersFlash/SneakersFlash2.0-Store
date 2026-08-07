@@ -12,7 +12,8 @@ import { bannersService } from "@/lib/api/banners.service";
 import { categoriesService } from "@/lib/api/categories.service";
 import { productsService } from "@/lib/api/products.service";
 import CampaignsService from "@/lib/api/campaigns.service";
-import { EventCampaignSection } from "@/components/home/EventCampaignSection"
+import { InfiniteDeals88HomeSection } from "@/components/campaign/InfiniteDeals88HomeSection"
+import { SKU_PAIRS, JUMLAH_SOROTAN_BERANDA } from "@/lib/campaign/infinite-deals-88"
 import VoucherClaimSection from "@/components/home/VoucherClaimSection";
 
 export const metadata: Metadata = {
@@ -32,12 +33,21 @@ const SECTION_COLORS = [
 ];
 
 export default async function HomePage() {
-  const [banners, apiCategories, campaigns, middleBanners] = await Promise.all([
+  const [banners, apiCategories, campaigns, middleBanners, hasil88] = await Promise.all([
     bannersService.getBanners("home_top").catch(() => []),
     categoriesService.getAll().catch(() => []),
     CampaignsService.getEvent().catch(() => []),
-    bannersService.getBanners("home_middle").catch(() => [])
+    bannersService.getBanners("home_middle").catch(() => []),
+    // Panel Infinite Deals 8.8 — kurasi tangan, bukan event dari admin.
+    productsService
+      .getProducts({ skus: SKU_PAIRS, limit: JUMLAH_SOROTAN_BERANDA, page: 1 })
+      .catch(() => ({ data: [] as any[] })),
   ]);
+
+  // Produk habis stok tidak ditampilkan di panel campaign.
+  const produk88 = (hasil88?.data ?? []).filter(
+    (p: any) => Number(p?.totalStock ?? 0) > 0,
+  );
 
   const sidebarBanner = middleBanners?.[0];
 
@@ -174,7 +184,10 @@ export default async function HomePage() {
           <VoucherClaimSection />
         </Suspense>
 
-        <EventCampaignSection campaigns={campaigns} />
+        {/* Panel event bawaan (CampaignsService) diganti sementara oleh panel
+            Infinite Deals 8.8. EventCampaignSection tetap ada di repo — untuk
+            mengembalikannya, tukar baris ini kembali. */}
+        <InfiniteDeals88HomeSection products={produk88} />
 
         <CategoryShortcuts />
         <BrandCarousel />

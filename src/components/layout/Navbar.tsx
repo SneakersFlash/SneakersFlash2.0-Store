@@ -476,8 +476,11 @@ function NavbarInner() {
                     href={item.href}
                     className={cn(
                       "nav-link flex items-center gap-1 px-3 py-2 font-bold",
+                      // Warna dipaksa dengan `!`: .nav-link.active (0,2,0)
+                      // mengalahkan .text-red-500 (0,1,0), sehingga tautan ini
+                      // justru berubah hitam persis saat halamannya dibuka.
                       (item as { isSale?: boolean }).isSale
-                        ? "text-red-500 hover:text-red-400"
+                        ? "!text-red-500 hover:!text-red-400 font-extrabold tracking-tight"
                         : "text-black",
                       pathname === item.href && "active"
                     )}

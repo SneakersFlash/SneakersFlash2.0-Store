@@ -8,6 +8,7 @@ import { TopSearchBar } from "@/components/home/TopSearchBar";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect } from "react";
 import WelcomeVoucherPopup from "@/components/voucher/WelcomeVoucherPopup";
+import { Campaign88FloatingButton } from "@/components/campaign/Campaign88FloatingButton";
 
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -68,6 +69,10 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
         voucher={welcomeVoucher}
         onClose={clearWelcomeVoucher}
       />
+
+      {/* Pintasan ke halaman campaign. Komponennya sendiri yang memutuskan
+          untuk tidak tampil di /8-8-sale dan /checkout. */}
+      <Campaign88FloatingButton />
     </>
   );
 }
