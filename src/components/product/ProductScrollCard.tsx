@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Heart, Star } from "lucide-react";
+import { Heart, Star, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
@@ -16,6 +16,16 @@ interface ProductScrollCardProps {
   product: Product;
   index?: number;
   variant?: "scroll" | "grid";
+  /**
+   * Tampilkan sisa stok di bawah harga. Dipakai section campaign yang stoknya
+   * memang terbatas; default mati supaya kartu di beranda tidak ikut berubah.
+   *
+   * Sengaja hanya menampilkan SISA stok, bukan bar "sudah terjual sekian
+   * persen" seperti section event. Di database, stock_quantity sama dengan
+   * available_stock dan reserved_stock nol, jadi angka terjual tidak ada —
+   * bar semacam itu cuma bisa diisi angka karangan.
+   */
+  showStock?: boolean;
 }
 
 function StarRating({ rating = 4, count = 78 }: { rating?: number; count?: number }) {
@@ -41,7 +51,12 @@ function StarRating({ rating = 4, count = 78 }: { rating?: number; count?: numbe
   );
 }
 
-export function ProductScrollCard({ product, index = 0, variant = "scroll" }: ProductScrollCardProps) {
+export function ProductScrollCard({
+  product,
+  index = 0,
+  variant = "scroll",
+  showStock = false,
+}: ProductScrollCardProps) {
   const [imgError, setImgError] = useState(false);
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -168,6 +183,23 @@ export function ProductScrollCard({ product, index = 0, variant = "scroll" }: Pr
                   Save {saving}%
                 </span>
               </div>
+            )}
+
+            {showStock && typeof product.totalStock === "number" && product.totalStock > 0 && (
+              <span
+                className={cn(
+                  "self-start inline-flex items-center gap-1 rounded-full px-2 py-1 mt-0.5",
+                  "text-[9px] lg:text-[10px] font-bold uppercase tracking-wider",
+                  // Enam pasang ke bawah dianggap menipis — dibuat solid supaya
+                  // kontras teks putih di merah tetap aman terbaca.
+                  product.totalStock <= 6
+                    ? "bg-[#E50000] text-white"
+                    : "bg-red-50 text-[#E50000]"
+                )}
+              >
+                <AlertTriangle size={10} strokeWidth={2.5} className="shrink-0" />
+                Sisa {product.totalStock} pasang
+              </span>
             )}
           </div>
           {/* <StarRating

@@ -26,17 +26,37 @@ export const revalidate = 60;
  *
  * Menambah/mengurangi produk = cukup sunting daftar di bawah.
  */
-const SKU_CAMPAIGN = [
-  // ── Delapan pertama → grid utama ──
-  "FQ8226101",  // NIKE Court Legacy Next Nature White Blue
-  "BB650RPC",   // NEW BALANCE 650R Angora Beige
-  "MEVOZFG3",   // NEW BALANCE Ff X Evoz V3 Shadow Grey
-  "U998BG",     // NEW BALANCE 998 Made In Usa Brown Green
-  "UWRPDKOM",   // NEW BALANCE Wrpd Runner Green Black
-  "38643002",   // PUMA Trc Blaze Chance Black White
-  "38636101",   // PUMA Trc Blaze Re Collection White
-  "ID2151",     // ADIDAS Superstar 82 Crystal White Clear Blue
-  // ── Sisanya → rail geser ──
+/** Section "Pairs Worth Checking Out" — 25 kode artikel, 5 per merek. */
+const SKU_PAIRS = [
+  "410866",      // SALOMON XT 6 Black Phantom
+  "474453",      // SALOMON XT 6 Vanilla Ice Almond Milk
+  "474671",      // SALOMON XT 6 Mindful 3 White Papper
+  "477334",      // SALOMON XT 6 Expanse Ltr Peat
+  "477375",      // SALOMON XT 6 Roasted Clay
+  "BB550VGC",    // NEW BALANCE 550 V1 Vintage Brown Pack
+  "MFCXCE4",     // NEW BALANCE FuelCell Rebel V4 Clay Ash
+  "ML574EVW",    // NEW BALANCE 574 Grey Nimbus Cloud
+  "MS327CBW",    // NEW BALANCE 327 Black
+  "U20026PU",    // NEW BALANCE 2002R Tan Black
+  "1203A330022", // ASICS Gel Lyte III OG
+  "1203A574001", // ASICS GT 2160 X Grip Swany X Atmos
+  "1203A603001", // ASICS Gel K1011 Black Pure Silver
+  "1203A740101", // ASICS Gel Kayano 14 White Papaya
+  "1203A896750", // ASICS Gel NYC 2.0 Sulphur Black
+  "CJ1288001",   // NIKE Air Zoom Spiridon Cage 2
+  "DD8959001",   // NIKE Air Force 1 07 Triple Black
+  "FZ2068001",   // NIKE Air Max Sunder Black Silver
+  "HF0263400",   // NIKE Cortez Txt Midnight Navy White
+  "IB8174100",   // NIKE Shox Ride 2 Metallic Platinum
+  "IG6190",      // ADIDAS Hand 2 Grey Light Blue Gum
+  "JI2625",      // ADIDAS Hamburg W White Blue Gum
+  "JI3218",      // ADIDAS Samba 62 Collegiate Green
+  "JP7149",      // ADIDAS Adizero Evo SL Black White
+  "JQ7643",      // ADIDAS Equipment Agravic Core Black
+];
+
+/** Section "Flash Hour" — rail geser, potongan paling dalam. */
+const SKU_FLASH_HOUR = [
   "39311401",   // PUMA Clyde Huskie White
   "GW2415",     // ADIDAS Superstar Pride Love Unites
   "FJ5472121",  // NIKE Air Max 1 Time Warp White
@@ -45,19 +65,24 @@ const SKU_CAMPAIGN = [
   "IE1763",     // ADIDAS Ultraboost Light Bold Onix Silver Metallic
 ];
 
-/** Berapa produk pertama yang tampil di grid; sisanya masuk rail geser. */
-const JUMLAH_GRID = 8;
-
 export default async function Campaign88Page() {
-  const hasil = await productsService
-    .getProducts({ skus: SKU_CAMPAIGN, limit: SKU_CAMPAIGN.length, page: 1 })
-    .catch(() => ({ data: [] as any[] }));
+  const [hasilPairs, hasilFlash] = await Promise.all([
+    productsService
+      .getProducts({ skus: SKU_PAIRS, limit: SKU_PAIRS.length, page: 1 })
+      .catch(() => ({ data: [] as any[] })),
+    productsService
+      .getProducts({ skus: SKU_FLASH_HOUR, limit: SKU_FLASH_HOUR.length, page: 1 })
+      .catch(() => ({ data: [] as any[] })),
+  ]);
 
   // Produk habis stok tidak ditampilkan — percuma makan slot highlight karena
   // tetap tidak bisa dibeli. totalStock dihitung backend dari stok varian.
-  const produk = (hasil?.data ?? []).filter(
-    (p: any) => Number(p?.totalStock ?? 0) > 0,
-  );
+  const berstok = (r: any) =>
+    (r?.data ?? []).filter((p: any) => Number(p?.totalStock ?? 0) > 0);
+
+  const produkPairs = berstok(hasilPairs);
+  const produkFlash = berstok(hasilFlash);
+  const produk = [...produkPairs, ...produkFlash];
 
   // Kalau kosong total, penyebabnya hampir pasti backend sedang tidak bisa
   // dihubungi (deploy/restart) — fetch di atas punya .catch() yang mengembalikan
@@ -69,9 +94,6 @@ export default async function Campaign88Page() {
       "Halaman 08.08: nol produk — backend produk kemungkinan tidak bisa dihubungi, atau seluruh kurasi habis stok",
     );
   }
-
-  const produkGrid = produk.slice(0, JUMLAH_GRID);
-  const produkRail = produk.slice(JUMLAH_GRID);
 
   return (
     <>
@@ -101,20 +123,20 @@ export default async function Campaign88Page() {
             viewAllHref="/products"
             viewAllLabel="Semua Produk"
           />
-          <Campaign88Grid products={produkGrid} />
+          <Campaign88Grid products={produkPairs} />
         </section>
 
         {/* ── Rail geser ── */}
-        {produkRail.length > 0 && (
+        {produkFlash.length > 0 && (
           <section className="pt-8 pb-12">
             <SectionHeading
               title="Flash Hour"
               subtitle="Kesempatan singkat buat harga yang lebih hemat."
             />
             <div className="flex gap-3 lg:gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none pb-2">
-              {produkRail.map((product: any, i: number) => (
+              {produkFlash.map((product: any, i: number) => (
                 <div key={product.id} className="snap-start shrink-0">
-                  <ProductScrollCard product={product} index={i} />
+                  <ProductScrollCard product={product} index={i} showStock />
                 </div>
               ))}
             </div>
