@@ -97,7 +97,7 @@ export const NAV_ITEMS = [
   // Halaman campaign tanggal kembar. Ditulis di sini, bukan diambil dari
   // CampaignsService, karena ini halaman kurasi tangan di /8-8-sale — bukan
   // event katalog yang punya slug sendiri di /events/<slug>.
-  { label: "8.8 Sale", href: "/8-8-sale", megaMenu: null, isSale: true },
+  { label: "8.8 SALE", href: "/8-8-sale", megaMenu: null, isSale: true },
 ];
 
 /**
