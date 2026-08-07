@@ -361,3 +361,18 @@ input, textarea, select {
 .animate-fadeInUp {
   animation: fadeInUp 0.35s ease-out;
 }
+
+/* Strip promo berjalan — dipakai halaman campaign (/8-8-sale).
+   Isi track digandakan dua kali di markup, jadi geser -50% = satu putaran mulus. */
+@keyframes marquee88 {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.animate-marquee88 {
+  animation: marquee88 30s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee88 { animation: none; }
+}
