@@ -61,7 +61,7 @@ export function Campaign88FloatingButton() {
       </span>
 
       <span className="flex flex-col leading-none">
-        <span className="text-[13px] font-extrabold tracking-tight">8.8 Sale</span>
+        <span className="text-[13px] font-extrabold tracking-tight">8.8 SALE</span>
         <span className="text-[9px] font-medium uppercase tracking-wider text-white/80 mt-0.5">
           Infinite Deals
         </span>
