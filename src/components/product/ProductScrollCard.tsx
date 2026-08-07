@@ -71,9 +71,24 @@ export function ProductScrollCard({
     ? getProductImageUrl([product.variants[0].imageUrl[1]])
     : null;
 
-  const hasDiscount = Boolean(product.variants[0]?.price && product.variants[0].price < product.basePrice);
-  const displayPrice = product.variants[0]?.price ?? product.basePrice;
-  const saving = hasDiscount ? discountPercent(product.basePrice, product.variants[0]?.price!) : 0;
+  // Harga promo event (clearance / flash sale) hidup di event_products.special_price,
+  // BUKAN di produk. Salinan clearance punya basePrice == variants[0].price == harga
+  // coret, jadi membandingkan keduanya selalu bilang "tidak diskon": kartu menampilkan
+  // harga penuh tanpa badge padahal checkout menagih harga event — tampil LEBIH MAHAL
+  // dari yang dibayar. Guard `> 0 && < basePrice` menyamai backend (events.service.ts).
+  const variantPrice = product.variants[0]?.price ?? product.basePrice;
+  const eventPrice =
+    product.activeEvent?.specialPrice &&
+    product.activeEvent.specialPrice > 0 &&
+    product.activeEvent.specialPrice < product.basePrice
+      ? product.activeEvent.specialPrice
+      : null;
+
+  // Harga event menang atas harga varian — itu yang benar-benar ditagih
+  // cart.service/orders.service untuk produk yang sedang ikut event.
+  const displayPrice = eventPrice ?? variantPrice;
+  const hasDiscount = displayPrice < product.basePrice;
+  const saving = hasDiscount ? discountPercent(product.basePrice, displayPrice) : 0;
 
   const isWishlisted = checkData?.wishlisted || false;
   const wishlistId = checkData?.wishlistId;

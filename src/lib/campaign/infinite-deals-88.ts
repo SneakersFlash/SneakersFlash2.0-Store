@@ -48,14 +48,21 @@ export const SKU_PAIRS = [
   "JQ7643",      // ADIDAS Equipment Agravic Core Black
 ];
 
-/** Section "Flash Hour" — rail geser, potongan paling dalam. */
+/**
+ * Section "Flash Hour" — rail geser, potongan paling dalam.
+ *
+ * PENTING — prefiks `LC-`. Kelimanya barang clearance, dan di katalog SF salinan
+ * clearance punya `sku_parent` sendiri yang berprefiks `LC-` (produk regulernya
+ * cuma ada di katalog TS). Filter `?skus=` backend mencocokkan `sku_parent`
+ * PERSIS, jadi menulis kode artikel telanjang di sini bikin rail-nya kosong
+ * tanpa error — daftarnya cuma memendek diam-diam.
+ */
 export const SKU_FLASH_HOUR = [
-  "39311401",   // PUMA Clyde Huskie White
-  "GW2415",     // ADIDAS Superstar Pride Love Unites
-  "FJ5472121",  // NIKE Air Max 1 Time Warp White
-  "CU9174600",  // NIKE Airmax 2090 Sp Infrared Duck Camo
-  "U998GB",     // NEW BALANCE 998 Made In Usa Grey Cream
-  "IE1763",     // ADIDAS Ultraboost Light Bold Onix Silver Metallic
+  "LC-100220888", // REEBOK Court Clean White Light Blue
+  "LC-37703011",  // PUMA Transport Modern Feather Gray Yellow Blaze Black
+  "LC-IB2748101", // NIKE Charge Canvas White — produk NONAKTIF, tidak akan tayang
+  "LC-JI4601",    // ADIDAS Galaxy 7 Dark Blue
+  "LC-ME430RK3",  // NEW BALANCE 430 V3 Black White
 ];
 
 /** Berapa produk yang tampil di panel beranda sebelum "lihat semua". */
