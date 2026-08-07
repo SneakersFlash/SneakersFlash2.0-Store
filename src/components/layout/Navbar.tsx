@@ -94,6 +94,10 @@ export const NAV_ITEMS = [
   // pembersihan katalog, jadi menu ini selalu berujung "NO PRODUCTS FOUND".
   // Kembalikan entri ini kalau stok apparel sudah masuk lagi.
   { label: "Brands", href: "/brands", megaMenu: null },
+  // Halaman campaign tanggal kembar. Ditulis di sini, bukan diambil dari
+  // CampaignsService, karena ini halaman kurasi tangan di /8-8-sale — bukan
+  // event katalog yang punya slug sendiri di /events/<slug>.
+  { label: "Infinite Deals 8.8", href: "/8-8-sale", megaMenu: null, isHot: true },
 ];
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────

@@ -69,7 +69,17 @@ const MOCK_FIRSTSTEP_VOUCHER = {
   isMock: true,
 };
 
-export default function VoucherClaimSection() {
+interface VoucherClaimSectionProps {
+  /** Judul section. Default-nya teks yang dipakai home page. */
+  title?: string;
+  /** Baris penjelas di bawah judul. Tidak dirender kalau kosong. */
+  subtitle?: string;
+}
+
+export default function VoucherClaimSection({
+  title = "Claim Shopping Vouchers",
+  subtitle,
+}: VoucherClaimSectionProps = {}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -151,11 +161,16 @@ export default function VoucherClaimSection() {
           initial={{ opacity: 0, y: -10 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex items-center justify-between mb-3 md:mb-4"
+          className="flex flex-col gap-1 mb-3 md:mb-4"
         >
           <p className="text-[18px] md:text-[22px] font-black tracking-tight text-gray-900">
-            Claim Shopping Vouchers
+            {title}
           </p>
+          {subtitle && (
+            <p className="text-[12px] md:text-[13px] text-gray-500 leading-relaxed max-w-2xl">
+              {subtitle}
+            </p>
+          )}
         </motion.div>
 
         <motion.div

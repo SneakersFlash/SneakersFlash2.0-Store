@@ -9,9 +9,9 @@ import { Campaign88Hero } from "@/components/campaign/Campaign88Hero";
 import { Campaign88Grid } from "@/components/campaign/Campaign88Grid";
 
 export const metadata: Metadata = {
-  title: "08.08 Sale — SneakersFlash",
+  title: "Infinite Deals 8.8 — SneakersFlash",
   description:
-    "Diskon spesial tanggal kembar 8–10 Agustus. Sneakers original Nike, Adidas, New Balance, dan Puma dengan harga 08.08. Stok terbatas.",
+    "Keuntungan tanpa batas, belanja makin puas. Diskon spesial tanggal kembar 8–10 Agustus untuk sneakers original Nike, Adidas, New Balance, dan Puma. Stok terbatas.",
 };
 
 export const revalidate = 60;
@@ -86,15 +86,18 @@ export default async function Campaign88Page() {
             <div className="h-32 w-full animate-pulse bg-gray-100 rounded-xl my-4" />
           }
         >
-          <VoucherClaimSection />
+          <VoucherClaimSection
+            title="Endless Discount Voucher"
+            subtitle="Klaim voucher sebelum belanja, lalu gunakan kodenya saat checkout. Satu kode berlaku untuk satu akun dengan kuota terbatas setiap hari."
+          />
         </Suspense>
 
         {/* ── Grid utama ── */}
         <section id="pilihan-88" className="pt-8 pb-4 scroll-mt-24">
           <SectionHeading
             eyebrow="8 – 10 Agustus"
-            title="Pilihan 08.08"
-            subtitle="Diskon terbesar yang stoknya masih ada. Harga dan ukuran ditarik langsung dari katalog."
+            title="Pairs Worth Checking Out"
+            subtitle="Pilihan sneakers pilihan yang sayang banget kalau dilewatin di Infinite Deals."
             viewAllHref="/products"
             viewAllLabel="Semua Produk"
           />
@@ -105,8 +108,8 @@ export default async function Campaign88Page() {
         {produkRail.length > 0 && (
           <section className="pt-8 pb-12">
             <SectionHeading
-              title="Flash Deal Berbatas Stok"
-              subtitle="Sisa kurasi 08.08. Geser ke samping."
+              title="Flash Hour"
+              subtitle="Kesempatan singkat buat harga yang lebih hemat."
             />
             <div className="flex gap-3 lg:gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none pb-2">
               {produkRail.map((product: any, i: number) => (

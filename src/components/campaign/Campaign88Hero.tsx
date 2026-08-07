@@ -25,8 +25,8 @@ const KEUNGGULAN = [
 ];
 
 const STRIP = [
-  "08.08 Sale",
-  "Diskon Spesial Tanggal Kembar",
+  "Infinite Deals 8.8",
+  "Keuntungan Tanpa Batas",
   "Gratis Ongkir",
   "100% Original",
 ];
@@ -106,12 +106,11 @@ export function Campaign88Hero() {
                 </span>
 
                 <h1 className="font-display font-bold text-white text-4xl md:text-5xl lg:text-6xl tracking-tight drop-shadow-md">
-                  08.08 Sale
+                  Infinite Deals 8.8
                 </h1>
 
-                <p className="text-sm text-white/75 max-w-md leading-relaxed">
-                  Tiga hari, harga spesial tanggal kembar. Sneakers original,
-                  stok terbatas, tanpa perpanjangan.
+                <p className="text-base md:text-lg text-white/80 max-w-md leading-relaxed">
+                  Keuntungan Tanpa Batas Belanja Makin Puas
                 </p>
 
                 <div className="flex flex-wrap gap-2.5 pt-1">
