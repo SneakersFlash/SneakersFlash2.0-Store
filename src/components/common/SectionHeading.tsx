@@ -43,7 +43,7 @@ export function SectionHeading({
           initial={{ width: 0 }}
           animate={isInView ? { width: 48 } : { width: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="h-1 bg-primary mb-3"
+          className="h-1 bg-gray-900 mb-3"
         />
 
         {eyebrow && (

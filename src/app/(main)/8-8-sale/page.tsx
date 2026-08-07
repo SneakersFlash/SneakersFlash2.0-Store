@@ -64,21 +64,22 @@ export default async function Campaign88Page() {
         {/* ── Voucher: ditarik dari modul voucher yang sudah ada, difilter
              platform oleh backend. Sengaja tidak di-hardcode supaya kuota dan
              masa berlaku ikut yang di admin. ── */}
-        <Suspense
-          fallback={
-            <div className="h-32 w-full animate-pulse bg-gray-100 rounded-xl my-4" />
-          }
-        >
-          <VoucherClaimSection
-            title="Endless Voucher 300k Off"
-            subtitle="Klaim voucher sebelum belanja, lalu gunakan kodenya saat checkout. Satu kode berlaku untuk satu akun dengan kuota terbatas setiap hari."
-          />
-        </Suspense>
+        <section id="voucher-88">
+          <Suspense
+            fallback={
+              <div className="h-32 w-full animate-pulse bg-gray-100 rounded-xl my-4" />
+            }
+            >
+            <VoucherClaimSection
+              title="Endless Voucher Up To 300k Off"
+              subtitle="Klaim voucher sebelum belanja, lalu gunakan kodenya saat checkout. Satu kode berlaku untuk satu akun dengan kuota terbatas setiap hari."
+              />
+          </Suspense>
+        </section>
 
         {/* ── Grid utama ── */}
         <section id="pilihan-88" className="pt-8 pb-4 scroll-mt-24">
           <SectionHeading
-            eyebrow="8 – 10 Agustus"
             title="Pairs Worth Checking Out"
             subtitle="Pilihan sneakers pilihan yang sayang banget kalau dilewatin di Infinite Deals."
             viewAllHref="/products"

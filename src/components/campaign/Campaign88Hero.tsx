@@ -69,26 +69,28 @@ export function Campaign88Hero() {
                   Special Event
                 </span>
 
-                <h1 className="font-display font-bold text-white text-4xl md:text-5xl lg:text-6xl tracking-tight drop-shadow-md">
+                <h1 className="font-display font-black text-white text-4xl md:text-5xl lg:text-6xl tracking-tight drop-shadow-md">
                   Infinite Deals 8.8
                 </h1>
 
                 <p className="teks-ringan text-base md:text-lg text-white/80 max-w-md leading-relaxed">
                   Keuntungan Tanpa Batas Belanja Makin Puas
+                  <br />
+                  8 – 10 Agustus
                 </p>
 
                 <div className="flex flex-wrap gap-2.5 pt-1">
                   <Link
-                    href="#pilihan-88"
+                    href="#voucher-88"
                     className="inline-flex items-center justify-center bg-white text-black px-6 py-3 font-display uppercase tracking-widest text-sm transition-all duration-200 active:scale-95 hover:bg-gray-100"
                   >
-                    Lihat Semua Deal
+                    CLAIM 300K OFF
                   </Link>
                   <Link
-                    href="/products"
+                    href="#pilihan-88"
                     className="inline-flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 font-display uppercase tracking-widest text-sm transition-all duration-200 active:scale-95 hover:bg-white hover:text-black"
                   >
-                    Semua Produk
+                    ⁠8.8 MUST HAVES
                   </Link>
                 </div>
               </div>
