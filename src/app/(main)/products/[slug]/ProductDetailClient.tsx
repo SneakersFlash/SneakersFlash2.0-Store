@@ -243,9 +243,36 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
   const earnedPoints = Math.floor(Number(displayPrice) * 0.01);
 
   // --- ACTIONS ---
+
+  // Tamu yang klik beli tidak pernah menyentuh API mana pun — fungsinya
+  // di-return duluan di bawah — jadi niat belinya tidak terekam di log server
+  // maupun di pixel. Tanpa ini kita tidak punya cara tahu berapa calon pembeli
+  // yang hilang di tembok login. Sengaja fire-and-forget: apa pun hasilnya,
+  // redirect tetap jalan supaya perilaku user tidak berubah sedikit pun.
+  const trackGuestBlocked = (source: "add_to_cart" | "buy_now") => {
+    try {
+      const sku = selectedVariant?.sku || product?.sku || "";
+      // keepalive supaya request tidak dibatalkan saat halaman langsung pindah.
+      fetch("/api/track/guest-cart-block", {
+        method: "POST",
+        keepalive: true,
+      }).catch(() => {});
+      (window as any).dataLayer?.push({
+        event: "guest_cart_blocked",
+        source,
+        sku,
+      });
+    } catch {
+      // Instrumentasi tidak boleh menggagalkan aksi user.
+    }
+  };
+
   const handleAddToCart = async () => {
     if (!selectedVariant) return;
-    if (!isAuthenticated) return router.push("/login");
+    if (!isAuthenticated) {
+      trackGuestBlocked("add_to_cart");
+      return router.push("/login");
+    }
     try {
       setIsAdding(true);
       await addItemToCart(Number(selectedVariant.id), quantity);
@@ -265,7 +292,10 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
 
   const handleBuyNow = async () => {
     if (!selectedVariant) return;
-    if (!isAuthenticated) return router.push("/login");
+    if (!isAuthenticated) {
+      trackGuestBlocked("buy_now");
+      return router.push("/login");
+    }
     
     try {
       setIsAdding(true);
@@ -691,9 +721,13 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
         <div className="flex px-4 pb-4 gap-3">
           {!isAuthenticated ? (
             <button
-              onClick={() =>
-                router.push(`/login?callbackUrl=${encodeURIComponent(currentPath)}`)
-              }
+              onClick={() => {
+                // Jalur mobile: tombolnya beda dari handleAddToCart, jadi harus
+                // ikut dihitung — kalau tidak, angkanya bias ke desktop padahal
+                // mayoritas pengunjung pakai HP.
+                trackGuestBlocked("add_to_cart");
+                router.push(`/login?callbackUrl=${encodeURIComponent(currentPath)}`);
+              }}
               className="w-full flex items-center justify-center py-3.5 rounded-xl font-bold text-[10px] transition-all shadow-md bg-[#FF6B00] text-white hover:bg-[#e66000] active:scale-[0.98]"
             >
               Login to Purchase
