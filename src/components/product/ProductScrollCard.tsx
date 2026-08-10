@@ -194,7 +194,7 @@ export function ProductScrollCard({
                 <span className="text-[11px] lg:text-[13px] text-[#888888] line-through font-normal">
                   {formatPrice(product.basePrice)}
                 </span>
-                <span className="inline-flex items-center justify-center bg-green-200 text-green-500 text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded">
+                <span className="inline-flex items-center justify-center bg-red-100 text-[#E50000] text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded">
                   Save {saving}%
                 </span>
               </div>

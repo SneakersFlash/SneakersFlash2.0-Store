@@ -98,8 +98,9 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
         <div className="relative w-full aspect-square sm:aspect-[5/4] bg-[#F5F5F5] shrink-0 overflow-hidden">
         {/* ── Event Badge ── */}
           {eventName && (
-            <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
-              <span className="inline-flex items-center px-2 py-1 rounded-md bg-black text-white text-[9px] sm:text-[10px] font-bold tracking-wide uppercase leading-none shadow-sm">
+            <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10">
+              {/* Sengaja mungil: ukuran lama menutupi logo SneakersFlash di foto produk */}
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-black text-white text-[7px] sm:text-[8px] font-bold tracking-wide uppercase leading-none shadow-sm">
                 {eventName}
               </span>
             </div>
@@ -170,12 +171,9 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
                 <span className="text-[11px] lg:text-[13px] text-[#888888] line-through font-normal">
                   {formatPrice(product.basePrice)}
                 </span>
-                <span className={cn(
-                  "inline-flex items-center justify-center text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded",
-                  hasEvent
-                    ? "bg-black text-white"
-                    : "bg-green-200 text-green-500"
-                )}>
+                {/* Satu warna untuk reguler maupun event — dulu hijau vs hitam,
+                    dua rasa badge di grid yang sama bikin diskonnya tidak kebaca. */}
+                <span className="inline-flex items-center justify-center bg-red-100 text-[#E50000] text-[10px] lg:text-[11px] font-bold px-1.5 py-0.5 rounded">
                   Save {saving}%
                 </span>
               </div>
