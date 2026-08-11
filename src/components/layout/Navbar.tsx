@@ -94,18 +94,7 @@ export const NAV_ITEMS = [
   // pembersihan katalog, jadi menu ini selalu berujung "NO PRODUCTS FOUND".
   // Kembalikan entri ini kalau stok apparel sudah masuk lagi.
   { label: "Brands", href: "/brands", megaMenu: null },
-  // Halaman campaign tanggal kembar. Ditulis di sini, bukan diambil dari
-  // CampaignsService, karena ini halaman kurasi tangan di /8-8-sale — bukan
-  // event katalog yang punya slug sendiri di /events/<slug>.
-  { label: "8.8 SALE", href: "/8-8-sale", megaMenu: null, isSale: true },
 ];
-
-/**
- * Campaign yang tautannya disembunyikan dari navbar (cocokkan huruf kecil).
- * Halaman /events/<slug>-nya TETAP hidup dan tetap bisa dibuka langsung —
- * ini murni menyembunyikan menunya, bukan menonaktifkan campaign di admin.
- */
-const CAMPAIGN_DISEMBUNYIKAN = ["clearance sale"];
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────
 
@@ -376,17 +365,12 @@ function NavbarInner() {
 
         // All active campaigns → Sale dropdown
         setCampaignItems(
-          events
-            .filter((e: any) => {
-              const nama = (e.name ?? e.title ?? "").trim().toLowerCase();
-              return !CAMPAIGN_DISEMBUNYIKAN.includes(nama);
-            })
-            .map((e: any) => ({
-              label: e.name ?? e.title ?? "Campaign",
-              href: e.slug
-                ? `/events/${e.slug}`
-                : `/products?sale=true&event=${e.id}`,
-            })),
+          events.map((e: any) => ({
+            label: e.name ?? e.title ?? "Campaign",
+            href: e.slug
+              ? `/events/${e.slug}`
+              : `/products?sale=true&event=${e.id}`,
+          })),
         );
       } catch {
         // silently fall back — campaignItems tetap array kosong
