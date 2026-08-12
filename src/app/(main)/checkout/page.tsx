@@ -392,6 +392,9 @@ function CheckoutContent(){
   const[isCalcShipping,setIsCalcShipping]=useState(false);
   const[destinationText,setDestinationText]=useState<string|null>(null);
   const[pointsBalance,setPointsBalance]=useState(0);
+  // Rate perolehan poin ikut tier customer (basic 1% / advance 2.5% / ultimate 5%).
+  // Dikirim backend lewat /logistics/calculate; 1% cuma nilai awal sebelum ada jawaban.
+  const[pointsEarnRate,setPointsEarnRate]=useState(0.01);
   const hasEventItem=checkoutItems.some(i=>i.isEventPrice);
   const hasNRItem=checkoutItems.some(i=>i.variantSku?.includes("/"));
   const[appliedVoucher,setAppliedVoucher]=useState<AppliedVoucher|null>(null);
@@ -437,7 +440,7 @@ function CheckoutContent(){
   const subtotal=checkoutItems.reduce((s,i)=>s+Number(i.price)*i.quantity,0);
   const actSubtotal=checkoutItems.reduce((s,i)=>s+Number(i.originalPrice)*i.quantity,0);
   const totalWeight=checkoutItems.reduce((s,i)=>s+(i.weightKilogram??2)*i.quantity,0);
-  const voucherDiscount=appliedVoucher?.discountAmount??0,pointsEarned=Math.floor(subtotal*0.01);
+  const voucherDiscount=appliedVoucher?.discountAmount??0,pointsEarned=Math.floor(subtotal*pointsEarnRate);
   const SHIPPING_SUBSIDY_MAX=50000,realShippingCost=selectedCourier?Number(selectedCourier.cost):0;
   const shippingSubsidy=Math.min(realShippingCost,SHIPPING_SUBSIDY_MAX),customerShippingCost=Math.max(0,realShippingCost-shippingSubsidy);
   const baseForPoints=subtotal+customerShippingCost-voucherDiscount;
@@ -465,7 +468,7 @@ function CheckoutContent(){
     setIsCalcShipping(true);setSelectedCourier(null);
     const destPin=selectedAddress.latitude&&selectedAddress.longitude?formatPin(selectedAddress.latitude,selectedAddress.longitude):undefined;
     logisticsService.calculateShipping({destinationSubdistrictId:Number(selectedAddress.subdistrictId),weightGrams:totalWeight,courier:"",itemValue:subtotal,isCod:"no",originPinPoint:ORIGIN_PIN,...(destPin?{destinationPinPoint:destPin}:{}),...(destinationText?{destinationText}:{})})
-      .then(data=>{if(typeof data?.pointsBalance==="number")setPointsBalance(data.pointsBalance);const opts:any[]=data?.options??(Array.isArray(data)?data:[]);setShippingOptions(opts);const el=opts.filter(o=>instantBlocked?!isInstantCourier(o):true);setSelectedCourier(el[0]??null);})
+      .then(data=>{if(typeof data?.pointsBalance==="number")setPointsBalance(data.pointsBalance);if(typeof data?.pointsEarnRate==="number"&&data.pointsEarnRate>0)setPointsEarnRate(data.pointsEarnRate);const opts:any[]=data?.options??(Array.isArray(data)?data:[]);setShippingOptions(opts);const el=opts.filter(o=>instantBlocked?!isInstantCourier(o):true);setSelectedCourier(el[0]??null);})
       .catch(console.error).finally(()=>setIsCalcShipping(false));
   },[selectedAddress?.subdistrictId,totalWeight,destinationText]);
 

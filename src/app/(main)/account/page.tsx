@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useMyProfile } from "@/lib/hooks/useUsers";
 import { useAuthStore } from "@/lib/store/authStore";
+import { toNumber } from "@/lib/utils/toNumber";
 import { AccountSkeleton } from "./AccountSkeleton";
 
 const PURCHASE_STATUS = [
@@ -102,7 +103,7 @@ export default function MyAccountPage() {
             <div className="relative z-10">
               <p className="font-bold text-lg">{profile.customerTier.toUpperCase()}</p>
               <p className="text-[12px] opacity-90">
-                Flash Poin {Number(profile.pointsBalance?.d?.[0] || 0).toLocaleString('id-ID')}
+                Flash Poin {toNumber(profile.pointsBalance).toLocaleString('id-ID')}
               </p>
             </div>
             <div className="absolute right-[-10px] bottom-[-20px] opacity-30 pointer-events-none transform rotate-[-15deg]">
@@ -202,7 +203,7 @@ export default function MyAccountPage() {
                   <div className="relative z-10 ml-2">
                     <p className="font-bold text-xl">{"Bronze"}</p>
                     <p className="text-sm opacity-90">
-                      Flash Poin {Number(profile.pointsBalance?.d?.[0] || 0).toLocaleString('id-ID')}
+                      Flash Poin {toNumber(profile.pointsBalance).toLocaleString('id-ID')}
                     </p>
                   </div>
                   <div className="absolute right-[-10px] bottom-[-20px] opacity-30 pointer-events-none transform rotate-[-15deg]">

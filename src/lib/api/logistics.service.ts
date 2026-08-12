@@ -12,7 +12,14 @@ export const logisticsService = {
     originPinPoint?: string;
     destinationPinPoint?: string;
     destinationText?: string;
-  }): Promise<ShippingOption[] & { options?: ShippingOption[]; pointsBalance?: number }> => {
+  }): Promise<ShippingOption[] & {
+    options?: ShippingOption[];
+    // Field berikut hanya ada kalau request-nya terautentikasi.
+    pointsBalance?: number;
+    customerTier?: string;
+    /** Rate perolehan poin sesuai tier, mis. 0.025 untuk advance. */
+    pointsEarnRate?: number;
+  }> => {
     const response = await apiClient.post('/logistics/calculate', payload);
     return response.data;
   },
