@@ -54,9 +54,12 @@ export function FreedomHero() {
       </div>
 
       <div className="container mx-auto px-4 max-w-7xl pt-4 md:pt-6">
-        <section className="relative w-full rounded-[20px] md:rounded-[24px] overflow-hidden shadow-lg bg-[#1A1A1A]">
+        <section className="relative w-full rounded-[20px] md:rounded-[24px] overflow-hidden shadow-lg bg-[#9E0107]">
+          {/* Gradasi hitamnya sengaja dibuat jauh lebih tipis dari versi 8.8:
+              di atas dasar merah, black/80 bikin warnanya jadi merah kusam
+              kehitaman. Segini masih cukup menjaga kontras teks putih. */}
           <div className="absolute inset-0 z-0" aria-hidden="true">
-            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-black/80" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/40" />
           </div>
 
           {/* Di layar kecil panel sengaja lebih jangkung dan isinya direnggangkan
