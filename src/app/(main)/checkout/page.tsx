@@ -14,7 +14,8 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useCartStore } from "@/lib/store/cartStore";
 import { useAuthStore } from "@/lib/store/authStore";
-import { useAddAddress, useMyAddresses } from "@/lib/hooks/useUsers";
+import { useAddAddress, useMyAddresses, useMyProfile } from "@/lib/hooks/useUsers";
+import { toNumber } from "@/lib/utils/toNumber";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import { cn } from "@/lib/utils/cn";
@@ -372,6 +373,7 @@ function CheckoutContent(){
   const{items,selectedItemIds}=useCartStore();
   const checkoutItems=items.filter(i=>selectedItemIds.includes(i.id));
   const{data:savedAddresses=[],isLoading:loadingAddresses}=useMyAddresses();
+  const{data:profile}=useMyProfile();
   const queryClient=useQueryClient();
 
   const hasFiredInitCheckout=useRef(false);
@@ -391,10 +393,14 @@ function CheckoutContent(){
   const[selectedCourier,setSelectedCourier]=useState<any|null>(null);
   const[isCalcShipping,setIsCalcShipping]=useState(false);
   const[destinationText,setDestinationText]=useState<string|null>(null);
+  // Saldo poin datang dari profil, BUKAN dari hasil hitung ongkir. Dulu hanya
+  // diisi lewat /logistics/calculate, jadi user yang belum punya alamat tersimpan
+  // selalu melihat "0 pts" walau saldonya ada.
   const[pointsBalance,setPointsBalance]=useState(0);
   // Rate perolehan poin ikut tier customer (basic 1% / advance 2.5% / ultimate 5%).
   // Dikirim backend lewat /logistics/calculate; 1% cuma nilai awal sebelum ada jawaban.
   const[pointsEarnRate,setPointsEarnRate]=useState(0.01);
+  useEffect(()=>{if(profile?.pointsBalance!==undefined)setPointsBalance(toNumber(profile.pointsBalance));},[profile]);
   const hasEventItem=checkoutItems.some(i=>i.isEventPrice);
   const hasNRItem=checkoutItems.some(i=>i.variantSku?.includes("/"));
   const[appliedVoucher,setAppliedVoucher]=useState<AppliedVoucher|null>(null);
@@ -468,7 +474,7 @@ function CheckoutContent(){
     setIsCalcShipping(true);setSelectedCourier(null);
     const destPin=selectedAddress.latitude&&selectedAddress.longitude?formatPin(selectedAddress.latitude,selectedAddress.longitude):undefined;
     logisticsService.calculateShipping({destinationSubdistrictId:Number(selectedAddress.subdistrictId),weightGrams:totalWeight,courier:"",itemValue:subtotal,isCod:"no",originPinPoint:ORIGIN_PIN,...(destPin?{destinationPinPoint:destPin}:{}),...(destinationText?{destinationText}:{})})
-      .then(data=>{if(typeof data?.pointsBalance==="number")setPointsBalance(data.pointsBalance);if(typeof data?.pointsEarnRate==="number"&&data.pointsEarnRate>0)setPointsEarnRate(data.pointsEarnRate);const opts:any[]=data?.options??(Array.isArray(data)?data:[]);setShippingOptions(opts);const el=opts.filter(o=>instantBlocked?!isInstantCourier(o):true);setSelectedCourier(el[0]??null);})
+      .then(data=>{if(data?.pointsBalance!==undefined&&data?.pointsBalance!==null)setPointsBalance(toNumber(data.pointsBalance));if(typeof data?.pointsEarnRate==="number"&&data.pointsEarnRate>0)setPointsEarnRate(data.pointsEarnRate);const opts:any[]=data?.options??(Array.isArray(data)?data:[]);setShippingOptions(opts);const el=opts.filter(o=>instantBlocked?!isInstantCourier(o):true);setSelectedCourier(el[0]??null);})
       .catch(console.error).finally(()=>setIsCalcShipping(false));
   },[selectedAddress?.subdistrictId,totalWeight,destinationText]);
 
