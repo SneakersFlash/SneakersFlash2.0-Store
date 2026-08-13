@@ -23,7 +23,7 @@ const KEUNGGULAN = [
   "Kirim Hari Yang Sama",
 ];
 
-/** `bendera: true` → item ini didahului ikon merah putih di strip. */
+/** `bendera: true` → item ini diikuti ikon merah putih di strip. */
 const STRIP: { teks: string; bendera?: boolean }[] = [
   { teks: "Freedom in Every Step", bendera: true },
   { teks: "Merdeka Buat Melangkah" },
@@ -68,8 +68,8 @@ export function FreedomHero() {
               key={i}
               className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.1em] whitespace-nowrap"
             >
-              {item.bendera && <BenderaMerahPutih />}
               {item.teks}
+              {item.bendera && <BenderaMerahPutih />}
             </span>
           ))}
         </div>
