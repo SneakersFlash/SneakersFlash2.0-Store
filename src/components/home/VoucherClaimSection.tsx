@@ -78,7 +78,7 @@ const MOCK_FIRSTSTEP_VOUCHER = {
 const MOCK_SIGNUP_POINTS = {
   id: "__mock_signup_points__",
   code: "MERDEKA-••••",
-  name: "Bonus Poin Registrasi",
+  name: "FREEDOM IN STEP",
   description: "Khusus member baru! Poin langsung masuk saldo FlashPoint.",
   discountType: "fixed_amount" as DiscountType,
   discountValue: SIGNUP_POINTS_PROMO.amount,
@@ -87,6 +87,13 @@ const MOCK_SIGNUP_POINTS = {
   expiresAt: SIGNUP_POINTS_PROMO.endAt.toISOString(),
   isMock: true,
   isPoints: true,
+  // Badge kedua, di samping "NEW MEMBER".
+  badgePromo: "MERDEKA SPECIAL",
+  // Kolom kanan ditumpuk ("81K" di atas "FLASHPOINT") karena lebarnya cuma
+  // 80-90px — satu baris penuh bakal mengecil sampai tidak terbaca.
+  nilaiRingkas: "81K",
+  satuanNilai: "FLASHPOINT",
+  periodeKlaim: "Klaim 13 - 17 Agustus",
 };
 
 interface VoucherClaimSectionProps {
@@ -229,8 +236,11 @@ export default function VoucherClaimSection({
 
               // "Diskon 4% s.d. Rp150RB Min. Blj Rp2JT" — kecuali kartu poin,
               // yang bukan diskon dan tidak punya minimum belanja.
+              // Nominalnya sudah jadi headline di kolom kanan, jadi baris ini
+              // dibuat pendek — kalau ikut menyebut "81.000 FlashPoint" dia
+              // wrap jadi dua baris dan kartu 90px kelebihan tinggi.
               const deskripsiDiskon = isPoints
-                ? `${voucher.discountValue.toLocaleString("id-ID")} FlashPoint · Tanpa min. belanja`
+                ? "Tanpa min. belanja"
                 : [
                 tipeDiskon === "free_shipping"
                   ? "Gratis Ongkir"
@@ -251,9 +261,9 @@ export default function VoucherClaimSection({
               // voucher persen dipatok batasnya ("UP TO 150RIBU"), bukan "4%"
               // yang tak berarti apa-apa sebagai headline.
               const pakaiUpTo = tipeDiskon === "percentage" && !!batasDiskon;
-              const nilaiUtama = isPoints
-                ? `${formatNominal(voucher.discountValue)} POIN`
-                : pakaiUpTo
+              // Kartu poin punya render sendiri di kolom kanan (nilai + satuan
+              // ditumpuk), jadi nilaiUtama hanya dipakai kartu voucher.
+              const nilaiUtama = pakaiUpTo
                 ? formatNominal(batasDiskon as number)
                 : tipeDiskon === "percentage"
                   ? formatPersen(voucher.discountValue)
@@ -285,16 +295,30 @@ export default function VoucherClaimSection({
                     <div className={cn("w-2 h-full shrink-0", accentStrip)} />
 
                     {/* Main info */}
-                    <div className="flex-1 px-1 md:px-4 py-2.5 flex flex-col justify-center border-r-2 border-dashed border-gray-200 relative min-w-0">
+                    <div className={cn(
+                      "flex-1 px-1 md:px-4 flex flex-col justify-center border-r-2 border-dashed border-gray-200 relative min-w-0",
+                      // Kartu poin punya satu baris ekstra (periode klaim),
+                      // jadi paddingnya dirapatkan supaya tetap muat 90px.
+                      isPoints ? "py-1.5" : "py-2.5",
+                    )}>
                       {/* Ticket notch top & bottom */}
                       <div className="absolute -top-2 -right-2 w-4 h-4 bg-[#F5F5F5] rounded-full border-b border-l border-gray-100" />
                       <div className="absolute -bottom-2 -right-2 w-4 h-4 bg-[#F5F5F5] rounded-full border-t border-l border-gray-100" />
 
-                      {/* Badge "Member Baru" hanya di mock */}
+                      {/* Badge "Member Baru" hanya di mock; kartu promo punya
+                          badge kedua di sampingnya. Keduanya nowrap supaya di
+                          kartu 260px tidak pecah jadi dua baris. */}
                       {isMock && (
-                        <span className="self-start text-[8px] font-black bg-red-50 text-red-500 border border-red-100 rounded-full px-2 py-0.5 uppercase tracking-wider mb-1">
-                          NEW MEMBER
-                        </span>
+                        <div className="flex items-center gap-1 mb-1">
+                          <span className="text-[8px] font-black bg-red-50 text-red-500 border border-red-100 rounded-full px-2 py-0.5 uppercase tracking-wider whitespace-nowrap">
+                            NEW MEMBER
+                          </span>
+                          {(voucher as any).badgePromo && (
+                            <span className="text-[8px] font-black bg-gray-900 text-white rounded-full px-2 py-0.5 uppercase tracking-wider whitespace-nowrap">
+                              {(voucher as any).badgePromo}
+                            </span>
+                          )}
+                        </div>
                       )}
 
                       <h4 className="font-bold text-[13px] md:text-[15px] text-gray-900 leading-tight mb-1 truncate">
@@ -307,10 +331,17 @@ export default function VoucherClaimSection({
                         {deskripsiDiskon}
                       </p>
 
-                      {/* Blurred code teaser untuk mock, expired date untuk reguler */}
+                      {/* Kartu promo pasang periode klaim; mock voucher biasa
+                          tidak punya baris bawah, reguler pakai tanggal expired */}
                       {isMock ? (
-                        <>
-                        </>
+                        (voucher as any).periodeKlaim ? (
+                          <p className="text-[9px] md:text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+                            <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {(voucher as any).periodeKlaim}
+                          </p>
+                        ) : null
                       ) : (
                         <p className="text-[9px] md:text-[10px] text-gray-400 mt-auto flex items-center gap-1">
                           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -329,17 +360,28 @@ export default function VoucherClaimSection({
                             Up To
                           </p>
                         )}
-                        <p
-                          className={cn(
-                            "font-black text-gray-900 leading-tight",
-                            pakaiUpTo && "mt-0.5",
-                            isLabelPanjang
-                              ? "text-[9px] md:text-[10px]"
-                              : "text-[12px] md:text-[14px]",
-                          )}
-                        >
-                          {nilaiUtama}
-                        </p>
+                        {isPoints ? (
+                          <>
+                            <p className="font-black text-gray-900 leading-tight text-[16px] md:text-[18px]">
+                              {(voucher as any).nilaiRingkas}
+                            </p>
+                            <p className="text-[7px] md:text-[8px] font-black uppercase tracking-wider text-red-500 mt-0.5">
+                              {(voucher as any).satuanNilai}
+                            </p>
+                          </>
+                        ) : (
+                          <p
+                            className={cn(
+                              "font-black text-gray-900 leading-tight",
+                              pakaiUpTo && "mt-0.5",
+                              isLabelPanjang
+                                ? "text-[9px] md:text-[10px]"
+                                : "text-[12px] md:text-[14px]",
+                            )}
+                          >
+                            {nilaiUtama}
+                          </p>
+                        )}
                       </div>
                       <motion.button
                         whileTap={isClaimed || isClaimingThis ? {} : { scale: 0.9 }}
