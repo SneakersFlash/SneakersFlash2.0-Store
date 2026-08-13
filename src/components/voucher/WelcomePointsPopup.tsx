@@ -88,14 +88,19 @@ export default function WelcomePointsPopup({ points, onClose }: WelcomePointsPop
               >
                 🎉
               </motion.div>
-              <motion.p
+              <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.35 }}
-                className="text-white font-black text-lg tracking-tight drop-shadow"
+                className="text-center px-3"
               >
-                Selamat Bergabung!
-              </motion.p>
+                <p className="text-white font-black text-lg tracking-tight drop-shadow leading-none">
+                  FREEDOM IN STEP
+                </p>
+                <p className="text-white/90 font-bold text-[10px] tracking-[0.15em] uppercase mt-1">
+                  Your freedom starts now
+                </p>
+              </motion.div>
             </div>
 
             {/* Body */}
@@ -108,17 +113,19 @@ export default function WelcomePointsPopup({ points, onClose }: WelcomePointsPop
 
               <div className="bg-red-50 border border-red-100 rounded-2xl px-4 py-3 mb-3 text-center">
                 <p className="text-[11px] text-red-500 font-semibold uppercase tracking-wider">
-                  Kamu dapat
+                  {"You've unlocked"}
                 </p>
                 <p className="text-3xl font-black text-red-600 leading-tight">
                   {formatNumber(points.amount)}
                 </p>
-                <p className="text-[11px] font-bold text-red-500 tracking-wide">FLASHPOINT</p>
+                <p className="text-[11px] font-bold text-red-500 tracking-wide">FLASH POINT</p>
               </div>
 
+              {/* Copy promo dipegang di sini, bukan dari `description` backend —
+                  ganti kalimat marketing tidak perlu ikut deploy API. */}
               <p className="text-[12px] text-gray-500 mb-1 leading-snug">
-                {points.description ??
-                  "Poin sudah masuk ke saldo FlashPoint kamu, langsung bisa dipakai di checkout."}
+                81K Flash Point udah masuk ke akun kamu. Saatnya bebas pilih pair
+                untuk langkah berikutnya.
               </p>
               <p className="text-[11px] text-gray-400 mb-3">
                 Saldo poin sekarang:{" "}
