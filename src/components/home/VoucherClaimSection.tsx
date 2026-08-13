@@ -7,6 +7,10 @@ import { toast } from "sonner";
 import { vouchersService } from "@/lib/api/vouchers.service";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import {
+  SIGNUP_POINTS_PROMO,
+  isSignupPointsPromoActive,
+} from "@/lib/utils/signupPromo";
 
 // Sama persis dengan enum DiscountType di Prisma (huruf kecil, snake_case).
 export type DiscountType = "percentage" | "fixed_amount" | "free_shipping";
@@ -69,6 +73,22 @@ const MOCK_FIRSTSTEP_VOUCHER = {
   isMock: true,
 };
 
+// Selama promo Kemerdekaan hadiah member baru bukan voucher lagi, tapi poin —
+// kartu ini yang tampil supaya janji di home sama dengan yang dikirim backend.
+const MOCK_SIGNUP_POINTS = {
+  id: "__mock_signup_points__",
+  code: "MERDEKA-••••",
+  name: "Bonus Poin Registrasi",
+  description: "Khusus member baru! Poin langsung masuk saldo FlashPoint.",
+  discountType: "fixed_amount" as DiscountType,
+  discountValue: SIGNUP_POINTS_PROMO.amount,
+  minPurchaseAmount: 0,
+  maxDiscountAmount: null,
+  expiresAt: SIGNUP_POINTS_PROMO.endAt.toISOString(),
+  isMock: true,
+  isPoints: true,
+};
+
 interface VoucherClaimSectionProps {
   /** Judul section. Default-nya teks yang dipakai home page. */
   title?: string;
@@ -114,7 +134,11 @@ export default function VoucherClaimSection({
 
   const handleClaim = async (id: string, isMock?: boolean) => {
     if (!isAuthenticated || isMock) {
-      toast.error("Daftar sekarang untuk mendapatkan voucher selamat datang!");
+      toast.error(
+        isSignupPointsPromoActive()
+          ? `Daftar sekarang dan dapatkan ${SIGNUP_POINTS_PROMO.amount.toLocaleString("id-ID")} FlashPoint!`
+          : "Daftar sekarang untuk mendapatkan voucher selamat datang!",
+      );
       router.push(`/register`);
       return;
     }
@@ -150,8 +174,14 @@ export default function VoucherClaimSection({
   v.name?.toUpperCase().includes("FIRST STEP") ||
   v.name?.toUpperCase().includes("FIRSTSTEP");
 
+  // Kartu hadiah member baru mengikuti jendela promo — setelah 17 Agt WIB
+  // otomatis balik ke kartu voucher, tanpa perlu deploy ulang.
+  const kartuMemberBaru = isSignupPointsPromoActive()
+    ? MOCK_SIGNUP_POINTS
+    : MOCK_FIRSTSTEP_VOUCHER;
+
   const displayVouchers = !isAuthenticated
-    ? [MOCK_FIRSTSTEP_VOUCHER, ...vouchers.filter(v => !isFirstStep(v))]
+    ? [kartuMemberBaru, ...vouchers.filter(v => !isFirstStep(v))]
     : vouchers;
 
   return (
@@ -188,6 +218,7 @@ export default function VoucherClaimSection({
           ) : (
             displayVouchers.map((voucher) => {
               const isMock = (voucher as any).isMock === true;
+              const isPoints = (voucher as any).isPoints === true;
               const isClaimed = !isMock && (voucher.isClaimed || claimedVouchers.includes(voucher.id));
               const isClaimingThis = claimingId === voucher.id;
 
@@ -196,8 +227,11 @@ export default function VoucherClaimSection({
                 ? Number(voucher.maxDiscountAmount)
                 : null;
 
-              // "Diskon 4% s.d. Rp150RB Min. Blj Rp2JT"
-              const deskripsiDiskon = [
+              // "Diskon 4% s.d. Rp150RB Min. Blj Rp2JT" — kecuali kartu poin,
+              // yang bukan diskon dan tidak punya minimum belanja.
+              const deskripsiDiskon = isPoints
+                ? `${voucher.discountValue.toLocaleString("id-ID")} FlashPoint · Tanpa min. belanja`
+                : [
                 tipeDiskon === "free_shipping"
                   ? "Gratis Ongkir"
                   : `Diskon ${
@@ -217,7 +251,9 @@ export default function VoucherClaimSection({
               // voucher persen dipatok batasnya ("UP TO 150RIBU"), bukan "4%"
               // yang tak berarti apa-apa sebagai headline.
               const pakaiUpTo = tipeDiskon === "percentage" && !!batasDiskon;
-              const nilaiUtama = pakaiUpTo
+              const nilaiUtama = isPoints
+                ? `${formatNominal(voucher.discountValue)} POIN`
+                : pakaiUpTo
                 ? formatNominal(batasDiskon as number)
                 : tipeDiskon === "percentage"
                   ? formatPersen(voucher.discountValue)
