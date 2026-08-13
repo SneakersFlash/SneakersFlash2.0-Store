@@ -26,6 +26,7 @@ const KEUNGGULAN = [
 /** `bendera: true` → item ini diikuti ikon merah putih di strip. */
 const STRIP: { teks: string; bendera?: boolean }[] = [
   { teks: "Freedom in Every Step", bendera: true },
+  { teks: "Diskon 17%" },
   { teks: "Merdeka Buat Melangkah" },
   { teks: "Gratis Ongkir" },
   { teks: "100% Original" },

@@ -63,7 +63,23 @@ export default async function FreedomCampaignPage() {
     // font-helvetica-88 mengganti keluarga font SELURUH halaman ini (lihat
     // globals.css). Dipasang di pembungkus supaya hanya halaman campaign yang
     // terpengaruh — halaman lain tetap Inter.
-    <div className="font-helvetica-88">
+    //
+    // --primary ditimpa DI SINI, bukan di globals.css: variabel itu dipakai
+    // seluruh toko (kuning #F6E70A), jadi mengubahnya di sana akan mewarnai
+    // ulang semua halaman. Ditulis sebagai style inline di pembungkus, nilainya
+    // diwarisi turun sehingga setiap bg-primary/text-primary di dalam halaman
+    // ini jadi #9E0107 — dan berhenti begitu keluar dari div ini.
+    // Format HSL tanpa fungsi hsl() karena begitulah token Tailwind di proyek
+    // ini dibaca. 357.7 98.7% 31.2% == #9E0107.
+    <div
+      className="font-helvetica-88"
+      style={
+        {
+          "--primary": "357.7 98.7% 31.2%",
+          "--primary-foreground": "0 0% 100%",
+        } as React.CSSProperties
+      }
+    >
       <FreedomHero />
 
       <div className="container mx-auto px-4 max-w-7xl">
