@@ -7,6 +7,7 @@ export function useAuthGMutations() {
   const queryClient = useQueryClient();
   const setAuth = useAuthStore((state) => state.setAuth);
   const setWelcomeVoucher = useAuthStore((state) => state.setWelcomeVoucher);
+  const setWelcomePoints = useAuthStore((state) => state.setWelcomePoints);
 
   const handleSuccess = (data: AuthResponse) => {
     // 1. Simpan user & token ke Zustand (otomatis masuk sessionStorage & interceptor Axios)
@@ -16,6 +17,12 @@ export function useAuthGMutations() {
     //    → ClientLayoutWrapper di route (main) akan menampilkan WelcomeVoucherPopup
     if (data.welcomeVoucher) {
       setWelcomeVoucher(data.welcomeVoucher);
+    }
+
+    // 2b. Selama promo Kemerdekaan backend mengirim poin, bukan voucher
+    //     → ClientLayoutWrapper menampilkan WelcomePointsPopup
+    if (data.welcomePoints) {
+      setWelcomePoints(data.welcomePoints);
     }
 
     // 3. Bersihkan/refresh cache data user & cart

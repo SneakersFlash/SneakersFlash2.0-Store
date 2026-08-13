@@ -42,10 +42,19 @@ export interface WelcomeVoucher {
   expiresAt: string;
 }
 
+/** Bonus poin member baru (promo Kemerdekaan 13-17 Agt 2026) — pengganti welcome voucher. */
+export interface WelcomePoints {
+  amount: number;
+  balanceAfter: number;
+  name: string;
+  description?: string;
+}
+
 export interface AuthResponse {
   access_token: string;
   user: User;
   welcomeVoucher?: WelcomeVoucher;
+  welcomePoints?: WelcomePoints;
 }
 
 export interface UserProfile {

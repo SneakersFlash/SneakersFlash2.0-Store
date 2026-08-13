@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { User, WelcomeVoucher } from "@/types/user.types";
+import type { User, WelcomeVoucher, WelcomePoints } from "@/types/user.types";
 import { registerTokenGetter, registerUnauthorizedHandler } from "@/lib/api/client";
 
 interface AuthState {
@@ -12,6 +12,8 @@ interface AuthState {
   isHydrated: boolean;
   /** Voucher selamat datang — diset saat login pertama, dikosongkan setelah popup ditutup */
   welcomeVoucher: WelcomeVoucher | null;
+  /** Bonus poin member baru — dipakai selama promo Kemerdekaan, gantinya voucher */
+  welcomePoints: WelcomePoints | null;
 
   // Actions
   setAuth: (user: User, token: string) => void;
@@ -19,6 +21,8 @@ interface AuthState {
   setHydrated: () => void;
   setWelcomeVoucher: (voucher: WelcomeVoucher) => void;
   clearWelcomeVoucher: () => void;
+  setWelcomePoints: (points: WelcomePoints) => void;
+  clearWelcomePoints: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -29,6 +33,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isHydrated: false,
       welcomeVoucher: null,
+      welcomePoints: null,
 
       setAuth: (user, token) => {
         set({ user, token, isAuthenticated: true });
@@ -43,6 +48,10 @@ export const useAuthStore = create<AuthState>()(
       setWelcomeVoucher: (voucher) => set({ welcomeVoucher: voucher }),
 
       clearWelcomeVoucher: () => set({ welcomeVoucher: null }),
+
+      setWelcomePoints: (points) => set({ welcomePoints: points }),
+
+      clearWelcomePoints: () => set({ welcomePoints: null }),
     }),
     {
       name: "sf-auth",
@@ -51,7 +60,7 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
-        // welcomeVoucher sengaja TIDAK di-persist agar tidak muncul ulang setelah refresh
+        // welcomeVoucher & welcomePoints sengaja TIDAK di-persist agar tidak muncul ulang setelah refresh
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
