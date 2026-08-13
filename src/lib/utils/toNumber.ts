@@ -21,9 +21,39 @@ export function toNumber(value: unknown): number {
   }
 
   if (typeof value === "object") {
-    // Decimal.js punya toString() yang selalu mengembalikan nilai penuh.
-    const parsed = Number(String(value));
-    if (Number.isFinite(parsed)) return parsed;
+    // Instance Decimal.js asli punya toString() yang mengembalikan nilai penuh.
+    // Objek hasil JSON.parse TIDAK punya itu — String()-nya "[object Object]"
+    // → NaN → saldo tampil 0 tanpa error sama sekali. Ini yang bikin bonus
+    // 81.000 poin tidak kelihatan di halaman akun (13 Agt 2026).
+    const asString = String(value);
+    if (asString !== "[object Object]") {
+      const parsed = Number(asString);
+      if (Number.isFinite(parsed)) return parsed;
+    }
+
+    const dec = value as { s?: number; e?: number; d?: unknown };
+    if (Array.isArray(dec.d) && typeof dec.e === "number") {
+      const digits = dec.d as number[];
+      // `d` menyimpan digit dalam basis 1e7: grup pertama apa adanya, sisanya
+      // dipadkan 7 digit. `e` menandai posisi titik desimal dari digit pertama.
+      const raw =
+        String(digits[0] ?? 0) +
+        digits
+          .slice(1)
+          .map((g) => String(g).padStart(7, "0"))
+          .join("");
+
+      const titik = dec.e + 1;
+      const teks =
+        titik <= 0
+          ? `0.${"0".repeat(-titik)}${raw}`
+          : titik >= raw.length
+            ? raw.padEnd(titik, "0")
+            : `${raw.slice(0, titik)}.${raw.slice(titik)}`;
+
+      const parsed = Number(teks) * (dec.s === -1 ? -1 : 1);
+      if (Number.isFinite(parsed)) return parsed;
+    }
   }
 
   return 0;
