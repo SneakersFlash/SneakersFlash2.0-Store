@@ -23,12 +23,33 @@ const KEUNGGULAN = [
   "Kirim Hari Yang Sama",
 ];
 
-const STRIP = [
-  "Freedom in Every Step",
-  "Merdeka Buat Melangkah",
-  "Gratis Ongkir",
-  "100% Original",
+/** `bendera: true` → item ini didahului ikon merah putih di strip. */
+const STRIP: { teks: string; bendera?: boolean }[] = [
+  { teks: "Freedom in Every Step", bendera: true },
+  { teks: "Merdeka Buat Melangkah" },
+  { teks: "Gratis Ongkir" },
+  { teks: "100% Original" },
 ];
+
+/**
+ * Bendera merah putih mini.
+ *
+ * Sengaja digambar sendiri, bukan emoji 🇮🇩: di Windows emoji bendera tidak
+ * dirender dan cuma keluar sebagai huruf "ID". Merahnya dipakai merah bendera
+ * (#CE1126), bukan #9E0107 milik strip — di atas latar merah gelap itu justru
+ * yang bikin benderanya terbaca. Garis putih tipis mengunci tepinya.
+ */
+function BenderaMerahPutih() {
+  return (
+    <span
+      aria-hidden="true"
+      className="inline-flex flex-col w-[14px] h-[10px] shrink-0 overflow-hidden rounded-[1px] ring-1 ring-white/70 align-middle"
+    >
+      <span className="h-1/2 w-full bg-[#CE1126]" />
+      <span className="h-1/2 w-full bg-white" />
+    </span>
+  );
+}
 
 export function FreedomHero() {
   const { fase, label, target } = useFaseCampaign(
@@ -39,15 +60,16 @@ export function FreedomHero() {
   return (
     <>
       {/* ── Strip promo berjalan ── */}
-      <div className="w-full bg-primary text-primary-foreground overflow-hidden py-1.5">
+      <div className="w-full bg-[#9E0107] text-white overflow-hidden py-1.5">
         <div className="flex w-max gap-8 animate-marquee88" aria-hidden="true">
           {/* Digandakan — lihat @keyframes marquee88 di globals.css */}
-          {[...STRIP, ...STRIP, ...STRIP, ...STRIP].map((teks, i) => (
+          {[...STRIP, ...STRIP, ...STRIP, ...STRIP].map((item, i) => (
             <span
               key={i}
-              className="text-[11px] font-bold uppercase tracking-[0.1em] whitespace-nowrap"
+              className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.1em] whitespace-nowrap"
             >
-              {teks}
+              {item.bendera && <BenderaMerahPutih />}
+              {item.teks}
             </span>
           ))}
         </div>
