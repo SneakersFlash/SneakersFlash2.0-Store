@@ -8,6 +8,17 @@ export const metadata: Metadata = {
 };
 
 /**
+ * Isi halaman ini sepenuhnya statis - papannya digambar di browser - jadi
+ * sebenarnya tidak ada yang perlu divalidasi ulang.
+ *
+ * Tetap dipasang karena tanpanya Next menandai halaman ini
+ * `s-maxage=31536000`, dan nginx di depan storefront menyimpannya SATU TAHUN.
+ * Akibatnya perubahan copy atau tema tidak pernah sampai ke pengunjung sampai
+ * cache-nya dibersihkan manual. Angkanya disamakan dengan halaman campaign lain.
+ */
+export const revalidate = 60;
+
+/**
  * Halaman game Kemerdekaan.
  *
  * Temanya langit malam tujuh-belasan - navy pekat, teks krem, aksen emas -
