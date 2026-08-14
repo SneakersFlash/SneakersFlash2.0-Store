@@ -11,6 +11,11 @@ import {
   SIGNUP_POINTS_PROMO,
   isSignupPointsPromoActive,
 } from "@/lib/utils/signupPromo";
+import {
+  FREEDOM_BERAKHIR,
+  FREEDOM_HREF,
+  FREEDOM_VOUCHER_KODE,
+} from "@/lib/campaign/freedom-in-every-step";
 
 // Sama persis dengan enum DiscountType di Prisma (huruf kecil, snake_case).
 export type DiscountType = "percentage" | "fixed_amount" | "free_shipping";
@@ -96,6 +101,28 @@ const MOCK_SIGNUP_POINTS = {
   periodeKlaim: "Klaim 13 - 17 Agustus",
 };
 
+// Bocoran voucher campaign — tampil SEBELUM voucher aslinya bisa diklaim.
+//
+// Voucher FREEDOM17 baru mulai 15 Agt, dan daftar klaim backend hanya memuat
+// voucher yang sudah mulai. Tanpa kartu ini promonya tidak kelihatan sama
+// sekali sampai hari-H, padahal campaign-nya sudah tayang sejak 12 Agt.
+// Kartu ini tidak bisa diklaim: menekannya membawa ke halaman campaign.
+const MOCK_FREEDOM17 = {
+  id: "__mock_freedom17__",
+  code: FREEDOM_VOUCHER_KODE,
+  name: "Voucher 17% No Max Cap",
+  description: "Potongan 17% tanpa batas maksimum, khusus produk campaign.",
+  discountType: "percentage" as DiscountType,
+  discountValue: 17,
+  minPurchaseAmount: 0,
+  maxDiscountAmount: null,
+  expiresAt: FREEDOM_BERAKHIR,
+  isMock: true,
+  isComingSoon: true,
+  badgePromo: "MERDEKA SPECIAL",
+  periodeKlaim: "Klaim 15 - 17 Agustus",
+};
+
 interface VoucherClaimSectionProps {
   /** Judul section. Default-nya teks yang dipakai home page. */
   title?: string;
@@ -139,7 +166,15 @@ export default function VoucherClaimSection({
   const containerRef = useRef(null);
   const isInView = useInView(containerRef, { once: true, margin: "-40px" });
 
-  const handleClaim = async (id: string, isMock?: boolean) => {
+  const handleClaim = async (id: string, isMock?: boolean, isComingSoon?: boolean) => {
+    // Bocoran voucher campaign: belum ada yang bisa diklaim, jadi arahkan ke
+    // halaman campaign-nya alih-alih ke pendaftaran.
+    if (isComingSoon) {
+      toast.info("Voucher 17% dibuka 15 Agustus 00:00 WIB. Siapkan keranjangmu!");
+      router.push(FREEDOM_HREF);
+      return;
+    }
+
     if (!isAuthenticated || isMock) {
       toast.error(
         isSignupPointsPromoActive()
@@ -187,9 +222,23 @@ export default function VoucherClaimSection({
     ? MOCK_SIGNUP_POINTS
     : MOCK_FIRSTSTEP_VOUCHER;
 
+  // Kartu bocoran FREEDOM17 dipasang paling depan selama voucher aslinya belum
+  // muncul di daftar dan campaign-nya belum lewat. Begitu yang asli terbit
+  // (15 Agt) daftar dari backend memuat kodenya dan bocorannya menyingkir —
+  // tanpa perlu deploy ulang. Seluruh keputusan ini terjadi sesudah data voucher
+  // tiba di klien (render awal masih "Memuat voucher..."), jadi tidak ada beda
+  // antara render server dan klien.
+  const freedomAsliSudahTerbit = vouchers.some(
+    (v) => v.code?.toUpperCase() === FREEDOM_VOUCHER_KODE,
+  );
+  const kartuFreedom =
+    !freedomAsliSudahTerbit && Date.now() < Date.parse(FREEDOM_BERAKHIR)
+      ? [MOCK_FREEDOM17]
+      : [];
+
   const displayVouchers = !isAuthenticated
-    ? [kartuMemberBaru, ...vouchers.filter(v => !isFirstStep(v))]
-    : vouchers;
+    ? [...kartuFreedom, kartuMemberBaru, ...vouchers.filter(v => !isFirstStep(v))]
+    : [...kartuFreedom, ...vouchers];
 
   return (
     <section className="w-full bg-[#F5F5F5] pb-4 pt-2 md:py-6" ref={containerRef}>
@@ -226,6 +275,7 @@ export default function VoucherClaimSection({
             displayVouchers.map((voucher) => {
               const isMock = (voucher as any).isMock === true;
               const isPoints = (voucher as any).isPoints === true;
+              const isComingSoon = (voucher as any).isComingSoon === true;
               const isClaimed = !isMock && (voucher.isClaimed || claimedVouchers.includes(voucher.id));
               const isClaimingThis = claimingId === voucher.id;
 
@@ -252,7 +302,16 @@ export default function VoucherClaimSection({
                 tipeDiskon === "percentage" && batasDiskon
                   ? `s.d. ${formatRp(batasDiskon)}`
                   : "",
-                `Min. Blj ${formatRp(voucher.minPurchaseAmount)}`,
+                // Voucher tanpa batas maksimum layak disebut apa adanya — itu
+                // justru daya tariknya, bukan sesuatu yang perlu disembunyikan.
+                tipeDiskon === "percentage" && !batasDiskon
+                  ? "tanpa max cap"
+                  : "",
+                // "Min. Blj Rp0" itu membingungkan; kalau tidak ada minimumnya,
+                // katakan begitu.
+                Number(voucher.minPurchaseAmount) > 0
+                  ? `Min. Blj ${formatRp(voucher.minPurchaseAmount)}`
+                  : "Tanpa min. belanja",
               ]
                 .filter(Boolean)
                 .join(" ");
@@ -311,7 +370,7 @@ export default function VoucherClaimSection({
                       {isMock && (
                         <div className="flex items-center gap-1 mb-1">
                           <span className="text-[8px] font-black bg-red-50 text-red-500 border border-red-100 rounded-full px-2 py-0.5 uppercase tracking-wider whitespace-nowrap">
-                            NEW MEMBER
+                            {isComingSoon ? "SEGERA" : "NEW MEMBER"}
                           </span>
                           {(voucher as any).badgePromo && (
                             <span className="text-[8px] font-black bg-gray-900 text-white rounded-full px-2 py-0.5 uppercase tracking-wider whitespace-nowrap">
@@ -385,14 +444,22 @@ export default function VoucherClaimSection({
                       </div>
                       <motion.button
                         whileTap={isClaimed || isClaimingThis ? {} : { scale: 0.9 }}
-                        onClick={() => handleClaim(voucher.id, isMock || undefined)}
+                        onClick={() => handleClaim(voucher.id, isMock || undefined, isComingSoon || undefined)}
                         disabled={isClaimed || isClaimingThis}
                         className={cn(
                           "w-full py-1.5 md:py-2 rounded-full text-[10px] md:text-[11px] font-bold transition-all duration-300 shadow-lg",
                           buttonClass
                         )}
                       >
-                        {isClaimingThis ? "..." : isClaimed ? "Diklaim" : isMock ? "Daftar" : "Klaim"}
+                        {isClaimingThis
+                          ? "..."
+                          : isClaimed
+                            ? "Diklaim"
+                            : isComingSoon
+                              ? "Lihat"
+                              : isMock
+                                ? "Daftar"
+                                : "Klaim"}
                       </motion.button>
                     </div>
                   </div>

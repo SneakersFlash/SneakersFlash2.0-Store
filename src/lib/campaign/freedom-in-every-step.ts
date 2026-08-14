@@ -43,6 +43,17 @@ export const FREEDOM_NAMA = "Freedom in Every Step";
  */
 export const FREEDOM_LABEL_PENDEK = "Freedom Step";
 
+/**
+ * Voucher campaign. Jendelanya sama persis dengan jam belanja dibuka sampai
+ * campaign berakhir (15-17 Agt), jadi tanggalnya memakai ulang dua konstanta di
+ * atas — bukan ditulis lagi, supaya tidak bisa selisih.
+ *
+ * Kodenya dipakai storefront untuk mengenali voucher aslinya di daftar klaim:
+ * selama voucher ini belum mulai, home menampilkan kartu bocoran; begitu yang
+ * asli muncul di daftar, kartu bocorannya menyingkir sendiri.
+ */
+export const FREEDOM_VOUCHER_KODE = "FREEDOM17";
+
 /** Slug event backend yang memuat kurasi yang sama beserta harga promonya. */
 export const FREEDOM_EVENT_SLUG = "freedom-in-every-step";
 
