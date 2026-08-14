@@ -11,6 +11,7 @@ import {
   Zap,
   PhoneCall,
   RefreshCw,
+  ChevronLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { chatService } from "@/lib/api/chat.service";
@@ -20,6 +21,8 @@ import type { ChatMessage } from "@/lib/api/chat.service";
 
 const SESSION_KEY = "sf_chat_session_id";
 const VISITOR_KEY = "sf_chat_visitor_id";
+// Bubble disembunyikan user — disimpan biar nggak nongol lagi tiap pindah halaman
+const HIDDEN_KEY = "sf_chat_hidden";
 
 function getOrCreateVisitorId(): string {
   if (typeof window === "undefined") return "";
@@ -109,6 +112,7 @@ function HandoffBanner() {
 export function ChatWidget() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -118,6 +122,12 @@ export function ChatWidget() {
   const [unread, setUnread] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // ─── Restore preferensi sembunyi ────────────────────────────────────────────
+  // Dibaca di effect (bukan useState initializer) supaya markup SSR & klien sama
+  useEffect(() => {
+    if (localStorage.getItem(HIDDEN_KEY) === "1") setHidden(true);
+  }, []);
 
   // ─── Restore session from localStorage ──────────────────────────────────────
   useEffect(() => {
@@ -229,6 +239,18 @@ export function ChatWidget() {
     setInput("");
   };
 
+  // ─── Sembunyikan / munculkan bubble ─────────────────────────────────────────
+  const hideWidget = () => {
+    setOpen(false);
+    setHidden(true);
+    localStorage.setItem(HIDDEN_KEY, "1");
+  };
+
+  const showWidget = () => {
+    setHidden(false);
+    localStorage.removeItem(HIDDEN_KEY);
+  };
+
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -240,7 +262,7 @@ export function ChatWidget() {
     <>
       {/* ── Chat panel ──────────────────────────────────────────────────────── */}
       <AnimatePresence>
-        {open && (
+        {open && !hidden && (
           <motion.div
             key="chat-panel"
             initial={{ opacity: 0, scale: 0.96, y: 16 }}
@@ -378,51 +400,95 @@ export function ChatWidget() {
       </AnimatePresence>
 
       {/* ── Floating button ─────────────────────────────────────────────────── */}
-      <motion.button
-        onClick={() => setOpen((v) => !v)}
-        whileHover={{ scale: 1.06 }}
-        whileTap={{ scale: 0.94 }}
-        className="fixed bottom-[80px] lg:bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-zinc-950 text-white shadow-[0_4px_24px_-4px_rgba(0,0,0,0.4)] hover:bg-zinc-800 transition-colors"
-        aria-label="Buka chat"
-      >
-        <AnimatePresence mode="wait">
-          {open ? (
-            <motion.span
-              key="close"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              <X className="h-5 w-5" />
-            </motion.span>
-          ) : (
-            <motion.span
-              key="open"
-              initial={{ rotate: 90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: -90, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              <MessageCircle className="h-5 w-5" />
-            </motion.span>
-          )}
-        </AnimatePresence>
+      {!hidden && (
+        <div className="fixed bottom-[80px] lg:bottom-5 right-5 z-50 h-14 w-14">
+          <motion.button
+            onClick={() => setOpen((v) => !v)}
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.94 }}
+            className="flex h-14 w-14 items-center justify-center rounded-full bg-zinc-950 text-white shadow-[0_4px_24px_-4px_rgba(0,0,0,0.4)] hover:bg-zinc-800 transition-colors"
+            aria-label={open ? "Tutup chat" : "Buka chat"}
+          >
+            <AnimatePresence mode="wait">
+              {open ? (
+                <motion.span
+                  key="close"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <X className="h-5 w-5" />
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="open"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <MessageCircle className="h-5 w-5" />
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
 
-        {/* Unread badge */}
-        <AnimatePresence>
-          {unread > 0 && !open && (
-            <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0 }}
-              className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white"
-            >
-              {unread}
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </motion.button>
+          {/* Unread badge */}
+          <AnimatePresence>
+            {unread > 0 && !open && (
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0 }}
+                className="pointer-events-none absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white"
+              >
+                {unread}
+              </motion.span>
+            )}
+          </AnimatePresence>
+
+          {/* Sembunyikan bubble — tombol terpisah biar nggak nested di dalam button */}
+          <AnimatePresence>
+            {!open && (
+              <motion.button
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                onClick={hideWidget}
+                title="Sembunyikan chat"
+                aria-label="Sembunyikan chat"
+                className="absolute -top-1 -left-1 flex h-6 w-6 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-500 shadow-sm hover:bg-zinc-100 hover:text-zinc-700 active:scale-90 transition-all"
+              >
+                <X className="h-3 w-3" />
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* ── Tab pemunculkan kembali ─────────────────────────────────────────── */}
+      <AnimatePresence>
+        {hidden && (
+          <motion.button
+            key="chat-reopen-tab"
+            initial={{ x: 24, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 24, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 420, damping: 32 }}
+            onClick={showWidget}
+            title="Tampilkan chat"
+            aria-label="Tampilkan chat"
+            className="fixed bottom-[92px] lg:bottom-8 right-0 z-50 flex h-12 w-7 items-center justify-center rounded-l-xl bg-zinc-950/85 text-white shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)] hover:w-9 hover:bg-zinc-900 transition-all"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            {unread > 0 && (
+              <span className="absolute top-1 left-1 h-2 w-2 rounded-full bg-red-500" />
+            )}
+          </motion.button>
+        )}
+      </AnimatePresence>
     </>
   );
 }
