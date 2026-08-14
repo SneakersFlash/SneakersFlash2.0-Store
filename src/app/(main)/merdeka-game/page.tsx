@@ -10,42 +10,53 @@ export const metadata: Metadata = {
 /**
  * Halaman game Kemerdekaan.
  *
- * Warna merah kampanye ditimpa DI SINI lewat style inline, bukan di globals.css:
- * --primary dipakai seluruh toko (kuning), jadi mengubahnya di sana akan
- * mewarnai ulang semua halaman. Nilainya diwarisi turun ke seluruh isi halaman
- * ini dan berhenti begitu keluar dari pembungkus - sama persis dengan cara
- * halaman /freedom-in-every-step.
+ * Temanya langit malam tujuh-belasan - navy pekat, teks krem, aksen emas -
+ * mengikuti demo game yang jadi acuan. Latar gelap dipilih bukan cuma karena
+ * selera: kanvas permainannya sendiri berakhir di langit malam (#020330), jadi
+ * bingkai gelap membuat papannya menyatu, sementara halaman terang akan
+ * membuat kanvas itu terlihat seperti kotak asing yang ditempel.
+ *
+ * --primary ditimpa DI SINI lewat style inline, bukan di globals.css: variabel
+ * itu dipakai seluruh toko (kuning), jadi mengubahnya di sana akan mewarnai
+ * ulang semua halaman. Nilainya diwarisi turun ke seluruh isi halaman ini dan
+ * berhenti begitu keluar dari pembungkus - sama persis dengan cara halaman
+ * /freedom-in-every-step. 39.1 87.4% 59.4% == #F2B33D (emas).
  */
 export default function MerdekaGamePage() {
   return (
     <div
-      className="min-h-screen bg-[#9E0107] font-helvetica-88"
+      className="min-h-screen bg-[#080D22] font-helvetica-88"
       style={
         {
-          "--primary": "357.7 98.7% 31.2%",
-          "--primary-foreground": "0 0% 100%",
+          "--primary": "39.1 87.4% 59.4%",
+          "--primary-foreground": "222 47% 8%",
+          // Cahaya langit di puncak halaman, meneruskan gradasi yang sama
+          // seperti di demo. radial-gradient dipasang sebagai background image
+          // supaya warna dasar di atas tetap jadi cadangan.
+          backgroundImage:
+            "radial-gradient(1100px 620px at 50% -8%, #242C63 0%, rgba(36,44,99,0) 62%)",
         } as React.CSSProperties
       }
     >
       <div className="container mx-auto max-w-3xl px-4 py-8 md:py-12">
         {/* -- Kepala -- */}
         <header className="text-center">
-          <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-white/70">
+          <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#F2B33D]">
             Freedom in Step
           </div>
-          <div className="mt-1 text-[11px] font-bold uppercase tracking-[0.2em] text-white/50">
+          <div className="mt-1 text-[11px] font-bold uppercase tracking-[0.2em] text-[#98A2CE]">
             Merdeka Game &middot; 17&ndash;31 Agustus 2026
           </div>
 
-          <h1 className="mt-4 font-display text-4xl font-black uppercase leading-none tracking-tight text-white md:text-6xl">
+          <h1 className="mt-4 font-display text-4xl font-black uppercase leading-none tracking-tight text-[#FFF4E8] md:text-6xl">
             The 17-Box Climb
           </h1>
 
-          <p className="mt-3 font-display text-base font-bold uppercase tracking-[0.15em] text-white/80 md:text-lg">
+          <p className="mt-3 font-display text-base font-bold uppercase tracking-[0.15em] text-[#F2B33D] md:text-lg">
             Stack 17. Beat 45. Break Free.
           </p>
 
-          <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-white/70 md:text-base">
+          <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-[#98A2CE] md:text-base">
             Susun 17 sneaker boxes dalam 45 detik. Capai puncak, unlock the
             wheel, dan menangkan reward spesial Kemerdekaan.
           </p>
@@ -58,11 +69,11 @@ export default function MerdekaGamePage() {
 
         {/* -- Aturan singkat -- */}
         <section className="mx-auto mt-10 max-w-[460px]">
-          <div className="rounded-2xl border border-white/15 bg-black/15 p-5">
-            <h2 className="font-display text-sm font-bold uppercase tracking-widest text-white">
+          <div className="rounded-2xl border border-[#2A3468] bg-[#141C3E] p-5">
+            <h2 className="font-display text-sm font-bold uppercase tracking-widest text-[#FFF4E8]">
               Cara Main
             </h2>
-            <ul className="mt-3 space-y-2 text-sm leading-relaxed text-white/70">
+            <ul className="mt-3 space-y-2 text-sm leading-relaxed text-[#98A2CE]">
               <li>
                 Sneaker box akan bergerak ke kanan dan kiri. Tap di waktu yang
                 tepat untuk menyusunnya. Bagian yang meleset akan terpotong.

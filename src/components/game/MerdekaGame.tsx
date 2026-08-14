@@ -144,6 +144,25 @@ export function MerdekaGame() {
     [],
   );
 
+  /**
+   * Kembali ke layar siap tanpa memuat ulang halaman. Hanya ditawarkan ke akun
+   * penguji - pemain biasa memang cuma punya satu kesempatan sehari.
+   *
+   * `slot` dikembalikan ke null bukan sekadar kerapian: PrizeWheel memutar
+   * rodanya lewat perubahan nilai `slot`, jadi kalau ronde berikutnya kebetulan
+   * mendarat di juring yang sama, tanpa null di antaranya rodanya tidak akan
+   * berputar sama sekali.
+   */
+  const mainLagi = () => {
+    setSlot(null);
+    setHasil(null);
+    setGalat(null);
+    setDus(0);
+    setBeruntun(0);
+    setSisaWaktu(BATAS_WAKTU_DETIK);
+    setFase("siap");
+  };
+
   const sedangMain = fase === "main";
 
   return (
@@ -169,7 +188,7 @@ export function MerdekaGame() {
           </div>
           <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/15">
             <div
-              className="h-full bg-white transition-[width] duration-100 ease-linear"
+              className="h-full bg-[#F2B33D] transition-[width] duration-100 ease-linear"
               style={{
                 width: `${Math.max(0, (sisaWaktu / BATAS_WAKTU_DETIK) * 100)}%`,
               }}
@@ -190,7 +209,7 @@ export function MerdekaGame() {
         />
 
         {beruntun >= 2 && sedangMain && (
-          <div className="absolute left-1/2 top-3 -translate-x-1/2 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-black">
+          <div className="absolute left-1/2 top-3 -translate-x-1/2 rounded-full bg-[#F2B33D] px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[#0D1430]">
             Pas x{beruntun}
           </div>
         )}
@@ -208,7 +227,7 @@ export function MerdekaGame() {
             </Teks>
             <Link
               href="/login"
-              className="mt-5 inline-flex items-center justify-center bg-white px-7 py-3 font-display text-sm uppercase tracking-widest text-black transition hover:bg-white/90 active:scale-95"
+              className="mt-5 inline-flex items-center justify-center bg-[#F2B33D] px-7 py-3 font-display text-sm uppercase tracking-widest text-[#0D1430] transition hover:brightness-110 active:scale-95"
             >
               Login / Daftar
             </Link>
@@ -241,6 +260,14 @@ export function MerdekaGame() {
 
         {fase === "siap" && (
           <Lapisan>
+            {/* Penanda kecil supaya penguji sadar dia sedang di jalur yang
+                dilonggarkan, dan tidak salah menyimpulkan gerbang jadwal atau
+                jatah harian sudah terbuka untuk semua orang. */}
+            {status?.penguji && (
+              <div className="mb-2 rounded-full bg-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white/80">
+                Mode penguji &middot; bebas jadwal &amp; jatah
+              </div>
+            )}
             <Judul>READY TO CLIMB?</Judul>
             <Teks>
               Sneaker box akan bergerak ke kanan dan kiri. Tap di waktu yang
@@ -249,7 +276,7 @@ export function MerdekaGame() {
             <button
               type="button"
               onClick={mulaiRonde}
-              className="mt-5 inline-flex items-center justify-center bg-white px-8 py-3.5 font-display text-sm uppercase tracking-widest text-black transition hover:bg-white/90 active:scale-95"
+              className="mt-5 inline-flex items-center justify-center bg-[#F2B33D] px-8 py-3.5 font-display text-sm uppercase tracking-widest text-[#0D1430] transition hover:brightness-110 active:scale-95"
             >
               Start the Climb
             </button>
@@ -270,8 +297,11 @@ export function MerdekaGame() {
               terbuka.
             </Teks>
             <Teks kecil>
-              Jatah main hari ini sudah terpakai. Coba lagi besok ya.
+              {status?.penguji
+                ? "Mode penguji: jatah harian tidak berlaku."
+                : "Jatah main hari ini sudah terpakai. Coba lagi besok ya."}
             </Teks>
+            {status?.penguji && <TombolMainLagi onKlik={mainLagi} />}
             {galat && <p className="mt-3 text-xs text-red-300">{galat}</p>}
           </Lapisan>
         )}
@@ -292,6 +322,9 @@ export function MerdekaGame() {
               />
             </div>
             {fase === "hadiah" && hasil && <KartuHadiah hasil={hasil} />}
+            {fase === "hadiah" && status?.penguji && (
+              <TombolMainLagi onKlik={mainLagi} />
+            )}
           </Lapisan>
         )}
       </div>
@@ -316,6 +349,18 @@ function Lapisan({
     >
       {children}
     </div>
+  );
+}
+
+function TombolMainLagi({ onKlik }: { onKlik: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onKlik}
+      className="mt-4 inline-flex items-center justify-center border border-white/30 bg-white/10 px-6 py-2.5 font-display text-xs uppercase tracking-widest text-white transition hover:bg-white hover:text-black active:scale-95"
+    >
+      Main lagi (penguji)
+    </button>
   );
 }
 
@@ -354,23 +399,23 @@ function Teks({
 function KartuHadiah({ hasil }: { hasil: HasilRonde }) {
   if (hasil.outcome === "points") {
     return (
-      <div className="w-full max-w-[320px] rounded-2xl bg-white p-5 text-center text-black">
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/50">
+      <div className="w-full max-w-[320px] rounded-2xl border border-[#2A3468] bg-[#141C3E] p-5 text-center text-[#F3F0FF]">
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#98A2CE]">
           Kamu dapat
         </div>
         <div className="mt-1 font-display text-3xl font-black">
           {hasil.pointsAwarded.toLocaleString("id-ID")}
         </div>
-        <div className="text-xs font-bold uppercase tracking-widest text-black/60">
+        <div className="text-xs font-bold uppercase tracking-widest text-[#C7CCEA]">
           Flash Points
         </div>
-        <p className="mt-3 text-xs leading-relaxed text-black/60">
+        <p className="mt-3 text-xs leading-relaxed text-[#C7CCEA]">
           Poinnya sudah masuk ke saldo kamu dan langsung bisa dipakai di
           checkout.
         </p>
         <Link
           href="/products"
-          className="mt-4 inline-flex w-full items-center justify-center bg-black px-6 py-3 font-display text-xs uppercase tracking-widest text-white transition active:scale-95"
+          className="mt-4 inline-flex w-full items-center justify-center bg-[#F2B33D] px-6 py-3 font-display text-xs uppercase tracking-widest text-[#0D1430] transition hover:brightness-110 active:scale-95"
         >
           Belanja Sekarang
         </Link>
@@ -380,32 +425,32 @@ function KartuHadiah({ hasil }: { hasil: HasilRonde }) {
 
   if (hasil.outcome === "apparel_won") {
     return (
-      <div className="w-full max-w-[320px] rounded-2xl bg-white p-5 text-center text-black">
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/50">
+      <div className="w-full max-w-[320px] rounded-2xl border border-[#2A3468] bg-[#141C3E] p-5 text-center text-[#F3F0FF]">
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#98A2CE]">
           Selamat, kamu menang
         </div>
         <div className="mt-1 font-display text-lg font-black leading-tight">
           {hasil.prizeLabel}
         </div>
 
-        <div className="mt-4 rounded-xl bg-black/5 p-3 text-left">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-black/50">
+        <div className="mt-4 rounded-xl bg-[#0D1430] p-3 text-left">
+          <div className="text-[10px] font-bold uppercase tracking-widest text-[#98A2CE]">
             Langkah berikutnya
           </div>
-          <ol className="mt-1.5 space-y-1 text-xs leading-relaxed text-black/70">
+          <ol className="mt-1.5 space-y-1 text-xs leading-relaxed text-[#C7CCEA]">
             <li>1. Cek email kamu, kami baru saja mengirim tautan verifikasi.</li>
             <li>2. Klik tautan itu untuk memverifikasi email.</li>
             <li>3. Kamu langsung dapat link WhatsApp buat klaim hadiahnya.</li>
           </ol>
         </div>
 
-        <div className="mt-3 text-[10px] font-bold uppercase tracking-widest text-black/50">
+        <div className="mt-3 text-[10px] font-bold uppercase tracking-widest text-[#98A2CE]">
           Kode klaim
         </div>
         <div className="font-mono text-base font-bold tracking-wider">
           {hasil.claimCode}
         </div>
-        <p className="mt-2 text-[11px] leading-relaxed text-black/50">
+        <p className="mt-2 text-[11px] leading-relaxed text-[#98A2CE]">
           Tautan verifikasinya berlaku 48 jam. Simpan kode ini kalau-kalau kamu
           butuh menyebutkannya ke CS.
         </p>
@@ -415,20 +460,20 @@ function KartuHadiah({ hasil }: { hasil: HasilRonde }) {
 
   if (hasil.outcome === "already_won") {
     return (
-      <div className="w-full max-w-[320px] rounded-2xl bg-white p-5 text-center text-black">
-        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-black/50">
+      <div className="w-full max-w-[320px] rounded-2xl border border-[#2A3468] bg-[#141C3E] p-5 text-center text-[#F3F0FF]">
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#98A2CE]">
           Nyaris!
         </div>
         <div className="mt-1 font-display text-lg font-black leading-tight">
           {hasil.prizeLabel}
         </div>
-        <p className="mt-3 text-xs leading-relaxed text-black/60">
+        <p className="mt-3 text-xs leading-relaxed text-[#C7CCEA]">
           Rodanya berhenti di sini, tapi hadiah ini sudah dimenangkan pemain
           lain. Masih ada hadiah lain yang menunggu - balik lagi besok ya.
         </p>
         <Link
           href="/freedom-in-every-step"
-          className="mt-4 inline-flex w-full items-center justify-center bg-black px-6 py-3 font-display text-xs uppercase tracking-widest text-white transition active:scale-95"
+          className="mt-4 inline-flex w-full items-center justify-center bg-[#F2B33D] px-6 py-3 font-display text-xs uppercase tracking-widest text-[#0D1430] transition hover:brightness-110 active:scale-95"
         >
           Lihat Promo Merdeka
         </Link>

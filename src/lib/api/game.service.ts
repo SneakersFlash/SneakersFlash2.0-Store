@@ -28,6 +28,8 @@ export type HasilRonde =
 
 export interface StatusGame {
   open: boolean;
+  /** Akun penguji: bebas jadwal campaign dan bebas jatah harian. */
+  penguji?: boolean;
   startAt: string;
   endAt: string;
   target: number;
