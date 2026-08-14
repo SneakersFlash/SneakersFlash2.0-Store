@@ -24,7 +24,7 @@ interface Props {
 }
 
 /**
- * Roda hadiah, digambar dari SPINWHEEL.png.
+ * Roda hadiah, digambar dari aset roda (lihat RODA_SRC).
  *
  * Jarumnya ikut tergambar di dalam PNG yang sama, jadi gambarnya tidak bisa
  * sekadar diputar pakai CSS transform - jarumnya akan ikut berputar dan tidak

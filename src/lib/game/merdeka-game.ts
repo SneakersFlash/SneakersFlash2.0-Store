@@ -27,9 +27,20 @@ export const LEBAR_AWAL = 150;
 export const TOLERANSI_PAS = 6;
 export const BONUS_PAS = 6;
 
-// -- Latar (public/images/BGjpg, 1260 x 7750) --------------------------------
+// -- Latar (1260 x 7750) -----------------------------------------------------
 
-export const BG_SRC = "/images/BGjpg";
+/**
+ * Turunan siap-web dari aset asli `public/images/BGjpg`.
+ *
+ * Dua alasan tidak memakai berkas aslinya langsung:
+ * 1. Nama aslinya tidak berekstensi, jadi Next menyajikannya sebagai
+ *    application/octet-stream. Browser memang masih mau menampilkannya di
+ *    <img>, tapi bergantung pada penebakan tipe itu tidak perlu.
+ * 2. Aslinya 1 MB untuk gambar yang paling lebar pun cuma tampil ~1050 px.
+ *    Versi ini 85 KB dengan piksel yang sama.
+ * Aset aslinya tetap disimpan di repo sebagai sumber.
+ */
+export const BG_SRC = "/images/merdeka-bg.jpg";
 export const BG_W_ASLI = 1260;
 export const BG_H_ASLI = 7750;
 
@@ -58,9 +69,19 @@ export const GARIS_TANAH = PAPAN_H - BG_H_TAMPIL * (1 - BG_RASIO_TANAH);
  */
 export const KAMERA_MAKS = (TARGET_DUS - 1) * TINGGI_DUS;
 
-// -- Roda hadiah (public/images/SPINWHEEL.png, 6750 x 6750) ------------------
+// -- Roda hadiah -------------------------------------------------------------
 
-export const RODA_SRC = "/images/SPINWHEEL.png";
+/**
+ * Turunan 1500 px dari aset asli `public/images/SPINWHEEL.png` (6750 x 6750).
+ *
+ * Rodanya tampil 300 px logis, jadi 750 px sudah cukup bahkan di layar DPR 2,5;
+ * 1500 px memberi ruang lega. Yang aslinya 5,6 MB - berat sekali untuk pemain
+ * yang bermain dari ponsel. Versi ini 228 KB.
+ *
+ * Angka-angka geometri di bawah diukur ulang pada berkas turunan ini dan cocok
+ * dengan aslinya sampai di bawah satu piksel pada ukuran tampil.
+ */
+export const RODA_SRC = "/images/merdeka-wheel.png";
 
 /**
  * Letak piringan dan jarum di dalam gambar, sebagai pecahan dari sisi gambar.
