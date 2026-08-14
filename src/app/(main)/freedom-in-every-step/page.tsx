@@ -7,7 +7,11 @@ import { ProductScrollCard } from "@/components/product/ProductScrollCard";
 import VoucherClaimSection from "@/components/home/VoucherClaimSection";
 import { FreedomHero } from "@/components/campaign/FreedomHero";
 import { Campaign88Grid } from "@/components/campaign/Campaign88Grid";
-import { SKU_PAIRS, SKU_FLASH_HOUR } from "@/lib/campaign/freedom-in-every-step";
+import {
+  SKU_PAIRS,
+  SKU_FLASH_HOUR,
+  FREEDOM_LIMIT_GRID,
+} from "@/lib/campaign/freedom-in-every-step";
 
 export const metadata: Metadata = {
   title: "Freedom in Every Step — SneakersFlash",
@@ -20,23 +24,28 @@ export const revalidate = 60;
 /**
  * Halaman campaign "Freedom in Every Step".
  *
- * Struktur & komponennya sengaja mengikuti halaman 8.8 supaya bentuknya bisa
- * dilihat dulu; kurasi produk masih meminjam daftar 8.8 (lihat
- * lib/campaign/freedom-in-every-step.ts). Grid-nya juga masih memakai
+ * Struktur & komponennya sengaja mengikuti halaman 8.8; grid-nya pun memakai
  * Campaign88Grid — komponen itu netral, tidak ada tulisan 8.8 di dalamnya.
+ * Kurasi produknya sudah final dan datang dari tab campaign di sheet Freedom
+ * (lihat lib/campaign/freedom-in-every-step.ts).
  */
 export default async function FreedomCampaignPage() {
   const [hasilPairs, hasilFlash] = await Promise.all([
     productsService
-      .getProducts({ skus: SKU_PAIRS, limit: SKU_PAIRS.length, page: 1 })
+      .getProducts({ skus: SKU_PAIRS, limit: FREEDOM_LIMIT_GRID, page: 1 })
       .catch(() => ({ data: [] as any[] })),
-    productsService
-      .getProducts({
-        skus: SKU_FLASH_HOUR,
-        limit: SKU_FLASH_HOUR.length,
-        page: 1,
-      })
-      .catch(() => ({ data: [] as any[] })),
+    // Daftar Flash Hour boleh kosong. Kalau kosong, request-nya dilewati: limit 0
+    // ditolak backend (@Min(1)) sehingga fetch-nya cuma jadi 400 yang tertelan
+    // .catch() dan terulang tiap revalidasi.
+    SKU_FLASH_HOUR.length > 0
+      ? productsService
+          .getProducts({
+            skus: SKU_FLASH_HOUR,
+            limit: SKU_FLASH_HOUR.length,
+            page: 1,
+          })
+          .catch(() => ({ data: [] as any[] }))
+      : Promise.resolve({ data: [] as any[] }),
   ]);
 
   // Produk habis stok tidak ditampilkan — percuma makan slot highlight karena
