@@ -103,8 +103,8 @@ export default async function FreedomCampaignPage() {
             }
           >
             <VoucherClaimSection
-              title="Endless Voucher Up To 300k Off"
-              subtitle="Klaim voucher sebelum belanja, lalu gunakan kodenya saat checkout. Satu kode berlaku untuk satu akun dengan kuota terbatas setiap hari."
+              title="GET 81K FLASH POINT"
+              subtitle="Daftar akun Sneakers Flash pada 13-17 Agustus 2026 dan dapatkan 81K Flash Point. Bisa digunakan untuk seluruh produk, tanpa minimum pembelian, dan tanpa masa kedaluwarsa."
             />
           </Suspense>
         </section>

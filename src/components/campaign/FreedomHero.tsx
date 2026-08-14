@@ -28,9 +28,9 @@ const KEUNGGULAN = [
 /** `bendera: true` → item ini diikuti ikon merah putih di strip. */
 const STRIP: { teks: string; bendera?: boolean }[] = [
   { teks: "Freedom in Every Step", bendera: true },
-  { teks: "Diskon 17%" },
-  { teks: "Merdeka Buat Melangkah" },
-  { teks: "Gratis Ongkir" },
+  { teks: "81K Flash Point" },
+  { teks: "Voucher 17% Tanpa Maksimum Potongan" },
+  { teks: "Gratis Ongkir Seluruh Indonesia" },
   { teks: "100% Original" },
 ];
 
@@ -124,9 +124,9 @@ export function FreedomHero() {
                 </h1>
 
                 <p className="teks-ringan text-base md:text-lg text-white/80 max-w-md leading-relaxed">
-                  Merdeka Buat Pilih Langkahmu
+                  Merdeka Pilih Langkahmu
                   <br />
-                  13 – 17 Agustus
+                  13 – 17 Agustus 2026
                 </p>
 
                 <div className="flex flex-wrap gap-2.5 pt-1">
@@ -134,13 +134,13 @@ export function FreedomHero() {
                     href="#voucher-freedom"
                     className="inline-flex items-center justify-center bg-white text-black px-6 py-3 font-display uppercase tracking-widest text-sm transition-all duration-200 active:scale-95 hover:bg-gray-100"
                   >
-                    CLAIM 300K OFF
+                    CLAIM 81K FLASH POINT
                   </Link>
                   <Link
                     href="#pilihan-freedom"
                     className="inline-flex items-center justify-center bg-white/10 backdrop-blur-md border border-white/20 text-white px-6 py-3 font-display uppercase tracking-widest text-sm transition-all duration-200 active:scale-95 hover:bg-white hover:text-black"
                   >
-                    FREEDOM PICKS
+                    SHOP FREEDOM PICKS
                   </Link>
                 </div>
               </div>
