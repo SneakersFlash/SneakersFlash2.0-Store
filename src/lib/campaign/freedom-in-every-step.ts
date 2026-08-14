@@ -20,11 +20,28 @@
  */
 
 /** WIB = UTC+7, ditulis eksplisit supaya tidak ikut zona waktu server. */
-export const FREEDOM_MULAI = "2026-08-13T00:00:00+07:00";
+export const FREEDOM_MULAI = "2026-08-12T00:00:00+07:00";
 export const FREEDOM_BERAKHIR = "2026-08-17T23:59:59+07:00";
+
+/**
+ * Jam belanja dibuka — BEDA dari jam campaign mulai.
+ *
+ * Campaign tayang 12 Agt supaya orang bisa lihat-lihat dan menyusun keranjang
+ * lebih dulu, tapi pesanan baru boleh diselesaikan 15 Agt. Angka ini harus sama
+ * dengan `events.checkout_opens_at` event id 9 di backend: yang menolak checkout
+ * adalah backend, yang di sini cuma menghitung mundur dan menahan tombol supaya
+ * pembeli tidak menabrak penolakan itu.
+ */
+export const FREEDOM_BELANJA_BUKA = "2026-08-15T00:00:00+07:00";
 
 export const FREEDOM_HREF = "/freedom-in-every-step";
 export const FREEDOM_NAMA = "Freedom in Every Step";
+
+/**
+ * Nama pendek untuk tempat sempit: menu navbar dan tombol mengambang.
+ * "Freedom in Every Step" terlalu panjang untuk dua tempat itu.
+ */
+export const FREEDOM_LABEL_PENDEK = "Freedom Step";
 
 /** Slug event backend yang memuat kurasi yang sama beserta harga promonya. */
 export const FREEDOM_EVENT_SLUG = "freedom-in-every-step";

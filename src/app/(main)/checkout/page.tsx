@@ -31,6 +31,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { cartService } from "@/lib/api/cart.service";
 import PageLoader from "@/components/common/PageLoader";
 import { pixel } from "@/lib/utils/fbPixel";
+import { CountdownTimer } from "@/components/home/CountdownTimer";
+import { FREEDOM_BELANJA_BUKA } from "@/lib/campaign/freedom-in-every-step";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -402,6 +404,19 @@ function CheckoutContent(){
   const[pointsEarnRate,setPointsEarnRate]=useState(0.01);
   useEffect(()=>{if(profile?.pointsBalance!==undefined)setPointsBalance(toNumber(profile.pointsBalance));},[profile]);
   const hasEventItem=checkoutItems.some(i=>i.isEventPrice);
+  // Gerbang jam belanja campaign. Backend yang benar-benar menolak (lihat
+  // EVENT_CHECKOUT_NOT_OPEN di orders.service); di sini cuma menahan tombol dan
+  // menghitung mundur supaya pembeli tidak menabrak penolakan itu. Dihitung
+  // sesudah mount agar jam pembeli, bukan jam render, yang menentukan.
+  const[belanjaEventBuka,setBelanjaEventBuka]=useState(true);
+  useEffect(()=>{
+    const bukaPada=Date.parse(FREEDOM_BELANJA_BUKA);
+    const cek=()=>setBelanjaEventBuka(Date.now()>=bukaPada);
+    cek();
+    const timer=setInterval(cek,1000);
+    return()=>clearInterval(timer);
+  },[]);
+  const tertahanEvent=hasEventItem&&!belanjaEventBuka;
   const hasNRItem=checkoutItems.some(i=>i.variantSku?.includes("/"));
   const[appliedVoucher,setAppliedVoucher]=useState<AppliedVoucher|null>(null);
 
@@ -517,7 +532,7 @@ function CheckoutContent(){
 
   const regularOptions=shippingOptions.filter(o=>!isInstantCourier(o));
   const instantOptions=shippingOptions.filter(o=>isInstantCourier(o));
-  const canPay=!!(selectedPayment&&selectedCourier&&selectedAddress&&!isCalcShipping);
+  const canPay=!!(selectedPayment&&selectedCourier&&selectedAddress&&!isCalcShipping&&!tertahanEvent);
   const allOpts=PAYMENT_METHODS.flatMap(g=>g.options);
 
   
@@ -607,7 +622,7 @@ function CheckoutContent(){
 
         {/* 4. VOUCHER + POINTS + PAYMENT */}
         <section className="bg-white lg:rounded-xl lg:border lg:border-gray-200 overflow-hidden divide-y divide-gray-100">
-          <VoucherSelector subtotal={subtotal} appliedVoucher={appliedVoucher} disabled={hasEventItem}
+          <VoucherSelector subtotal={subtotal} appliedVoucher={appliedVoucher} hanyaCakupanEvent={hasEventItem}
             onApply={v=>{setAppliedVoucher(v);cartService.saveAppliedVoucher(v);}}
             onRemove={()=>{setAppliedVoucher(null);cartService.saveAppliedVoucher(null);}}/>
 
@@ -677,6 +692,25 @@ function CheckoutContent(){
       <AddressSheet isOpen={isAddressSheetOpen} onClose={()=>setIsAddressSheetOpen(false)} addresses={savedAddresses} selectedId={selectedAddress?.id??null}
         onSelect={addr=>{setSelectedAddress(addr);setSelectedCourier(null);setShippingOptions([]);}} onAddNew={()=>{setIsAddressSheetOpen(false);setIsAddressFormOpen(true);}} distanceMap={distanceMap}/>
       <AddressFormModal isOpen={isAddressFormOpen} onClose={()=>setIsAddressFormOpen(false)} onSaved={()=>queryClient.invalidateQueries({queryKey:["myAddresses"]})}/>
+      {/* Pemberitahuan jam belanja campaign. Duduk tepat di atas bilah total
+          supaya alasan tombol bayarnya mati terbaca tanpa perlu digulir. */}
+      {tertahanEvent&&(
+        <div className="fixed bottom-[92px] left-0 right-0 z-40 px-4">
+          <div className="mx-auto max-w-2xl rounded-xl bg-[#9E0107] text-white px-4 py-3 shadow-lg">
+            <p className="text-[12px] font-bold uppercase tracking-wide">
+              Belanja Freedom in Every Step belum dibuka
+            </p>
+            <p className="text-[11px] text-white/85 mt-0.5">
+              Pesanan bisa diselesaikan mulai 15 Agustus 00:00 WIB. Keranjangmu
+              tersimpan — tinggal kembali ke sini nanti.
+            </p>
+            <div className="mt-2">
+              <CountdownTimer targetDate={FREEDOM_BELANJA_BUKA}/>
+            </div>
+          </div>
+        </div>
+      )}
+
       <SummaryBar isOpen={isSummaryOpen} onToggle={()=>setIsSummaryOpen(!isSummaryOpen)}
         subtotal={subtotal} shippingSubsidy={shippingSubsidy} shippingCost={realShippingCost}
         voucherDiscount={voucherDiscount} pointsDiscount={pointsDiscount}

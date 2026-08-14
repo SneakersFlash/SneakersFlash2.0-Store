@@ -9,6 +9,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect } from "react";
 import WelcomeVoucherPopup from "@/components/voucher/WelcomeVoucherPopup";
 import WelcomePointsPopup from "@/components/voucher/WelcomePointsPopup";
+import { FreedomFloatingButton } from "@/components/campaign/FreedomFloatingButton";
 
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -79,6 +80,10 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
         onClose={clearWelcomePoints}
       />
 
+      {/* Pintasan ke campaign Kemerdekaan. Menyembunyikan dirinya sendiri di
+          halaman campaign & checkout, dan berhenti tampil begitu campaign
+          lewat — tidak perlu dicabut manual dari sini. */}
+      <FreedomFloatingButton />
     </>
   );
 }

@@ -1,10 +1,15 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import { CountdownTimer } from "./CountdownTimer";
 import { useAutoScroll } from "@/lib/hooks/useAutoScroll";
+import {
+  FREEDOM_EVENT_SLUG,
+  FREEDOM_HREF,
+} from "@/lib/campaign/freedom-in-every-step";
 
 interface EventCampaignSectionProps {
   campaigns: any[];
@@ -42,6 +47,29 @@ function EventCampaignCard({ campaign }: { campaign: any }) {
     enabled: (campaign.products?.length ?? 0) > 0,
   });
 
+  // Campaign yang punya halaman landing sendiri diarahkan ke sana, bukan ke
+  // halaman event generik.
+  const href =
+    campaign.slug === FREEDOM_EVENT_SLUG
+      ? FREEDOM_HREF
+      : `/events/${campaign.slug}`;
+
+  // Event bisa tayang lebih dulu daripada boleh dibeli. Nilai awalnya diambil
+  // dari backend (isCheckoutOpen) supaya render server dan klien sama; sesudah
+  // mount jam pembeli yang menentukan, jadi labelnya berganti sendiri saat jam
+  // buka lewat tanpa perlu halaman ini di-render ulang.
+  const [bukaLewat, setBukaLewat] = useState(false);
+  useEffect(() => {
+    if (!campaign.checkoutOpensAt) return;
+    const target = Date.parse(campaign.checkoutOpensAt);
+    const cek = () => setBukaLewat(Date.now() >= target);
+    cek();
+    const timer = setInterval(cek, 1000);
+    return () => clearInterval(timer);
+  }, [campaign.checkoutOpensAt]);
+
+  const menungguBelanja = campaign.isCheckoutOpen === false && !bukaLewat;
+
   return (
     <section
       // 1. Hapus class 'group' dari section ini agar tidak mengganggu hover produk
@@ -69,7 +97,7 @@ function EventCampaignCard({ campaign }: { campaign: any }) {
               Special Event
             </span>
 
-            <Link href={`/events/${campaign.slug}`}>
+            <Link href={href}>
               <h2 className="font-display font-black text-2xl md:text-3xl lg:text-4xl text-white tracking-tight drop-shadow-md hover:text-gray-200 transition-colors">
                 {campaign.title}
               </h2>
@@ -80,14 +108,20 @@ function EventCampaignCard({ campaign }: { campaign: any }) {
             {campaign.isTimer && campaign.countDownEnd && (
               <div className="flex flex-col items-start md:items-end">
                 <span className="text-[10px] text-white/80 font-medium uppercase tracking-wider mb-1 hidden md:block">
-                  Berakhir Dalam:
+                  {menungguBelanja ? "Belanja Dibuka Dalam:" : "Berakhir Dalam:"}
                 </span>
-                <CountdownTimer targetDate={campaign.countDownEnd} />
+                <CountdownTimer
+                  targetDate={
+                    menungguBelanja
+                      ? campaign.checkoutOpensAt
+                      : campaign.countDownEnd
+                  }
+                />
               </div>
             )}
 
             <Link
-              href={`/events/${campaign.slug}`}
+              href={href}
               // Tambahkan shrink-0 dan ml-auto di bawah ini
               className="flex items-center justify-center shrink-0 ml-auto w-10 h-10 md:w-11 md:h-11 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white hover:bg-white hover:text-black transition-all duration-300"
             >

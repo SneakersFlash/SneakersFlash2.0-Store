@@ -14,9 +14,19 @@ interface VoucherSelectorProps {
   onApply: (voucher: AppliedVoucher) => void;
   onRemove: () => void;
   disabled?: boolean;
+  /**
+   * Keranjang berisi produk event: yang boleh dipakai HANYA voucher yang
+   * cakupannya event (punya appliesToEventId), bukan voucher umum.
+   *
+   * Sebelumnya keranjang berisi produk event membuat voucher dimatikan total —
+   * itu menutup voucher campaign sendiri, yang justru dibuat khusus untuk
+   * barang event. Voucher umum tetap ditahan supaya tidak menumpuk di atas
+   * harga event; penolakan sesungguhnya tetap di backend.
+   */
+  hanyaCakupanEvent?: boolean;
 }
 
-export default function VoucherSelector({ subtotal, appliedVoucher, onApply, onRemove, disabled }: VoucherSelectorProps) {
+export default function VoucherSelector({ subtotal, appliedVoucher, onApply, onRemove, disabled, hanyaCakupanEvent }: VoucherSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [vouchers, setVouchers] = useState<any[]>([]); // Menggunakan any[] sementara untuk menampung properti tambahan
   const [isLoadingList, setIsLoadingList] = useState(false);
@@ -29,11 +39,24 @@ export default function VoucherSelector({ subtotal, appliedVoucher, onApply, onR
     if (isOpen && vouchers.length === 0) {
       setIsLoadingList(true);
       vouchersService.getMyWallet()
-        .then((data) => setVouchers(data))
+        .then((data) => {
+          // Saring menurut isi keranjang: voucher ber-cakupan event hanya
+          // muncul kalau keranjangnya memang berisi produk event, dan
+          // sebaliknya. Yang tidak cocok bukan cuma tidak berguna — kalau
+          // ditekan, backend menolaknya dan pembeli cuma dapat pesan error.
+          const daftar = Array.isArray(data) ? data : [];
+          setVouchers(
+            daftar.filter((v: any) =>
+              hanyaCakupanEvent
+                ? v.appliesToEventId != null
+                : v.appliesToEventId == null,
+            ),
+          );
+        })
         .catch((err) => console.error("Gagal memuat voucher:", err))
         .finally(() => setIsLoadingList(false));
     }
-  }, [isOpen, vouchers.length]);
+  }, [isOpen, vouchers.length, hanyaCakupanEvent]);
 
   const handleApplyCode = async (codeToApply: string) => {
     if (!codeToApply.trim()) return;

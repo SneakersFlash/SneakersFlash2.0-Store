@@ -17,6 +17,11 @@ import { MobileMenu } from "./MobileMenu";
 import { CartSidebar } from "../cart/CartSidebar";
 import { WishlistSidebar } from "../wishlist/WishlistSidebar";
 import CampaignsService from "@/lib/api/campaigns.service";
+import {
+  FREEDOM_EVENT_SLUG,
+  FREEDOM_HREF,
+  FREEDOM_LABEL_PENDEK,
+} from "@/lib/campaign/freedom-in-every-step";
 
 // ─── Nav data ─────────────────────────────────────────────────────────────────
 
@@ -363,14 +368,25 @@ function NavbarInner() {
         const events = await CampaignsService.getEvent();
         if (!events || events.length === 0) return;
 
-        // All active campaigns → Sale dropdown
+        // All active campaigns → Sale dropdown.
+        //
+        // Campaign yang punya halaman landing sendiri diarahkan ke sana, bukan
+        // ke halaman event generik: landing-nya yang digarap (hero, voucher,
+        // saringan merek) sedangkan /events/<slug> cuma daftar polos. Namanya
+        // ikut dipendekkan supaya muat di menu.
         setCampaignItems(
-          events.map((e: any) => ({
-            label: e.name ?? e.title ?? "Campaign",
-            href: e.slug
-              ? `/events/${e.slug}`
-              : `/products?sale=true&event=${e.id}`,
-          })),
+          events.map((e: any) => {
+            const slug = e.slug as string | undefined;
+            if (slug === FREEDOM_EVENT_SLUG) {
+              return { label: FREEDOM_LABEL_PENDEK, href: FREEDOM_HREF };
+            }
+            return {
+              label: e.name ?? e.title ?? "Campaign",
+              href: slug
+                ? `/events/${slug}`
+                : `/products?sale=true&event=${e.id}`,
+            };
+          }),
         );
       } catch {
         // silently fall back — campaignItems tetap array kosong

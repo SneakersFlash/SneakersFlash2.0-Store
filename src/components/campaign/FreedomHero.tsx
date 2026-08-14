@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { CountdownTimer } from "@/components/home/CountdownTimer";
@@ -7,6 +8,7 @@ import { useFaseCampaign } from "./useFaseCampaign";
 import {
   FREEDOM_MULAI,
   FREEDOM_BERAKHIR,
+  FREEDOM_BELANJA_BUKA,
 } from "@/lib/campaign/freedom-in-every-step";
 
 /**
@@ -57,6 +59,23 @@ export function FreedomHero() {
     FREEDOM_MULAI,
     FREEDOM_BERAKHIR,
   );
+
+  // Campaign sudah tayang tapi belanjanya belum dibuka: yang dihitung mundur
+  // adalah jam buka belanja, bukan jam berakhirnya campaign. Dihitung sesudah
+  // mount (null dulu) dengan alasan yang sama seperti useFaseCampaign — halaman
+  // ini di-prerender, jadi jam server tidak boleh menentukan label.
+  const [belanjaSudahBuka, setBelanjaSudahBuka] = useState<boolean | null>(null);
+  useEffect(() => {
+    const bukaPada = Date.parse(FREEDOM_BELANJA_BUKA);
+    const cek = () => setBelanjaSudahBuka(Date.now() >= bukaPada);
+    cek();
+    const timer = setInterval(cek, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const menungguBelanja = fase === "berjalan" && belanjaSudahBuka === false;
+  const labelTampil = menungguBelanja ? "Belanja Dibuka Dalam:" : label;
+  const targetTampil = menungguBelanja ? FREEDOM_BELANJA_BUKA : target;
 
   return (
     <>
@@ -131,10 +150,10 @@ export function FreedomHero() {
                   ditentukan sesudah mount. */}
               <div className="flex flex-col items-start lg:items-end gap-2 min-h-[68px] md:min-h-[76px]">
                 <span className="text-[10px] text-white/80 font-medium uppercase tracking-wider">
-                  {label}
+                  {labelTampil}
                 </span>
                 {fase !== null && fase !== "selesai" && (
-                  <CountdownTimer targetDate={target} />
+                  <CountdownTimer targetDate={targetTampil} />
                 )}
               </div>
             </div>
