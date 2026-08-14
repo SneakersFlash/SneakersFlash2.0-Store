@@ -11,6 +11,7 @@ import {
   SKU_PAIRS,
   SKU_FLASH_HOUR,
   FREEDOM_LIMIT_GRID,
+  FREEDOM_SEMUA_PRODUK_HREF,
 } from "@/lib/campaign/freedom-in-every-step";
 
 export const metadata: Metadata = {
@@ -113,7 +114,9 @@ export default async function FreedomCampaignPage() {
           <SectionHeading
             title="Pairs Worth Checking Out"
             subtitle="Pilihan sneakers yang sayang banget kalau dilewatin di Freedom in Every Step."
-            viewAllHref="/products"
+            // Katalog penuh campaign ada di halaman event-nya, bukan di /products
+            // yang isinya seluruh katalog toko.
+            viewAllHref={FREEDOM_SEMUA_PRODUK_HREF}
             viewAllLabel="Semua Produk"
           />
           <Campaign88Grid products={produkPairs} />
