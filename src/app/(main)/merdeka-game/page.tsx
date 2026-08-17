@@ -93,7 +93,7 @@ export default function MerdekaGamePage() {
         <MerdekaGame />
 
         {/* -- Keterangan ---------------------------------------------------- */}
-        <section className="mx-auto grid w-full max-w-[920px] gap-3.5 [grid-template-columns:repeat(auto-fit,minmax(238px,1fr))]">
+        <section className="mx-auto w-full max-w-[560px]">
           <Kartu judul="Cara main">
             <Poin>
               Sneaker box digantung crane, bergerak <B>kiri-kanan</B> dan makin
@@ -108,49 +108,6 @@ export default function MerdekaGamePage() {
               dapat pita emas.
             </Poin>
             <Poin>Meleset total, menaranya runtuh dan rondenya selesai.</Poin>
-          </Kartu>
-
-          <Kartu judul="Box yang dipakai">
-            <div className="flex flex-col gap-1.5">
-              <Merek warna="#F4692A">Nike</Merek>
-              <Merek warna="#16305E">adidas</Merek>
-              <Merek warna="#EFF2F7" tepi="#1B4CA1">
-                ASICS
-              </Merek>
-              <Merek warna="#C9CDD4">New Balance</Merek>
-              <Merek warna="#14161A">Salomon</Merek>
-            </div>
-            <p className="m-0 text-[13px] text-[#6E78A8]">
-              Warna dan tata letak boxnya digambar ulang di canvas, urutannya
-              berputar tiap tingkat.
-            </p>
-          </Kartu>
-
-          <Kartu judul="Parameter">
-            <Baris k="Target box" v="17" />
-            <Baris k="Batas waktu" v="45 detik" />
-            <Baris k="Lebar box awal" v="150 px" />
-            <Baris k="Toleransi pas" v="6 px" />
-            <Baris k="Bonus lebar saat pas" v="+6 px" />
-            <Baris k="Kesempatan / akun" v="1x per hari" />
-          </Kartu>
-
-          <Kartu judul="Isi roda">
-            <Poin>
-              Sembilan juring: <B>Flash Points</B>, apparel, dan sneaker.
-            </Poin>
-            <Poin>
-              Pemenang ditentukan di <B>server</B>; animasi roda hanya mengikuti
-              hasilnya.
-            </Poin>
-            <Poin>
-              Hadiah barang stoknya <B>satu</B> - begitu diklaim, juringnya
-              memberi tahu kalau sudah dimenangkan orang lain.
-            </Poin>
-            <Poin>
-              Klaim apparel lewat <B>verifikasi email</B> dulu, baru dapat link
-              WhatsApp ke CS.
-            </Poin>
           </Kartu>
         </section>
 
@@ -200,35 +157,3 @@ function B({ children }: { children: React.ReactNode }) {
   return <b className="font-semibold text-[#F3F0FF]">{children}</b>;
 }
 
-function Baris({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex justify-between gap-2.5 border-b border-[#2A3468] py-1.5 text-sm last:border-b-0">
-      <span className="text-[#98A2CE]">{k}</span>
-      <b className="font-mono font-semibold tabular-nums text-[#F3F0FF]">{v}</b>
-    </div>
-  );
-}
-
-function Merek({
-  warna,
-  tepi,
-  children,
-}: {
-  warna: string;
-  tepi?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-center gap-2.5 text-sm text-[#F3F0FF]">
-      <i
-        className="h-[15px] w-[22px] flex-none rounded-[3px] border"
-        style={{
-          background: warna,
-          borderColor: tepi ?? "rgba(255,255,255,.28)",
-          boxShadow: "0 1px 0 rgba(0,0,0,.5)",
-        }}
-      />
-      {children}
-    </div>
-  );
-}
