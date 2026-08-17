@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from "react";
 import {
+  DERAJAT_PER_JURING,
   RODA_CX,
   RODA_CY,
   RODA_JARUM,
@@ -9,6 +10,7 @@ import {
   RODA_SRC,
   sudutUntukSlot,
 } from "@/lib/game/merdeka-game";
+import { blip } from "@/lib/game/suara";
 
 interface Props {
   /** Sisi kanvas dalam piksel logis. */
@@ -112,6 +114,7 @@ export function PrizeWheel({
     const mulai = sudutRef.current;
     const target = mulai + sudutUntukSlot(slot);
     const t0 = performance.now();
+    let tikTerakhir = 0;
 
     const langkah = (t: number) => {
       const p = Math.min(1, (t - t0) / durasiMs);
@@ -120,6 +123,15 @@ export function PrizeWheel({
       const e = 1 - Math.pow(1 - p, 4);
       sudutRef.current = mulai + (target - mulai) * e;
       gambar(sudutRef.current);
+
+      // Bunyi tik tiap batas juring lewat: nadanya turun seiring roda melambat,
+      // jadi telinga ikut menghitung mundur bareng mata. Dihentikan sedikit
+      // sebelum berhenti supaya tidak bertabrakan dengan fanfar hadiah.
+      const tik = Math.floor(sudutRef.current / DERAJAT_PER_JURING);
+      if (tik !== tikTerakhir && p < 0.97) {
+        tikTerakhir = tik;
+        blip(900 - p * 420, 0.03, "square", 0.03);
+      }
 
       if (p < 1) {
         rafRef.current = requestAnimationFrame(langkah);

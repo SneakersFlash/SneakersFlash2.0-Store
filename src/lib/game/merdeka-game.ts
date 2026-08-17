@@ -4,6 +4,10 @@
  * Kembaran berkas ini ada di backend (`src/common/constants/merdeka-game.ts`).
  * Kalau salah satu diubah, ubah keduanya - backend yang berhak menolak ronde,
  * jadi angka di sini cuma dipakai untuk menampilkan aturan dan menyetel animasi.
+ *
+ * Nilai permainannya (lebar dus, toleransi, laju, tinggi gantungan) disalin
+ * dari demo artifact yang jadi acuan, bukan dikarang ulang - demo itu yang
+ * sudah disetujui, jadi angkanya ikut apa adanya.
  */
 
 export const TARGET_DUS = 17;
@@ -27,29 +31,49 @@ export const LEBAR_AWAL = 150;
 export const TOLERANSI_PAS = 6;
 export const BONUS_PAS = 6;
 
-// -- Latar (1260 x 7750) -----------------------------------------------------
+/** Tinggi dus digantung crane di atas puncak menara sebelum dijatuhkan. */
+export const TINGGI_GANTUNGAN = 108;
+
+/** Laju geser dus: pelan di bawah, makin ngebut tiap tingkat, ada batasnya. */
+export function lajuDus(tingkat: number): number {
+  return 2.5 + Math.min(tingkat * 0.1, 1.7);
+}
 
 /**
- * Turunan siap-web dari aset asli `public/images/BGjpg`.
+ * Kamera saat menara sudah penuh.
  *
- * Dua alasan tidak memakai berkas aslinya langsung:
- * 1. Nama aslinya tidak berekstensi, jadi Next menyajikannya sebagai
- *    application/octet-stream. Browser memang masih mau menampilkannya di
- *    <img>, tapi bergantung pada penebakan tipe itu tidak perlu.
- * 2. Aslinya 1 MB untuk gambar yang paling lebar pun cuma tampil ~1050 px.
- *    Versi ini 85 KB dengan piksel yang sama.
- * Aset aslinya tetap disimpan di repo sebagai sumber.
+ * Kamera mengejar `puncak.y + TINGGI_DUS - PAPAN_H * 0.4`, jadi nilai
+ * tertingginya jatuh saat dus ke-17 mendarat. Dipakai dua kali: menahan geser
+ * kamera, dan memetakan perjalanan latar.
+ */
+export const KAMERA_MAKS =
+  TARGET_DUS * TINGGI_DUS + TINGGI_DUS - PAPAN_H * 0.4;
+
+// -- Latar -------------------------------------------------------------------
+
+/**
+ * Turunan siap-web dari aset asli `public/images/BGjpg` (1260 x 7750).
+ *
+ * Aslinya jauh lebih tinggi dari jarak yang benar-benar ditempuh kamera satu
+ * ronde, jadi latarnya melesat berkali-kali lipat lebih cepat dari menaranya.
+ * Tingginya dipotong supaya persis sepanjang pendakian: satu ronde penuh =
+ * satu gambar penuh, dan garis rumputnya menempel di dasar menara.
+ *
+ * Potongannya bukan potong-buang: adegan panjat pinang + rumput + tanah di
+ * bawah dan langit malam berbintang di atas dipertahankan 1:1, yang dimampatkan
+ * cuma pita gradasi langit kosong di antaranya - dengan laju mampat berbentuk
+ * sin^2 supaya tidak ada garis horizon palsu di sambungannya. Aset aslinya
+ * tetap disimpan di repo sebagai sumber.
  */
 export const BG_SRC = "/images/merdeka-bg.jpg";
 export const BG_W_ASLI = 1260;
-export const BG_H_ASLI = 7750;
+export const BG_H_ASLI = 2844;
 
 /**
- * Posisi garis rumput di dalam gambar, diukur dari hasil pemindaian baris:
- * warna berubah tajam dari langit ke rumput pada 96,2% tinggi gambar.
- * Dus paling bawah berdiri persis di garis ini.
+ * Posisi garis rumput di dalam gambar hasil potong, diukur dari pemetaan baris
+ * saat gambar itu dibuat. Dus paling bawah berdiri persis di garis ini.
  */
-export const BG_RASIO_TANAH = 0.962;
+export const BG_RASIO_TANAH = 0.8959;
 
 /** Tinggi gambar latar setelah dilebarkan menyamai lebar kanvas. */
 export const BG_H_TAMPIL = (PAPAN_W * BG_H_ASLI) / BG_W_ASLI;
@@ -62,12 +86,6 @@ export const BG_H_TAMPIL = (PAPAN_W * BG_H_ASLI) / BG_W_ASLI;
  * di bawah garis rumput.
  */
 export const GARIS_TANAH = PAPAN_H - BG_H_TAMPIL * (1 - BG_RASIO_TANAH);
-
-/**
- * Kamera saat dus terakhir tersusun. Dipakai memetakan perjalanan latar:
- * kamera 0 = dasar gambar (rumput), kamera maksimum = puncak gambar (langit malam).
- */
-export const KAMERA_MAKS = (TARGET_DUS - 1) * TINGGI_DUS;
 
 // -- Roda hadiah -------------------------------------------------------------
 
@@ -126,16 +144,86 @@ export function sudutUntukSlot(slot: number, putaran = 6): number {
   return putaran * 360 + (360 - kelipatan * DERAJAT_PER_JURING) + geser;
 }
 
-// -- Warna dus ---------------------------------------------------------------
+// -- Palet -------------------------------------------------------------------
 
-/** Dus sepatu bergiliran memakai warna kotak merek. */
-export const WARNA_DUS = [
-  { badan: "#F4692A", tepi: "#C7501B", tulisan: "#FFFFFF" }, // Nike
-  { badan: "#16305E", tepi: "#0D1F3F", tulisan: "#FFFFFF" }, // adidas
-  { badan: "#EFF2F7", tepi: "#1B4CA1", tulisan: "#16305E" }, // ASICS
-  { badan: "#C9CDD4", tepi: "#9AA1AC", tulisan: "#2A2F36" }, // New Balance
-  { badan: "#14161A", tepi: "#000000", tulisan: "#FFFFFF" }, // Salomon
+/** Warna poster tujuh-belasan, disalin dari demo artifact. */
+export const WARNA = {
+  merah: "#E23A3A",
+  merahTua: "#A8232B",
+  putih: "#FFF4E8",
+  emas: "#F2B33D",
+  emasTua: "#B87F16",
+  garis: "#080D22",
+  mint: "#4FD1A0",
+} as const;
+
+// -- Dus sepatu --------------------------------------------------------------
+
+export type TandaMerek = "swoosh" | "stripes" | "spiral" | "nb" | "salomon";
+
+export interface MerekDus {
+  id: string;
+  nama: string;
+  /** Warna tutup dus. */
+  tutup: string;
+  /** Badan dus, selalu lebih gelap dari tutupnya. */
+  badan: string;
+  /** Warna logo + wordmark di tutup. */
+  tinta: string;
+  tanda: TandaMerek;
+  /** Warna label ukuran di ujung kanan badan dus. */
+  label: string;
+}
+
+/**
+ * Dus sepatu digambar ulang di kanvas memakai warna kemasan ritel tiap merek.
+ * Urutannya berputar tiap tingkat, jadi menara yang tersusun terlihat seperti
+ * tumpukan dus asli, bukan balok warna-warni.
+ */
+export const MEREK_DUS: MerekDus[] = [
+  {
+    id: "nike",
+    nama: "NIKE",
+    tutup: "#F4692A",
+    badan: "#D2521A",
+    tinta: "#FFFFFF",
+    tanda: "swoosh",
+    label: "#FFF4E8",
+  },
+  {
+    id: "adi",
+    nama: "adidas",
+    tutup: "#16305E",
+    badan: "#0E2244",
+    tinta: "#FFFFFF",
+    tanda: "stripes",
+    label: "#E8ECF6",
+  },
+  {
+    id: "asics",
+    nama: "ASICS",
+    tutup: "#EFF2F7",
+    badan: "#D3D9E4",
+    tinta: "#1B4CA1",
+    tanda: "spiral",
+    label: "#1B4CA1",
+  },
+  {
+    id: "nb",
+    nama: "New Balance",
+    tutup: "#C9CDD4",
+    badan: "#A7ADB8",
+    tinta: "#C8102E",
+    tanda: "nb",
+    label: "#FFFFFF",
+  },
+  {
+    id: "salo",
+    nama: "SALOMON",
+    tutup: "#14161A",
+    badan: "#0A0C0F",
+    tinta: "#FFFFFF",
+    tanda: "salomon",
+    label: "#D8DEE6",
+  },
 ];
-
-/** Merah kampanye Freedom in Every Step. Dipakai HUD dan tombol game. */
-export const MERAH_MERDEKA = "#9E0107";
