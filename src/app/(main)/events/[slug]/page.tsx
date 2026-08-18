@@ -1,7 +1,7 @@
 import { cache } from "react";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import CampaignsService from "@/lib/api/campaigns.service";
 import { CountdownTimer } from "@/components/home/CountdownTimer";
 import { EventGridClient } from "./EventGridClient";
@@ -69,6 +69,14 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
     }
 
     if (!eventData) return notFound();
+
+    // Event yang sudah dimatikan admin — atau yang tanggalnya lewat — tidak
+    // punya halaman lagi. Daftar produknya masih memakai badge & harga promo,
+    // dan itu menyesatkan begitu promonya selesai. Dialihkan ke beranda, bukan
+    // 404, karena tautan lamanya masih beredar di IG/WA/iklan.
+    // Dipasang 18 Agt 2026 waktu mematikan Freedom in Every Step; berlaku juga
+    // untuk event lama yang sudah nonaktif (clearance-sale, last-drop, dst).
+    if (!eventData.isActive) redirect("/");
 
     const bgColor = eventData.styleConfig?.backgroundColor || "#1A1A1A";
 

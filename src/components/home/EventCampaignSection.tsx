@@ -6,11 +6,6 @@ import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import { CountdownTimer } from "./CountdownTimer";
 import { useAutoScroll } from "@/lib/hooks/useAutoScroll";
-import {
-  FREEDOM_EVENT_SLUG,
-  FREEDOM_HREF,
-} from "@/lib/campaign/freedom-in-every-step";
-
 interface EventCampaignSectionProps {
   campaigns: any[];
 }
@@ -47,12 +42,9 @@ function EventCampaignCard({ campaign }: { campaign: any }) {
     enabled: (campaign.products?.length ?? 0) > 0,
   });
 
-  // Campaign yang punya halaman landing sendiri diarahkan ke sana, bukan ke
-  // halaman event generik.
-  const href =
-    campaign.slug === FREEDOM_EVENT_SLUG
-      ? FREEDOM_HREF
-      : `/events/${campaign.slug}`;
+  // Semua campaign menuju halaman event generik. Pengecualian landing khusus
+  // dicabut 18 Agt 2026 bersama Freedom in Every Step.
+  const href = `/events/${campaign.slug}`;
 
   // Event bisa tayang lebih dulu daripada boleh dibeli. Nilai awalnya diambil
   // dari backend (isCheckoutOpen) supaya render server dan klien sama; sesudah

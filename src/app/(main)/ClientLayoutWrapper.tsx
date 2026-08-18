@@ -8,7 +8,6 @@ import { TopSearchBar } from "@/components/home/TopSearchBar";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect } from "react";
 import WelcomeVoucherPopup from "@/components/voucher/WelcomeVoucherPopup";
-import WelcomePointsPopup from "@/components/voucher/WelcomePointsPopup";
 
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -16,8 +15,6 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
   const isHydrated = useAuthStore((state) => state.isHydrated);
   const welcomeVoucher = useAuthStore((state) => state.welcomeVoucher);
   const clearWelcomeVoucher = useAuthStore((state) => state.clearWelcomeVoucher);
-  const welcomePoints = useAuthStore((state) => state.welcomePoints);
-  const clearWelcomePoints = useAuthStore((state) => state.clearWelcomePoints);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -70,13 +67,6 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
       <WelcomeVoucherPopup
         voucher={welcomeVoucher}
         onClose={clearWelcomeVoucher}
-      />
-
-      {/* Selama promo Kemerdekaan backend kirim poin (bukan voucher), jadi
-          hanya salah satu dari dua popup ini yang pernah terisi. */}
-      <WelcomePointsPopup
-        points={welcomePoints}
-        onClose={clearWelcomePoints}
       />
 
     </>

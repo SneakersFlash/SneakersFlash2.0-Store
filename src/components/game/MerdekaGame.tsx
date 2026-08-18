@@ -685,8 +685,8 @@ function KartuHadiah({ hasil }: { hasil: HasilRonde }) {
           Rodanya berhenti di sini, tapi hadiah ini sudah dimenangkan pemain
           lain. Masih ada hadiah lain yang menunggu - balik lagi besok ya.
         </p>
-        <Tombol as="link" href="/freedom-in-every-step">
-          Promo Merdeka
+        <Tombol as="link" href="/products">
+          Belanja Sekarang
         </Tombol>
       </BingkaiHadiah>
     );
