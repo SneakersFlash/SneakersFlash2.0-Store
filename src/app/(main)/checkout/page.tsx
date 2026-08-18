@@ -319,7 +319,7 @@ function SummaryBar({isOpen,onToggle,subtotal,actSubtotal,shippingCost,shippingS
             </div>
             <div className="space-y-2.5">
               <div className="flex justify-between text-xs text-gray-700"><span>Subtotal <span className="text-gray-400">({itemCount} item)</span></span><span className="font-semibold">{formatPrice(subtotal)}</span></div>
-              <div className="flex justify-between text-xs text-gray-700"><span>Ongkir</span><span className="font-semibold line-through text-gray-400">{formatPrice(shippingCost+shippingSubsidy)}</span></div>
+              <div className="flex justify-between text-xs text-gray-700"><span>Ongkir</span><span className={cn("font-semibold",shippingSubsidy>0&&"line-through text-gray-400")}>{formatPrice(shippingCost)}</span></div>
               {shippingSubsidy>0&&(<div className="flex justify-between text-xs text-emerald-600"><span className="flex items-center gap-1"><Truck size={13}/>Subsidi Ongkir</span><span className="font-semibold">−{formatPrice(shippingSubsidy)}</span></div>)}
               {voucherDiscount>0&&(<div className="flex justify-between text-xs text-emerald-600"><span className="flex items-center gap-1"><Tag size={13}/>Voucher</span><span className="font-semibold">−{formatPrice(voucherDiscount)}</span></div>)}
               {pointsDiscount>0&&(<div className="flex justify-between text-xs text-amber-600"><span className="flex items-center gap-1"><Zap size={13}/>Flash Points</span><span className="font-semibold">−{formatPrice(pointsDiscount)}</span></div>)}
