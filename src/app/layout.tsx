@@ -4,6 +4,7 @@ import Script from "next/script";
 import { Providers } from "@/components/common/Providers";
 import { ChunkReloadGuard } from "@/components/common/ChunkReloadGuard";
 import { ChatWidget } from "@/components/chat/ChatWidget";
+import { MerdekaFloatingButton } from "@/components/game/MerdekaFloatingButton";
 import "./globals.css";
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
@@ -112,6 +113,9 @@ export default function RootLayout({
         <Providers>
           {children}
           <ChatWidget />
+          {/* Duduk di atas tombol chat. Urutannya di sini tidak menentukan
+              lapisan - tombol game sudah dipatok z-40, chat z-50. */}
+          <MerdekaFloatingButton />
         </Providers>
 
         {/* ── Google Tag Manager (script) ── */}
