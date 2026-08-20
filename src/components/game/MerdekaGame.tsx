@@ -8,7 +8,11 @@ import {
   type HasilRonde,
   type StatusGame,
 } from "@/lib/api/game.service";
-import { BATAS_WAKTU_DETIK, TARGET_DUS } from "@/lib/game/merdeka-game";
+import {
+  BATAS_WAKTU_DETIK,
+  CLAIM_TOKEN_TTL_HOURS,
+  TARGET_DUS,
+} from "@/lib/game/merdeka-game";
 import { fanfarHadiah, setSuara, suaraNyala } from "@/lib/game/suara";
 import { BoxClimbCanvas, type KendaliGame } from "./BoxClimbCanvas";
 import { PrizeWheel } from "./PrizeWheel";
@@ -669,8 +673,8 @@ function KartuHadiah({ hasil }: { hasil: HasilRonde }) {
           {hasil.claimCode}
         </div>
         <p className="m-0 text-[11px] leading-relaxed text-[#6E78A8]">
-          Tautan verifikasinya berlaku 48 jam. Simpan kode ini kalau-kalau kamu
-          butuh menyebutkannya ke CS.
+          Tautan verifikasinya berlaku {CLAIM_TOKEN_TTL_HOURS} jam. Simpan kode
+          ini kalau-kalau kamu butuh menyebutkannya ke CS.
         </p>
       </BingkaiHadiah>
     );

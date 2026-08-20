@@ -227,3 +227,13 @@ export const MEREK_DUS: MerekDus[] = [
     label: "#D8DEE6",
   },
 ];
+
+/**
+ * Umur token verifikasi email pemenang barang, dalam jam.
+ *
+ * Cerminan `CLAIM_TOKEN_TTL_HOURS` di backend
+ * (`src/common/constants/merdeka-game.ts`). Angkanya cuma dipakai untuk
+ * salinan teks di layar kemenangan - yang menegakkan batas waktunya tetap
+ * server. Ubah dua-duanya bareng kalau masa berlakunya diganti.
+ */
+export const CLAIM_TOKEN_TTL_HOURS = 24;
