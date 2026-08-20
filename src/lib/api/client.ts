@@ -65,13 +65,10 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       _onUnauthorized?.();
     }
-    // Normalize error message
-    const message =
-      (error.response?.data as { message?: string })?.message ??
-      error.message ??
-      "An unexpected error occurred";
-
-    return Promise.reject(new Error(message));
+    // Pertahankan AxiosError beserta response body/status. Halaman checkout
+    // membutuhkan code dan detail aman dari backend (mis. kegagalan charge
+    // Midtrans); menggantinya dengan `new Error()` membuang semua metadata itu.
+    return Promise.reject(error);
   }
 );
 

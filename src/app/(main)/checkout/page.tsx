@@ -516,7 +516,16 @@ function CheckoutContent(){
         event_id: res.id,  // deduplikasi dengan CAPI server-side
       });
       router.push(`/orders/${res.id}`);
-    }catch(err:any){alert(err?.response?.data?.message||"Terjadi kesalahan. Coba lagi.");}
+    }catch(err:any){
+      const detail=err?.response?.data;
+      if(detail?.code==="MIDTRANS_CHARGE_FAILED"){
+        const providerCode=detail.midtransStatusCode?` (kode ${detail.midtransStatusCode})`:"";
+        alert(`Pembayaran ${detail.paymentMethod??selectedPayment} gagal diproses${providerCode}: ${detail.message}`);
+      }else{
+        const message=Array.isArray(detail?.message)?detail.message.join("\n"):detail?.message;
+        alert(message||err?.message||"Terjadi kesalahan. Coba lagi.");
+      }
+    }
     finally{setIsLoading(false);}
   };
 
