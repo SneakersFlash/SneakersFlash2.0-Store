@@ -62,6 +62,8 @@ export interface TrackingManifest {
 // Tracking via RajaOngkir (Komerce — untuk kurir instant/same day)
 export interface TrackingResult {
   delivered: boolean;
+  trackingPending?: boolean;
+  message?: string;
   summary: {
     courier_code:   string;
     courier_name:   string;

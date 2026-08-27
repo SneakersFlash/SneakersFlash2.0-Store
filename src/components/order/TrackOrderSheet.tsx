@@ -59,6 +59,23 @@ function RajaOngkirTimeline({ data }: { data: TrackingResult }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  if (data.trackingPending) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-10 text-center">
+        <Clock size={36} className="text-amber-500" />
+        <div>
+          <p className="text-sm font-bold text-gray-900">Resi menunggu aktivasi kurir</p>
+          <p className="mt-1 max-w-[280px] text-xs text-gray-500">
+            {data.message || "Nomor resi sudah dibuat dan akan bisa dilacak setelah paket dipindai kurir."}
+          </p>
+        </div>
+        <p className="rounded-full bg-amber-50 px-3 py-1 font-mono text-xs font-semibold text-amber-800">
+          {data.summary.waybill_number}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-5">
       {/* Resi info card */}
@@ -518,6 +535,7 @@ export default function TrackOrderSheet({ order, isOpen, onClose }: TrackOrderSh
   const [state, setState] = useState<"idle" | "loading" | "success" | "error" | "no_awb">("idle");
   const [trackingData, setTrackingData] = useState<TrackingResult | LionParcelTrackingResult | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
   const sheetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -561,7 +579,7 @@ export default function TrackOrderSheet({ order, isOpen, onClose }: TrackOrderSh
         );
         setState("error");
       });
-  }, [isOpen, order]);
+  }, [isOpen, order, retryCount]);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
@@ -573,8 +591,7 @@ export default function TrackOrderSheet({ order, isOpen, onClose }: TrackOrderSh
   };
 
   const handleRetry = () => {
-    setState("idle");
-    setTimeout(() => setState("loading"), 50);
+    setRetryCount((count) => count + 1);
   };
 
   if (!isOpen) return null;
