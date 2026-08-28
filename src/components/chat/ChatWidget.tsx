@@ -258,6 +258,11 @@ export function ChatWidget() {
     }
   };
 
+  // Halaman /links sudah memajang tombol WhatsApp sebagai salah satu tautan
+  // utamanya. Bubble chat di atasnya hanya menutupi konten dan menawarkan jalur
+  // yang sama dua kali.
+  if (pathname === "/links") return null;
+
   return (
     <>
       {/* ── Chat panel ──────────────────────────────────────────────────────── */}

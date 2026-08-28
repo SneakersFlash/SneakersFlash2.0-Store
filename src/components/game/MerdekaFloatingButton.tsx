@@ -75,7 +75,9 @@ export function MerdekaFloatingButton() {
   const disembunyikan =
     pathname === HREF ||
     pathname.startsWith(`${HREF}/`) ||
-    pathname.startsWith("/checkout");
+    pathname.startsWith("/checkout") ||
+    // /links dipakai sebagai link-in-bio; tombol melayang merusak tampilannya.
+    pathname === "/links";
 
   if (disembunyikan) return null;
 
