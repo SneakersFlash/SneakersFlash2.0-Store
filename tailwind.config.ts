@@ -13,6 +13,12 @@ const config: Config = {
         sans: ["var(--font-inter)", "sans-serif"],
         body: ["var(--font-barlow)", "sans-serif"],
         display: ["var(--font-oswald)", "sans-serif"],
+        // Turunan wordmark "SNKRS FLASH". Archivo dipilih karena satu-satunya
+        // grotesque Google Fonts yang punya sumbu LEBAR (wdth) sekaligus italic
+        // asli — dua hal yang bikin logo terlihat seperti logo. Variabelnya
+        // hanya dimuat di halaman /links, jadi kelas ini tidak berefek di
+        // tempat lain (akan jatuh ke Helvetica/Arial).
+        brand: ["var(--font-archivo)", "Helvetica Neue", "Arial", "sans-serif"],
         mono: ["var(--font-ibm-plex-mono)", "monospace"],
       },
       colors: {

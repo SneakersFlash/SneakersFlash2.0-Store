@@ -2,7 +2,14 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
-import { Instagram, MessageCircle, ShoppingBag, Check, Link2 } from "lucide-react";
+import {
+  Instagram,
+  MessageCircle,
+  ShoppingBag,
+  Check,
+  Link2,
+  ArrowUpRight,
+} from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils/cn";
 
@@ -20,6 +27,49 @@ import { cn } from "@/lib/utils/cn";
  */
 const PAGE_URL = "https://sneakersflash.com/links";
 
+/**
+ * Wordmark resmi: huruf putih + petir kuning-oranye sebagai huruf "S" pada
+ * FLASH. Varian putih yang benar untuk latar gelap - `logo_basic.png` hurufnya
+ * hitam dan akan lenyap di sini.
+ *
+ * Ini turunan 600px dari logo_basic_white.png (master 2084px tetap disimpan),
+ * dipangkas ke bbox-nya dan dikuantisasi ke 128 warna: 9 KB, dari 68 KB.
+ * Penurunannya penting karena `images.unoptimized: true` di next.config.ts -
+ * next/image di proyek ini TIDAK menurunkan resolusi apa pun, jadi memakai
+ * master berarti mengirim gambar 2084px untuk slot 300px. Halaman ini dibuka
+ * dari bio Instagram, di ponsel, dengan kuota, dan gambar ini elemen LCP-nya.
+ *
+ * Kalau logo diganti, regenerasi turunan ini juga - jangan tunjuk balik ke
+ * master. Dimensi di bawah harus cocok dengan file supaya next/image memesan
+ * ruang yang benar dan tata letak tidak bergeser saat gambar masuk.
+ */
+const WORDMARK = {
+  src: "/images/logo-wordmark-white-600.png",
+  width: 600,
+  height: 283,
+} as const;
+
+/**
+ * Gaya huruf yang meniru wordmark: berat, MIRING, MELEBAR, dan tracking negatif
+ * supaya huruf hampir bersentuhan seperti di logo. Ini kebalikan persis dari
+ * default lama halaman ini (Oswald - sempit, tegak, tracking positif).
+ *
+ * Lebar diatur lewat `font-stretch`, bukan `font-variation-settings`. Sumbu wdth
+ * Archivo terekspos sebagai `font-stretch: 62% 125%` di @font-face, dan properti
+ * high-level itu menyatu dengan font-weight/font-style; font-variation-settings
+ * memintas keduanya dan di sebagian engine mengembalikan sumbu yang tidak
+ * disebut - termasuk BERAT - ke nilai default, jadi teks bisa diam-diam kehilangan
+ * ketebalannya.
+ *
+ * 106% ditahan di bawah lebar penuh logo supaya label terpanjang - "Belanja
+ * Sekarang" - tetap muat satu baris di layar 320px.
+ *
+ * Semua ini bergantung pada `axes: ["wdth"]` di app/links/page.tsx: tanpa baris
+ * itu font terunduh tanpa sumbu lebar dan font-stretch tidak error, cuma tidak
+ * berefek apa-apa.
+ */
+const WORDMARK_TYPE =
+  "font-brand font-extrabold italic uppercase tracking-[-0.02em] [font-stretch:106%]";
 
 // TikTok tidak tersedia di lucide-react - pakai path resmi seperti di Footer.
 function TikTokIcon({ className }: { className?: string }) {
@@ -89,7 +139,7 @@ function CopyLinkButton() {
       aria-label={copied ? "Tautan tersalin" : `Salin tautan ${PAGE_URL}`}
       className={cn(
         "inline-flex min-h-[44px] items-center gap-2 rounded-sm px-4 py-2",
-        "font-body text-sm text-brand-gray-200",
+        "font-brand text-sm font-medium text-brand-gray-200",
         "border border-white/10 bg-white/[0.04]",
         "transition-colors duration-200 hover:bg-white/[0.08] hover:text-white",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-brand-black",
@@ -128,7 +178,8 @@ export function LinkInBio() {
       {/* ── Cahaya ambien ────────────────────────────────────────────────────
           Dua noda kuning ber-blur berat. Murni dekoratif dan statis: tidak ada
           animasi yang berjalan terus supaya baterai ponsel tidak ikut terbakar
-          hanya untuk latar. */}
+          hanya untuk latar. Noda atas sekaligus jadi pendar di belakang logo,
+          jadi wordmark tidak perlu efek glow sendiri. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-40 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-primary/20 blur-[120px]"
@@ -139,24 +190,29 @@ export function LinkInBio() {
       />
 
       <div className="relative mx-auto flex w-full max-w-[520px] flex-col items-center px-5 pb-16 pt-14 sm:pt-20">
-        {/* ── Identitas ──────────────────────────────────────────────────── */}
-        <motion.div {...rise(0)} className="flex flex-col items-center text-center">
-          <div className="relative grid h-24 w-24 place-items-center rounded-full border border-primary/30 bg-brand-gray-900 shadow-[0_0_50px_-12px_rgba(246,231,10,0.5)]">
-            <Image
-              src="/images/petir.svg"
-              alt=""
-              width={44}
-              height={44}
-              priority
-              className="h-11 w-11"
-            />
-          </div>
+        {/* ── Identitas ────────────────────────────────────────────────────
+            Wordmark asli, bukan teks yang ditulis ulang. Versi lama menyusun
+            "SneakersFlash" dari huruf biasa, padahal logo sebenarnya berbunyi
+            "SNKRS FLASH" dengan petir sebagai huruf S - jadi halaman ini
+            menampilkan merek yang bahkan tidak ada di logonya.
 
-          <h1 className="mt-6 font-display text-4xl font-bold uppercase tracking-[0.08em] text-white sm:text-5xl">
-            Sneakers<span className="text-primary">Flash</span>
+            Gambarnya dipasang di dalam <h1> supaya halaman tetap punya satu
+            heading level-1; teks yang dibaca screen reader sekarang datang dari
+            atribut alt. */}
+        <motion.div {...rise(0)} className="flex flex-col items-center text-center">
+          <h1 className="m-0">
+            <Image
+              src={WORDMARK.src}
+              alt="SneakersFlash"
+              width={WORDMARK.width}
+              height={WORDMARK.height}
+              priority
+              sizes="(max-width: 640px) 260px, 300px"
+              className="h-auto w-[260px] sm:w-[300px]"
+            />
           </h1>
 
-          <p className="mt-3 max-w-[340px] font-body text-[15px] leading-relaxed text-brand-gray-200">
+          <p className="mt-6 max-w-[340px] font-brand text-[15px] font-normal leading-relaxed text-brand-gray-200">
             Sneakers original, 100% authentic. Kilat sampai ke kaki lo.
           </p>
         </motion.div>
@@ -190,22 +246,24 @@ export function LinkInBio() {
                   </span>
 
                   <span className="min-w-0 flex-1">
-                    <span className="block font-display text-lg font-semibold uppercase tracking-[0.06em] text-white">
+                    <span
+                      className={cn("block text-[17px] leading-tight text-white", WORDMARK_TYPE)}
+                    >
                       {label}
                     </span>
-                    <span className="mt-0.5 block truncate font-body text-[13px] text-brand-gray-200">
+                    {/* Caption sengaja TEGAK dan lebar normal. Kalau ikut miring
+                        seperti label, kemiringan berhenti jadi penanda merek dan
+                        berubah jadi kebisingan - lagipula teks kecil yang miring
+                        lebih berat dibaca. */}
+                    <span className="mt-1 block truncate font-brand text-[13px] font-normal not-italic text-brand-gray-200">
                       {caption}
                     </span>
                   </span>
 
-                  {/* Panah gaya-lama: rotasi 45deg dari ikon garis, biar tidak
-                      perlu impor ikon tambahan hanya untuk satu chevron. */}
-                  <span
+                  <ArrowUpRight
                     aria-hidden="true"
-                    className="shrink-0 font-mono text-lg text-brand-gray-400 transition-colors duration-200 group-hover:text-primary"
-                  >
-                    &rarr;
-                  </span>
+                    className="h-5 w-5 shrink-0 text-brand-gray-400 transition-colors duration-200 group-hover:text-primary"
+                  />
                 </a>
               </motion.li>
             ))}
@@ -215,7 +273,10 @@ export function LinkInBio() {
         {/* ── Kaki halaman ───────────────────────────────────────────────── */}
         <motion.footer {...rise(0.36)} className="mt-10 flex flex-col items-center gap-4">
           <CopyLinkButton />
-          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-brand-gray-400">
+          {/* Tracking lebar di sini disengaja sebagai lawan dari tracking rapat
+              wordmark: ukuran kecil butuh ruang antar huruf, dan kontrasnya
+              menjauhkan baris ini dari peran judul. */}
+          <p className="font-brand text-[11px] font-semibold uppercase not-italic tracking-[0.18em] text-brand-gray-400">
             &copy; SneakersFlash
           </p>
         </motion.footer>
