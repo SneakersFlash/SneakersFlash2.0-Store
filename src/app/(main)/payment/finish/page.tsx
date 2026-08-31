@@ -19,9 +19,10 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { CheckCircle2, Clock, XCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { ordersService } from "@/lib/api/orders.service";
 import { useAuthStore } from "@/lib/store/authStore";
+import ThunderLoader from "@/components/common/ThunderLoader";
 
 type Nada = "sukses" | "menunggu" | "gagal";
 
@@ -100,10 +101,7 @@ function IsiHalaman() {
 
   if (mencari) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 px-6">
-        <Loader2 className="w-7 h-7 animate-spin text-gray-400" />
-        <p className="text-sm text-gray-500">Mengecek status pembayaran…</p>
-      </div>
+      <ThunderLoader variant="section" label="Mengecek status pembayaran" />
     );
   }
 
@@ -153,9 +151,7 @@ export default function PaymentFinishPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[60vh] flex items-center justify-center">
-          <Loader2 className="w-7 h-7 animate-spin text-gray-400" />
-        </div>
+        <ThunderLoader variant="section" />
       }
     >
       <IsiHalaman />

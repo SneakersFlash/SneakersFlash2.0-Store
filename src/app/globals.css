@@ -408,3 +408,212 @@ input, textarea, select {
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee88 { animation: none; }
 }
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   THUNDER LOADER — satu bahasa animasi untuk semua state "sedang memuat"
+   Dipakai oleh ThunderBolt / ThunderLoader / ThunderSpinner / #boot-splash.
+
+   Kenapa keyframe-nya banyak dan jaraknya tidak rata: petir sungguhan tidak
+   berdenyut dengan tempo tetap. Ia menyambar, mati, menyambar lagi dua-tiga
+   kali beruntun dalam sepersekian detik, lalu menyisakan bara sebelum
+   sambaran berikutnya. Persentase di bawah sengaja dibuat tidak simetris
+   untuk meniru itu; kalau diratakan, hasilnya kembali terasa seperti
+   lampu berkedip biasa.
+
+   Semua durasi memakai siklus 1.9s supaya inti petir, halo, arc, dan kilatan
+   layar tetap sinkron pada sambaran yang sama.
+════════════════════════════════════════════════════════════════════════════ */
+
+@keyframes tl-strike {
+  /* fase gelap — sebelum sambaran */
+  0%,
+  4%   { opacity: .12; transform: translateY(-5%) scale(.94) skewX(0deg);
+         filter: drop-shadow(0 0 0 rgba(246, 231, 10, 0)); }
+
+  /* sambaran pertama: terang penuh, membesar sedikit */
+  7%   { opacity: 1; transform: translateY(0) scale(1.07) skewX(-2deg);
+         filter: drop-shadow(0 0 14px rgba(246, 231, 10, .95))
+                 drop-shadow(0 0 34px rgba(250, 166, 26, .45)); }
+  10%  { opacity: .22; transform: translateY(0) scale(1) skewX(0deg); }
+
+  /* sambaran kedua, paling keras — ini "puncak" siklusnya */
+  13%  { opacity: 1; transform: translateY(-1%) scale(1.12) skewX(2deg);
+         filter: drop-shadow(0 0 22px rgba(246, 231, 10, 1))
+                 drop-shadow(0 0 52px rgba(250, 166, 26, .6)); }
+  16%  { opacity: .3; transform: scale(1.02); }
+  19%  { opacity: .95; transform: scale(1.05) skewX(-1deg);
+         filter: drop-shadow(0 0 16px rgba(246, 231, 10, .8)); }
+
+  /* bara: redup tapi tidak pernah benar-benar mati */
+  30%  { opacity: .6; transform: scale(1);
+         filter: drop-shadow(0 0 8px rgba(246, 231, 10, .35)); }
+  48%  { opacity: .38; filter: drop-shadow(0 0 4px rgba(246, 231, 10, .2)); }
+
+  /* sambaran susulan yang lebih pelan di ujung siklus */
+  62%  { opacity: 1; transform: scale(1.06) skewX(1.5deg);
+         filter: drop-shadow(0 0 18px rgba(246, 231, 10, .9))
+                 drop-shadow(0 0 40px rgba(250, 166, 26, .45)); }
+  66%  { opacity: .28; transform: scale(1); }
+  70%  { opacity: .85; filter: drop-shadow(0 0 10px rgba(246, 231, 10, .5)); }
+
+  85%,
+  100% { opacity: .12; transform: translateY(-5%) scale(.94);
+         filter: drop-shadow(0 0 0 rgba(246, 231, 10, 0)); }
+}
+
+/* Garis listrik yang menjalar menyusuri tepi petir.
+   110 = keliling jalur siluetnya (lihat ThunderBolt.tsx). */
+@keyframes tl-arc {
+  0%   { stroke-dashoffset: 110; opacity: 0; }
+  6%   { opacity: .9; }
+  13%  { opacity: 1; }
+  45%  { stroke-dashoffset: 0; opacity: .35; }
+  62%  { stroke-dashoffset: -34; opacity: .8; }
+  80%  { stroke-dashoffset: -110; opacity: 0; }
+  100% { stroke-dashoffset: -110; opacity: 0; }
+}
+
+/* Halo di belakang petir — "udara yang ikut menyala" */
+@keyframes tl-halo {
+  0%, 4%   { opacity: 0;   transform: scale(.6); }
+  7%       { opacity: .5;  transform: scale(1); }
+  11%      { opacity: .1;  transform: scale(.9); }
+  13%      { opacity: .75; transform: scale(1.15); }
+  22%      { opacity: .18; transform: scale(1); }
+  62%      { opacity: .45; transform: scale(1.08); }
+  72%      { opacity: .12; transform: scale(1); }
+  100%     { opacity: 0;   transform: scale(.6); }
+}
+
+/* Kilatan yang menerangi seluruh area loader, seperti langit saat petir.
+   Nilainya sengaja rendah (maks .16) — ini latar, bukan strobo. */
+@keyframes tl-sky-flash {
+  0%, 5%   { opacity: 0; }
+  7%       { opacity: .10; }
+  10%      { opacity: 0; }
+  13%      { opacity: .16; }
+  17%      { opacity: 0; }
+  61%      { opacity: 0; }
+  63%      { opacity: .09; }
+  67%,
+  100%     { opacity: 0; }
+}
+
+/* Ritme rapat untuk petir seukuran ikon di dalam tombol. */
+@keyframes tl-zap {
+  0%   { opacity: .3;  transform: scale(.9); }
+  12%  { opacity: 1;   transform: scale(1.1); }
+  20%  { opacity: .35; transform: scale(1); }
+  30%  { opacity: 1;   transform: scale(1.06); }
+  45%  { opacity: .5;  transform: scale(1); }
+  60%  { opacity: 1;   transform: scale(1.08); }
+  75%  { opacity: .4;  transform: scale(.97); }
+  100% { opacity: .3;  transform: scale(.9); }
+}
+
+.tl-bolt {
+  animation: tl-strike 1.9s cubic-bezier(.2, .8, .3, 1) infinite;
+  transform-origin: 50% 45%;
+  transform-box: fill-box;
+}
+
+.tl-arc {
+  stroke-dasharray: 110;
+  animation: tl-arc 1.9s linear infinite;
+}
+
+.tl-halo {
+  background: radial-gradient(
+    circle,
+    rgba(246, 231, 10, .35) 0%,
+    rgba(250, 166, 26, .16) 45%,
+    transparent 72%
+  );
+  animation: tl-halo 1.9s ease-out infinite;
+}
+
+.tl-flash {
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    rgba(255, 253, 235, .9) 0%,
+    rgba(246, 231, 10, .35) 35%,
+    transparent 70%
+  );
+  opacity: 0;
+  animation: tl-sky-flash 1.9s linear infinite;
+}
+
+.tl-zap {
+  animation: tl-zap .95s ease-in-out infinite;
+}
+
+/* ── Splash sebelum React hidup ──────────────────────────────────────────────
+   Markup-nya dirender di server (lihat BootSplash.tsx), jadi ia sudah ada di
+   HTML byte pertama — inilah satu-satunya cara menampilkan loading pada render
+   pertama, sebelum bundle JS apa pun selesai diunduh.
+
+   Dihilangkan dengan cara menambah [data-app-ready] pada <html> setelah React
+   hydrate. Failsafe 8 detik ada supaya splash tidak pernah mengunci layar
+   selamanya kalau bundle gagal dimuat (mis. chunk 404 setelah deploy).
+──────────────────────────────────────────────────────────────────────────── */
+#boot-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  /* Warna dipatok literal, BUKAN hsl(var(--background)).
+     Script next-themes yang menaruh kelas .light/.dark di <html> dirender
+     setelah blok ini di HTML, jadi selama sepersekian detik pertama <html>
+     masih tanpa kelas — dan var --background saat itu bernilai versi gelap.
+     Karena defaultTheme toko ini "light", memakai var bikin peluang splash
+     berkedip hitam dulu. Nilai di bawah persis --background masing-masing tema. */
+  background: #F5F5F0;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .3s ease, visibility 0s linear .3s;
+  animation: tl-boot-failsafe 0s linear 8s forwards;
+}
+
+html.dark #boot-splash {
+  background: #0A0A0A;
+}
+
+html[data-app-ready] #boot-splash {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@keyframes tl-boot-failsafe {
+  to { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+
+/* ── Hormati prefers-reduced-motion ──────────────────────────────────────────
+   Kilat berulang adalah pemicu klasik untuk fotosensitivitas dan migrain.
+   Untuk pengguna yang memintanya, petirnya tetap ada tapi hanya bernapas
+   pelan — tanpa kedipan, tanpa flash layar, tanpa arc berjalan.
+──────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes tl-calm {
+    0%, 100% { opacity: .55; }
+    50%      { opacity: 1; }
+  }
+
+  .tl-bolt,
+  .tl-zap {
+    animation: tl-calm 2.4s ease-in-out infinite;
+    transform: none;
+    filter: none;
+  }
+
+  .tl-arc,
+  .tl-flash,
+  .tl-halo {
+    animation: none;
+    opacity: 0;
+  }
+}

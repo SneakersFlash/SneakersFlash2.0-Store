@@ -3,6 +3,7 @@ import { Oswald, Barlow, Inter } from "next/font/google";
 import Script from "next/script";
 import { Providers } from "@/components/common/Providers";
 import { ChunkReloadGuard } from "@/components/common/ChunkReloadGuard";
+import { BootSplash } from "@/components/common/BootSplash";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { MerdekaFloatingButton } from "@/components/game/MerdekaFloatingButton";
 import "./globals.css";
@@ -105,6 +106,10 @@ export default function RootLayout({
         <noscript><img height="1" width="1" style={{display: "none"}}
         src="https://www.facebook.com/tr?id=1703072617370190&ev=PageView&noscript=1"
         /></noscript>
+
+        {/* Loading untuk render pertama. Harus di paling atas <body> dan di luar
+            Providers: ia sudah harus tergambar sebelum React sempat hidup. */}
+        <BootSplash />
 
         {/* Sengaja DI LUAR Providers: kalau chunk yang gagal dimuat kebetulan
             milik salah satu provider, guard-nya tetap hidup dan bisa reload. */}

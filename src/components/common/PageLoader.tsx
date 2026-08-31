@@ -1,16 +1,13 @@
-import Image from "next/image";
+import ThunderLoader from "./ThunderLoader";
 
+/**
+ * Alias historis. Banyak halaman sudah meng-import PageLoader sebagai fallback
+ * <Suspense>, jadi nama ini dipertahankan — isinya sekarang ThunderLoader,
+ * supaya semua titik loading di toko memakai animasi petir yang sama.
+ *
+ * Catatan: dulu komponen ini memaksa bg-white. Tema default toko gelap, jadi
+ * setiap kali ia muncul layar berkedip putih. Sekarang ikut bg-background.
+ */
 export default function PageLoader() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="relative w-[50px] h-[50px]">
-        <Image
-          src="/images/petir.svg"
-          alt="Loading"
-          fill
-          className="object-contain animate-bounce"
-        />
-      </div>
-    </div>
-  );
+  return <ThunderLoader variant="section" />;
 }

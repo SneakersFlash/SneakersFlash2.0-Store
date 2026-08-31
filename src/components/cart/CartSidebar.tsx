@@ -4,10 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  X, ShoppingBag, Minus, Plus, Trash2, Zap,
-  Check, Tag, ChevronRight, Ticket, Clock, Loader2,
-} from "lucide-react";
+import { X, ShoppingBag, Minus, Plus, Trash2, Zap, Check, Tag, ChevronRight, Ticket, Clock } from "lucide-react";
 
 import { useCartStore } from "@/lib/store/cartStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -16,6 +13,7 @@ import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import { cn } from "@/lib/utils/cn";
 import { cartService } from "@/lib/api/cart.service";
 import type { AppliedVoucher, ClaimableVoucher } from "@/types/voucher.types";
+import ThunderLoader from "@/components/common/ThunderLoader";
 
 // ─── Voucher Card (ticket design, konsisten dengan halaman voucher) ───────────
 
@@ -535,9 +533,7 @@ export function CartSidebar() {
                   {/* Voucher list */}
                   <div className="p-4 overflow-y-auto space-y-3 flex-1">
                     {voucherLoading ? (
-                      <div className="flex items-center justify-center py-10">
-                        <Loader2 size={24} className="animate-spin text-primary" />
-                      </div>
+                      <ThunderLoader variant="inline" label={null} />
                     ) : vouchers.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-10 text-gray-400">
                         <Ticket size={32} className="mb-3 opacity-30" />

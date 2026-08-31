@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Ticket, ChevronDown, ChevronUp, Loader2, CheckCircle2, X, Clock } from "lucide-react";
+import { Ticket, ChevronDown, ChevronUp, CheckCircle2, X, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { vouchersService } from "@/lib/api/vouchers.service";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { cn } from "@/lib/utils/cn";
 import type { Voucher, AppliedVoucher } from "@/types/voucher.types";
+import ThunderSpinner from "@/components/common/ThunderSpinner";
+import ThunderLoader from "@/components/common/ThunderLoader";
 
 interface VoucherSelectorProps {
   subtotal: number;
@@ -151,7 +153,7 @@ export default function VoucherSelector({ subtotal, appliedVoucher, onApply, onR
                     onClick={() => handleApplyCode(manualCode)}
                     className="bg-gray-900 text-white font-bold px-5 rounded-lg text-sm hover:bg-black disabled:bg-gray-300 transition-colors flex items-center justify-center min-w-[80px]"
                   >
-                    {isApplying && !vouchers.some(v => v.code === manualCode) ? <Loader2 size={16} className="animate-spin" /> : "Apply"}
+                    {isApplying && !vouchers.some(v => v.code === manualCode) ? <ThunderSpinner size={16} tone="mono" /> : "Apply"}
                   </button>
                 </div>
                 {errorMsg && <p className="text-xs text-red-500 mt-2 font-medium">{errorMsg}</p>}
@@ -164,7 +166,7 @@ export default function VoucherSelector({ subtotal, appliedVoucher, onApply, onR
                 <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Voucher Spesial Untukmu</p>
                 
                 {isLoadingList ? (
-                  <div className="flex justify-center py-4"><Loader2 className="animate-spin text-gray-300" /></div>
+                  <ThunderLoader variant="inline" label={null} className="!py-4" />
                 ) : vouchers.length === 0 ? (
                   <p className="text-xs text-gray-400 text-center py-2">Belum ada voucher yang tersedia saat ini.</p>
                 ) : (
@@ -239,7 +241,7 @@ export default function VoucherSelector({ subtotal, appliedVoucher, onApply, onR
                           {/* Action (Tombol kanan) */}
                           <div className="w-[76px] shrink-0 flex flex-col items-center justify-center px-2 z-10">
                             {isApplying && manualCode === v.code ? (
-                              <Loader2 size={18} className="animate-spin text-primary" />
+                              <ThunderSpinner size={18} />
                             ) : (
                               <motion.button
                                 whileTap={isSelected || disabled ? {} : { scale: 0.9 }}

@@ -3,10 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import {
-  Star, ChevronRight, Zap, CreditCard, ShieldCheck,
-  Loader2, Ruler, Check, BadgeCheck, X
-} from "lucide-react";
+import { Star, ChevronRight, Zap, CreditCard, ShieldCheck, Ruler, Check, BadgeCheck, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useProduct } from "@/lib/hooks/useProducts";
@@ -18,6 +15,7 @@ import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import { cn } from "@/lib/utils/cn";
 import { RelatedProducts } from "@/components/product/RelatedProduct";
 import { pixel } from "@/lib/utils/fbPixel";
+import ThunderSpinner from "@/components/common/ThunderSpinner";
 
 interface ProductDetailClientProps {
   slug: string;
@@ -566,7 +564,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                     : "border-gray-100 text-gray-400 bg-gray-50 cursor-not-allowed"
                 )}
               >
-                {isAdding ? <Loader2 size={18} className="animate-spin" /> : "Add to Cart"}
+                {isAdding ? <ThunderSpinner size={18} tone="mono" /> : "Add to Cart"}
               </button>
               <button
                 onClick={handleBuyNow}
@@ -579,7 +577,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                 )}
               >
                 {isAdding ? (
-                  <Loader2 size={20} className="animate-spin text-white" />
+                  <ThunderSpinner size={20} tone="mono" className="text-white" />
                 ) : (
                   "Buy it Now"
                 )}
@@ -745,7 +743,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                 )}
               >
                 {isAdding ? (
-                  <Loader2 size={18} className="animate-spin" />
+                  <ThunderSpinner size={18} tone="mono" />
                 ) : (
                   "Add to Cart"
                 )}

@@ -3,13 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import {
-  ArrowLeft, ChevronDown, ChevronUp,
-  Zap, Wallet, Loader2, Circle, CheckCircle2,
-  MapPin, Truck, X, Plus, Home, Briefcase,
-  Building2, AlertTriangle, ChevronRight,
-  Package, Tag, Star, Lock,
-} from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronUp, Zap, Wallet, Circle, CheckCircle2, MapPin, Truck, X, Plus, Home, Briefcase, Building2, AlertTriangle, ChevronRight, Package, Tag, Star, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useCartStore } from "@/lib/store/cartStore";
@@ -31,6 +25,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { cartService } from "@/lib/api/cart.service";
 import PageLoader from "@/components/common/PageLoader";
 import { pixel } from "@/lib/utils/fbPixel";
+import ThunderSpinner from "@/components/common/ThunderSpinner";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -352,7 +347,7 @@ function SummaryBar({isOpen,onToggle,subtotal,actSubtotal,shippingCost,shippingS
             <button onClick={onPay} disabled={!canPay||isLoading}
               className={cn("shrink-0 flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-xs transition-all shadow-lg",
                 canPay&&!isLoading?"bg-[#1C1C1C] text-white hover:bg-black active:scale-[0.98] shadow-black/20":"bg-gray-200 text-gray-400 cursor-not-allowed shadow-none")}>
-              {isLoading?<Loader2 size={18} className="animate-spin"/>:"Bayar Sekarang →"}
+              {isLoading?<ThunderSpinner size={18} tone="mono"/>:"Bayar Sekarang →"}
             </button>
           </div>
         </div>
@@ -602,7 +597,7 @@ function CheckoutContent(){
           <div className="px-4 pt-4 pb-2 flex items-center gap-2"><Truck size={15} className="text-gray-500"/><p className="text-xs font-bold">Metode Pengiriman</p></div>
           <button onClick={()=>setIsShippingOpen(!isShippingOpen)} className="w-full flex items-center justify-between px-4 py-3 border-t border-gray-100 hover:bg-gray-50">
             <div className="text-left">
-              {isCalcShipping?(<span className="flex items-center gap-2 text-xs text-gray-400"><Loader2 size={13} className="animate-spin text-primary"/>Menghitung tarif…</span>)
+              {isCalcShipping?(<span className="flex items-center gap-2 text-xs text-gray-400"><ThunderSpinner size={13}/>Menghitung tarif…</span>)
               :selectedCourier?(<><p className="text-xs font-semibold text-gray-900">{selectedCourier.courier_name||selectedCourier.courier} · {selectedCourier.service}</p><p className="text-xs text-gray-400">Est. {selectedCourier.etd||"varies"}</p></>)
               :(<p className="text-xs text-gray-400">Pilih metode pengiriman</p>)}
             </div>
@@ -672,7 +667,7 @@ function CheckoutContent(){
                             {option.id==="credit_card"&&isSel&&(
                               <div className="px-4 pb-4">
                                 <CreditCardForm value={cardForm} onChange={setCardForm}/>
-                                {isTokenizing&&<p className="text-[12px] text-gray-400 flex items-center gap-2 mt-3"><Loader2 size={13} className="animate-spin"/>Memvalidasi kartu…</p>}
+                                {isTokenizing&&<p className="text-[12px] text-gray-400 flex items-center gap-2 mt-3"><ThunderSpinner size={13} tone="mono"/>Memvalidasi kartu…</p>}
                               </div>
                             )}
                           </div>

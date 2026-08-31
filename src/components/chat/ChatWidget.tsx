@@ -3,19 +3,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  MessageCircle,
-  X,
-  Send,
-  Loader2,
-  Zap,
-  PhoneCall,
-  RefreshCw,
-  ChevronLeft,
-} from "lucide-react";
+import { MessageCircle, X, Send, Zap, PhoneCall, RefreshCw, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { chatService } from "@/lib/api/chat.service";
 import type { ChatMessage } from "@/lib/api/chat.service";
+import ThunderSpinner from "@/components/common/ThunderSpinner";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -390,7 +382,7 @@ export function ChatWidget() {
                   className="flex h-7 w-7 items-center justify-center rounded-lg bg-zinc-900 text-white disabled:opacity-30 hover:bg-zinc-700 active:scale-95 transition-all"
                 >
                   {loading ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <ThunderSpinner size={14} tone="mono" />
                   ) : (
                     <Send className="h-3.5 w-3.5" />
                   )}

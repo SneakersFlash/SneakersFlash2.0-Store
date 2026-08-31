@@ -3,13 +3,12 @@
 import { useEffect, useState, use, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import {
-  Copy, CheckCircle2, ArrowLeft, RefreshCw,
-  AlertCircle, ChevronDown, ChevronUp, Wallet,
-  ExternalLink, Smartphone,
-} from "lucide-react";
+import { Copy, CheckCircle2, ArrowLeft, AlertCircle, ChevronDown, ChevronUp, Wallet, ExternalLink, Smartphone } from "lucide-react";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { ordersService } from "@/lib/api/orders.service";
+import ThunderLoader from "@/components/common/ThunderLoader";
+import { ThunderBolt } from "@/components/common/ThunderBolt";
+import ThunderSpinner from "@/components/common/ThunderSpinner";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -261,16 +260,7 @@ export default function OrderPaymentPage({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
-        <div className="relative w-[50px] h-[50px]">
-          <Image
-            src="/images/petir.svg"
-            alt="Loading"
-            fill
-            className="object-contain animate-bounce"
-          />
-        </div>
-      </div>
+      <ThunderLoader variant="fullscreen" />
     );
   }
 
@@ -298,9 +288,7 @@ export default function OrderPaymentPage({
   ) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F8F9FA] gap-4 p-6 text-center">
-        <div className="relative w-[50px] h-[50px]">
-          <Image src="/images/petir.svg" alt="Loading" fill className="object-contain animate-bounce" />
-        </div>
+        <ThunderBolt className="h-14 w-14" />
         <p className="font-bold text-gray-800">
           {method === "akulaku" ? "Mengarahkan ke Akulaku PayLater..." : "Mengarahkan ke halaman verifikasi 3DS..."}
         </p>
@@ -616,7 +604,7 @@ export default function OrderPaymentPage({
             className="w-full bg-[#1C1C1C] text-white hover:bg-black active:scale-[0.98] font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-70"
           >
             {isRefreshing ? (
-              <RefreshCw className="w-5 h-5 animate-spin" />
+              <ThunderSpinner size={20} tone="mono" />
             ) : (
               "Cek Status Pembayaran"
             )}

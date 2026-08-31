@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { MapPin, Navigation, X, Check, Plus, Loader2 } from "lucide-react";
+import { MapPin, Navigation, X, Check, Plus } from "lucide-react";
 import { logisticsService } from "@/lib/api/logistics.service";
 import type { UserAddress, CreateUserAddressDto } from "@/types/user.types";
+import ThunderSpinner from "@/components/common/ThunderSpinner";
 
 // ─── Helpers & Types ────────────────────────────────────────────────────────
 interface LocationOption { id: number; name: string; zip_code?: string; }
@@ -340,7 +341,7 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
         <div className="space-y-3">
             <div className="flex items-center gap-2">
             <label className="text-[12px] font-reguler text-gray-700">Your Address <span className="text-red-500">*</span></label>
-            {geocoding && <span className="flex items-center gap-1 text-xs text-primary"><Loader2 className="w-3 h-3 animate-spin" /> Auto-filling...</span>}
+            {geocoding && <span className="flex items-center gap-1 text-xs text-primary"><ThunderSpinner size={12} tone="mono" /> Auto-filling...</span>}
             </div>
             {geocodeError && !geocoding && (
             <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded px-3 py-2">

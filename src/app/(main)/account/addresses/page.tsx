@@ -6,7 +6,7 @@ import { ArrowLeft, Plus, MapPin } from "lucide-react";
 import Link from "next/link";
 import { useMyAddresses } from "@/lib/hooks/useUsers";
 import { AddressCard } from "@/components/address/AddressCard";
-import Image from "next/image";
+import ThunderLoader from "@/components/common/ThunderLoader";
 
 export default function ListAddressPage() {
     const router = useRouter();
@@ -14,16 +14,7 @@ export default function ListAddressPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
-                <div className="relative w-[50px] h-[50px]">
-                <Image
-                    src="/images/petir.svg"
-                    alt="Loading"
-                    fill
-                    className="object-contain animate-bounce text-yellow-300"
-                />
-                </div>
-            </div>
+            <ThunderLoader variant="section" />
         );
     }
     

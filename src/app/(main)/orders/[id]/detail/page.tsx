@@ -4,21 +4,11 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { 
-  ArrowLeft, 
-  RefreshCw, 
-  AlertCircle, 
-  Copy, 
-  CheckCircle2, 
-  MapPin, 
-  CreditCard, 
-  Box, 
-  Loader2, 
-  XCircle,
-  Wallet
-} from "lucide-react";
+import { ArrowLeft, AlertCircle, Copy, CheckCircle2, MapPin, CreditCard, Box, XCircle, Wallet } from "lucide-react";
 import { ordersService } from "@/lib/api/orders.service";
+import ThunderLoader from "@/components/common/ThunderLoader";
 import { formatPrice } from "@/lib/utils/formatPrice";
+import ThunderSpinner from "@/components/common/ThunderSpinner";
 
 // Helper for Exact Formatting
 const formatDateTime = (dateString: string) => {
@@ -82,16 +72,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
   if (isLoading) {
       return (
-          <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
-              <div className="relative w-[50px] h-[50px]">
-              <Image
-                  src="/images/petir.svg"
-                  alt="Loading"
-                  fill
-                  className="object-contain animate-bounce text-yellow-300"
-              />
-              </div>
-          </div>
+          <ThunderLoader variant="fullscreen" />
       );
   }
 
@@ -341,7 +322,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 className="w-full flex items-center justify-center gap-2 bg-white text-gray-600 hover:text-red-600 border border-gray-300 hover:border-red-300 hover:bg-red-50 active:scale-[0.98] font-bold py-3.5 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isCancelling ? (
-                  <Loader2 size={18} className="animate-spin" />
+                  <ThunderSpinner size={18} tone="mono" />
                 ) : (
                   <XCircle size={18} />
                 )}

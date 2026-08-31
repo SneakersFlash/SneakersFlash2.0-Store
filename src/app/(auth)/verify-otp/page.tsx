@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthInput from "@/components/auth/AuthInput";
 import { useAuthGMutations } from "@/lib/hooks/useAuthGMutations";
+import ThunderSpinner from "@/components/common/ThunderSpinner";
 
 // ─── Tidak ada lagi import WelcomeVoucherPopup di sini ───────────────────────
 // Popup sekarang ditampilkan di ClientLayoutWrapper (route main),
@@ -171,15 +172,17 @@ export default function VerifyOtpPage() {
   );
 }
 
+/**
+ * Dibiarkan sebagai komponen lokal supaya semua pemanggil di berkas ini tidak
+ * perlu ikut berubah — isinya sekarang petir yang sama dengan seluruh toko.
+ * color="white" dipakai di atas tombol gelap, "gray" di atas latar terang.
+ */
 function LoadingSpinner({ color }: { color: "white" | "gray" }) {
   return (
-    <svg
-      className={`animate-spin w-5 h-5 ${color === "white" ? "text-white" : "text-gray-500"}`}
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-    </svg>
+    <ThunderSpinner
+      size={20}
+      tone="mono"
+      className={color === "white" ? "text-white" : "text-gray-500"}
+    />
   );
 }

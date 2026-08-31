@@ -9,6 +9,7 @@ import { validateEmail, validatePassword, validateName } from "@/lib/auth-valida
 import AuthInput from "@/components/auth/AuthInput";
 import SocialLoginButton from "../../../../validation/SocialLoginButton"; // Sesuaikan jika path berbeda
 import AuthHeroBanner from "@/components/auth/AuthHeroBanner";
+import ThunderSpinner from "@/components/common/ThunderSpinner";
 
 interface FormState {
   name: string;
@@ -251,15 +252,17 @@ export default function RegisterPage() {
   );
 }
 
+/**
+ * Dibiarkan sebagai komponen lokal supaya semua pemanggil di berkas ini tidak
+ * perlu ikut berubah — isinya sekarang petir yang sama dengan seluruh toko.
+ * color="white" dipakai di atas tombol gelap, "gray" di atas latar terang.
+ */
 function LoadingSpinner({ color }: { color: "white" | "gray" }) {
   return (
-    <svg
-      className={`animate-spin w-4 h-4 ${color === "white" ? "text-white" : "text-gray-400"}`}
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-    </svg>
+    <ThunderSpinner
+      size={16}
+      tone="mono"
+      className={color === "white" ? "text-white" : "text-gray-400"}
+    />
   );
 }

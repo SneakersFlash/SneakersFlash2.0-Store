@@ -17,7 +17,7 @@ import {
 import { ordersService } from "@/lib/api/orders.service";
 import { cn } from "@/lib/utils/cn";
 import ProductOrderCard from "@/components/product/ProductOrderCard";
-import Image from "next/image";
+import ThunderLoader from "@/components/common/ThunderLoader";
 
 const FILTER_TABS = [
   { label: "All", value: "all", icon: Layers },
@@ -75,17 +75,7 @@ export default function MyOrdersContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8F9FA]">
-        {/* Tambahkan class 'relative' pada div ini */}
-        <div className="relative w-[50px] h-[50px]">
-          <Image
-            src="/images/petir.svg"
-            alt="Loading"
-            fill
-            className="object-contain animate-bounce text-yellow-300"
-          />
-        </div>
-      </div>
+      <ThunderLoader variant="section" />
     );
   }
   if (error) {
