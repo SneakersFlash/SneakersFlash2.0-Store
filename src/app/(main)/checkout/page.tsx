@@ -365,7 +365,15 @@ function CheckoutContent(){
   const buyNowVariantId=searchParams.get("buyNowVariantId"),buyNowQuantity=searchParams.get("buyNowQuantity");
   const isBuyNowFlow=!!buyNowVariantId&&!!buyNowQuantity;
   const isAuthenticated=useAuthStore(s=>s.isAuthenticated);
+  const isAuthHydrated=useAuthStore(s=>s.isHydrated);
   const{items,selectedItemIds}=useCartStore();
+  const isCartHydrated=useCartStore(s=>s.isHydrated);
+  // Sesi dan keranjang sama-sama dibaca dari localStorage sesudah render
+  // pertama. Sebelum keduanya selesai, `isAuthenticated` masih false dan
+  // `items` masih kosong — itu bukan fakta, cuma keadaan belum terbaca.
+  // Menyimpulkan apa pun sebelum titik ini persis yang dulu menendang pembeli
+  // yang sudah login ke /login begitu ia membuka /checkout.
+  const isStoreReady=isAuthHydrated&&isCartHydrated;
   const checkoutItems=items.filter(i=>selectedItemIds.includes(i.id));
   const{data:savedAddresses=[],isLoading:loadingAddresses}=useMyAddresses();
   const{data:profile}=useMyProfile();
@@ -407,7 +415,7 @@ function CheckoutContent(){
 
   useEffect(()=>{if(savedAddresses.length>0&&!selectedAddress)setSelectedAddress(savedAddresses.find(a=>a.isDefault)??savedAddresses[0]);},[savedAddresses,selectedAddress]);
   useEffect(()=>{if(hasEventItem){setAppliedVoucher(null);cartService.saveAppliedVoucher(null);return;}const s=cartService.loadAppliedVoucher();if(s)setAppliedVoucher(s);},[hasEventItem]);
-  useEffect(()=>{if(!isAuthenticated)router.push("/login");else if(checkoutItems.length===0)router.push("/");},[isAuthenticated,checkoutItems.length,router]);
+  useEffect(()=>{if(!isStoreReady)return;if(!isAuthenticated)router.push("/login");else if(checkoutItems.length===0)router.push("/");},[isStoreReady,isAuthenticated,checkoutItems.length,router]);
 
   useEffect(()=>{
     if(checkoutItems.length===0||hasFiredInitCheckout.current)return;
@@ -478,6 +486,10 @@ function CheckoutContent(){
       .catch(console.error).finally(()=>setIsCalcShipping(false));
   },[selectedAddress?.subdistrictId,totalWeight,destinationText]);
 
+  // Selama localStorage belum terbaca, tampilkan loader — bukan null. Null di
+  // sini bikin layar kosong sekejap, lalu halaman menyimpulkan keranjang kosong
+  // dan memantulkan orang keluar sebelum isinya sempat muncul.
+  if(!isStoreReady)return <PageLoader/>;
   if(checkoutItems.length===0)return null;
 
   const handleCheckout=async()=>{

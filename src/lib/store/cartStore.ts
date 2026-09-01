@@ -10,6 +10,17 @@ interface CartStore {
   selectedItemIds: string[];
   isOpen: boolean;
   isLoading: boolean;
+  /**
+   * Menyala setelah StoreHydration selesai membaca localStorage.
+   *
+   * Store ini memakai `skipHydration: true`, jadi render pertama selalu melihat
+   * items & selectedItemIds kosong — bukan karena keranjangnya kosong, tapi
+   * karena isinya belum dibaca. Halaman yang mengambil keputusan navigasi dari
+   * isi keranjang (checkout) harus menunggu flag ini dulu. Sengaja tidak ikut
+   * di-persist supaya selalu mulai dari false tiap kali halaman dimuat.
+   */
+  isHydrated: boolean;
+  setCartHydrated: () => void;
 
   // UI Actions
   openCart: () => void;
@@ -36,6 +47,9 @@ export const useCartStore = create<CartStore>()(
       selectedItemIds: [],
       isOpen: false,
       isLoading: false,
+      isHydrated: false,
+
+      setCartHydrated: () => set({ isHydrated: true }),
 
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),

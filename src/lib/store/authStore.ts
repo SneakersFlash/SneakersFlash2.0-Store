@@ -55,7 +55,13 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "sf-auth",
-      storage: createJSONStorage(() => sessionStorage),
+      // localStorage, bukan sessionStorage. sessionStorage mati begitu tab
+      // ditutup dan tidak dibagi antar tab, jadi pembeli yang membuka produk
+      // di tab baru — jalur paling umum dari IG/TikTok/Google — datang dalam
+      // keadaan seolah belum login. Keranjang sendiri sudah di localStorage,
+      // sehingga isinya bertahan sementara sesinya hilang: justru kombinasi itu
+      // yang memantulkan orang ke /login tepat di depan checkout.
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
         token: state.token,
@@ -63,9 +69,11 @@ export const useAuthStore = create<AuthState>()(
         // welcomeVoucher & welcomePoints sengaja TIDAK di-persist agar tidak muncul ulang setelah refresh
       }),
       onRehydrateStorage: () => (state) => {
-        if (state) {
-          state.setHydrated();
-        }
+        // Dipanggil juga ketika storage kosong atau gagal dibaca, dan pada
+        // kasus itu `state` bisa undefined. Flag ini sekarang menggerbangi
+        // redirect di halaman checkout, jadi ia wajib menyala apa pun hasil
+        // rehydrate — kalau tidak, checkout tertahan di loader selamanya.
+        (state ?? useAuthStore.getState()).setHydrated();
       },
     }
   )
