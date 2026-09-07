@@ -73,10 +73,6 @@ export function Campaign99Hero() {
               <Selotip className="hidden lg:block bottom-[16%] right-8 h-5 w-24 rotate-[6deg] bg-white/90" />
 
               <div className="flex flex-col items-start gap-3">
-                <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.28em] text-primary">
-                  SNKRS Flash
-                </span>
-
                 <h1 className="flex flex-col leading-[0.86] tracking-[-0.03em]">
                   <span className="text-primary text-6xl md:text-7xl lg:text-8xl font-black">
                     9.9
@@ -144,7 +140,9 @@ export function Campaign99Hero() {
                   {label}
                 </span>
                 {fase !== null && fase !== 'selesai' && (
-                  <CountdownTimer targetDate={target} />
+                  // Panel ini kuning, jadi angka putih bawaan CountdownTimer
+                  // praktis tidak terbaca — wajib varian gelap.
+                  <CountdownTimer targetDate={target} tone="dark" />
                 )}
               </div>
 

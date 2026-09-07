@@ -2,7 +2,18 @@
 
 import { useEffect, useState } from "react";
 
-export function CountdownTimer({ targetDate }: { targetDate: string }) {
+/**
+ * `tone` menentukan kontras, bukan selera: varian "light" (bawaan) menulis
+ * angka putih di atas kaca buram — benar untuk panel gelap, tapi HILANG di
+ * atas bidang kuning. Panel yang alasnya terang wajib memakai "dark".
+ */
+export function CountdownTimer({
+    targetDate,
+    tone = "light",
+}: {
+    targetDate: string;
+    tone?: "light" | "dark";
+}) {
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     const [isMounted, setIsMounted] = useState(false);
 
@@ -44,10 +55,10 @@ export function CountdownTimer({ targetDate }: { targetDate: string }) {
         <div className="flex items-center gap-1.5 md:gap-2">
         {displayBlocks.map((block, idx) => (
             <div key={idx} className="flex flex-col items-center">
-            <div className="bg-white/20 backdrop-blur-md border border-white/30 text-white font-bold text-sm md:text-lg w-9 h-9 md:w-11 md:h-11 flex items-center justify-center rounded-lg shadow-sm">
+            <div className={`${tone === "dark" ? "bg-black/10 border-black/20 text-black" : "bg-white/20 border-white/30 text-white"} backdrop-blur-md border font-bold text-sm md:text-lg w-9 h-9 md:w-11 md:h-11 flex items-center justify-center rounded-lg shadow-sm`}>
                 {block.value.toString().padStart(2, "0")}
             </div>
-            <span className="text-[8px] md:text-[10px] text-white/90 font-medium mt-1 tracking-wider">
+            <span className={`${tone === "dark" ? "text-black/70" : "text-white/90"} text-[8px] md:text-[10px] font-medium mt-1 tracking-wider`}>
                 {block.label}
             </span>
             </div>
