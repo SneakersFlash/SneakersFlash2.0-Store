@@ -94,6 +94,10 @@ export const NAV_ITEMS = [
   // pembersihan katalog, jadi menu ini selalu berujung "NO PRODUCTS FOUND".
   // Kembalikan entri ini kalau stok apparel sudah masuk lagi.
   { label: "Brands", href: "/brands", megaMenu: null },
+  // Halaman campaign tanggal kembar. Ditulis di sini, bukan diambil dari
+  // CampaignsService, karena ini halaman kurasi tangan di /9-9-sale — bukan
+  // event katalog yang punya slug sendiri di /events/<slug>.
+  { label: "9.9 SALE", href: "/9-9-sale", megaMenu: null, isSale: true },
 ];
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────
@@ -466,11 +470,14 @@ function NavbarInner() {
                     href={item.href}
                     className={cn(
                       "nav-link flex items-center gap-1 px-3 py-2 font-bold",
-                      // Warna dipaksa dengan `!`: .nav-link.active (0,2,0)
-                      // mengalahkan .text-red-500 (0,1,0), sehingga tautan ini
-                      // justru berubah hitam persis saat halamannya dibuka.
+                      // Entri campaign tampil sebagai KOTAK kuning, bukan
+                      // teks berwarna: kuning #F6E70A di atas navbar putih
+                      // praktis tak terbaca sebagai teks. Warna dipaksa dengan
+                      // `!` karena .nav-link.active (0,2,0) mengalahkan utility
+                      // warna (0,1,0) — tanpa itu tautannya justru berubah
+                      // hitam persis saat halamannya sedang dibuka.
                       (item as { isSale?: boolean }).isSale
-                        ? "!text-red-500 hover:!text-red-400 font-extrabold tracking-tight"
+                        ? "bg-primary !text-primary-foreground hover:brightness-95 font-extrabold tracking-tight rounded"
                         : "text-black",
                       pathname === item.href && "active"
                     )}

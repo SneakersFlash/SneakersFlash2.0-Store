@@ -8,6 +8,7 @@ import { TopSearchBar } from "@/components/home/TopSearchBar";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect } from "react";
 import WelcomeVoucherPopup from "@/components/voucher/WelcomeVoucherPopup";
+import { Campaign99FloatingButton } from "@/components/campaign/Campaign99FloatingButton";
 
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -68,6 +69,14 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
         voucher={welcomeVoucher}
         onClose={clearWelcomeVoucher}
       />
+
+      {/* ─── Tombol mengambang campaign 9.9 ───────────────────────────────────
+           Menyembunyikan dirinya sendiri di /9-9-sale, di checkout, dan sesudah
+           campaign berakhir (9 Sep 23:59 WIB) — jadi mencabutnya tidak butuh
+           deploy, tinggal biarkan lewat. Komponennya baru perlu dilepas dari
+           sini kalau memang mau dibersihkan.
+      ──────────────────────────────────────────────────────────────────────── */}
+      <Campaign99FloatingButton />
 
     </>
   );
