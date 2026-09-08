@@ -68,6 +68,8 @@ export interface Product {
   salePrice?: number;
   weightGrams?: number;
   sku: string;
+  /** Kode artikel. Salinan event memakai prefiks: "LC-" (Clearance), "FS-" (Flash Sale). */
+  skuParent?: string | null;
   isActive: boolean;
   isFeatured: boolean;
   brand: Brand;

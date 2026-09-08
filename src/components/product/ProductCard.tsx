@@ -11,6 +11,7 @@ import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import type { Product } from "@/types/product.types";
 import { useCheckWishlist, useAddWishlist, useRemoveWishlist } from "@/lib/hooks/useWishlist";
+import { EventFooterBadge, isKurasiClearance } from "./EventFooterBadge";
 import { useAuthStore } from "@/lib/store/authStore";
 
 interface ProductCardProps {
@@ -96,8 +97,12 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
       >
         {/* ── Image Container ── */}
         <div className="relative w-full aspect-square sm:aspect-[5/4] bg-[#F5F5F5] shrink-0 overflow-hidden">
-        {/* ── Event Badge ── */}
-          {eventName && (
+        {/* ── Event Badge ──
+            Barang kurasi Clearance / 9.9 pakai pita selebar kartu di kaki gambar
+            (lihat EventFooterBadge, dirender di bawah). Event lain tetap memakai
+            pil pojok yang lama supaya perubahan ini tidak melebar ke luar kurasi
+            yang diminta. */}
+          {eventName && !isKurasiClearance(product) && (
             <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10">
               {/* Sengaja mungil: ukuran lama menutupi logo SneakersFlash di foto produk */}
               <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-black text-white text-[7px] sm:text-[8px] font-bold tracking-wide uppercase leading-none shadow-sm">
@@ -143,6 +148,10 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
               className="object-cover object-top opacity-0 scale-105 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-100"
             />
           )}
+
+          {/* Ditaruh SESUDAH kedua <Image> supaya pita tetap di atas foto yang
+              bertukar saat hover, tanpa perlu menaikkan z-index gambar. */}
+          <EventFooterBadge product={product} />
         </div>
 
         {/* ── Product Info ── */}
