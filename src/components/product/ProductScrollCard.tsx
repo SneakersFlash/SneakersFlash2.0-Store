@@ -169,11 +169,11 @@ export function ProductScrollCard({
             />
           )}
 
-          {/* Kartu ini dipakai rail "Fresh Picks" di /9-9-sale — isinya barang
-              kurasi yang sama dengan Daily & Active, jadi pitanya harus ikut
-              supaya tiga section itu tidak beda rasa. */}
-          <EventFooterBadge product={product} />
         </div>
+
+        {/* Pita event: DI BAWAH gambar. Rail "Fresh Picks" di /9-9-sale memakai
+            kartu ini, isinya kurasi yang sama dengan Daily & Active. */}
+        <EventFooterBadge product={product} />
 
         {/* ── Product info ── */}
         <div className="pt-3 lg:pt-4 px-3 lg:px-4 flex flex-col flex-1">

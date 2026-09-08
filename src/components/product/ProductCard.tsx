@@ -149,10 +149,11 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
             />
           )}
 
-          {/* Ditaruh SESUDAH kedua <Image> supaya pita tetap di atas foto yang
-              bertukar saat hover, tanpa perlu menaikkan z-index gambar. */}
-          <EventFooterBadge product={product} />
         </div>
+
+        {/* Pita event: DI BAWAH gambar, bukan menimpanya — tidak ada bagian
+            sepatu yang tertutup. Selebar kartu karena anak langsung <Link>. */}
+        <EventFooterBadge product={product} />
 
         {/* ── Product Info ── */}
         <div className="pt-3 sm:pt-4 px-3 sm:px-4 md:px-5 flex flex-col flex-1">

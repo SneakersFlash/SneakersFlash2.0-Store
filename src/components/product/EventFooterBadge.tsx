@@ -24,17 +24,17 @@ export function isKurasiClearance(product: Product): boolean {
 }
 
 /**
- * Pita nama event di KAKI gambar produk, selebar kartu.
+ * Pita nama event tepat DI BAWAH gambar produk, selebar kartu.
  *
  * Sebelumnya badge ini pil mungil di pojok kiri atas foto. Di sana ia bersaing
  * dengan isi foto: ukurannya sempat harus dikecilkan sampai 7px supaya tidak
- * menutupi logo SneakersFlash di produk, dan jadi nyaris tak terbaca. Di kaki
- * gambar ruangnya kosong (foto di-anchor `object-top`), jadi hurufnya bisa
- * dinaikkan lagi tanpa menutupi barangnya.
+ * menutupi logo SneakersFlash di produk, dan jadi nyaris tak terbaca.
  *
- * Menempel ke sisi kartu lewat `inset-x-0` di dalam wadah gambar yang sudah
- * `relative` + `overflow-hidden` — lebarnya otomatis mengikuti kartu, termasuk
- * saat kartu menyempit di rail yang bisa digeser.
+ * Dirender sebagai blok biasa SESUDAH wadah gambar, bukan overlay di atasnya —
+ * jadi tidak ada bagian sepatu yang tertutup, berapa pun crop-nya di layar
+ * kecil. Lebarnya mengikuti kartu dengan sendirinya karena ia anak langsung
+ * <Link> yang tidak berpadding horizontal; sisi kirinya rata dengan tepi kartu
+ * (kartu sudah `overflow-hidden`).
  */
 export function EventFooterBadge({
   product,
@@ -48,11 +48,9 @@ export function EventFooterBadge({
   return (
     <div
       className={cn(
-        // z-10 menyamai tombol wishlist: gambar punya `group-hover:scale-105`,
-        // tanpa ini pita ikut tertimpa saat kartu di-hover.
-        "absolute inset-x-0 bottom-0 z-10 bg-black/95 px-2 py-1 text-center sm:py-1.5",
-        // Pita cuma label; klik & hover harus tembus ke <Link> pembungkus kartu.
-        "pointer-events-none",
+        // `shrink-0`: kartu itu flex kolom — tanpa ini pita bisa terpencet tipis
+        // saat isi kartu lebih tinggi dari ruang yang ada.
+        "w-full shrink-0 bg-black px-2 py-1 text-center sm:py-1.5",
         className,
       )}
     >
