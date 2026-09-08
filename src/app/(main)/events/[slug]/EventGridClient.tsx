@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { ChevronDown } from "lucide-react";
 import { Pagination } from "@/components/common/Pagination"; 
 
 export function EventGridClient({
@@ -29,6 +31,10 @@ export function EventGridClient({
   // Ukuran boleh dipilih lebih dari satu; keadaannya hidup di URL supaya bisa
   // dibagikan, di-bookmark, dan tombol Back berperilaku seperti yang diharapkan.
   const terpilih = new Set(appliedSizes);
+
+  // Hanya soal tampilan di HP — sengaja TIDAK ikut ke URL. Panel dibiarkan
+  // terbuka sesudah memilih karena ukurannya bisa lebih dari satu.
+  const [panelUkuranTerbuka, setPanelUkuranTerbuka] = useState(false);
 
   const ubahUkuran = (ukuran: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -73,10 +79,32 @@ export function EventGridClient({
             )}
           </div>
 
+          {/* Di HP daftarnya dilipat jadi dropdown: event ini punya 38 ukuran,
+              dan barisan chip-nya memakan hampir satu layar penuh sebelum
+              produknya kelihatan. Di layar lebar chip tetap terbuka — di sana
+              ruangnya ada dan memilih ukuran jadi satu ketukan, bukan dua. */}
+          <button
+            type="button"
+            onClick={() => setPanelUkuranTerbuka((v) => !v)}
+            aria-expanded={panelUkuranTerbuka}
+            aria-controls="panel-ukuran"
+            className="sm:hidden flex w-full items-center justify-between gap-2 h-11 px-3 rounded-lg border border-gray-300 bg-white text-[13px] font-bold text-[#111111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+          >
+            <span>
+              {terpilih.size > 0
+                ? `${terpilih.size} ukuran dipilih`
+                : "Semua ukuran"}
+            </span>
+            <ChevronDown
+              className={`w-4 h-4 shrink-0 transition-transform ${panelUkuranTerbuka ? "rotate-180" : ""}`}
+            />
+          </button>
+
           <div
+            id="panel-ukuran"
             role="group"
             aria-label="Saring produk menurut ukuran"
-            className="flex flex-wrap gap-2"
+            className={`${panelUkuranTerbuka ? "flex" : "hidden"} sm:flex flex-wrap gap-2 mt-2 sm:mt-0`}
           >
             {sizeOptions.map((ukuran) => {
               const aktif = terpilih.has(ukuran);
