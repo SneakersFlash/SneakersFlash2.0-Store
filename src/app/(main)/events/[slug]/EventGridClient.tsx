@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import { Pagination } from "@/components/common/Pagination"; 
 
 export function EventGridClient({
@@ -32,9 +32,49 @@ export function EventGridClient({
   // dibagikan, di-bookmark, dan tombol Back berperilaku seperti yang diharapkan.
   const terpilih = new Set(appliedSizes);
 
-  // Hanya soal tampilan di HP — sengaja TIDAK ikut ke URL. Panel dibiarkan
-  // terbuka sesudah memilih karena ukurannya bisa lebih dari satu.
-  const [panelUkuranTerbuka, setPanelUkuranTerbuka] = useState(false);
+  // Lembar filter HP. Sengaja TIDAK ikut ke URL: itu murni tampilan.
+  const [sheetTerbuka, setSheetTerbuka] = useState(false);
+
+  // Pilihan di dalam lembar ditahan dulu, baru dikirim saat "Terapkan".
+  // Kalau tiap ketukan langsung navigasi, membuka lembar untuk memilih tiga
+  // ukuran berarti tiga kali muat ulang server di jaringan HP.
+  const [pilihanSementara, setPilihanSementara] = useState<string[]>(appliedSizes);
+
+  const bukaSheet = () => {
+    setPilihanSementara(appliedSizes);
+    setSheetTerbuka(true);
+  };
+
+  // Kunci scroll latar + tutup dengan Escape selama lembar terbuka.
+  useEffect(() => {
+    if (!sheetTerbuka) return;
+    const scrollAsli = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSheetTerbuka(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = scrollAsli;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [sheetTerbuka]);
+
+  const toggleSementara = (ukuran: string) =>
+    setPilihanSementara((sebelumnya) =>
+      sebelumnya.includes(ukuran)
+        ? sebelumnya.filter((u) => u !== ukuran)
+        : [...sebelumnya, ukuran],
+    );
+
+  const terapkanSementara = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (pilihanSementara.length) params.set("size", pilihanSementara.join(","));
+    else params.delete("size");
+    params.delete("page");
+    setSheetTerbuka(false);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const ubahUkuran = (ukuran: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -79,32 +119,38 @@ export function EventGridClient({
             )}
           </div>
 
-          {/* Di HP daftarnya dilipat jadi dropdown: event ini punya 38 ukuran,
-              dan barisan chip-nya memakan hampir satu layar penuh sebelum
-              produknya kelihatan. Di layar lebar chip tetap terbuka — di sana
-              ruangnya ada dan memilih ukuran jadi satu ketukan, bukan dua. */}
+          {/* HP: pemicu lembar filter. Event ini punya 38 ukuran — membentangkan
+              chip-nya inline mendorong grid produk keluar layar, dan melipatnya
+              jadi panel inline cuma memindahkan masalah yang sama satu ketukan
+              ke belakang. Lembar dari bawah menaruh daftarnya di atas konten,
+              bisa ditutup dengan tap di luar, dan tidak menggeser apa pun. */}
           <button
             type="button"
-            onClick={() => setPanelUkuranTerbuka((v) => !v)}
-            aria-expanded={panelUkuranTerbuka}
-            aria-controls="panel-ukuran"
-            className="sm:hidden flex w-full items-center justify-between gap-2 h-11 px-3 rounded-lg border border-gray-300 bg-white text-[13px] font-bold text-[#111111] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+            onClick={bukaSheet}
+            aria-haspopup="dialog"
+            aria-expanded={sheetTerbuka}
+            className="sm:hidden flex w-full items-center justify-between gap-2 h-12 px-4 rounded-xl border border-gray-300 bg-white text-[13px] font-bold text-[#111111] active:bg-gray-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
           >
-            <span>
-              {terpilih.size > 0
-                ? `${terpilih.size} ukuran dipilih`
-                : "Semua ukuran"}
+            <span className="flex items-center gap-2">
+              <span>Ukuran</span>
+              {terpilih.size > 0 && (
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-black px-1.5 text-[11px] font-bold text-white">
+                  {terpilih.size}
+                </span>
+              )}
             </span>
-            <ChevronDown
-              className={`w-4 h-4 shrink-0 transition-transform ${panelUkuranTerbuka ? "rotate-180" : ""}`}
-            />
+            <span className="flex items-center gap-1.5 text-gray-500 font-semibold">
+              {terpilih.size > 0 ? [...terpilih].join(", ") : "Semua"}
+              <ChevronDown className="w-4 h-4 shrink-0" />
+            </span>
           </button>
 
+          {/* Layar lebar: chip tetap terbuka — ruangnya ada dan memilih ukuran
+              cukup satu ketukan, tanpa perlu lembar. */}
           <div
-            id="panel-ukuran"
             role="group"
             aria-label="Saring produk menurut ukuran"
-            className={`${panelUkuranTerbuka ? "flex" : "hidden"} sm:flex flex-wrap gap-2 mt-2 sm:mt-0`}
+            className="hidden sm:flex flex-wrap gap-2"
           >
             {sizeOptions.map((ukuran) => {
               const aktif = terpilih.has(ukuran);
@@ -126,6 +172,88 @@ export function EventGridClient({
                 </button>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* ── Lembar filter ukuran (HP) ─────────────────────────────────────
+          Muncul dari bawah, menutupi konten alih-alih mendorongnya. Ditutup
+          lewat tap latar, tombol X, atau Escape. Pilihan ditahan lokal lalu
+          dikirim sekali saat "Terapkan" — bukan satu navigasi per ketukan. */}
+      {sheetTerbuka && (
+        <div className="sm:hidden fixed inset-0 z-50 flex flex-col justify-end">
+          <button
+            type="button"
+            aria-label="Tutup pilihan ukuran"
+            onClick={() => setSheetTerbuka(false)}
+            className="absolute inset-0 h-full w-full bg-black/50"
+          />
+
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Pilih ukuran"
+            className="relative w-full rounded-t-2xl bg-white shadow-2xl animate-fadeInUp"
+          >
+            <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-[#111111]">
+                Pilih Ukuran
+              </h3>
+              <button
+                type="button"
+                onClick={() => setSheetTerbuka(false)}
+                aria-label="Tutup"
+                className="-mr-2 flex h-11 w-11 items-center justify-center rounded-full text-gray-500 active:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* max-h + overflow: 38 ukuran tidak boleh mendorong tombol
+                Terapkan keluar layar. */}
+            <div className="max-h-[46vh] overflow-y-auto px-4 py-4">
+              <div className="grid grid-cols-4 gap-2">
+                {sizeOptions.map((ukuran) => {
+                  const aktif = pilihanSementara.includes(ukuran);
+                  return (
+                    <button
+                      key={ukuran}
+                      type="button"
+                      onClick={() => toggleSementara(ukuran)}
+                      aria-pressed={aktif}
+                      className={`h-12 rounded-xl border text-[13px] font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${
+                        aktif
+                          ? "border-black bg-black text-white"
+                          : "border-gray-300 bg-white text-[#111111] active:bg-gray-50"
+                      }`}
+                    >
+                      {ukuran}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* pb tambahan menghindari home indicator iOS. */}
+            <div className="flex items-center gap-3 border-t border-gray-100 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <button
+                type="button"
+                onClick={() => setPilihanSementara([])}
+                disabled={pilihanSementara.length === 0}
+                className="h-12 shrink-0 px-4 text-[13px] font-bold text-gray-600 disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              >
+                Reset
+              </button>
+              <button
+                type="button"
+                onClick={terapkanSementara}
+                className="h-12 flex-1 rounded-xl bg-black text-[14px] font-bold text-white active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              >
+                {pilihanSementara.length > 0
+                  ? `Terapkan (${pilihanSementara.length})`
+                  : "Lihat semua ukuran"}
+              </button>
+            </div>
           </div>
         </div>
       )}

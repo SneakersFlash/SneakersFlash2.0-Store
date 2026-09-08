@@ -47,7 +47,7 @@ export function Campaign99FloatingButton() {
       aria-label="Buka halaman 9.9 Next In Rotation"
       className={cn(
         'fixed z-40 right-4 flex items-center gap-2.5 rounded-full',
-        'bg-primary text-primary-foreground shadow-lg shadow-black/25',
+        'bg-[#F7E608] text-[#0D0D0D] shadow-lg shadow-black/25',
         'pl-3 pr-4 py-2.5 group',
         'transition-all duration-300 ease-out hover:brightness-95 active:scale-95',
         // Di layar kecil bottom-nav (~64px) menutupi kanan bawah, jadi tombol

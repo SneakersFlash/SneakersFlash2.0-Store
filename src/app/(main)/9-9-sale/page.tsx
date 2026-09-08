@@ -110,9 +110,9 @@ export default async function Campaign99Page() {
         {/* ── Penjelas rotation: inti pesan campaign ── */}
         <section id="rotation-99" className="pt-10 pb-2 scroll-mt-24">
           <SectionHeading
-            eyebrow="The Rotation"
-            title="Different Days Call For Different Pairs"
-            subtitle="Satu buat harian, satu buat hari yang lebih bergerak — dan satu slot yang biasanya masih kosong. 9.9 alasan buat ngisinya."
+            eyebrow="Next In Rotation"
+            title="Different Days. Different Pairs."
+            subtitle="Dari daily pair sampai active pair, setiap hari punya rotasinya sendiri. 9.9 waktunya cari pair berikutnya."
           />
           <RotationExplainer99 />
         </section>

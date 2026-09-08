@@ -50,7 +50,7 @@ export function Campaign99Hero() {
   return (
     <>
       {/* ── Strip promo berjalan ── */}
-      <div className="w-full bg-primary text-primary-foreground overflow-hidden py-1.5">
+      <div className="w-full bg-[#F7E608] text-[#0D0D0D] overflow-hidden py-1.5">
         <div className="flex w-max gap-8 animate-marquee88" aria-hidden="true">
           {/* Digandakan — lihat @keyframes marquee88 di globals.css */}
           {[...STRIP, ...STRIP, ...STRIP, ...STRIP].map((teks, i) => (
@@ -65,44 +65,50 @@ export function Campaign99Hero() {
       </div>
 
       <div className="container mx-auto px-4 max-w-7xl pt-4 md:pt-6">
-        <section className="relative w-full overflow-hidden rounded-[20px] md:rounded-[24px] shadow-lg bg-[#0D0D0D]">
+        {/* Latar panel kiri memakai BG_LAYOUT.jpg (putih bergrid tipis).
+            Panel kanan tetap kuning penuh dan menimpanya di separuh kanan.
+            Karena latarnya kini TERANG, semua teks di panel kiri dibalik jadi
+            near-black — kuning di atas putih cuma 1,3:1 dan tak terbaca. */}
+        <section
+          className="relative w-full overflow-hidden rounded-[20px] md:rounded-[24px] shadow-lg bg-white bg-[url('/images/BG_LAYOUT.jpg')] bg-cover bg-center"
+        >
           <div className="relative grid lg:grid-cols-[1.35fr_1fr]">
             {/* ═══ Kiri: pesan ═══ */}
             <div className="relative p-6 pb-8 md:p-9 lg:p-11 flex flex-col gap-6 justify-between min-h-[420px] lg:min-h-[520px]">
-              <Selotip className="hidden lg:block top-[14%] -right-3 h-6 w-16 rotate-[-8deg] bg-primary" />
-              <Selotip className="hidden lg:block bottom-[16%] right-8 h-5 w-24 rotate-[6deg] bg-white/90" />
+              <Selotip className="hidden lg:block top-[14%] -right-3 h-6 w-16 rotate-[-8deg] bg-[#F7E608]" />
+              <Selotip className="hidden lg:block bottom-[16%] right-8 h-5 w-24 rotate-[6deg] bg-[#0D0D0D]/10" />
 
               <div className="flex flex-col items-start gap-3">
                 <h1 className="flex flex-col leading-[0.86] tracking-[-0.03em]">
-                  <span className="text-primary text-6xl md:text-7xl lg:text-8xl font-black">
+                  <span className="text-[#0D0D0D] text-6xl md:text-7xl lg:text-8xl font-black">
                     9.9
                   </span>
-                  <span className="text-white text-4xl md:text-6xl lg:text-7xl font-black">
+                  <span className="text-[#0D0D0D] text-4xl md:text-6xl lg:text-7xl font-black">
                     NEXT IN
                   </span>
-                  <span className="text-white text-4xl md:text-6xl lg:text-7xl font-black">
+                  <span className="text-[#0D0D0D] text-4xl md:text-6xl lg:text-7xl font-black">
                     ROTATION
                   </span>
                 </h1>
 
-                <p className="teks-ringan mt-1 text-base md:text-lg text-white/80 max-w-md leading-relaxed">
+                <p className="teks-ringan mt-1 text-base md:text-lg text-[#0D0D0D]/70 max-w-md leading-relaxed">
                   {CAMPAIGN_99_TAGLINE}
                 </p>
 
-                <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.22em] text-primary">
+                <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.22em] text-[#0D0D0D]/65">
                   {CAMPAIGN_99_PERIODE}
                 </span>
 
                 <div className="flex flex-wrap gap-2.5 pt-3">
                   <Link
                     href="#voucher-99"
-                    className="inline-flex items-center justify-center bg-primary text-primary-foreground px-6 py-3 font-black uppercase tracking-widest text-sm transition-all duration-200 active:scale-95 hover:brightness-95"
+                    className="inline-flex items-center justify-center bg-[#F7E608] text-[#0D0D0D] px-6 py-3 font-black uppercase tracking-widest text-sm transition-all duration-200 active:scale-95 hover:brightness-95"
                   >
                     Claim Voucher
                   </Link>
                   <Link
                     href="#rotation-99"
-                    className="inline-flex items-center justify-center border border-white/25 bg-white/5 backdrop-blur-md text-white px-6 py-3 font-black uppercase tracking-widest text-sm transition-all duration-200 active:scale-95 hover:bg-white hover:text-black"
+                    className="inline-flex items-center justify-center border border-[#0D0D0D]/15 bg-[#F6F6F6] text-[#0D0D0D] px-6 py-3 font-black uppercase tracking-widest text-sm transition-all duration-200 active:scale-95 hover:bg-[#0D0D0D] hover:text-white"
                   >
                     Find Your Next Pair
                   </Link>
@@ -110,16 +116,17 @@ export function Campaign99Hero() {
               </div>
 
               {/* ── Baris kepercayaan ── */}
-              <div className="flex flex-wrap gap-x-6 gap-y-2 pt-5 border-t border-white/15">
+              <div className="flex flex-wrap gap-x-6 gap-y-2.5 pt-5 border-t border-[#0D0D0D]/12">
                 {KEUNGGULAN.map((teks) => (
                   <span
                     key={teks}
-                    className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-white/75"
+                    className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-[#0D0D0D]/75"
                   >
-                    <Check
-                      className="w-3.5 h-3.5 shrink-0 text-primary"
-                      strokeWidth={3}
-                    />
+                    {/* Centang duduk di bulatan hitam — di latar putih, ikon
+                        telanjang hilang di antara garis grid. */}
+                    <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-[#0D0D0D]">
+                      <Check className="h-3 w-3 text-white" strokeWidth={3.5} />
+                    </span>
                     {teks}
                   </span>
                 ))}
@@ -129,7 +136,7 @@ export function Campaign99Hero() {
             {/* ═══ Kanan: penawaran ═══
                 Kuning penuh, sesuai brief: di fase commercial kuning jadi warna
                 dominan, bukan sekadar aksen. */}
-            <div className="relative bg-primary text-primary-foreground p-6 md:p-9 lg:p-10 flex flex-col justify-center gap-6">
+            <div className="relative bg-[#F7E608] text-[#0D0D0D] p-6 md:p-9 lg:p-10 flex flex-col justify-center gap-6">
               <Selotip className="top-6 left-6 h-5 w-20 rotate-[-7deg] bg-[#0D0D0D]" />
               <Selotip className="bottom-8 right-6 h-5 w-16 rotate-[9deg] bg-white/85" />
 

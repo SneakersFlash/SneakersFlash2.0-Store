@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { cn } from "@/lib/utils/cn";
 import type { Product } from "@/types/product.types";
 import {
@@ -78,16 +80,34 @@ export function EventFooterBadge({
       className={cn(
         // `shrink-0`: kartu itu flex kolom — tanpa ini pita bisa terpencet tipis
         // saat isi kartu lebih tinggi dari ruang yang ada.
-        "w-full shrink-0 px-2 py-1 text-center sm:py-1.5",
+        "flex w-full shrink-0 items-center gap-2 px-2.5 py-1 sm:py-1.5",
+        // Tanpa logo (event non-campaign) label tetap di tengah seperti dulu.
+        kampanye ? "justify-start text-left" : "justify-center text-center",
         // Kuning brand + teks near-black: token toko, BUKAN hex lepas — brief
         // 9.9 memakai kuning sebagai jembatan sosmed ↔ website, dan pita hero
         // di halaman campaign persis memakai pasangan token yang sama.
         // Kontras terukur 15,4:1, jauh di atas ambang WCAG 4.5:1. Kuning
         // MENUNTUT teks gelap: putih di atas kuning cuma 1,28:1 — tak terbaca.
-        kampanye ? "bg-primary text-primary-foreground" : "bg-black text-white",
+        kampanye ? "bg-[#F7E608] text-[#0D0D0D]" : "bg-black text-white",
         className,
       )}
     >
+      {/* Logo 9.9 di kiri, bukan di atas foto: sisi kiri pita ini satu-satunya
+          tempat yang tidak menutupi sepatu. Kotak logonya kuning sama dengan
+          pita, jadi yang terbaca hanya angka hitamnya — itu memang maunya.
+          Berkasnya di-rename dari "LOGO 99.png": spasi di nama file harus
+          di-encode di URL dan gampang jadi 404 lewat CDN/nginx. */}
+      {kampanye && (
+        <Image
+          src="/images/logo-99.png"
+          alt=""
+          aria-hidden="true"
+          width={40}
+          height={36}
+          className="h-5 w-auto shrink-0 sm:h-6"
+        />
+      )}
+
       <span
         className={cn(
           "block text-[12px] font-black uppercase leading-tight sm:text-[15px]",

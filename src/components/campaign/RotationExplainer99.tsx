@@ -17,33 +17,33 @@ const SLOT = [
     nomor: '01',
     judul: 'Daily',
     baris: [
-      'Lifestyle sneakers',
-      'Neutral & versatile',
-      'Office • campus • hangout',
+      'Everyday sneakers',
+      'Easy to wear. Easy to rotate.',
+      'Office • campus • wherever the day goes',
     ],
     kicker: 'Made for the everyday rotation.',
     href: '#daily-99',
     // Kartu hitam: judul & kicker kuning, isi putih.
     kelas: 'bg-[#0D0D0D] text-white',
-    kelasJudul: 'text-primary',
+    kelasJudul: 'text-[#F7E608]',
     kelasIsi: 'text-white/75',
-    kelasKicker: 'text-primary',
+    kelasKicker: 'text-[#F7E608]',
   },
   {
     nomor: '02',
     judul: 'Active',
     baris: [
       'Running & training',
-      'Comfort & cushioning',
-      'For days that keep moving',
+      'Built for active days',
+      'From daily miles to training sessions',
     ],
     kicker: 'Ready when your day gets moving.',
     href: '#active-99',
     // Kartu kuning: semuanya hitam.
-    kelas: 'bg-primary text-primary-foreground',
-    kelasJudul: 'text-primary-foreground',
-    kelasIsi: 'text-primary-foreground/75',
-    kelasKicker: 'text-primary-foreground',
+    kelas: 'bg-[#F7E608] text-[#0D0D0D]',
+    kelasJudul: 'text-[#0D0D0D]',
+    kelasIsi: 'text-[#0D0D0D]/75',
+    kelasKicker: 'text-[#0D0D0D]',
   },
 ];
 
@@ -105,32 +105,32 @@ export function RotationExplainer99() {
       {/* ── Slot ketiga: sengaja kosong ── */}
       <Link
         href="#fresh-99"
-        className="group flex flex-col gap-4 p-6 md:p-7 rounded-2xl border-2 border-dashed border-foreground/30 transition-colors duration-200 hover:border-primary"
+        className="group flex flex-col gap-4 p-6 md:p-7 rounded-2xl border-2 border-dashed border-foreground/30 transition-colors duration-200 hover:border-[#F7E608]"
       >
         <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-muted-foreground">
-          03 Next ?
+          03 What&apos;s Next?
         </span>
 
         <h3 className="text-2xl md:text-3xl font-black uppercase leading-[0.95] tracking-tight">
-          Next
+          Fresh
           <br />
-          In Rotation
+          Picks
         </h3>
 
         {/* Tanda tanya besar = slot yang belum terisi. aria-hidden karena
             maknanya sudah ditulis di teks di bawahnya. */}
         <span
           aria-hidden="true"
-          className="text-5xl md:text-6xl font-black text-primary leading-none"
+          className="text-5xl md:text-6xl font-black text-[#F7E608] leading-none"
         >
           ?
         </span>
 
         <p className="teks-ringan text-sm leading-relaxed text-muted-foreground">
-          Kebutuhan berikutnya yang belum terisi di rotasi kamu.
+          Pilihan yang layak masuk ke slot berikutnya di rotasi lo.
         </p>
 
-        <span className="mt-auto pt-4 text-[11px] font-bold uppercase tracking-widest text-foreground group-hover:text-primary transition-colors">
+        <span className="mt-auto pt-4 text-[11px] font-bold uppercase tracking-widest text-foreground group-hover:text-[#F7E608] transition-colors">
           What&apos;s next in yours?
         </span>
       </Link>
