@@ -66,10 +66,10 @@ export const SKU_ACTIVE: string[] = [
 export const SKU_FRESH: string[] = [
   "LC-CJ1288001", // NIKE Air Zoom Spiridon Cage 2 Lt Smoke Grey
   "LC-1203A600250", // ASICS Gel Nimbus 9 Oatmeal Indigo Fog
-  "LC-1201A942100", // ASICS EX89 x Needles White Purple Grey
+  "LC-U998BG", // NEW BALANCE 998 Made in USA Brown Green
   "LC-IB7025200", // NIKE Air Max Dn NRG Neutral Olive
   "LC-ID2151", // ADIDAS Superstar 82 Crystal White Clear Blue
-  "LC-U998BG", // NEW BALANCE 998 Made in USA Brown Green
+  "LC-1201A942100", // ASICS EX89 x Needles White Purple Grey
   "LC-FN5215141", // NIKE Air Jordan 1 Mid SE White Industrial Blue
   "LC-DV2440002", // NIKE Lunar Roam Dark Smoke Grey Black
 ];
