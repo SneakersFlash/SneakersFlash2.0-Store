@@ -11,7 +11,11 @@ import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import type { Product } from "@/types/product.types";
 import { useCheckWishlist, useAddWishlist, useRemoveWishlist } from "@/lib/hooks/useWishlist";
-import { EventFooterBadge, isKurasiClearance } from "./EventFooterBadge";
+import {
+  CampaignCornerLogo,
+  EventFooterBadge,
+  isKurasiClearance,
+} from "./EventFooterBadge";
 import { useAuthStore } from "@/lib/store/authStore";
 
 interface ProductCardProps {
@@ -149,6 +153,9 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
             />
           )}
 
+          {/* Stiker 9.9 di pojok kiri-atas foto — terpisah dari pita di kaki
+              kartu supaya bentuk logonya tidak lebur ke dalam pita kuning. */}
+          <CampaignCornerLogo product={product} />
         </div>
 
         {/* Pita event: DI BAWAH gambar, bukan menimpanya — tidak ada bagian

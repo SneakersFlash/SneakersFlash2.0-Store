@@ -11,7 +11,7 @@ import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import type { Product } from "@/types/product.types";
 import { useAddWishlist, useCheckWishlist, useRemoveWishlist } from "@/lib/hooks/useWishlist";
 import { useAuthStore } from "@/lib/store/authStore";
-import { EventFooterBadge } from "./EventFooterBadge";
+import { CampaignCornerLogo, EventFooterBadge } from "./EventFooterBadge";
 
 interface ProductScrollCardProps {
   product: Product;
@@ -169,6 +169,8 @@ export function ProductScrollCard({
             />
           )}
 
+          {/* Stiker 9.9 di pojok kiri-atas foto — lihat ProductCard. */}
+          <CampaignCornerLogo product={product} />
         </div>
 
         {/* Pita event: DI BAWAH gambar. Rail "Fresh Picks" di /9-9-sale memakai

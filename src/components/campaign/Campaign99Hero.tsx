@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { CountdownTimer } from '@/components/home/CountdownTimer';
@@ -8,7 +9,6 @@ import {
   CAMPAIGN_99_BERAKHIR,
   CAMPAIGN_99_MULAI,
   CAMPAIGN_99_PERIODE,
-  CAMPAIGN_99_TAGLINE,
 } from '@/lib/campaign/next-in-rotation-99';
 
 /**
@@ -79,21 +79,32 @@ export function Campaign99Hero() {
               <Selotip className="hidden lg:block bottom-[16%] right-8 h-5 w-24 rotate-[6deg] bg-[#0D0D0D]/10" />
 
               <div className="flex flex-col items-start gap-3">
-                <h1 className="flex flex-col leading-[0.86] tracking-[-0.03em]">
-                  <span className="text-[#0D0D0D] text-6xl md:text-7xl lg:text-8xl font-black">
-                    9.9
-                  </span>
-                  <span className="text-[#0D0D0D] text-4xl md:text-6xl lg:text-7xl font-black">
-                    NEXT IN
-                  </span>
-                  <span className="text-[#0D0D0D] text-4xl md:text-6xl lg:text-7xl font-black">
-                    ROTATION
-                  </span>
+                {/* Kunci visual campaign dipakai sebagai judul, menggantikan
+                    susunan teks "9.9 / NEXT IN / ROTATION" + tagline. Tetap
+                    dibungkus <h1> dan alt-nya memuat nama campaign — kalau
+                    tidak, halaman ini kehilangan judulnya di mata mesin
+                    pencari dan pembaca layar. `priority` karena ini elemen
+                    terbesar di layar pertama (LCP). */}
+                <h1 className="m-0">
+                  <Image
+                    src="/images/logo_square_2.png"
+                    alt="9.9 Next In Rotation — Different days call for different pairs"
+                    width={1730}
+                    height={1408}
+                    priority
+                    className="w-[240px] md:w-[330px] lg:w-[400px] h-auto"
+                  />
                 </h1>
 
-                <p className="teks-ringan mt-1 text-base md:text-lg text-[#0D0D0D]/70 max-w-md leading-relaxed">
-                  {CAMPAIGN_99_TAGLINE}
-                </p>
+                {/* Penawaran: alasan beli, ditaruh tepat di bawah kunci visual. */}
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-[#0D0D0D] text-2xl md:text-3xl lg:text-4xl font-black uppercase leading-none tracking-tight">
+                    Disc. up to 70%
+                  </span>
+                  <span className="text-[#0D0D0D]/75 text-base md:text-lg lg:text-xl font-bold uppercase leading-tight tracking-tight">
+                    Extra Voucher up to 300K
+                  </span>
+                </div>
 
                 <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.22em] text-[#0D0D0D]/65">
                   {CAMPAIGN_99_PERIODE}

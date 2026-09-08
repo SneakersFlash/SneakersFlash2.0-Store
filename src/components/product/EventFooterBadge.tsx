@@ -80,9 +80,7 @@ export function EventFooterBadge({
       className={cn(
         // `shrink-0`: kartu itu flex kolom — tanpa ini pita bisa terpencet tipis
         // saat isi kartu lebih tinggi dari ruang yang ada.
-        "flex w-full shrink-0 items-center gap-2 px-2.5 py-1 sm:py-1.5",
-        // Tanpa logo (event non-campaign) label tetap di tengah seperti dulu.
-        kampanye ? "justify-start text-left" : "justify-center text-center",
+        "w-full shrink-0 px-2 py-1 text-center sm:py-1.5",
         // Kuning brand + teks near-black: token toko, BUKAN hex lepas — brief
         // 9.9 memakai kuning sebagai jembatan sosmed ↔ website, dan pita hero
         // di halaman campaign persis memakai pasangan token yang sama.
@@ -92,22 +90,6 @@ export function EventFooterBadge({
         className,
       )}
     >
-      {/* Logo 9.9 di kiri, bukan di atas foto: sisi kiri pita ini satu-satunya
-          tempat yang tidak menutupi sepatu. Kotak logonya kuning sama dengan
-          pita, jadi yang terbaca hanya angka hitamnya — itu memang maunya.
-          Berkasnya di-rename dari "LOGO 99.png": spasi di nama file harus
-          di-encode di URL dan gampang jadi 404 lewat CDN/nginx. */}
-      {kampanye && (
-        <Image
-          src="/images/logo-99.png"
-          alt=""
-          aria-hidden="true"
-          width={40}
-          height={36}
-          className="h-5 w-auto shrink-0 sm:h-6"
-        />
-      )}
-
       <span
         className={cn(
           "block text-[12px] font-black uppercase leading-tight sm:text-[15px]",
@@ -122,5 +104,40 @@ export function EventFooterBadge({
         {label}
       </span>
     </div>
+  );
+}
+
+/**
+ * Stiker logo 9.9 di pojok KIRI-ATAS foto produk.
+ *
+ * Dipisah dari pita di kaki kartu supaya keduanya tidak menyatu jadi satu
+ * balok kuning: kotak logonya kuning sama persis dengan pita, jadi kalau
+ * ditempel di sana yang terbaca cuma angkanya dan bentuk logonya hilang.
+ *
+ * Ditaruh di dalam wadah gambar yang sudah `relative` + `overflow-hidden`.
+ * Ukurannya sengaja kecil — foto produk SneakersFlash punya logo sendiri di
+ * pojok, dan stiker yang kebesaran menutupinya.
+ */
+export function CampaignCornerLogo({
+  product,
+  className,
+}: {
+  product: Product;
+  className?: string;
+}) {
+  if (!isKurasiClearance(product) || !sedangKampanye99()) return null;
+
+  return (
+    <Image
+      src="/images/logo-99.png"
+      alt=""
+      aria-hidden="true"
+      width={1290}
+      height={1152}
+      className={cn(
+        "absolute left-2 top-2 z-10 h-7 w-auto rounded-[5px] shadow-sm sm:left-3 sm:top-3 sm:h-9",
+        className,
+      )}
+    />
   );
 }
