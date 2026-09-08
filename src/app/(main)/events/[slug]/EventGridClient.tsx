@@ -5,7 +5,17 @@ import Image from "next/image";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Pagination } from "@/components/common/Pagination"; 
 
-export function EventGridClient({ products, meta }: { products: any[], meta: any }) {
+export function EventGridClient({
+  products,
+  meta,
+  sizeOptions = [],
+  appliedSizes = [],
+}: {
+  products: any[];
+  meta: any;
+  sizeOptions?: string[];
+  appliedSizes?: string[];
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -16,8 +26,88 @@ export function EventGridClient({ products, meta }: { products: any[], meta: any
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
+  // Ukuran boleh dipilih lebih dari satu; keadaannya hidup di URL supaya bisa
+  // dibagikan, di-bookmark, dan tombol Back berperilaku seperti yang diharapkan.
+  const terpilih = new Set(appliedSizes);
+
+  const ubahUkuran = (ukuran: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    const berikutnya = new Set(terpilih);
+    berikutnya.has(ukuran) ? berikutnya.delete(ukuran) : berikutnya.add(ukuran);
+
+    if (berikutnya.size) params.set("size", [...berikutnya].join(","));
+    else params.delete("size");
+    // Jumlah halaman menyusut saat difilter — bertahan di halaman 5 bakal
+    // memunculkan grid kosong.
+    params.delete("page");
+
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const bersihkan = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("size");
+    params.delete("page");
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
   return (
     <div className="w-full mt-4 md:mt-6">
+      {/* ── Filter ukuran ──
+          Pilihannya datang dari backend dan hanya memuat ukuran yang masih ada
+          stoknya di event ini, jadi tidak ada chip yang berujung nol hasil. */}
+      {sizeOptions.length > 0 && (
+        <div className="mb-4 md:mb-6">
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <span className="text-[11px] md:text-xs font-bold uppercase tracking-widest text-[#111111]">
+              Pilih Ukuran
+            </span>
+            {terpilih.size > 0 && (
+              <button
+                type="button"
+                onClick={bersihkan}
+                className="text-[11px] md:text-xs font-semibold text-gray-500 underline underline-offset-2 hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black"
+              >
+                Hapus filter ({terpilih.size})
+              </button>
+            )}
+          </div>
+
+          <div
+            role="group"
+            aria-label="Saring produk menurut ukuran"
+            className="flex flex-wrap gap-2"
+          >
+            {sizeOptions.map((ukuran) => {
+              const aktif = terpilih.has(ukuran);
+              return (
+                <button
+                  key={ukuran}
+                  type="button"
+                  onClick={() => ubahUkuran(ukuran)}
+                  aria-pressed={aktif}
+                  // h-11 + min-w-11 = 44px, ambang target sentuh; gap-2 menjaga
+                  // jarak antar tombol tetap 8px.
+                  className={`h-11 min-w-11 px-3 rounded-lg border text-[13px] font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${
+                    aktif
+                      ? "bg-black text-white border-black"
+                      : "bg-white text-[#111111] border-gray-300 hover:border-black"
+                  }`}
+                >
+                  {ukuran}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {products.length === 0 && (
+        <p className="py-10 text-center text-sm text-gray-500">
+          Tidak ada produk untuk ukuran yang dipilih.
+        </p>
+      )}
+
       {/* UBAHAN UTAMA: 
         1. gap-2 di mobile agar ada jarak antar kartu. 
         2. Hapus border aneh (border-t border-l)

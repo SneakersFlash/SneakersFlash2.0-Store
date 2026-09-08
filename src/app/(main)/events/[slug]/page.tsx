@@ -13,8 +13,14 @@ type EventPageProps = {
 };
 
 // ── React.cache agar API tidak dipanggil 2x (sekali di generateMetadata, sekali di page) ──
-const getEventData = cache(async (slug: string, page: number = 1) => {
-    return CampaignsService.getEventBySlug(slug, { page, limit: 16 });
+const getEventData = cache(async (slug: string, page: number = 1, size: string = "") => {
+    // `size` ikut jadi bagian argumen cache: tanpa itu React.cache mengembalikan
+    // hasil TANPA filter untuk permintaan yang berfilter (slug+page sama).
+    return CampaignsService.getEventBySlug(slug, {
+        page,
+        limit: 16,
+        ...(size ? { size } : {}),
+    });
 });
 
 // ── generateMetadata: inject <head> dinamis dari data backend ──
@@ -59,11 +65,14 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
     const resolvedSearchParams = await searchParams;
 
     const currentPage = resolvedSearchParams.page ? Number(resolvedSearchParams.page) : 1;
+    const ukuranTerpilih = Array.isArray(resolvedSearchParams.size)
+        ? resolvedSearchParams.size.join(",")
+        : (resolvedSearchParams.size ?? "");
 
     let eventData;
     try {
         // Pakai getEventData yang sudah di-cache — tidak ada double request
-        eventData = await getEventData(resolvedParams.slug, currentPage);
+        eventData = await getEventData(resolvedParams.slug, currentPage, ukuranTerpilih);
     } catch (error) {
         notFound();
     }
@@ -149,6 +158,8 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
         <EventGridClient 
           products={eventData.products} 
           meta={eventData.meta} 
+          sizeOptions={eventData.sizeOptions ?? []}
+          appliedSizes={eventData.appliedSizes ?? []}
         />
       </div>
 

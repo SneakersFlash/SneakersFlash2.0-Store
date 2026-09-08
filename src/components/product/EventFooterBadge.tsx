@@ -90,10 +90,13 @@ export function EventFooterBadge({
     >
       <span
         className={cn(
-          "block truncate text-[9px] font-bold uppercase leading-tight sm:text-[11px]",
-          // "9.9 NEXT IN ROTATION" jauh lebih panjang dari "Clearance Sale";
-          // tracking dirapatkan supaya tetap utuh di kartu rail yang cuma 160px.
-          kampanye ? "tracking-[0.06em]" : "tracking-[0.12em]",
+          "block text-[12px] font-black uppercase leading-tight sm:text-[15px]",
+          // "9.9 NEXT IN ROTATION" jauh lebih panjang dari "Clearance Sale".
+          // Tracking dirapatkan DAN teks dibiarkan turun baris (bukan truncate):
+          // di kartu rail yang cuma 160px, memotong tulisan jauh lebih buruk
+          // daripada memakai dua baris — semua kartu memakai label yang sama,
+          // jadi tingginya tetap seragam sebaris.
+          kampanye ? "tracking-[0.01em]" : "tracking-[0.08em]",
         )}
       >
         {label}
