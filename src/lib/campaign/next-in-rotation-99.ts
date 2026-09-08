@@ -39,13 +39,40 @@ export const CAMPAIGN_99_TAGLINE = "Different days call for different pairs.";
    ═══════════════════════════════════════════════════════════════════════════ */
 
 /** 01 DAILY — lifestyle, netral, dipakai hampir tiap hari. */
-export const SKU_DAILY: string[] = [];
+export const SKU_DAILY: string[] = [
+  "LC-FQ6965700", // NIKE Dunk Low QS Dark Curry White
+  "LC-IG6190", // ADIDAS Hand 2 Grey Light Blue Gum
+  "LC-FQ8762100", // NIKE Field General 82 SP White Varsity Red
+  "LC-39771707", // PUMA Seoul White Red Fire
+  "LC-FZ1347100", // NIKE Cortez White Varsity Red Varsity Blue
+  "LC-FQ9079300", // NIKE LD 1000 SP Vintage Green
+  "LC-39684101", // PUMA Palermo Vintage Hyperlink Blue
+  "LC-A11752C", // CONVERSE CT 70s OX Clay Court Orange
+];
 
 /** 02 ACTIVE — running & training, buat hari yang lebih bergerak. */
-export const SKU_ACTIVE: string[] = [];
+export const SKU_ACTIVE: string[] = [
+  "LC-1147790FRT", // HOKA Mach 6 Forest Lichen Tart Apple
+  "LC-JR3148", // ADIDAS Ultraboost 1 Grey Blue
+  "LC-M108014C", // NEW BALANCE 1080 Sand
+  "LC-M86014G", // NEW BALANCE 860 V14 Sea Salt White
+  "LC-WRCXCS4", // NEW BALANCE SC Trainer White
+  "LC-IE8463", // ADIDAS Pureboost 5 White Grey
+  "LC-31040502", // PUMA Genetics Speckle Black White
+  "LC-100211907", // REEBOK Flexagon Energy TR 4 Black White
+];
 
 /** FRESH PICKS — hero SKU / current favourites, bukan kategori rotation ketiga. */
-export const SKU_FRESH: string[] = [];
+export const SKU_FRESH: string[] = [
+  "LC-CJ1288001", // NIKE Air Zoom Spiridon Cage 2 Lt Smoke Grey
+  "LC-1203A600250", // ASICS Gel Nimbus 9 Oatmeal Indigo Fog
+  "LC-1201A942100", // ASICS EX89 x Needles White Purple Grey
+  "LC-IB7025200", // NIKE Air Max Dn NRG Neutral Olive
+  "LC-ID2151", // ADIDAS Superstar 82 Crystal White Clear Blue
+  "LC-U998BG", // NEW BALANCE 998 Made in USA Brown Green
+  "LC-FN5215141", // NIKE Air Jordan 1 Mid SE White Industrial Blue
+  "LC-DV2440002", // NIKE Lunar Roam Dark Smoke Grey Black
+];
 
 /* ── Kueri fallback ────────────────────────────────────────────────────────
    Dipakai hanya kalau daftar SKU di atas kosong.
