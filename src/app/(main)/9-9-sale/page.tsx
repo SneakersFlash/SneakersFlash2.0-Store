@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Suspense } from 'react';
 
 import { productsService } from '@/lib/api/products.service';
@@ -192,29 +191,6 @@ export default async function Campaign99Page() {
           </section>
         )}
 
-        {/* ── Penutup: satu ajakan terakhir ──
-             Brief: kalau CTA-nya mengarah ke website, alamat websitenya harus
-             kelihatan — bukan cuma tersirat. */}
-        <section className="my-12">
-          <div className="rounded-2xl bg-[#0D0D0D] px-6 py-10 md:px-10 md:py-12 flex flex-col items-start gap-5">
-            <p className="text-3xl md:text-5xl font-black uppercase leading-[0.95] tracking-tight text-white">
-              Find your next pair
-              <br />
-              <span className="text-primary">before the deal ends.</span>
-            </p>
-            <div className="flex flex-wrap items-center gap-3">
-              <Link
-                href="/products"
-                className="inline-flex items-center justify-center bg-primary text-primary-foreground px-7 py-3.5 font-black uppercase tracking-widest text-sm transition-all duration-200 active:scale-95 hover:brightness-95"
-              >
-                Shop Now
-              </Link>
-              <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50">
-                sneakersflash.com
-              </span>
-            </div>
-          </div>
-        </section>
       </div>
     </div>
   );

@@ -388,6 +388,19 @@ input, textarea, select {
   letter-spacing: -0.015em;
 }
 
+/* Teks yang berdampingan langsung dengan lockup gambar (penawaran di hero).
+   Keluarga & bobotnya dipatok eksplisit supaya sebaris rasa dengan huruf di
+   logo_square_2_trim.png — bukan menumpang pewarisan yang bisa kalah oleh
+   utility Tailwind. Helvetica Neue baru benar-benar ada di perangkat Apple;
+   di Windows/Android browser mensubstitusi ke Arial/Liberation Sans, jadi
+   bentuk hurufnya mirip tapi tidak identik dengan gambar. */
+.font-rotation-99 .teks-kv-99 {
+  font-family: "Helvetica Neue", "HelveticaNeue", Helvetica, Arial,
+               "Liberation Sans", sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
 /* Hanya teks naratif yang diringankan. Nama produk & harga di kartu sengaja
    dilewati: pada 10-12px, bobot 300 jadi tipis dan susah dibaca. */
 .font-helvetica-88 .teks-ringan {

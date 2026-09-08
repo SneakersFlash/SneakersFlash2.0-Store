@@ -87,21 +87,21 @@ export function Campaign99Hero() {
                     terbesar di layar pertama (LCP). */}
                 <h1 className="m-0">
                   <Image
-                    src="/images/logo_square_2.png"
+                    src="/images/logo_square_2_trim.png"
                     alt="9.9 Next In Rotation — Different days call for different pairs"
-                    width={1730}
-                    height={1408}
+                    width={1539}
+                    height={1223}
                     priority
-                    className="w-[240px] md:w-[330px] lg:w-[400px] h-auto"
+                    className="w-[230px] md:w-[310px] lg:w-[380px] h-auto"
                   />
                 </h1>
 
                 {/* Penawaran: alasan beli, ditaruh tepat di bawah kunci visual. */}
                 <div className="flex flex-col gap-0.5">
-                  <span className="text-[#0D0D0D] text-2xl md:text-3xl lg:text-4xl font-black uppercase leading-none tracking-tight">
+                  <span className="teks-kv-99 text-[#0D0D0D] text-2xl md:text-3xl lg:text-4xl uppercase leading-none">
                     Disc. up to 70%
                   </span>
-                  <span className="text-[#0D0D0D]/75 text-base md:text-lg lg:text-xl font-bold uppercase leading-tight tracking-tight">
+                  <span className="teks-kv-99 text-[#0D0D0D]/75 text-base md:text-lg lg:text-xl uppercase leading-tight">
                     Extra Voucher up to 300K
                   </span>
                 </div>
@@ -183,9 +183,6 @@ export function Campaign99Hero() {
                 Extra Voucher
               </Link>
 
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
-                sneakersflash.com
-              </span>
             </div>
           </div>
         </section>
