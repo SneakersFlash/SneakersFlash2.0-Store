@@ -49,8 +49,13 @@ function TopSearchBarInner() {
     const q = searchParams.get("q");
     const brand = searchParams.get("brand") || searchParams.get("brandName");
     const category = searchParams.get("category");
+    // Tag kurasi campaign (?tag=daily rotation). Tanpa cabang ini daftar yang
+    // sudah tersaring tetap berjudul "All Footwear" dan pengunjung HP mengira
+    // sedang melihat seluruh katalog.
+    const tag = searchParams.get("tag");
     if (q) return `Search: "${q}"`;
     if (brand) return brand.toUpperCase();
+    if (tag) return tag.toUpperCase();
     if (category) return category;
     return "All Footwear";
   };
