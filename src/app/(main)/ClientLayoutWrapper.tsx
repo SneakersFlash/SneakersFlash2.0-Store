@@ -9,6 +9,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect } from "react";
 import WelcomeVoucherPopup from "@/components/voucher/WelcomeVoucherPopup";
 import { Campaign99FloatingButton } from "@/components/campaign/Campaign99FloatingButton";
+import { Campaign99Popup } from "@/components/campaign/Campaign99Popup";
 
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -77,6 +78,14 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
            sini kalau memang mau dibersihkan.
       ──────────────────────────────────────────────────────────────────────── */}
       <Campaign99FloatingButton />
+
+      {/* ─── Pop-up campaign 9.9 ──────────────────────────────────────────────
+           Hanya di beranda, muncul sekali per sesi, menutup sendiri setelah
+           5 detik. Sama seperti tombol mengambang di atas, ia berhenti muncul
+           sendiri sesudah campaign berakhir — tidak perlu deploy untuk
+           mencabutnya.
+      ──────────────────────────────────────────────────────────────────────── */}
+      <Campaign99Popup />
 
     </>
   );
