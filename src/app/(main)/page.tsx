@@ -63,26 +63,41 @@ export default async function HomePage() {
   // yang tidak ada di katalog SF (salah ketik, produk nonaktif, atau milik
   // platform lain) dilewati diam-diam oleh backend: section memendek, bukan
   // error. Produk yang stoknya habis juga disaring di bawah.
+  //
+  // PREFIKS "LC-" ITU WAJIB, BUKAN GAYA PENULISAN. Barang yang kode artikelnya
+  // sudah pindah ke tab clearance dinonaktifkan dalam bentuk telanjang, dan
+  // yang hidup hanya salinannya yang ber-prefiks "LC-". Filter ?skus=
+  // mencocokkan sku_parent PERSIS, jadi menulis kode telanjang untuk barang
+  // clearance membuat kartunya HILANG tanpa error — section memendek diam-diam.
+  // Terukur 9 Sep 2026: daftar running sebelumnya minta 8 dan hanya 3 yang
+  // kembali. Sebelum menambah artikel ke daftar ini, pastikan dulu bentuk mana
+  // yang aktif di katalog.
   const SECTION_SKUS = {
     unisex: [
-      "JI3218", "1203A574001", "CT8532080", "U20026PU",
-      "M1000LA", "DM0211100", "FZ2068100", "39884686",
+      "JI3219", "1203A740100", "LC-U370AI", "JH5470",
+      "FZ2068001", "U200210D", "LC-FZ1347100", "LC-1203A600250",
     ],
     mens: [
-      "JP7676", "1203A896750", "BB550VGC", "ML574EVW",
-      "IB8182100", "553558145", "39652001", "39684101",
+      "IB8868222", "HM8818001", "JQ7643", "LC-IH4772",
+      "LC-UA950AB1", "U20026PU", "LC-40237301", "LC-39771707",
     ],
+    // 1147851NKV (Hoka Arahi 7) tertulis DUA KALI di daftar kiriman; yang kedua
+    // dibuang karena akan merender sepatu yang sama dua kartu. Section ini jadi
+    // 7 kartu sampai ada artikel pengganti.
     womens: [
-      "JS0682", "JP5330", "WL574CUL", "WRCXCS4",
-      "IH7318677", "FZ5778004", "DD8959001", "39934801",
+      "JI2625", "DD8959103", "LC-WL574CUL", "LC-WRCXCS4",
+      "LC-1147851NKV", "LC-CU9174600", "LC-39934801",
     ],
     lifestyleCasual: [
-      "JQ7643", "IH4771", "1203A740101", "1203A574001",
-      "M475VTH", "U200210D", "IB8174100", "FZ4110103",
+      "LC-CJ1288001", "FQ7860008", "JP7676", "KJ8724",
+      "BB550VGC", "U1500PGL", "1203A896750", "1203A574001",
     ],
+    // JP7149 dipertahankan dari daftar lama supaya KEDUA Adizero EVO SL tetap
+    // tampil, dan ditaruh berdampingan dengan JH6206 — sisanya urutan kiriman.
     running: [
-      "JH6206", "JP7149", "1147851NKV", "1147930WTTR",
-      "M108014C", "MFCXCE4", "M86014G", "JH9184",
+      "JH6206", "JP7149", "HV9272001", "MKAIRCB1",
+      "LC-M108014C", "LC-1162030WKY", "LC-1147790FRT", "LC-JR3148",
+      "LC-IE8463",
     ],
   };
 
