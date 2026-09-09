@@ -138,9 +138,9 @@ export default async function Campaign99Page() {
             <SectionHeading
               eyebrow="01 Daily"
               title="Daily Rotation"
-              subtitle="Pairs that work with almost everything — buat rutinitas dan hampir semua outfit."
+              subtitle="Everyday pairs yang gampang masuk ke rutinitas, berbagai look, dan hampir semua agenda."
               viewAllHref="/products?type=Footwear"
-              viewAllLabel="Semua Produk"
+              viewAllLabel="Lihat Daily Rotation"
             />
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {daily.map((product, i) => (
@@ -161,9 +161,9 @@ export default async function Campaign99Page() {
             <SectionHeading
               eyebrow="02 Active"
               title="Active Rotation"
-              subtitle="Ready when your day gets moving — running dan training, fokus di bantalan dan kenyamanan."
+              subtitle="Pairs for running, training, dan hari-hari yang bikin lo terus bergerak."
               viewAllHref="/products?category=Running"
-              viewAllLabel="Semua Running"
+              viewAllLabel="Lihat Active Rotation"
             />
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {active.map((product, i) => (
@@ -177,9 +177,11 @@ export default async function Campaign99Page() {
         {fresh.length > 0 && (
           <section id="fresh-99" className="pt-10 pb-4 scroll-mt-24">
             <SectionHeading
-              eyebrow="03 Next ?"
+              eyebrow="03 What's Next?"
               title="Fresh Picks"
-              subtitle="Barang yang baru masuk rak. Kalau slot ketiga di rotasi kamu masih kosong, mulai dari sini."
+              subtitle="Pilihan yang menurut kami worth masuk ke rotasi berikutnya. Kalau masih ada satu slot kosong, mulai dari sini."
+              viewAllHref="/products?sort=newest"
+              viewAllLabel="Lihat Fresh Picks"
             />
             <div className="flex gap-3 lg:gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-none pb-2">
               {fresh.map((product, i) => (
