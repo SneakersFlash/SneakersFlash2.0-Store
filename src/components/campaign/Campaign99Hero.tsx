@@ -148,12 +148,17 @@ export function Campaign99Hero() {
                 Kuning penuh, sesuai brief: di fase commercial kuning jadi warna
                 dominan, bukan sekadar aksen. */}
             <div className="relative bg-[#F7E608] text-[#0D0D0D] p-6 md:p-9 lg:p-10 flex flex-col justify-center gap-6">
-              <Selotip className="top-6 left-6 h-5 w-20 rotate-[-7deg] bg-[#0D0D0D]" />
+              {/* Selotip atas duduk di KANAN, bukan kiri: di layar sempit panel
+                  ini setinggi isinya, jadi `justify-center` tidak menggeser apa
+                  pun dan label "Berakhir Dalam" mulai persis di y=24px — sama
+                  dengan `top-6` selotip. Karena selotip absolut dicat di atas
+                  konten in-flow, tulisannya tertimbun bidang hitam. */}
+              <Selotip className="top-6 right-6 h-5 w-20 rotate-[-7deg] bg-[#0D0D0D]" />
               <Selotip className="bottom-8 right-6 h-5 w-16 rotate-[9deg] bg-white/85" />
 
               {/* Tinggi dikunci supaya isi hero tidak melompat saat fase
                   ditentukan sesudah mount. */}
-              <div className="flex flex-col gap-2 min-h-[76px]">
+              <div className="relative z-10 flex flex-col gap-2 min-h-[76px]">
                 <span className="text-[10px] font-bold uppercase tracking-[0.22em] opacity-70">
                   {label}
                 </span>
