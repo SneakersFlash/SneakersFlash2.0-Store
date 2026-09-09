@@ -45,6 +45,7 @@ function ProductListingClientInner({
   const priceSortFromUrl   = searchParams.get("priceSort");     // dari FilterModal
   const sortFromUrl        = searchParams.get("sort");          // dari Navbar (?sort=newest)
   const genderFromUrl      = searchParams.get("gender");        // dari Navbar (?gender=men)
+  const tagFromUrl         = searchParams.get("tag");           // dari kurasi campaign (?tag=daily rotation)
   const pageFromUrl        = Number(searchParams.get("page")) || 1;
 
   // ── Bangun ProductFilters dari URL → dikirim ke useProducts ───────────────
@@ -70,6 +71,10 @@ function ProductListingClientInner({
   // Search
   if (searchFromUrl) currentFilters.search = searchFromUrl;
 
+  // Tag kurasi campaign (?tag=daily rotation). Diteruskan apa adanya —
+  // backend yang meng-lowercase-kan dan mencocokkan PERSIS ke kolom tags.
+  if (tagFromUrl) currentFilters.tag = tagFromUrl;
+
   // Gender (dari Navbar)
   if (genderFromUrl) currentFilters.gender = genderFromUrl;
 
@@ -92,7 +97,7 @@ function ProductListingClientInner({
 
   // ── Cek ada filter aktif (untuk dot badge di tombol) ──────────────────────
   const hasActiveFilter = Boolean(
-    brandsFromUrl || brandFromUrl || priceSortFromUrl ||
+    brandsFromUrl || brandFromUrl || priceSortFromUrl || tagFromUrl ||
     (categoryFromUrl && categoryFromUrl !== categoryName) // filter beda dari default page
   );
 
@@ -161,6 +166,8 @@ function ProductListingClientInner({
     ? `Search: "${searchFromUrl}"`
     : brandFromUrl
     ? brandFromUrl.replace(/-/g, " ").toUpperCase()
+    : tagFromUrl
+    ? tagFromUrl.toUpperCase()
     : categoryName || "All Footwear";
 
   return (

@@ -139,7 +139,7 @@ export default async function Campaign99Page() {
               eyebrow="01 Daily"
               title="Daily Rotation"
               subtitle="Everyday pairs yang gampang masuk ke rutinitas, berbagai look, dan hampir semua agenda."
-              viewAllHref="/products?type=Footwear"
+              viewAllHref="/products?tag=daily%20rotation"
               viewAllLabel="Lihat Daily Rotation"
             />
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">

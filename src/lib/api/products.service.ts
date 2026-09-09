@@ -16,6 +16,9 @@ export const productsService = {
         // ── Search ─────────────────────────────────────────────────────────────
         ...(filters.search && { search: filters.search }),
 
+        // ── Tag ────────────────────────────────────────────────────────────────
+        ...(filters.tag && { tag: filters.tag }),
+
         // ── Category ───────────────────────────────────────────────────────────
         // "new" | "deals" dari FilterModal, atau nama kategori dari Navbar/tab
         ...(filters.category && { category: filters.category }),

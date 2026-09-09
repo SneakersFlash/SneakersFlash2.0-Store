@@ -53,10 +53,10 @@ export const SKU_DAILY: string[] = [
 /** 02 ACTIVE — running & training, buat hari yang lebih bergerak. */
 export const SKU_ACTIVE: string[] = [
   "LC-1147790FRT", // HOKA Mach 6 Forest Lichen Tart Apple
-  "LC-JR3148", // ADIDAS Ultraboost 1 Grey Blue
+  "LC-WRCXCS4", // NEW BALANCE SC Trainer White
   "LC-M108014C", // NEW BALANCE 1080 Sand
   "LC-M86014G", // NEW BALANCE 860 V14 Sea Salt White
-  "LC-WRCXCS4", // NEW BALANCE SC Trainer White
+  "LC-JR3148", // ADIDAS Ultraboost 1 Grey Blue
   "LC-IE8463", // ADIDAS Pureboost 5 White Grey
   "LC-31040502", // PUMA Genetics Speckle Black White
   "LC-100211907", // REEBOK Flexagon Energy TR 4 Black White

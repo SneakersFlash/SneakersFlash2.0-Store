@@ -129,6 +129,11 @@ export interface ProductFilters {
   // ── Search ──────────────────────────────────────────────────────────────────
   search?: string;
 
+  // ── Tag ─────────────────────────────────────────────────────────────────────
+  // Kolom `tags` di produk, dicocokkan PERSIS (backend meng-lowercase-kan).
+  // Dipakai kurasi campaign, mis. "daily rotation" / "active rotation".
+  tag?: string;
+
   // ── Category ────────────────────────────────────────────────────────────────
   // Dari Navbar      : ?category=shoes | running | lifestyle | apparel | ...
   // Dari FilterModal : ?category=new | deals
