@@ -8,8 +8,7 @@ import { TopSearchBar } from "@/components/home/TopSearchBar";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect } from "react";
 import WelcomeVoucherPopup from "@/components/voucher/WelcomeVoucherPopup";
-import { Campaign99FloatingButton } from "@/components/campaign/Campaign99FloatingButton";
-import { Campaign99Popup } from "@/components/campaign/Campaign99Popup";
+import { ClearanceSalePopup } from "@/components/campaign/ClearanceSalePopup";
 
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -71,21 +70,13 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
         onClose={clearWelcomeVoucher}
       />
 
-      {/* ─── Tombol mengambang campaign 9.9 ───────────────────────────────────
-           Menyembunyikan dirinya sendiri di /9-9-sale, di checkout, dan sesudah
-           campaign berakhir (9 Sep 23:59 WIB) — jadi mencabutnya tidak butuh
-           deploy, tinggal biarkan lewat. Komponennya baru perlu dilepas dari
-           sini kalau memang mau dibersihkan.
-      ──────────────────────────────────────────────────────────────────────── */}
-      <Campaign99FloatingButton />
-
-      {/* ─── Pop-up campaign 9.9 ──────────────────────────────────────────────
+      {/* ─── Pop-up Clearance Sale ────────────────────────────────────
            Hanya di beranda, muncul sekali per sesi, menutup sendiri setelah
-           5 detik. Sama seperti tombol mengambang di atas, ia berhenti muncul
-           sendiri sesudah campaign berakhir — tidak perlu deploy untuk
-           mencabutnya.
-      ──────────────────────────────────────────────────────────────────────── */}
-      <Campaign99Popup />
+           5 detik. Menggantikan pop-up 9.9 yang dicabut bersama halamannya
+           (10 Sep 2026); ia berhenti muncul sendiri sesudah event clearance
+           berakhir — tidak perlu deploy untuk mencabutnya.
+      ────────────────────────────────────────────────────────────────────── */}
+      <ClearanceSalePopup />
 
     </>
   );

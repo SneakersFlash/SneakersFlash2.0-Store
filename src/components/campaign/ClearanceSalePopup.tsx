@@ -7,30 +7,31 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, X } from 'lucide-react';
 import {
-  CAMPAIGN_99_BERAKHIR,
-  CAMPAIGN_99_HREF,
-  CAMPAIGN_99_PERIODE,
-} from '@/lib/campaign/next-in-rotation-99';
+  CLEARANCE_BERAKHIR,
+  CLEARANCE_DISKON,
+  CLEARANCE_HREF,
+  CLEARANCE_PERIODE,
+} from '@/lib/campaign/clearance-sale';
 
 /**
- * Pop-up campaign 9.9 di beranda.
+ * Pop-up Clearance Sale di beranda.
  *
- * Muncul sesaat setelah beranda terbuka, bertahan 5 detik, lalu menutup
- * sendiri. Diklik di mana pun → halaman /9-9-sale.
+ * Turunan langsung dari pop-up 9.9 yang dicabut 10 Sep 2026: perilakunya
+ * (muncul sebentar setelah beranda terbuka, bertahan 5 detik, menutup sendiri,
+ * sekali per sesi) sengaja dipertahankan persis — yang diganti cuma isinya.
  *
- * Desainnya sengaja meniru header banner /9-9-sale (strip promo kuning, latar
- * grid BG_LAYOUT, kunci visual, potongan selotip, panel kuning penuh) supaya
- * orang yang mengkliknya mendarat di halaman yang terasa jelas sama — bukan
- * dua kreatif berbeda yang kebetulan menuju satu tempat.
+ * Warnanya hitam-putih, BUKAN kuning campaign: pita Clearance di kartu produk
+ * hitam-putih, dan pop-up yang kuning akan terasa seperti campaign lain yang
+ * kebetulan menuju halaman clearance.
  *
- * Seperti tombol mengambangnya, pop-up ini mematikan dirinya sendiri begitu
- * campaign lewat: mencabutnya tidak butuh deploy.
+ * Ia mematikan dirinya sendiri sesudah CLEARANCE_BERAKHIR — mencabutnya tidak
+ * butuh deploy.
  */
 
 /** Jeda sebelum muncul — memberi ruang buat elemen terbesar beranda selesai render. */
 const JEDA_MUNCUL_MS = 900;
 
-/** Lama tampil sebelum menutup sendiri. Ini angka yang diminta: 5 detik. */
+/** Lama tampil sebelum menutup sendiri. */
 const DURASI_TAMPIL_MS = 5000;
 
 /**
@@ -40,21 +41,28 @@ const DURASI_TAMPIL_MS = 5000;
  * kalau memang mau muncul di setiap pembukaan beranda.
  */
 const SEKALI_PER_SESI = true;
-const KUNCI_SESI = 'popup-99-tampil';
 
-/** Potongan selotip miring — murni hiasan, sama seperti di hero. */
+/**
+ * Kuncinya sengaja BEDA dari kunci pop-up 9.9 (`popup-99-tampil`). Kalau
+ * dipakai ulang, orang yang sesi peramban-nya masih hidup dari kunjungan
+ * sebelumnya sudah tertandai "pernah lihat" dan tidak akan pernah melihat
+ * pop-up clearance-nya.
+ */
+const KUNCI_SESI = 'popup-clearance-tampil';
+
+/** Potongan selotip miring — murni hiasan. */
 function Selotip({ className }: { className: string }) {
   return <span aria-hidden="true" className={`absolute block ${className}`} />;
 }
 
 const STRIP = [
-  '9.9 Next In Rotation',
+  'Clearance Sale',
   'Disc. Up To 70%',
-  'Extra Voucher 300K',
+  'Stok Terbatas',
   '100% Original',
 ];
 
-export function Campaign99Popup() {
+export function ClearanceSalePopup() {
   const pathname = usePathname();
   const kurangiGerak = useReducedMotion();
 
@@ -63,7 +71,7 @@ export function Campaign99Popup() {
 
   const tutup = useCallback(() => setTampil(false), []);
 
-  // Keputusan "campaign masih hidup atau tidak" diambil sesudah mount: kalau
+  // Keputusan "event masih hidup atau tidak" diambil sesudah mount: kalau
   // dihitung saat render server, jawabannya ikut jam build, bukan jam pembeli.
   //
   // Penandaan "sudah pernah tampil" sengaja ditulis DI DALAM timeout, bukan saat
@@ -72,7 +80,7 @@ export function Campaign99Popup() {
   // pop-up tidak pernah muncul sama sekali.
   useEffect(() => {
     if (pathname !== '/') return;
-    if (Date.now() >= Date.parse(CAMPAIGN_99_BERAKHIR)) return;
+    if (Date.now() >= Date.parse(CLEARANCE_BERAKHIR)) return;
 
     if (SEKALI_PER_SESI) {
       try {
@@ -120,12 +128,12 @@ export function Campaign99Popup() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-[9998] flex items-center justify-center px-5 font-rotation-99"
+          className="fixed inset-0 z-[9998] flex items-center justify-center px-5"
           role="dialog"
           aria-modal="true"
-          aria-label="Promo 9.9 Next In Rotation"
+          aria-label="Promo Clearance Sale"
         >
-          {/* Latar gelap: sekali klik = tutup, tanpa ikut membuka campaign. */}
+          {/* Latar gelap: sekali klik = tutup, tanpa ikut membuka eventnya. */}
           <button
             type="button"
             aria-label="Tutup promo"
@@ -148,12 +156,12 @@ export function Campaign99Popup() {
                 bukan pembungkus, supaya tombol tutup tidak jadi tautan bersarang
                 di dalam tautan — pembaca layar tersesat kalau begitu. */}
             <Link
-              href={CAMPAIGN_99_HREF}
+              href={CLEARANCE_HREF}
               onClick={tutup}
-              className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#F7E608] focus-visible:ring-offset-2"
+              className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#F6E70A] focus-visible:ring-offset-2"
             >
               <span className="sr-only">
-                Buka halaman 9.9 Next In Rotation — diskon sampai 70%
+                Buka halaman Clearance Sale — diskon sampai 70%
               </span>
             </Link>
 
@@ -163,16 +171,16 @@ export function Campaign99Popup() {
             <button
               type="button"
               onClick={tutup}
-              aria-label="Tutup promo 9.9"
-              className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center rounded-full text-[#0D0D0D] transition-transform duration-200 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D0D0D]"
+              aria-label="Tutup promo Clearance Sale"
+              className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center rounded-full text-white transition-transform duration-200 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0D0D0D]/85 shadow">
                 <X className="h-4 w-4 text-white" strokeWidth={3} />
               </span>
             </button>
 
-            {/* ── Strip promo berjalan — pembuka yang sama dengan hero ── */}
-            <div className="w-full overflow-hidden bg-[#F7E608] py-1.5 text-[#0D0D0D]">
+            {/* ── Strip berjalan: hitam-putih, sewarna pita Clearance di kartu ── */}
+            <div className="w-full overflow-hidden bg-[#0D0D0D] py-1.5 text-white">
               <div className="flex w-max gap-6 animate-marquee88" aria-hidden="true">
                 {[...STRIP, ...STRIP, ...STRIP, ...STRIP].map((teks, i) => (
                   <span
@@ -188,7 +196,8 @@ export function Campaign99Popup() {
             {/* Garis hitung mundur: memberi tahu pop-up ini akan pergi sendiri,
                 jadi tidak terasa seperti penghalang yang harus dilawan.
                 Ditaruh di bawah strip, bukan di dasar kartu — di dasar, lengkung
-                sudut 20px memakan hampir seluruh garisnya. */}
+                sudut 20px memakan hampir seluruh garisnya. Kuning brand supaya
+                terlihat di antara dua blok hitam. */}
             <motion.div
               key={berjalan ? 'jalan' : 'jeda'}
               initial={{ scaleX: 1 }}
@@ -197,45 +206,51 @@ export function Campaign99Popup() {
                 duration: berjalan ? DURASI_TAMPIL_MS / 1000 : 0,
                 ease: 'linear',
               }}
-              className="h-1 w-full origin-left bg-[#0D0D0D]"
+              className="h-1 w-full origin-left bg-[#F6E70A]"
               aria-hidden="true"
             />
 
-            {/* ── Badan: latar grid + kunci visual, seperti panel kiri hero ── */}
-            <div className="relative bg-white bg-[url('/images/BG_LAYOUT.jpg')] bg-cover bg-center px-6 pb-6 pt-7">
-              <Selotip className="left-3 top-2 h-4 w-16 rotate-[-8deg] bg-[#F7E608]" />
+            {/* ── Badan ──
+                Latar kisi titik dibuat dari gradient CSS, bukan berkas gambar:
+                pop-up ini cuma hidup 5 detik, jadi apa pun yang harus diunduh
+                dulu berisiko mendarat sesudah kartunya pergi. */}
+            <div className="relative bg-white bg-[radial-gradient(rgba(0,0,0,0.07)_1px,transparent_1px)] [background-size:14px_14px] px-6 pb-6 pt-7">
+              <Selotip className="left-3 top-2 h-4 w-16 rotate-[-8deg] bg-[#F6E70A]" />
 
               <div className="relative flex flex-col items-center gap-3 text-center">
                 <Image
-                  src="/images/logo_square_2_trim.png"
-                  alt="9.9 Next In Rotation — Different days call for different pairs"
-                  width={1539}
-                  height={1223}
-                  // Pop-up ini cuma hidup 5 detik: gambar yang baru mendarat di
-                  // detik ketiga sama saja dengan tidak ada.
+                  src="/images/logo_basic.png"
+                  alt="Sneakers Flash"
+                  width={140}
+                  height={36}
                   priority
-                  className="h-auto w-[190px]"
+                  className="h-6 w-auto object-contain"
                 />
 
-                <div className="flex flex-col gap-0.5">
-                  <span className="teks-kv-99 text-2xl uppercase leading-none text-[#0D0D0D]">
-                    Disc. up to 70%
-                  </span>
-                  <span className="teks-kv-99 text-sm uppercase leading-tight text-[#0D0D0D]/75">
-                    Extra Voucher up to 300K
+                <div className="flex flex-col items-center gap-2">
+                  <h2 className="text-[28px] font-black uppercase leading-none tracking-tight text-[#0D0D0D]">
+                    Clearance
+                    <br />
+                    Sale
+                  </h2>
+
+                  {/* Angka diskon dibalik jadi blok hitam: di kartu yang putih,
+                      teks hitam biasa hilang di antara judul dan tanggal. */}
+                  <span className="rounded-full bg-[#0D0D0D] px-3.5 py-1 text-[13px] font-black uppercase tracking-wide text-white">
+                    {CLEARANCE_DISKON}
                   </span>
                 </div>
 
                 <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#0D0D0D]/65">
-                  {CAMPAIGN_99_PERIODE}
+                  {CLEARANCE_PERIODE}
                 </span>
               </div>
             </div>
 
-            {/* ── Kaki kuning: ajakan, mengambil peran panel kanan hero ── */}
-            <div className="relative flex items-center justify-center gap-2 bg-[#F7E608] py-3.5 text-[#0D0D0D]">
+            {/* ── Kaki: ajakan ── */}
+            <div className="relative flex items-center justify-center gap-2 bg-[#0D0D0D] py-3.5 text-white">
               <span className="text-[13px] font-black uppercase tracking-widest">
-                Belanja 9.9 Sekarang
+                Belanja Clearance Sekarang
               </span>
               <ArrowRight size={15} strokeWidth={3} />
             </div>

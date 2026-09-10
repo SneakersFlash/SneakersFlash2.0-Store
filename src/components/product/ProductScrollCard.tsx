@@ -11,7 +11,7 @@ import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import type { Product } from "@/types/product.types";
 import { useAddWishlist, useCheckWishlist, useRemoveWishlist } from "@/lib/hooks/useWishlist";
 import { useAuthStore } from "@/lib/store/authStore";
-import { CampaignCornerLogo, EventFooterBadge } from "./EventFooterBadge";
+import { EventFooterBadge } from "./EventFooterBadge";
 
 interface ProductScrollCardProps {
   product: Product;
@@ -168,13 +168,10 @@ export function ProductScrollCard({
               className="object-cover object-top opacity-0 scale-105 transition-all duration-700 ease-out group-hover:opacity-100 group-hover:scale-100"
             />
           )}
-
-          {/* Stiker 9.9 di pojok kiri-atas foto — lihat ProductCard. */}
-          <CampaignCornerLogo product={product} />
         </div>
 
-        {/* Pita event: DI BAWAH gambar. Rail "Fresh Picks" di /9-9-sale memakai
-            kartu ini, isinya kurasi yang sama dengan Daily & Active. */}
+        {/* Pita event: DI BAWAH gambar, bukan menimpanya — sama seperti di
+            ProductCard. */}
         <EventFooterBadge product={product} />
 
         {/* ── Product info ── */}

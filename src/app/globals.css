@@ -388,19 +388,6 @@ input, textarea, select {
   letter-spacing: -0.015em;
 }
 
-/* Teks yang berdampingan langsung dengan lockup gambar (penawaran di hero).
-   Keluarga & bobotnya dipatok eksplisit supaya sebaris rasa dengan huruf di
-   logo_square_2_trim.png — bukan menumpang pewarisan yang bisa kalah oleh
-   utility Tailwind. Helvetica Neue baru benar-benar ada di perangkat Apple;
-   di Windows/Android browser mensubstitusi ke Arial/Liberation Sans, jadi
-   bentuk hurufnya mirip tapi tidak identik dengan gambar. */
-.font-rotation-99 .teks-kv-99 {
-  font-family: "Helvetica Neue", "HelveticaNeue", Helvetica, Arial,
-               "Liberation Sans", sans-serif;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
-
 /* Hanya teks naratif yang diringankan. Nama produk & harga di kartu sengaja
    dilewati: pada 10-12px, bobot 300 jadi tipis dan susah dibaca. */
 .font-helvetica-88 .teks-ringan {
@@ -629,41 +616,4 @@ html[data-app-ready] #boot-splash {
     animation: none;
     opacity: 0;
   }
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   9.9 NEXT IN ROTATION — khusus halaman campaign /9-9-sale
-
-   Creative brief menuntut "bold sans-serif typography" sebagai kode visual
-   yang dipertahankan. Sama seperti .font-helvetica-88, keluarga fontnya dipakai
-   lewat tumpukan fallback: Helvetica Neue font sistem berlisensi (bawaan
-   macOS/iOS) dan tidak boleh di-host sendiri; perangkat non-Apple turun ke
-   Arial/Liberation Sans yang metriknya paling dekat.
-
-   Selector wildcard dipakai dengan sengaja: banyak komponen bersama
-   (ProductCard, ProductScrollCard, SectionHeading) memasang font-nya sendiri,
-   jadi pewarisan dari pembungkus saja tidak cukup untuk menimpanya.
-
-   Kelasnya dibuat terpisah dari .font-helvetica-88 — bukan dipakai ulang —
-   supaya menyunting salah satu campaign tidak diam-diam mengubah yang lain.
-───────────────────────────────────────────────────────────────────────────── */
-.font-rotation-99,
-.font-rotation-99 * {
-  font-family: "Helvetica Neue", "HelveticaNeue", Helvetica, Arial,
-               "Liberation Sans", sans-serif;
-}
-
-/* Judul setebal mungkin dengan jarak huruf rapat — itu yang bikin lockup
-   "9.9 NEXT IN ROTATION" terbaca seperti di KV, bukan seperti teks biasa. */
-.font-rotation-99 h1,
-.font-rotation-99 h2,
-.font-rotation-99 h3 {
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
-
-/* Hanya teks naratif yang diringankan. Nama produk & harga di kartu sengaja
-   dilewati: pada 10-12px, bobot 300 jadi tipis dan susah dibaca. */
-.font-rotation-99 .teks-ringan {
-  font-weight: 300;
 }
