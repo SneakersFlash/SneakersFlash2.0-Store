@@ -22,11 +22,19 @@ ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
 ARG NEXT_PUBLIC_MIDTRANS_CLIENT_KEY
 ARG NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION
 
+# OPSIONAL, hanya dipakai saat prerender `next build`.
+# Kosong = perilaku lama persis: render sisi-server jatuh ke NEXT_PUBLIC_API_URL.
+# Diisi kalau API-nya tidak bisa dijangkau dari internet saat build — misalnya
+# staging yang ditutup Cloudflare Access. Wajib dibarengi `docker build
+# --network <jaringan docker app>` supaya host-nya ter-resolve.
+ARG INTERNAL_API_URL
+
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME
 ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
 ENV NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=$NEXT_PUBLIC_MIDTRANS_CLIENT_KEY
 ENV NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION=$NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION
+ENV INTERNAL_API_URL=$INTERNAL_API_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build

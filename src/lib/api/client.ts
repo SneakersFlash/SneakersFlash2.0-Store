@@ -7,10 +7,12 @@ import axios, { type AxiosInstance, type AxiosError, type InternalAxiosRequestCo
 // sampai ke container sebelah — mahal, dan di NAS malah kejegal Cloudflare Access
 // sampai halaman ter-generate kosong.
 //
-// INTERNAL_API_URL sengaja HANYA di-set saat runtime (docker-compose), TIDAK saat
-// `next build`: container build tidak berada di jaringan Docker yang sama, jadi
-// `app:3000` tidak ter-resolve di sana. Kalau tidak di-set, jatuh ke URL publik —
-// persis perilaku lama.
+// INTERNAL_API_URL biasanya di-set saat runtime (docker-compose). Saat
+// `next build` dia OPSIONAL: container build normalnya tidak berada di jaringan
+// Docker yang sama, jadi `app:3000` tidak ter-resolve — kecuali build dijalankan
+// dengan `docker build --network <jaringan itu>`, yang memang dipakai staging
+// karena API-nya ditutup Cloudflare Access dan tidak bisa dijangkau dari luar.
+// Kalau tidak di-set, jatuh ke URL publik — persis perilaku lama.
 const API_BASE_URL =
   typeof window === "undefined"
     ? process.env.INTERNAL_API_URL ??
