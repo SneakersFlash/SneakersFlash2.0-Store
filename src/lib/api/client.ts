@@ -15,8 +15,12 @@ import axios, { type AxiosInstance, type AxiosError, type InternalAxiosRequestCo
 // Kalau tidak di-set, jatuh ke URL publik — persis perilaku lama.
 const API_BASE_URL =
   typeof window === "undefined"
-    ? process.env.INTERNAL_API_URL ??
-      process.env.NEXT_PUBLIC_API_URL ??
+    ? // `||`, bukan `??`: Dockerfile.store selalu menulis ENV INTERNAL_API_URL,
+      // jadi arg yang tidak diisi jadi string KOSONG — `??` tidak melewatinya
+      // dan semua fetch sisi server menembak baseURL "" (build prod gagal di
+      // prerender "/" sejak b6115b9).
+      process.env.INTERNAL_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
       "http://localhost:3001"
     : process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
