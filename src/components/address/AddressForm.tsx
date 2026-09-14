@@ -14,6 +14,15 @@ interface FormErrors { recipientName?: string; phone?: string; province?: string
 const DEFAULT_LABELS = ["Home", "Work"];
 const DEFAULT_COORDS: Coordinates = { lat: -6.2088, lng: 106.8456 }; // Jakarta
 
+// Titik awal peta, BUKAN lokasi customer. Dulu titik ini ikut tersimpan kalau
+// peta tidak digeser, lalu kurir instant dikirim ke Jakarta Pusat dan batas
+// 15 km di checkout lolos untuk alamat luar kota. Backend menolak titik yang
+// sama (FE_DEFAULT_PIN di logistics.service.ts) — ubah keduanya bersamaan.
+export function isDefaultPin(lat?: number | null, lng?: number | null): boolean {
+    if (lat == null || lng == null) return true;
+    return Math.abs(lat - DEFAULT_COORDS.lat) < 1e-4 && Math.abs(lng - DEFAULT_COORDS.lng) < 1e-4;
+}
+
 const sortByName = (arr: LocationOption[]): LocationOption[] =>
     [...arr].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -167,6 +176,7 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
         lat: initialData?.latitude || DEFAULT_COORDS.lat,
         lng: initialData?.longitude || DEFAULT_COORDS.lng,
     });
+    const [pinSet, setPinSet] = useState<boolean>(!isDefaultPin(initialData?.latitude, initialData?.longitude));
 
     const [provinces, setProvinces] = useState<LocationOption[]>([]);
     const [cities, setCities] = useState<LocationOption[]>([]);
@@ -191,6 +201,7 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
     const handleCoordinatesChange = async (coords: Coordinates, userInitiated: boolean) => {
         setCoordinates(coords);
         if (!userInitiated) return;
+        setPinSet(true);
 
         setGeocoding(true);
         setGeocodeError(null);
@@ -282,8 +293,8 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
         cityId: Number(cityId),
         districtId: Number(distId),
         subdistrictId: Number(subdistId),
-        latitude: coordinates.lat,
-        longitude: coordinates.lng,
+        latitude: pinSet ? coordinates.lat : null,
+        longitude: pinSet ? coordinates.lng : null,
         isDefault,
         });
     };
@@ -336,6 +347,9 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
 
         {/* ── Map ─────────────────────────────────────────────────────────── */}
         <MapPicker coordinates={coordinates} onCoordinatesChange={handleCoordinatesChange} />
+        {!pinSet && (
+            <p className="-mt-4 text-xs text-amber-700">Geser pin atau ketuk peta ke lokasi rumahmu. Tanpa pin, pengiriman instan (GoSend/Grab) tidak tersedia.</p>
+        )}
 
         {/* ── Cascading Location ──────────────────────────────────────────── */}
         <div className="space-y-3">

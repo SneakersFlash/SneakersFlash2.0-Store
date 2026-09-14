@@ -81,8 +81,9 @@ export interface UserAddress {
   subdistrictId: number | null;
   postalCode: string;
   isDefault: boolean;
-  latitude?: number
-  longitude?: number
+  // null = customer belum pernah menaruh pin (lihat isDefaultPin di AddressForm)
+  latitude?: number | null
+  longitude?: number | null
   // Relasi (opsional, tergantung backend mengirimkannya atau tidak)
   province?: { id: number; name: string };
   city?: { id: number; name: string; type: string };

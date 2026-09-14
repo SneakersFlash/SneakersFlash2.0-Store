@@ -20,7 +20,7 @@ import type { CreateUserAddressDto, UserAddress } from "@/types/user.types";
 
 import VoucherSelector from "@/components/voucher/VoucherSelector";
 import type { AppliedVoucher } from "@/types/voucher.types";
-import { AddressForm } from "@/components/address/AddressForm";
+import { AddressForm, isDefaultPin } from "@/components/address/AddressForm";
 import { useQueryClient } from "@tanstack/react-query";
 import { cartService } from "@/lib/api/cart.service";
 import PageLoader from "@/components/common/PageLoader";
@@ -82,6 +82,8 @@ function isInstantCourier(opt:any):boolean{
   return INSTANT_KEYWORDS.some(kw=>label.includes(kw));
 }
 function formatPin(lat:number,lng:number){return `${lat},${lng}`;}
+// Pin bawaan form alamat = belum pernah ditaruh customer; anggap tanpa pin.
+const hasRealPin=(a?:{latitude?:number|null;longitude?:number|null}|null):a is {latitude:number;longitude:number}=>!!a&&!isDefaultPin(a.latitude,a.longitude);
 function LabelIcon({label}:{label:string}){
   const l=label?.toLowerCase();
   if(l==="home")return <Home size={11}/>;
@@ -447,8 +449,8 @@ function CheckoutContent(){
   });
 
   const distanceMap:Record<number,number>={};
-  savedAddresses.forEach(a=>{if(a.latitude&&a.longitude)distanceMap[a.id]=haversineKm(ORIGIN_COORDS.lat,ORIGIN_COORDS.lng,a.latitude,a.longitude);});
-  const selectedDistKm=selectedAddress?.latitude&&selectedAddress?.longitude?haversineKm(ORIGIN_COORDS.lat,ORIGIN_COORDS.lng,selectedAddress.latitude,selectedAddress.longitude):null;
+  savedAddresses.forEach(a=>{if(hasRealPin(a))distanceMap[a.id]=haversineKm(ORIGIN_COORDS.lat,ORIGIN_COORDS.lng,a.latitude,a.longitude);});
+  const selectedDistKm=hasRealPin(selectedAddress)?haversineKm(ORIGIN_COORDS.lat,ORIGIN_COORDS.lng,selectedAddress.latitude,selectedAddress.longitude):null;
   const instantBlocked=hasNRItem||(selectedDistKm!==null&&selectedDistKm>INSTANT_DISTANCE_LIMIT_KM);
 
   const subtotal=checkoutItems.reduce((s,i)=>s+Number(i.price)*i.quantity,0);
@@ -480,7 +482,7 @@ function CheckoutContent(){
   useEffect(()=>{
     if(!selectedAddress?.subdistrictId||checkoutItems.length===0)return;
     setIsCalcShipping(true);setSelectedCourier(null);
-    const destPin=selectedAddress.latitude&&selectedAddress.longitude?formatPin(selectedAddress.latitude,selectedAddress.longitude):undefined;
+    const destPin=hasRealPin(selectedAddress)?formatPin(selectedAddress.latitude,selectedAddress.longitude):undefined;
     logisticsService.calculateShipping({destinationSubdistrictId:Number(selectedAddress.subdistrictId),weightGrams:totalWeight,courier:"",itemValue:subtotal,isCod:"no",originPinPoint:ORIGIN_PIN,...(destPin?{destinationPinPoint:destPin}:{}),...(destinationText?{destinationText}:{})})
       .then(data=>{if(data?.pointsBalance!==undefined&&data?.pointsBalance!==null)setPointsBalance(toNumber(data.pointsBalance));if(typeof data?.pointsEarnRate==="number"&&data.pointsEarnRate>0)setPointsEarnRate(data.pointsEarnRate);const opts:any[]=data?.options??(Array.isArray(data)?data:[]);setShippingOptions(opts);const el=opts.filter(o=>instantBlocked?!isInstantCourier(o):true);setSelectedCourier(el[0]??null);})
       .catch(console.error).finally(()=>setIsCalcShipping(false));
@@ -497,14 +499,14 @@ function CheckoutContent(){
     if(!selectedCourier)return alert("Pilih metode pengiriman.");
     if(!selectedAddress)return alert("Pilih alamat pengiriman.");
     const isInstant=INSTANT_KEYWORDS.some(kw=>`${selectedCourier.courier_name||selectedCourier.courier} ${selectedCourier.service}`.toLowerCase().includes(kw));
-    if(isInstant&&(!selectedAddress.latitude||!selectedAddress.longitude))return alert("Pengiriman instan butuh pin lokasi. Edit alamat untuk tambahkan pin.");
+    if(isInstant&&!hasRealPin(selectedAddress))return alert("Pengiriman instan butuh pin lokasi. Edit alamat untuk tambahkan pin.");
     if(selectedPayment==="credit_card"){
       const num=cardForm.number.replace(/\s/g,"");
       if(num.length<16||!cardForm.expiry||cardForm.cvv.length<3||!cardForm.name)return alert("Lengkapi data kartu kredit.");
     }
     let cityName=selectedAddress.city||selectedAddress.cityName;
     if(!cityName&&selectedAddress.provinceId&&selectedAddress.cityId){const cities=await logisticsService.getCities(selectedAddress.provinceId);cityName=(cities as any[]).find((c:any)=>c.id===selectedAddress.cityId)?.name;}
-    const enrichedAddress={...selectedAddress,city:cityName||"Unknown City",district:districtName||"",latitude:selectedAddress.latitude?Number(selectedAddress.latitude):undefined,longitude:selectedAddress.longitude?Number(selectedAddress.longitude):undefined};
+    const enrichedAddress={...selectedAddress,city:cityName||"Unknown City",district:districtName||"",latitude:hasRealPin(selectedAddress)?Number(selectedAddress.latitude):undefined,longitude:hasRealPin(selectedAddress)?Number(selectedAddress.longitude):undefined};
     setIsLoading(true);
     try{
       let cardToken:string|undefined;
@@ -575,7 +577,7 @@ function CheckoutContent(){
                   {instantBlocked&&<span className="text-[10px] text-amber-600 flex items-center gap-0.5 font-medium"><AlertTriangle size={11}/>Instant tidak tersedia ({hasNRItem?"barang NR":`>${INSTANT_DISTANCE_LIMIT_KM} km`})</span>}
                 </div>
               )}
-              {selectedAddress.latitude&&selectedAddress.longitude&&(<div className="mt-3 h-28 rounded-xl overflow-hidden border border-gray-200"><MiniMap lat={selectedAddress.latitude} lng={selectedAddress.longitude}/></div>)}
+              {hasRealPin(selectedAddress)&&(<div className="mt-3 h-28 rounded-xl overflow-hidden border border-gray-200"><MiniMap lat={selectedAddress.latitude} lng={selectedAddress.longitude}/></div>)}
             </div>
           ):(
             <button onClick={()=>setIsAddressSheetOpen(true)} className="ml-6 flex items-center gap-2 text-xs text-primary font-semibold"><Plus size={15}/>Pilih alamat pengiriman</button>
