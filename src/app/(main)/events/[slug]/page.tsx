@@ -1,6 +1,5 @@
 import { cache } from "react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import CampaignsService from "@/lib/api/campaigns.service";
 import { CountdownTimer } from "@/components/home/CountdownTimer";
@@ -89,51 +88,102 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
 
     const bgColor = eventData.styleConfig?.backgroundColor || "#1A1A1A";
 
+    // Desktop diutamakan; kalau admin cuma mengisi salah satu, yang ada itulah
+    // yang dipakai untuk dua-duanya (daripada halamannya jadi tanpa banner).
+    const bannerUrl = eventData.bannerDesktopUrl || eventData.bannerMobileUrl || "";
+
     return (
     <div className="min-h-screen bg-white pb-10">
     
-      {/* === HEADER BANNER === */}
-      <div className="relative w-full overflow-hidden">
-        <div className="relative h-[250px] md:h-[350px] w-full max-w-7xl mx-auto flex flex-col justify-center px-4 md:px-12">
-          
-          {eventData.bannerDesktopUrl ? (
-            <Image 
-              src={eventData.bannerDesktopUrl} 
-              alt={eventData.title} 
-              fill 
-              className="object-cover opacity-50 mix-blend-overlay object-center" 
-              priority
-            />
-          ) : (
-            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+      {/* === HEADER BANNER ===
+          Banner dipasang UTUH: lebar penuh, tinggi mengikuti rasio aslinya, tidak
+          dipotong dan tidak diredam. Sebelumnya `fill object-cover opacity-50
+          mix-blend-overlay` di dalam kotak 250/350px — desain creative kepotong
+          kiri-kanan dan nyaris tak terlihat, padahal merekalah yang menyiapkan
+          ukurannya. Judul & hitung mundur karena itu pindah ke BAWAH banner.
 
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6 mt-auto pb-6 md:pb-12 w-full">
+          <picture>, bukan dua <Image> yang disembunyikan bergantian: elemen yang
+          di-`hidden` TETAP diunduh peramban, sementara banner kampanye bisa
+          belasan MB — HP tidak boleh menarik versi desktop. Karena
+          `images.unoptimized` menyala di next.config, <img> biasa tidak
+          kehilangan apa pun dibanding next/image.
+
+          Event tanpa banner tetap memakai panel gelap yang lama supaya halamannya
+          tidak jadi kosong melompong (mis. flash-sale yang memang tak berbanner). */}
+      {bannerUrl ? (
+        <>
+          <div className="w-full bg-gray-50">
+            <picture>
+              {eventData.bannerMobileUrl && (
+                <source media="(max-width: 767px)" srcSet={eventData.bannerMobileUrl} />
+              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={bannerUrl}
+                alt={eventData.title}
+                className="w-full h-auto"
+                fetchPriority="high"
+              />
+            </picture>
+          </div>
+
+          <div className="max-w-7xl mx-auto px-4 md:px-12 mt-5 md:mt-7 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6">
             <div className="w-full md:w-auto">
-              <span className="inline-flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm font-bold bg-white text-black px-2.5 py-1 md:px-3 md:py-1.5 rounded-md uppercase tracking-widest mb-2 md:mb-3 shadow-lg">
+              <span className="inline-flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm font-bold bg-black text-white px-2.5 py-1 md:px-3 md:py-1.5 rounded-md uppercase tracking-widest mb-2 md:mb-3">
                 <span className="relative flex h-2 w-2">
                   {eventData.isActive && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>}
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
                 </span>
                 {eventData.isActive ? "Live Event" : "Event Berakhir"}
               </span>
-              <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight drop-shadow-lg line-clamp-2 md:line-clamp-none">
+              <h1 className="text-3xl md:text-5xl font-black text-[#111111] uppercase tracking-tight">
                 {eventData.title}
               </h1>
             </div>
 
             {eventData.isActive && eventData.countDownEnd && (
-              <div className="bg-black/30 backdrop-blur-md p-3 md:p-4 rounded-xl md:rounded-2xl border border-white/10 shadow-2xl w-full md:w-auto">
-                <p className="text-[10px] md:text-xs text-white/80 uppercase tracking-widest font-semibold mb-1 md:mb-2">
+              <div className="bg-gray-50 border border-gray-200 p-3 md:p-4 rounded-xl md:rounded-2xl w-full md:w-auto">
+                <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest font-semibold mb-1 md:mb-2">
                   Promo Berakhir Dalam:
                 </p>
-                <CountdownTimer targetDate={eventData.countDownEnd} />
+                {/* tone="dark" wajib: varian terang menulis angka putih dan hilang di alas abu muda */}
+                <CountdownTimer targetDate={eventData.countDownEnd} tone="dark" />
               </div>
             )}
           </div>
+        </>
+      ) : (
+        <div className="relative w-full overflow-hidden">
+          <div className="relative h-[250px] md:h-[350px] w-full max-w-7xl mx-auto flex flex-col justify-center px-4 md:px-12">
+            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6 mt-auto pb-6 md:pb-12 w-full">
+              <div className="w-full md:w-auto">
+                <span className="inline-flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm font-bold bg-white text-black px-2.5 py-1 md:px-3 md:py-1.5 rounded-md uppercase tracking-widest mb-2 md:mb-3 shadow-lg">
+                  <span className="relative flex h-2 w-2">
+                    {eventData.isActive && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>}
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+                  </span>
+                  {eventData.isActive ? "Live Event" : "Event Berakhir"}
+                </span>
+                <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight drop-shadow-lg line-clamp-2 md:line-clamp-none">
+                  {eventData.title}
+                </h1>
+              </div>
+
+              {eventData.isActive && eventData.countDownEnd && (
+                <div className="bg-black/30 backdrop-blur-md p-3 md:p-4 rounded-xl md:rounded-2xl border border-white/10 shadow-2xl w-full md:w-auto">
+                  <p className="text-[10px] md:text-xs text-white/80 uppercase tracking-widest font-semibold mb-1 md:mb-2">
+                    Promo Berakhir Dalam:
+                  </p>
+                  <CountdownTimer targetDate={eventData.countDownEnd} />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {eventData.contentHtml && (
         <div className="max-w-7xl mx-auto px-4 mt-6 md:mt-8">
