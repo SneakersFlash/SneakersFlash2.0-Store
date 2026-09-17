@@ -111,7 +111,7 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
           Event tanpa banner tetap memakai panel gelap yang lama supaya halamannya
           tidak jadi kosong melompong (mis. flash-sale yang memang tak berbanner). */}
       {bannerUrl ? (
-        <div className="relative w-full bg-gray-50">
+        <div className="relative w-full bg-gray-50 [container-type:inline-size]">
           <picture>
             {eventData.bannerMobileUrl && (
               <source media="(max-width: 767px)" srcSet={eventData.bannerMobileUrl} />
@@ -125,30 +125,32 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
             />
           </picture>
 
-          {/* Badge & hitung mundur menumpang DI DALAM banner, posisinya sama
-              dengan tata letak lama (kiri-bawah & kanan-bawah). Judul event
-              tidak ditulis — desain banner yang memuatnya, dan creative yang
-              menyisakan ruang untuk dua elemen ini. <h1> tetap ada untuk SEO. */}
+          {/* Badge & hitung mundur DIKUNCI ke banner, bukan ke layar: wadah ini
+              container query (`container-type: inline-size`), jadi jarak tepi
+              (cqw = % lebar banner) dan ukuran huruf ikut membesar/mengecil
+              bersama gambarnya. Semua ukuran anak memakai `em` dari font-size
+              wadah overlay — satu angka yang mengatur skala semuanya. Batas bawah
+              9px supaya di HP tetap terbaca. Tanpa panel/kaca di belakang timer:
+              creative yang menyiapkan ruang kosong di desain banner.
+              Judul event tidak ditulis — sudah ada di desain. <h1> tetap untuk SEO. */}
           <h1 className="sr-only">{eventData.title}</h1>
-          <div className="absolute inset-0 flex">
-            <div className="w-full max-w-7xl mx-auto px-4 md:px-12 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6 mt-auto pb-6 md:pb-12">
-              <span className="inline-flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm font-bold bg-white text-black px-2.5 py-1 md:px-3 md:py-1.5 rounded-md uppercase tracking-widest shadow-lg">
-                <span className="relative flex h-2 w-2">
-                  {eventData.isActive && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>}
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
-                </span>
-                {eventData.isActive ? "Live Event" : "Event Berakhir"}
+          <div className="absolute inset-x-[3cqw] bottom-[3cqw] flex flex-row items-end justify-between gap-[2cqw] [font-size:max(9px,0.9cqw)]">
+            <span className="inline-flex items-center gap-[0.5em] text-[0.85em] font-bold bg-white text-black px-[0.8em] py-[0.35em] rounded-[0.35em] uppercase tracking-widest shadow-lg">
+              <span className="relative flex h-[0.6em] w-[0.6em]">
+                {eventData.isActive && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>}
+                <span className="relative inline-flex rounded-full h-full w-full bg-red-600"></span>
               </span>
+              {eventData.isActive ? "Live Event" : "Event Berakhir"}
+            </span>
 
-              {eventData.isActive && eventData.countDownEnd && (
-                <div className="bg-black/30 backdrop-blur-md p-3 md:p-4 rounded-xl md:rounded-2xl border border-white/10 shadow-2xl w-full md:w-auto">
-                  <p className="text-[10px] md:text-xs text-white/80 uppercase tracking-widest font-semibold mb-1 md:mb-2">
-                    Promo Berakhir Dalam:
-                  </p>
-                  <CountdownTimer targetDate={eventData.countDownEnd} />
-                </div>
-              )}
-            </div>
+            {eventData.isActive && eventData.countDownEnd && (
+              <div className="flex flex-col items-end">
+                <p className="text-[0.6em] text-white uppercase tracking-widest font-semibold mb-[0.4em] [text-shadow:0_1px_3px_rgba(0,0,0,0.6)]">
+                  Promo Berakhir Dalam:
+                </p>
+                <CountdownTimer targetDate={eventData.countDownEnd} size="fluid" />
+              </div>
+            )}
           </div>
         </div>
       ) : (
