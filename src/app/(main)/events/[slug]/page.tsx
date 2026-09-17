@@ -100,7 +100,7 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
           dipotong dan tidak diredam. Sebelumnya `fill object-cover opacity-50
           mix-blend-overlay` di dalam kotak 250/350px — desain creative kepotong
           kiri-kanan dan nyaris tak terlihat, padahal merekalah yang menyiapkan
-          ukurannya. Judul & hitung mundur karena itu pindah ke BAWAH banner.
+          ukurannya.
 
           <picture>, bukan dua <Image> yang disembunyikan bergantian: elemen yang
           di-`hidden` TETAP diunduh peramban, sementara banner kampanye bisa
@@ -111,47 +111,46 @@ export default async function EventDetailPage({ params, searchParams }: EventPag
           Event tanpa banner tetap memakai panel gelap yang lama supaya halamannya
           tidak jadi kosong melompong (mis. flash-sale yang memang tak berbanner). */}
       {bannerUrl ? (
-        <>
-          <div className="w-full bg-gray-50">
-            <picture>
-              {eventData.bannerMobileUrl && (
-                <source media="(max-width: 767px)" srcSet={eventData.bannerMobileUrl} />
-              )}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={bannerUrl}
-                alt={eventData.title}
-                className="w-full h-auto"
-                fetchPriority="high"
-              />
-            </picture>
-          </div>
+        <div className="relative w-full bg-gray-50">
+          <picture>
+            {eventData.bannerMobileUrl && (
+              <source media="(max-width: 767px)" srcSet={eventData.bannerMobileUrl} />
+            )}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={bannerUrl}
+              alt={eventData.title}
+              className="w-full h-auto"
+              fetchPriority="high"
+            />
+          </picture>
 
-          <div className="max-w-7xl mx-auto px-4 md:px-12 mt-5 md:mt-7 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6">
-            <div className="w-full md:w-auto">
-              <span className="inline-flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm font-bold bg-black text-white px-2.5 py-1 md:px-3 md:py-1.5 rounded-md uppercase tracking-widest mb-2 md:mb-3">
+          {/* Badge & hitung mundur menumpang DI DALAM banner, posisinya sama
+              dengan tata letak lama (kiri-bawah & kanan-bawah). Judul event
+              tidak ditulis — desain banner yang memuatnya, dan creative yang
+              menyisakan ruang untuk dua elemen ini. <h1> tetap ada untuk SEO. */}
+          <h1 className="sr-only">{eventData.title}</h1>
+          <div className="absolute inset-0 flex">
+            <div className="w-full max-w-7xl mx-auto px-4 md:px-12 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 md:gap-6 mt-auto pb-6 md:pb-12">
+              <span className="inline-flex items-center gap-1.5 md:gap-2 text-[10px] md:text-sm font-bold bg-white text-black px-2.5 py-1 md:px-3 md:py-1.5 rounded-md uppercase tracking-widest shadow-lg">
                 <span className="relative flex h-2 w-2">
                   {eventData.isActive && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>}
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
                 </span>
                 {eventData.isActive ? "Live Event" : "Event Berakhir"}
               </span>
-              <h1 className="text-3xl md:text-5xl font-black text-[#111111] uppercase tracking-tight">
-                {eventData.title}
-              </h1>
-            </div>
 
-            {eventData.isActive && eventData.countDownEnd && (
-              <div className="bg-gray-50 border border-gray-200 p-3 md:p-4 rounded-xl md:rounded-2xl w-full md:w-auto">
-                <p className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest font-semibold mb-1 md:mb-2">
-                  Promo Berakhir Dalam:
-                </p>
-                {/* tone="dark" wajib: varian terang menulis angka putih dan hilang di alas abu muda */}
-                <CountdownTimer targetDate={eventData.countDownEnd} tone="dark" />
-              </div>
-            )}
+              {eventData.isActive && eventData.countDownEnd && (
+                <div className="bg-black/30 backdrop-blur-md p-3 md:p-4 rounded-xl md:rounded-2xl border border-white/10 shadow-2xl w-full md:w-auto">
+                  <p className="text-[10px] md:text-xs text-white/80 uppercase tracking-widest font-semibold mb-1 md:mb-2">
+                    Promo Berakhir Dalam:
+                  </p>
+                  <CountdownTimer targetDate={eventData.countDownEnd} />
+                </div>
+              )}
+            </div>
           </div>
-        </>
+        </div>
       ) : (
         <div className="relative w-full overflow-hidden">
           <div className="relative h-[250px] md:h-[350px] w-full max-w-7xl mx-auto flex flex-col justify-center px-4 md:px-12">
