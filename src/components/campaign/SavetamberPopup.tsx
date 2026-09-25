@@ -217,9 +217,6 @@ export function SavetamberPopup() {
                 />
 
                 <div className="flex flex-col items-center gap-1.5">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#0D0D0D]/65">
-                    Voucher Toko Tiering
-                  </span>
                   <h2 className="text-[30px] font-black uppercase leading-none tracking-tight text-[#0D0D0D]">
                     {SAVETAMBER_NAMA}
                   </h2>
