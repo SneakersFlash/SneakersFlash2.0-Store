@@ -4,11 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
+// Gambar ImageKit lewat /ik/ (proxy nginx di domain sendiri), BUKAN
+// ik.imagekit.io langsung: domain itu masuk blokir TrustPositif Komdigi sejak
+// Sep 2026, jadi di ISP Indonesia gambarnya tak pernah sampai ke browser.
 const CATEGORIES = [
   {
     label: "WOMEN",
     href: "/products?gender=women",
-    image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/women.jpg.jpeg",
+    image: "/ik/wzcsyc58s/sf%20web/women.jpg.jpeg",
     span: "col-span-1",
   },
   // Kartu KIDS dihapus: katalog SF tidak punya satu pun produk anak, jadi
@@ -17,14 +20,14 @@ const CATEGORIES = [
   {
     label: "MEN",
     href: "/products?gender=men",
-    image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/mens.jpg.jpeg",
+    image: "/ik/wzcsyc58s/sf%20web/mens.jpg.jpeg",
     span: "col-span-1",
   },
   {
     label: "CASUAL",
     // Slug katalognya "lifestylecasual", tanpa tanda hubung.
     href: "/products?category=lifestylecasual",
-    image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/casual.jpg.jpeg",
+    image: "/ik/wzcsyc58s/sf%20web/casual.jpg.jpeg",
     span: "col-span-1 md:col-span-1",        // di mobile 1 kolom, di desktop tetap
     tall: true,                               // kartu bawah lebih tinggi
   },
@@ -33,7 +36,7 @@ const CATEGORIES = [
     // satu-satunya kategori olahraga yang benar-benar terisi (110 produk).
     label: "RUNNING",
     href: "/products?category=running",
-    image: "https://ik.imagekit.io/wzcsyc58s/sf%20web/sports.jpg.jpeg",
+    image: "/ik/wzcsyc58s/sf%20web/sports.jpg.jpeg",
     span: "col-span-1 md:col-span-1",
     tall: true,
   },
