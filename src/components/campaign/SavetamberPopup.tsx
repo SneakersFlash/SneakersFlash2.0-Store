@@ -7,25 +7,21 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, X } from 'lucide-react';
 import {
-  CLEARANCE_BERAKHIR,
-  CLEARANCE_DISKON,
-  CLEARANCE_HREF,
-  CLEARANCE_PERIODE,
-} from '@/lib/campaign/clearance-sale';
+  SAVETAMBER_HREF,
+  SAVETAMBER_NAMA,
+  periodeSavetamberAktif,
+  type PeriodeSavetamber,
+} from '@/lib/campaign/savetamber';
 
 /**
- * Pop-up Clearance Sale di beranda.
+ * Pop-up voucher toko tiering SAVETAMBER di beranda.
  *
- * Turunan langsung dari pop-up 9.9 yang dicabut 10 Sep 2026: perilakunya
- * (muncul sebentar setelah beranda terbuka, bertahan 5 detik, menutup sendiri,
- * sekali per sesi) sengaja dipertahankan persis — yang diganti cuma isinya.
+ * Menggantikan pop-up Clearance Sale (25 Sep 2026). Perilakunya sengaja sama
+ * persis dengan pendahulunya — muncul sebentar setelah beranda terbuka,
+ * bertahan 5 detik, menutup sendiri, sekali per sesi — yang diganti isinya.
  *
- * Warnanya hitam-putih, BUKAN kuning campaign: pita Clearance di kartu produk
- * hitam-putih, dan pop-up yang kuning akan terasa seperti campaign lain yang
- * kebetulan menuju halaman clearance.
- *
- * Ia mematikan dirinya sendiri sesudah CLEARANCE_BERAKHIR — mencabutnya tidak
- * butuh deploy.
+ * Tabel tier ikut jam pembeli: tier 25 Sep sampai tengah malam WIB, lalu tier
+ * 26–30 Sep, lalu pop-up berhenti muncul sendiri — tanpa deploy.
  */
 
 /** Jeda sebelum muncul — memberi ruang buat elemen terbesar beranda selesai render. */
@@ -37,18 +33,16 @@ const DURASI_TAMPIL_MS = 5000;
 /**
  * Sekali per sesi peramban. Beranda sering dikunjungi berkali-kali dalam satu
  * kunjungan (balik dari produk, dari keranjang, dari pencarian) — tanpa ini,
- * pop-up yang sama menghadang orang yang sudah melihatnya. Ubah ke `false`
- * kalau memang mau muncul di setiap pembukaan beranda.
+ * pop-up yang sama menghadang orang yang sudah melihatnya.
  */
 const SEKALI_PER_SESI = true;
 
 /**
- * Kuncinya sengaja BEDA dari kunci pop-up 9.9 (`popup-99-tampil`). Kalau
- * dipakai ulang, orang yang sesi peramban-nya masih hidup dari kunjungan
- * sebelumnya sudah tertandai "pernah lihat" dan tidak akan pernah melihat
- * pop-up clearance-nya.
+ * Kuncinya sengaja BEDA dari pop-up sebelumnya (`popup-clearance-tampil`).
+ * Kalau dipakai ulang, sesi peramban yang masih hidup sudah tertandai "pernah
+ * lihat" dan pop-up SAVETAMBER tidak akan pernah muncul buat mereka.
  */
-const KUNCI_SESI = 'popup-clearance-tampil';
+const KUNCI_SESI = 'popup-savetamber-tampil';
 
 /** Potongan selotip miring — murni hiasan. */
 function Selotip({ className }: { className: string }) {
@@ -56,23 +50,24 @@ function Selotip({ className }: { className: string }) {
 }
 
 const STRIP = [
-  'Clearance Sale',
-  'Disc. Up To 70%',
-  'Stok Terbatas',
+  'Voucher Toko Tiering',
+  'Extra Disc. Up To 4%',
+  SAVETAMBER_NAMA,
   '100% Original',
 ];
 
-export function ClearanceSalePopup() {
+export function SavetamberPopup() {
   const pathname = usePathname();
   const kurangiGerak = useReducedMotion();
 
-  const [tampil, setTampil] = useState(false);
+  const [periode, setPeriode] = useState<PeriodeSavetamber | null>(null);
   const [berjalan, setBerjalan] = useState(true); // jeda hitung mundur saat disentuh
 
-  const tutup = useCallback(() => setTampil(false), []);
+  const tampil = periode !== null;
+  const tutup = useCallback(() => setPeriode(null), []);
 
-  // Keputusan "event masih hidup atau tidak" diambil sesudah mount: kalau
-  // dihitung saat render server, jawabannya ikut jam build, bukan jam pembeli.
+  // Periode diambil sesudah mount: kalau dihitung saat render server,
+  // jawabannya ikut jam build/cache, bukan jam pembeli.
   //
   // Penandaan "sudah pernah tampil" sengaja ditulis DI DALAM timeout, bukan saat
   // efeknya jalan. React memasang-lepas-memasang ulang efek di mode ketat, jadi
@@ -80,7 +75,7 @@ export function ClearanceSalePopup() {
   // pop-up tidak pernah muncul sama sekali.
   useEffect(() => {
     if (pathname !== '/') return;
-    if (Date.now() >= Date.parse(CLEARANCE_BERAKHIR)) return;
+    if (!periodeSavetamberAktif()) return;
 
     if (SEKALI_PER_SESI) {
       try {
@@ -96,14 +91,14 @@ export function ClearanceSalePopup() {
       } catch {
         /* sama seperti di atas: bukan alasan untuk gagal */
       }
-      setTampil(true);
+      setPeriode(periodeSavetamberAktif());
     }, JEDA_MUNCUL_MS);
 
     return () => clearTimeout(t);
   }, [pathname]);
 
   // Hitung mundur penutupan. Dijeda selama kursor/jari menahan kartu — orang
-  // yang sedang membaca tidak boleh kehilangan bacaannya di tengah jalan.
+  // yang sedang membaca tabel tier tidak boleh kehilangan bacaannya.
   useEffect(() => {
     if (!tampil || !berjalan) return;
     const t = setTimeout(tutup, DURASI_TAMPIL_MS);
@@ -122,7 +117,7 @@ export function ClearanceSalePopup() {
 
   return (
     <AnimatePresence>
-      {tampil && (
+      {periode && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -131,9 +126,9 @@ export function ClearanceSalePopup() {
           className="fixed inset-0 z-[9998] flex items-center justify-center px-5"
           role="dialog"
           aria-modal="true"
-          aria-label="Promo Clearance Sale"
+          aria-label="Promo voucher SAVETAMBER"
         >
-          {/* Latar gelap: sekali klik = tutup, tanpa ikut membuka eventnya. */}
+          {/* Latar gelap: sekali klik = tutup, tanpa ikut pindah ke voucher. */}
           <button
             type="button"
             aria-label="Tutup promo"
@@ -154,24 +149,23 @@ export function ClearanceSalePopup() {
           >
             {/* Seluruh kartu adalah satu tautan. Dibuat sebagai lapisan absolut,
                 bukan pembungkus, supaya tombol tutup tidak jadi tautan bersarang
-                di dalam tautan — pembaca layar tersesat kalau begitu. */}
+                di dalam tautan. */}
             <Link
-              href={CLEARANCE_HREF}
+              href={SAVETAMBER_HREF}
               onClick={tutup}
               className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#F6E70A] focus-visible:ring-offset-2"
             >
               <span className="sr-only">
-                Buka halaman Clearance Sale — diskon sampai 70%
+                Klaim voucher SAVETAMBER — diskon sampai 4%
               </span>
             </Link>
 
-            {/* Tombol tutup duduk DI ATAS lapisan tautan (z lebih tinggi),
-                kalau tidak, kliknya diambil tautan dan pop-up malah pindah
-                halaman. Kotak sentuhnya 44×44 sesuai ambang minimum. */}
+            {/* Tombol tutup DI ATAS lapisan tautan (z lebih tinggi), kalau tidak
+                kliknya diambil tautan. Kotak sentuhnya 44×44. */}
             <button
               type="button"
               onClick={tutup}
-              aria-label="Tutup promo Clearance Sale"
+              aria-label="Tutup promo SAVETAMBER"
               className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center rounded-full text-white transition-transform duration-200 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0D0D0D]/85 shadow">
@@ -179,7 +173,7 @@ export function ClearanceSalePopup() {
               </span>
             </button>
 
-            {/* ── Strip berjalan: hitam-putih, sewarna pita Clearance di kartu ── */}
+            {/* ── Strip berjalan ── */}
             <div className="w-full overflow-hidden bg-[#0D0D0D] py-1.5 text-white">
               <div className="flex w-max gap-6 animate-marquee88" aria-hidden="true">
                 {[...STRIP, ...STRIP, ...STRIP, ...STRIP].map((teks, i) => (
@@ -193,11 +187,8 @@ export function ClearanceSalePopup() {
               </div>
             </div>
 
-            {/* Garis hitung mundur: memberi tahu pop-up ini akan pergi sendiri,
-                jadi tidak terasa seperti penghalang yang harus dilawan.
-                Ditaruh di bawah strip, bukan di dasar kartu — di dasar, lengkung
-                sudut 20px memakan hampir seluruh garisnya. Kuning brand supaya
-                terlihat di antara dua blok hitam. */}
+            {/* Garis hitung mundur — di bawah strip, bukan di dasar kartu:
+                di dasar, lengkung sudut 20px memakan hampir seluruh garisnya. */}
             <motion.div
               key={berjalan ? 'jalan' : 'jeda'}
               initial={{ scaleX: 1 }}
@@ -210,11 +201,9 @@ export function ClearanceSalePopup() {
               aria-hidden="true"
             />
 
-            {/* ── Badan ──
-                Latar kisi titik dibuat dari gradient CSS, bukan berkas gambar:
-                pop-up ini cuma hidup 5 detik, jadi apa pun yang harus diunduh
-                dulu berisiko mendarat sesudah kartunya pergi. */}
-            <div className="relative bg-white bg-[radial-gradient(rgba(0,0,0,0.07)_1px,transparent_1px)] [background-size:14px_14px] px-6 pb-6 pt-7">
+            {/* ── Badan ── latar kisi titik dari gradient CSS, bukan gambar:
+                pop-up 5 detik tidak boleh menunggu unduhan. */}
+            <div className="relative bg-white bg-[radial-gradient(rgba(0,0,0,0.07)_1px,transparent_1px)] [background-size:14px_14px] px-5 pb-5 pt-6">
               <Selotip className="left-3 top-2 h-4 w-16 rotate-[-8deg] bg-[#F6E70A]" />
 
               <div className="relative flex flex-col items-center gap-3 text-center">
@@ -227,34 +216,50 @@ export function ClearanceSalePopup() {
                   className="h-6 w-auto object-contain"
                 />
 
-                <div className="flex flex-col items-center gap-2">
-                  <h2 className="text-[28px] font-black uppercase leading-none tracking-tight text-[#0D0D0D]">
-                    Clearance
-                    <br />
-                    Sale
+                <div className="flex flex-col items-center gap-1.5">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#0D0D0D]/65">
+                    Voucher Toko Tiering
+                  </span>
+                  <h2 className="text-[30px] font-black uppercase leading-none tracking-tight text-[#0D0D0D]">
+                    {SAVETAMBER_NAMA}
                   </h2>
-
-                  {/* Angka diskon dibalik jadi blok hitam: di kartu yang putih,
-                      teks hitam biasa hilang di antara judul dan tanggal. */}
-                  <span className="rounded-full bg-[#0D0D0D] px-3.5 py-1 text-[13px] font-black uppercase tracking-wide text-white">
-                    {CLEARANCE_DISKON}
+                  <span className="rounded-full bg-[#0D0D0D] px-3.5 py-1 text-[11px] font-black uppercase tracking-wide text-white">
+                    {periode.label}
                   </span>
                 </div>
 
-                <span className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#0D0D0D]/65">
-                  {CLEARANCE_PERIODE}
-                </span>
+                {/* Tabel tier: persen jadi blok kuning supaya mata langsung
+                    menangkap tangganya (2 → 3 → 4), rincian di sebelahnya. */}
+                <ul className="flex w-full flex-col gap-1.5">
+                  {periode.tier.map((t) => (
+                    <li
+                      key={t.persen}
+                      className="flex items-center gap-3 rounded-xl border border-[#0D0D0D]/10 bg-white px-2.5 py-2 text-left"
+                    >
+                      <span className="flex h-10 w-12 shrink-0 items-center justify-center rounded-lg bg-[#F6E70A] text-[18px] font-black text-[#0D0D0D]">
+                        {t.persen}%
+                      </span>
+                      <span className="flex flex-col leading-tight">
+                        <span className="text-[13px] font-black uppercase text-[#0D0D0D]">
+                          Maks. {t.maks}
+                        </span>
+                        <span className="text-[11px] font-semibold text-[#0D0D0D]/65">
+                          Min. belanja {t.minBelanja}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
 
             {/* ── Kaki: ajakan ── */}
             <div className="relative flex items-center justify-center gap-2 bg-[#0D0D0D] py-3.5 text-white">
               <span className="text-[13px] font-black uppercase tracking-widest">
-                Belanja Clearance Sekarang
+                Klaim Vouchernya
               </span>
               <ArrowRight size={15} strokeWidth={3} />
             </div>
-
           </motion.div>
         </motion.div>
       )}

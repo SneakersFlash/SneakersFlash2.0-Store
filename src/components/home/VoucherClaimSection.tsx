@@ -157,8 +157,10 @@ export default function VoucherClaimSection({
     ? [MOCK_FIRSTSTEP_VOUCHER, ...vouchers.filter(v => !isFirstStep(v))]
     : vouchers;
 
+  // id="vouchers" = tujuan pop-up campaign & tombol di Voucher Saya ("/#vouchers");
+  // scroll-mt memberi ruang navbar fixed (96px) supaya judulnya tidak tertutup.
   return (
-    <section className="w-full bg-[#F5F5F5] pb-4 pt-2 md:py-6" ref={containerRef}>
+    <section id="vouchers" className="w-full scroll-mt-[110px] bg-[#F5F5F5] pb-4 pt-2 md:py-6" ref={containerRef}>
       <div className="container px-1 max-w-7xl">
         <motion.div
           initial={{ opacity: 0, y: -10 }}

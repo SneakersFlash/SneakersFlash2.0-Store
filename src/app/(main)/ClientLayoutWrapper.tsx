@@ -8,7 +8,7 @@ import { TopSearchBar } from "@/components/home/TopSearchBar";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect } from "react";
 import WelcomeVoucherPopup from "@/components/voucher/WelcomeVoucherPopup";
-import { ClearanceSalePopup } from "@/components/campaign/ClearanceSalePopup";
+import { SavetamberPopup } from "@/components/campaign/SavetamberPopup";
 
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -70,13 +70,13 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
         onClose={clearWelcomeVoucher}
       />
 
-      {/* ─── Pop-up Clearance Sale ────────────────────────────────────
+      {/* ─── Pop-up voucher SAVETAMBER ────────────────────────────────
            Hanya di beranda, muncul sekali per sesi, menutup sendiri setelah
-           5 detik. Menggantikan pop-up 9.9 yang dicabut bersama halamannya
-           (10 Sep 2026); ia berhenti muncul sendiri sesudah event clearance
-           berakhir — tidak perlu deploy untuk mencabutnya.
+           5 detik. Menggantikan pop-up Clearance Sale (25 Sep 2026); tier-nya
+           ganti sendiri tengah malam 26 Sep dan pop-up berhenti muncul
+           sesudah 30 Sep 23:59 WIB — tidak perlu deploy untuk mencabutnya.
       ────────────────────────────────────────────────────────────────────── */}
-      <ClearanceSalePopup />
+      <SavetamberPopup />
 
     </>
   );
