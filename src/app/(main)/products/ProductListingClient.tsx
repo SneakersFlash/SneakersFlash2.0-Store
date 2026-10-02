@@ -84,7 +84,14 @@ function ProductListingClientInner({
   if (priceSortFromUrl === "high-to-low" || priceSortFromUrl === "low-to-high") {
     currentFilters.priceSort = priceSortFromUrl;
   } else if (sortFromUrl) {
-    if (sortFromUrl === "newest")     { currentFilters.sortBy = "createdAt"; currentFilters.sortOrder = "desc"; }
+    if (sortFromUrl === "newest") {
+      currentFilters.sortBy = "createdAt";
+      currentFilters.sortOrder = "desc";
+      // "New Arrivals" = barang yang ditandai tag `new arrival` di sheet, bukan
+      // sekadar urutan tanggal masuk — sync massal bikin seluruh katalog
+      // "baru". ?tag= eksplisit di URL tetap menang.
+      if (!tagFromUrl) currentFilters.tag = "new arrival";
+    }
     if (sortFromUrl === "price-asc")  { currentFilters.priceSort = "low-to-high"; }
     if (sortFromUrl === "price-desc") { currentFilters.priceSort = "high-to-low"; }
     if (sortFromUrl === "name")       { currentFilters.sortBy = "name"; currentFilters.sortOrder = "asc"; }
