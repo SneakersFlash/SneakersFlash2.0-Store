@@ -94,10 +94,11 @@ export const NAV_ITEMS = [
   // pembersihan katalog, jadi menu ini selalu berujung "NO PRODUCTS FOUND".
   // Kembalikan entri ini kalau stok apparel sudah masuk lagi.
   { label: "Brands", href: "/brands", megaMenu: null },
-  // Tidak ada entri campaign di sini sejak 9.9 dicabut (10 Sep 2026). Gaya
-  // `isSale` di bawah sengaja ditinggal utuh — itu cetakan entri campaign yang
-  // sudah teruji (kotak kuning, bukan teks kuning yang tak terbaca di navbar
-  // putih), tinggal dipasang lagi kalau ada campaign berikutnya.
+  // Halaman campaign tanggal kembar. Ditulis di sini, bukan diambil dari
+  // CampaignsService, karena ini halaman kurasi tangan di /10-10-sale — bukan
+  // event katalog yang punya slug sendiri di /events/<slug>. Gaya `isSale`
+  // (kotak kuning) dipakai ulang dari 9.9.
+  { label: "10.10 SALE", href: "/10-10-sale", megaMenu: null, isSale: true },
 ];
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────

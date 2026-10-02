@@ -7,21 +7,23 @@ import { usePathname } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, X } from 'lucide-react';
 import {
-  SAVETAMBER_HREF,
-  SAVETAMBER_NAMA,
-  periodeSavetamberAktif,
-  type PeriodeSavetamber,
-} from '@/lib/campaign/savetamber';
+  LOWTOBER_HREF,
+  LOWTOBER_NAMA,
+  LOWTOBER_SUBNAMA,
+  periodeLowtoberAktif,
+  type PeriodeLowtober,
+} from '@/lib/campaign/lowtober-1010';
 
 /**
- * Pop-up voucher toko tiering SAVETAMBER di beranda.
+ * Pop-up campaign 10.10 LOWTOBER THE BIG DROP di beranda.
  *
- * Menggantikan pop-up Clearance Sale (25 Sep 2026). Perilakunya sengaja sama
- * persis dengan pendahulunya — muncul sebentar setelah beranda terbuka,
- * bertahan 5 detik, menutup sendiri, sekali per sesi — yang diganti isinya.
+ * Menggantikan pop-up SAVETAMBER (yang sudah berhenti sendiri 1 Okt 2026).
+ * Perilakunya sengaja sama persis dengan pendahulunya — muncul sebentar setelah
+ * beranda terbuka, bertahan 5 detik, menutup sendiri, sekali per sesi — yang
+ * diganti isinya dan tujuannya (halaman /10-10-sale, bukan /#vouchers).
  *
- * Tabel tier ikut jam pembeli: tier 25 Sep sampai tengah malam WIB, lalu tier
- * 26–30 Sep, lalu pop-up berhenti muncul sendiri — tanpa deploy.
+ * Tabel tier ikut jam pembeli: tier 1–9 Okt sampai tengah malam WIB, lalu tier
+ * 10 Okt, lalu pop-up berhenti muncul sendiri 11 Okt 00:00 WIB — tanpa deploy.
  */
 
 /** Jeda sebelum muncul — memberi ruang buat elemen terbesar beranda selesai render. */
@@ -38,11 +40,11 @@ const DURASI_TAMPIL_MS = 5000;
 const SEKALI_PER_SESI = true;
 
 /**
- * Kuncinya sengaja BEDA dari pop-up sebelumnya (`popup-clearance-tampil`).
+ * Kuncinya sengaja BEDA dari pop-up sebelumnya (`popup-savetamber-tampil`).
  * Kalau dipakai ulang, sesi peramban yang masih hidup sudah tertandai "pernah
- * lihat" dan pop-up SAVETAMBER tidak akan pernah muncul buat mereka.
+ * lihat" dan pop-up 10.10 tidak akan pernah muncul buat mereka.
  */
-const KUNCI_SESI = 'popup-savetamber-tampil';
+const KUNCI_SESI = 'popup-lowtober-tampil';
 
 /** Potongan selotip miring — murni hiasan. */
 function Selotip({ className }: { className: string }) {
@@ -50,17 +52,17 @@ function Selotip({ className }: { className: string }) {
 }
 
 const STRIP = [
-  'Voucher Toko Tiering',
-  'Extra Disc. Up To 4%',
-  SAVETAMBER_NAMA,
+  LOWTOBER_NAMA,
+  LOWTOBER_SUBNAMA,
+  'Extra Voucher Up To 300K',
   '100% Original',
 ];
 
-export function SavetamberPopup() {
+export function Lowtober1010Popup() {
   const pathname = usePathname();
   const kurangiGerak = useReducedMotion();
 
-  const [periode, setPeriode] = useState<PeriodeSavetamber | null>(null);
+  const [periode, setPeriode] = useState<PeriodeLowtober | null>(null);
   const [berjalan, setBerjalan] = useState(true); // jeda hitung mundur saat disentuh
 
   const tampil = periode !== null;
@@ -75,7 +77,7 @@ export function SavetamberPopup() {
   // pop-up tidak pernah muncul sama sekali.
   useEffect(() => {
     if (pathname !== '/') return;
-    if (!periodeSavetamberAktif()) return;
+    if (!periodeLowtoberAktif()) return;
 
     if (SEKALI_PER_SESI) {
       try {
@@ -91,7 +93,7 @@ export function SavetamberPopup() {
       } catch {
         /* sama seperti di atas: bukan alasan untuk gagal */
       }
-      setPeriode(periodeSavetamberAktif());
+      setPeriode(periodeLowtoberAktif());
     }, JEDA_MUNCUL_MS);
 
     return () => clearTimeout(t);
@@ -126,7 +128,7 @@ export function SavetamberPopup() {
           className="fixed inset-0 z-[9998] flex items-center justify-center px-5"
           role="dialog"
           aria-modal="true"
-          aria-label="Promo voucher SAVETAMBER"
+          aria-label="Promo 10.10 Lowtober The Big Drop"
         >
           {/* Latar gelap: sekali klik = tutup, tanpa ikut pindah ke voucher. */}
           <button
@@ -151,12 +153,12 @@ export function SavetamberPopup() {
                 bukan pembungkus, supaya tombol tutup tidak jadi tautan bersarang
                 di dalam tautan. */}
             <Link
-              href={SAVETAMBER_HREF}
+              href={LOWTOBER_HREF}
               onClick={tutup}
               className="absolute inset-0 z-10 focus:outline-none focus-visible:ring-4 focus-visible:ring-[#F6E70A] focus-visible:ring-offset-2"
             >
               <span className="sr-only">
-                Klaim voucher SAVETAMBER — diskon sampai 4%
+                Buka halaman 10.10 Lowtober The Big Drop — voucher sampai 300K
               </span>
             </Link>
 
@@ -165,7 +167,7 @@ export function SavetamberPopup() {
             <button
               type="button"
               onClick={tutup}
-              aria-label="Tutup promo SAVETAMBER"
+              aria-label="Tutup promo 10.10"
               className="absolute right-2 top-2 z-20 flex h-11 w-11 items-center justify-center rounded-full text-white transition-transform duration-200 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0D0D0D]/85 shadow">
@@ -217,8 +219,13 @@ export function SavetamberPopup() {
                 />
 
                 <div className="flex flex-col items-center gap-1.5">
-                  <h2 className="text-[30px] font-black uppercase leading-none tracking-tight text-[#0D0D0D]">
-                    {SAVETAMBER_NAMA}
+                  <h2 className="flex flex-col items-center leading-none text-[#0D0D0D]">
+                    <span className="text-[30px] font-black uppercase tracking-tight">
+                      {LOWTOBER_NAMA}
+                    </span>
+                    <span className="mt-1.5 -rotate-2 bg-[#F6E70A] px-2.5 py-1 text-[16px] font-black uppercase tracking-tight">
+                      {LOWTOBER_SUBNAMA}
+                    </span>
                   </h2>
                   <span className="rounded-full bg-[#0D0D0D] px-3.5 py-1 text-[11px] font-black uppercase tracking-wide text-white">
                     {periode.label}
@@ -253,7 +260,7 @@ export function SavetamberPopup() {
             {/* ── Kaki: ajakan ── */}
             <div className="relative flex items-center justify-center gap-2 bg-[#0D0D0D] py-3.5 text-white">
               <span className="text-[13px] font-black uppercase tracking-widest">
-                Klaim Vouchernya
+                Lihat Promonya
               </span>
               <ArrowRight size={15} strokeWidth={3} />
             </div>

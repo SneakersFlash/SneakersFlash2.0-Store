@@ -8,7 +8,8 @@ import { TopSearchBar } from "@/components/home/TopSearchBar";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect } from "react";
 import WelcomeVoucherPopup from "@/components/voucher/WelcomeVoucherPopup";
-import { SavetamberPopup } from "@/components/campaign/SavetamberPopup";
+import { Lowtober1010Popup } from "@/components/campaign/Lowtober1010Popup";
+import { Lowtober1010FloatingButton } from "@/components/campaign/Lowtober1010FloatingButton";
 
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -70,13 +71,20 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
         onClose={clearWelcomeVoucher}
       />
 
-      {/* ─── Pop-up voucher SAVETAMBER ────────────────────────────────
+      {/* ─── Tombol mengambang campaign 10.10 ─────────────────────────────────
+           Menyembunyikan dirinya sendiri di /10-10-sale, di checkout, dan
+           sesudah campaign berakhir (10 Okt 23:59 WIB) — tidak perlu deploy
+           untuk mencabutnya.
+      ──────────────────────────────────────────────────────────────────────── */}
+      <Lowtober1010FloatingButton />
+
+      {/* ─── Pop-up campaign 10.10 ────────────────────────────────────────────
            Hanya di beranda, muncul sekali per sesi, menutup sendiri setelah
-           5 detik. Menggantikan pop-up Clearance Sale (25 Sep 2026); tier-nya
-           ganti sendiri tengah malam 26 Sep dan pop-up berhenti muncul
-           sesudah 30 Sep 23:59 WIB — tidak perlu deploy untuk mencabutnya.
-      ────────────────────────────────────────────────────────────────────── */}
-      <SavetamberPopup />
+           5 detik. Menggantikan pop-up SAVETAMBER (2 Okt 2026); tier-nya ganti
+           sendiri tengah malam 10 Okt dan pop-up berhenti muncul sesudah
+           10 Okt 23:59 WIB.
+      ──────────────────────────────────────────────────────────────────────── */}
+      <Lowtober1010Popup />
 
     </>
   );
