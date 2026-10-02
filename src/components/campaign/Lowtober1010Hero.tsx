@@ -100,9 +100,6 @@ export function Lowtober1010Hero() {
                   <span className="text-white font-black uppercase leading-none text-xl md:text-2xl lg:text-3xl">
                     Extra Voucher up to 300K
                   </span>
-                  <span className="text-white/75 font-bold uppercase leading-tight text-sm md:text-base">
-                    Voucher toko tiering, sampai 4%
-                  </span>
                 </div>
 
                 <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.22em] text-white/65">
@@ -167,7 +164,7 @@ export function Lowtober1010Hero() {
                   Pairs Go Fast.
                 </p>
                 <p className="mt-3 text-sm leading-relaxed opacity-80">
-                  Klaim voucher tiering-nya dulu, lalu ambil pair kamu sebelum
+                  Klaim vouchernya dulu, lalu ambil pair kamu sebelum
                   stoknya ikut drop. Puncaknya 10 Oktober, voucher sampai 300K.
                 </p>
               </div>

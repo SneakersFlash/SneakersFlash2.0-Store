@@ -105,9 +105,7 @@ export default async function Campaign1010Page() {
              yang belum mulai) bisa tampil sekaligus. ── */}
         <section id="tier-1010" className="pt-10 scroll-mt-24">
           <SectionHeading
-            eyebrow="Voucher Toko Tiering"
             title="Makin Banyak Belanja, Makin Besar Drop-nya"
-            subtitle="Dua periode, tiga tingkat. Tier 10 Oktober otomatis berlaku mulai tengah malam — maksimal potongan naik sampai 300K."
           />
           <Lowtober1010Tier />
         </section>
