@@ -71,16 +71,28 @@ export default async function Campaign1010Page() {
     ambilSection(SKU_FRESH, KUERI_FRESH),
   ]);
 
-  // Urutan pembuangan duplikat penting. Moving disaring paling dulu karena
-  // kuerinya paling spesifik (kategori Running/TRAINING); Big Drop memakai
-  // kurasi umum yang bisa memuat sepatu lari yang sama, jadi Big Drop yang
-  // mengalah. Fresh terakhir supaya tidak mengulang apa pun yang sudah tampil.
-  const moving = semuaMoving.slice(0, JUMLAH_MOVING);
+  // Urutan pembuangan duplikat penting. Kalau Big Drop berisi daftar SKU
+  // pilihan tangan, ia tampil UTUH dan Moving yang mengalah. Kalau masih
+  // fallback, Moving disaring dulu karena kuerinya paling spesifik
+  // (Running/TRAINING), dan kurasi umum Big Drop yang mengalah. Fresh terakhir
+  // supaya tidak mengulang apa pun yang sudah tampil.
+  let bigDrop: Product[];
+  let moving: Product[];
+  if (SKU_BIG_DROP.length > 0) {
+    bigDrop = semuaBigDrop;
+    const idBigDrop = new Set(bigDrop.map((p) => p.id));
+    moving = semuaMoving
+      .filter((p) => !idBigDrop.has(p.id))
+      .slice(0, JUMLAH_MOVING);
+  } else {
+    moving = semuaMoving.slice(0, JUMLAH_MOVING);
+    const idMoving = new Set(moving.map((p) => p.id));
+    bigDrop = semuaBigDrop
+      .filter((p) => !idMoving.has(p.id))
+      .slice(0, JUMLAH_BIG_DROP);
+  }
 
   const idMoving = new Set(moving.map((p) => p.id));
-  const bigDrop = semuaBigDrop
-    .filter((p) => !idMoving.has(p.id))
-    .slice(0, JUMLAH_BIG_DROP);
 
   const idTerpakai = new Set([...idMoving, ...bigDrop.map((p) => p.id)]);
   const fresh = semuaFresh
