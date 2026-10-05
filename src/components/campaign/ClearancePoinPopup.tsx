@@ -25,6 +25,8 @@ import {
  *
  * Beda dari pop-up promo beranda, yang ini TIDAK menutup sendiri — isinya
  * tindakan, bukan pengumuman. Berhenti tampil sendiri sesudah 11 Okt 23:59 WIB.
+ *
+ * Copy mode tamu & berhasil dari user (5 Okt 2026), dipakai apa adanya.
  */
 
 const JEDA_MUNCUL_MS = 700;
@@ -198,18 +200,22 @@ export function ClearancePoinPopup() {
 
               {mode === 'tamu' && (
                 <>
-                  <p className="text-[14px] font-semibold leading-snug text-[#0D0D0D]">
-                    Daftar atau login sekarang untuk klaim{' '}
-                    <span className="font-black">100.000 FlashPoint</span>.
-                    Langsung bisa dipakai potong harga di checkout.
-                  </p>
+                  <div className="flex flex-col items-center gap-1.5">
+                    <h2 className="text-[19px] font-black uppercase leading-tight tracking-tight text-[#0D0D0D]">
+                      Your 100K Flash Point is waiting.
+                    </h2>
+                    <p className="text-[14px] font-semibold leading-snug text-[#0D0D0D]/80">
+                      Register sekarang dan dapatkan 100K Flash Point untuk
+                      dipakai selama 10.10 LOWTOBER.
+                    </p>
+                  </div>
                   <div className="flex w-full flex-col gap-2">
                     <Link
                       href={`/register?callbackUrl=${callback}`}
                       onClick={tutup}
                       className="flex h-12 w-full items-center justify-center rounded-xl bg-[#F6E70A] text-[14px] font-black uppercase tracking-wide text-[#0D0D0D] transition-transform active:scale-[0.98]"
                     >
-                      Daftar &amp; Klaim
+                      Register &amp; Get 100K
                     </Link>
                     <Link
                       href={`/login?callbackUrl=${callback}`}
@@ -250,11 +256,13 @@ export function ClearancePoinPopup() {
                 <>
                   <div className="flex flex-col items-center gap-1.5">
                     <CheckCircle2 className="h-9 w-9 text-green-600" />
-                    <p className="text-[15px] font-black text-[#0D0D0D]">
-                      100.000 FlashPoint sudah masuk!
-                    </p>
-                    <p className="text-[13px] font-semibold leading-snug text-[#0D0D0D]/70">
-                      Pakai di checkout untuk potong harga belanjaan kamu.
+                    <h2 className="text-[19px] font-black uppercase leading-tight tracking-tight text-[#0D0D0D]">
+                      100K Flash Point is yours!
+                    </h2>
+                    <p className="text-[14px] font-semibold leading-snug text-[#0D0D0D]/80">
+                      Congrats! 100K Flash Point udah masuk ke akun kamu.
+                      Pakai buat belanja selama 10.10 LOWTOBER dan bikin The
+                      Big Drop makin worth it.
                     </p>
                   </div>
                   <button
@@ -262,13 +270,15 @@ export function ClearancePoinPopup() {
                     onClick={tutup}
                     className="flex h-12 w-full items-center justify-center rounded-xl bg-[#0D0D0D] text-[14px] font-black uppercase tracking-wide text-white transition-transform active:scale-[0.98]"
                   >
-                    Mulai Belanja
+                    Shop The Drop
                   </button>
                 </>
               )}
 
               <p className="text-[11px] font-medium text-[#0D0D0D]/60">
-                Berlaku s/d 11 Oktober 2026 · 1x klaim per akun
+                {mode === 'berhasil'
+                  ? 'Valid during LOWTOBER. T&C apply.'
+                  : 'Berlaku s/d 11 Oktober 2026 · sisa poin ditarik setelahnya'}
               </p>
             </div>
           </motion.div>
