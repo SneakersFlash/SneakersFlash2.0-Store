@@ -8,8 +8,7 @@ import { TopSearchBar } from "@/components/home/TopSearchBar";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect } from "react";
 import WelcomeVoucherPopup from "@/components/voucher/WelcomeVoucherPopup";
-import { Lowtober1010Popup } from "@/components/campaign/Lowtober1010Popup";
-import { Lowtober1010FloatingButton } from "@/components/campaign/Lowtober1010FloatingButton";
+import { ClearancePoinPopup } from "@/components/campaign/ClearancePoinPopup";
 
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -71,20 +70,14 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
         onClose={clearWelcomeVoucher}
       />
 
-      {/* ─── Tombol mengambang campaign 10.10 ─────────────────────────────────
-           Menyembunyikan dirinya sendiri di /10-10-sale, di checkout, dan
-           sesudah campaign berakhir (10 Okt 23:59 WIB) — tidak perlu deploy
-           untuk mencabutnya.
-      ──────────────────────────────────────────────────────────────────────── */}
-      <Lowtober1010FloatingButton />
 
-      {/* ─── Pop-up campaign 10.10 ────────────────────────────────────────────
-           Hanya di beranda, muncul sekali per sesi, menutup sendiri setelah
-           5 detik. Menggantikan pop-up SAVETAMBER (2 Okt 2026); tier-nya ganti
-           sendiri tengah malam 10 Okt dan pop-up berhenti muncul sesudah
-           10 Okt 23:59 WIB.
+      {/* ─── Pop-up klaim 100K FlashPoint ─────────────────────────────────────
+           Hanya di /events/clearance-sale. Member login → tombol klaim; tamu →
+           ajakan daftar/login. Berhenti sendiri sesudah 11 Okt 23:59 WIB.
+           Pop-up & tombol mengambang 10.10 dicabut 5 Okt 2026 (komponennya
+           masih ada di components/campaign kalau mau dipakai lagi).
       ──────────────────────────────────────────────────────────────────────── */}
-      <Lowtober1010Popup />
+      <ClearancePoinPopup />
 
     </>
   );

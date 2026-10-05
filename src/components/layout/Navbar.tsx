@@ -94,11 +94,9 @@ export const NAV_ITEMS = [
   // pembersihan katalog, jadi menu ini selalu berujung "NO PRODUCTS FOUND".
   // Kembalikan entri ini kalau stok apparel sudah masuk lagi.
   { label: "Brands", href: "/brands", megaMenu: null },
-  // Halaman campaign tanggal kembar. Ditulis di sini, bukan diambil dari
-  // CampaignsService, karena ini halaman kurasi tangan di /10-10-sale — bukan
-  // event katalog yang punya slug sendiri di /events/<slug>. Gaya `isSale`
-  // (kotak kuning) dipakai ulang dari 9.9.
-  { label: "10.10 SALE", href: "/10-10-sale", megaMenu: null, isSale: true },
+  // Entri "10.10 SALE" (/10-10-sale) dicabut 5 Okt 2026 — halamannya
+  // dinonaktifkan dan dialihkan ke /events/clearance-sale (next.config.ts).
+  // Gaya `isSale` (kotak kuning) tetap ada untuk campaign berikutnya.
 ];
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────

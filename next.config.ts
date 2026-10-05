@@ -38,6 +38,14 @@ const nextConfig: NextConfig = {
         destination: "/events/clearance-sale",
         permanent: false,
       },
+      // Halaman 10.10 dinonaktifkan 5 Okt 2026 atas permintaan user. Kodenya
+      // (app/(main)/10-10-sale) sengaja tidak dihapus — cabut redirect ini
+      // untuk menghidupkannya lagi. 307 dengan alasan yang sama seperti 9.9.
+      {
+        source: "/10-10-sale",
+        destination: "/events/clearance-sale",
+        permanent: false,
+      },
     ];
   },
 };

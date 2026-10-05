@@ -14,6 +14,21 @@ export const usersService = {
     return response.data;
   },
 
+  // --- Klaim 100K FlashPoint (pop-up Clearance Sale) ---
+  getPointsClaim: async (): Promise<{
+    active: boolean;
+    claimed: boolean;
+    amount: number;
+  }> => {
+    const response = await apiClient.get('/users/me/points-claim');
+    return response.data;
+  },
+
+  claimPoints: async (): Promise<{ amount: number; balanceAfter: string }> => {
+    const response = await apiClient.post('/users/me/points-claim');
+    return response.data;
+  },
+
   // --- Addresses ---
   getMyAddresses: async (): Promise<UserAddress[]> => {
     const response = await apiClient.get('/users/me/addresses');
