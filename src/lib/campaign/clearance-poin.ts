@@ -18,3 +18,14 @@ export function klaimPoinClearanceAktif(now: Date = new Date()): boolean {
     now < new Date(CLEARANCE_POIN_BERAKHIR)
   );
 }
+
+/**
+ * Selama jendela klaim, FlashPoint cuma bisa dipakai kalau subtotal barang
+ * minimal Rp700.000. Backend yang menegakkan (`pointsMinPurchase` di
+ * `loyalty.ts`); angka di sini supaya toggle checkout terkunci duluan.
+ */
+export const POIN_MIN_BELANJA = 700000;
+
+export function minBelanjaPakaiPoin(now: Date = new Date()): number {
+  return now < new Date(CLEARANCE_POIN_BERAKHIR) ? POIN_MIN_BELANJA : 0;
+}

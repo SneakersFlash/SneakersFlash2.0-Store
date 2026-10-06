@@ -10,6 +10,7 @@ import { useCartStore } from "@/lib/store/cartStore";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useAddAddress, useMyAddresses, useMyProfile } from "@/lib/hooks/useUsers";
 import { toNumber } from "@/lib/utils/toNumber";
+import { minBelanjaPakaiPoin } from "@/lib/campaign/clearance-poin";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import { cn } from "@/lib/utils/cn";
@@ -464,7 +465,8 @@ function CheckoutContent(){
   const shippingSubsidy=Math.min(realShippingCost,SHIPPING_SUBSIDY_MAX),customerShippingCost=Math.max(0,realShippingCost-shippingSubsidy);
   const baseForPoints=subtotal+customerShippingCost-voucherDiscount;
   const maxRedeemablePoints=Math.max(0,baseForPoints-1000);
-  const pointsDiscount=usePoints?Math.min(pointsBalance,maxRedeemablePoints):0;
+  const minBelanjaPoin=minBelanjaPakaiPoin(),poinTerkunci=subtotal<minBelanjaPoin;
+  const pointsDiscount=usePoints&&!poinTerkunci?Math.min(pointsBalance,maxRedeemablePoints):0;
   const grandTotal=Math.max(0,subtotal+customerShippingCost-voucherDiscount-pointsDiscount);
 
   useEffect(()=>{
@@ -517,7 +519,7 @@ function CheckoutContent(){
         setIsTokenizing(true);
         try{cardToken=await getCardToken();}catch(e:any){alert(e.message??"Gagal validasi kartu.");return;}finally{setIsTokenizing(false);}
       }
-      const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:selectedPayment,voucherCode:appliedVoucher?.code||undefined,usePoints,pointsToRedeem:usePoints?pointsDiscount:undefined,...(cardToken?{cardToken}:{})};
+      const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:selectedPayment,voucherCode:appliedVoucher?.code||undefined,usePoints:pointsDiscount>0,pointsToRedeem:pointsDiscount>0?pointsDiscount:undefined,...(cardToken?{cardToken}:{})};
       const finalPayload=isBuyNowFlow?{...basePayload,cartItemIds:[],buyNowVariantId:buyNowVariantId as string,buyNowQuantity:Number(buyNowQuantity)}:{...basePayload,cartItemIds:selectedItemIds.map(id=>id.toString())};
       const res=await ordersService.checkout(finalPayload);
       pixel.purchase({
@@ -640,10 +642,10 @@ function CheckoutContent(){
           <div className="flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
               <div className="border border-primary rounded-full p-1"><Zap size={18} className="text-amber-400"/></div>
-              <div><p className="text-xs font-medium text-gray-800">Gunakan Flash Points</p><p className="text-xs text-gray-400">{pointsBalance.toLocaleString()} pts · {formatPrice(Math.floor(pointsBalance))}</p></div>
+              <div><p className="text-xs font-medium text-gray-800">Gunakan Flash Points</p><p className="text-xs text-gray-400">{pointsBalance.toLocaleString()} pts · {formatPrice(Math.floor(pointsBalance))}</p>{poinTerkunci&&(<p className="text-[11px] text-amber-600 mt-0.5">Bisa dipakai untuk belanja min. {formatPrice(minBelanjaPoin)}</p>)}</div>
             </div>
-            <button onClick={()=>setUsePoints(!usePoints)} className={cn("w-11 h-6 rounded-full transition-colors relative shrink-0",usePoints?"bg-primary":"bg-gray-200")}>
-              <span className={cn("absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all",usePoints?"left-5":"left-0.5")}/>
+            <button onClick={()=>setUsePoints(!usePoints)} disabled={poinTerkunci} className={cn("w-11 h-6 rounded-full transition-colors relative shrink-0 disabled:opacity-50 disabled:cursor-not-allowed",usePoints&&!poinTerkunci?"bg-primary":"bg-gray-200")}>
+              <span className={cn("absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all",usePoints&&!poinTerkunci?"left-5":"left-0.5")}/>
             </button>
           </div>
 
