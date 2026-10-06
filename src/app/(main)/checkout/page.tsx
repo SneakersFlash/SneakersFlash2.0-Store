@@ -55,7 +55,10 @@ const PAYMENT_METHODS = [
     category: "e-Wallet & QRIS",
     options: [
       { id: "gopay",     name: "GoPay",              logo: "/images/gopay.jpg.jpeg",     logoText: "GoPay"     },
-      { id: "shopeepay", name: "ShopeePay",          logo: "/images/Spay.jpg.jpeg", logoText: "ShopeePay" },
+      // ShopeePay disembunyikan 6 Okt 2026: Midtrans menolak semua charge dengan
+      // 4045408 "Invalid merchant, status is not active" (merchant di sisi Shopee belum aktif).
+      // Balikin baris ini setelah Midtrans konfirmasi aktif + uji charge kecil.
+      // { id: "shopeepay", name: "ShopeePay",          logo: "/images/Spay.jpg.jpeg", logoText: "ShopeePay" },
       { id: "qris",      name: "GoPay Dynamic QRIS", logo: "/images/Gopay Qris.jpg.jpeg",      logoText: "QRIS"      },
     ],
   },
