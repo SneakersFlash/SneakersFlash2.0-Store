@@ -4,7 +4,7 @@ export interface Banner {
     id: string | number;
     title: string;
     imageDesktopUrl: string;
-    imageMobileUrl: string;
+    imageMobileUrl: string | null;
     targetUrl: string;
     position?: string;
     sortOrder?: number;

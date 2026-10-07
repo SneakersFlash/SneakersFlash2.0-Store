@@ -51,6 +51,8 @@ export function HeroBanner({ banners }: HeroBannerProps) {
 
   const imageIndex = Math.abs(page % banners.length);
   const currentBanner = banners[imageIndex];
+  // Admin boleh tidak mengisi gambar mobile (null dari API) — jatuh ke gambar desktop
+  const mobileSrc = currentBanner.imageMobileUrl || currentBanner.imageDesktopUrl;
 
   return (
     // Wrapper luar: Di mobile full-bleed, di layar sm (640px) ke atas diberi margin & padding
@@ -89,7 +91,7 @@ export function HeroBanner({ banners }: HeroBannerProps) {
               {/* GAMBAR MOBILE (Ditampilkan jika lebar layar < 640px) */}
               <div className="block sm:hidden absolute inset-0">
                 <Image
-                  src={currentBanner.imageMobileUrl.startsWith("http") ? currentBanner.imageMobileUrl : buildImageUrl(currentBanner.imageMobileUrl)}
+                  src={mobileSrc.startsWith("http") ? mobileSrc : buildImageUrl(mobileSrc)}
                   alt={currentBanner.title}
                   fill
                   className="object-cover object-center" 

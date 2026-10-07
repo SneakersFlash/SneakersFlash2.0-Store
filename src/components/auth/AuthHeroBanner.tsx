@@ -21,10 +21,12 @@ export default function AuthHeroBanner() {
       .finally(() => setReady(true));
   }, []);
 
-  const src = banner
-    ? banner.imageMobileUrl.startsWith("http")
-      ? banner.imageMobileUrl
-      : buildImageUrl(banner.imageMobileUrl)
+  // Gambar mobile boleh kosong (null dari API) — jatuh ke gambar desktop
+  const bannerImage = banner ? banner.imageMobileUrl || banner.imageDesktopUrl : null;
+  const src = bannerImage
+    ? bannerImage.startsWith("http")
+      ? bannerImage
+      : buildImageUrl(bannerImage)
     : FALLBACK_IMAGE;
 
   return (
