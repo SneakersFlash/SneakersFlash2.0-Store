@@ -1,3 +1,5 @@
+import type { Utm } from "@/lib/attribution/utm";
+
 export interface CheckoutAddress {
     recipientName: string;
     phone: string;
@@ -28,6 +30,7 @@ export interface CheckoutPayload {
     buyNowQuantity?: number;
     usePoints?: boolean;
     pointsToRedeem?: number;
+    utm?: Utm;
 }
 
 // Response dari POST /orders/checkout

@@ -27,6 +27,7 @@ import { cartService } from "@/lib/api/cart.service";
 import PageLoader from "@/components/common/PageLoader";
 import { pixel } from "@/lib/utils/fbPixel";
 import ThunderSpinner from "@/components/common/ThunderSpinner";
+import { ambilUtm } from "@/lib/attribution/utm";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -519,7 +520,7 @@ function CheckoutContent(){
         setIsTokenizing(true);
         try{cardToken=await getCardToken();}catch(e:any){alert(e.message??"Gagal validasi kartu.");return;}finally{setIsTokenizing(false);}
       }
-      const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:selectedPayment,voucherCode:appliedVoucher?.code||undefined,usePoints:pointsDiscount>0,pointsToRedeem:pointsDiscount>0?pointsDiscount:undefined,...(cardToken?{cardToken}:{})};
+      const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:selectedPayment,voucherCode:appliedVoucher?.code||undefined,usePoints:pointsDiscount>0,pointsToRedeem:pointsDiscount>0?pointsDiscount:undefined,utm:ambilUtm(),...(cardToken?{cardToken}:{})};
       const finalPayload=isBuyNowFlow?{...basePayload,cartItemIds:[],buyNowVariantId:buyNowVariantId as string,buyNowQuantity:Number(buyNowQuantity)}:{...basePayload,cartItemIds:selectedItemIds.map(id=>id.toString())};
       const res=await ordersService.checkout(finalPayload);
       pixel.purchase({

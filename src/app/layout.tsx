@@ -6,6 +6,7 @@ import { ChunkReloadGuard } from "@/components/common/ChunkReloadGuard";
 import { BootSplash } from "@/components/common/BootSplash";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { MerdekaFloatingButton } from "@/components/game/MerdekaFloatingButton";
+import { UtmCapture } from "@/components/common/UtmCapture";
 import "./globals.css";
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
@@ -117,6 +118,7 @@ export default function RootLayout({
 
         <Providers>
           {children}
+          <UtmCapture />
           <ChatWidget />
           {/* Duduk di atas tombol chat. Urutannya di sini tidak menentukan
               lapisan - tombol game sudah dipatok z-40, chat z-50. */}
