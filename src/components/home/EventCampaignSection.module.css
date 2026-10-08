@@ -5,7 +5,6 @@
   --navy: #06095a;
   --ink: #ffffff;
   --sub: #c9ccf2;
-  --bleed: 56px;
   position: relative;
   overflow: hidden;
   padding: 24px 0;
@@ -13,10 +12,10 @@
 }
 
 .panel {
-  margin: 0 var(--bleed);
   padding: 26px 0 24px;
   border-radius: 28px;
   background: var(--navy);
+  overflow: hidden; /* kartu tetap di DALAM panel, kepotong sudut bulatnya */
 }
 
 /* ---------- header ---------- */
@@ -130,7 +129,6 @@
 
 /* ---------- product lanes ---------- */
 .lane {
-  margin: 0 calc(-1 * var(--bleed)); /* kartu keluar dari panel kiri-kanan */
   padding-top: 22px;
   overflow: hidden;
 }
@@ -184,7 +182,7 @@
 
 /* ---------- mobile ---------- */
 @media (max-width: 640px) {
-  .section { --bleed: 12px; padding: 12px 0; }
+  .section { padding: 12px 0; }
   .panel { padding: 18px 0 14px; border-radius: 24px; }
   .header { flex-direction: column; align-items: stretch; gap: 14px; padding: 0; }
   .marquee { height: 36px; }
