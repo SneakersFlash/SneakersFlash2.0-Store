@@ -1,0 +1,205 @@
+/* Panel event di beranda. Port dari desain LowtoberSection (c6638f0) —
+   kartu produknya SENGAJA tidak ikut: tetap kartu lama (Tailwind) di TSX. */
+
+.section {
+  --navy: #06095a;
+  --ink: #ffffff;
+  --sub: #c9ccf2;
+  --bleed: 56px;
+  position: relative;
+  overflow: hidden;
+  padding: 24px 0;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+}
+
+.panel {
+  margin: 0 var(--bleed);
+  padding: 26px 0 24px;
+  border-radius: 28px;
+  background: var(--navy);
+}
+
+/* ---------- header ---------- */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 32px;
+}
+
+.marquee {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+
+.word {
+  padding-right: 28px;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 600;
+  font-stretch: 115%;
+  letter-spacing: 8px;
+  white-space: nowrap;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.divider {
+  width: 1px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.timerRow {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.timerWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.timerLabel {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--sub);
+}
+
+.timer {
+  display: flex;
+  gap: 6px;
+}
+
+.box {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.boxV {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.boxL {
+  margin-top: 4px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--sub);
+}
+
+.seeAll {
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  margin-left: auto;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  color: var(--navy);
+}
+
+.seeAll:focus-visible,
+.item:focus-within {
+  outline: 3px solid #ffd400;
+  outline-offset: 3px;
+}
+
+/* ---------- product lanes ---------- */
+.lane {
+  margin: 0 calc(-1 * var(--bleed)); /* kartu keluar dari panel kiri-kanan */
+  padding-top: 22px;
+  overflow: hidden;
+}
+
+.lane + .lane {
+  padding-top: 16px;
+}
+
+.move {
+  display: flex;
+  align-items: stretch;
+  width: max-content;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Jarak antarkartu WAJIB margin, bukan gap: loop -50% butuh tiap kartu
+   membawa jaraknya sendiri supaya sambungan dua salinan tidak loncat. */
+.item {
+  flex-shrink: 0;
+  margin-right: 24px;
+  border-radius: 12px;
+}
+
+.left { animation-name: eventLaneLeft; }
+.right { animation-name: eventLaneRight; }
+
+.lane:hover .move,
+.lane:focus-within .move {
+  animation-play-state: paused;
+}
+
+@keyframes eventLaneLeft {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes eventLaneRight {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- mobile ---------- */
+@media (max-width: 640px) {
+  .section { --bleed: 12px; padding: 12px 0; }
+  .panel { padding: 18px 0 14px; border-radius: 24px; }
+  .header { flex-direction: column; align-items: stretch; gap: 14px; padding: 0; }
+  .marquee { height: 36px; }
+  .word { font-size: 22px; letter-spacing: 6px; padding-right: 18px; }
+  .divider { display: none; }
+  .timerRow { justify-content: space-between; padding: 0 16px; }
+  .timerLabel { display: none; }
+  .box, .seeAll { width: 44px; height: 44px; }
+  .boxV { font-size: 17px; }
+  .lane { padding-top: 16px; }
+  .lane + .lane { padding-top: 12px; }
+  .item { margin-right: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .move { animation: none; }
+  .lane { overflow-x: auto; }
+}
