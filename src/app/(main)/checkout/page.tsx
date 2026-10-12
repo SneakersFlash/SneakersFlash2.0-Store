@@ -512,7 +512,18 @@ function CheckoutContent(){
     }
     let cityName=selectedAddress.city||selectedAddress.cityName;
     if(!cityName&&selectedAddress.provinceId&&selectedAddress.cityId){const cities=await logisticsService.getCities(selectedAddress.provinceId);cityName=(cities as any[]).find((c:any)=>c.id===selectedAddress.cityId)?.name;}
-    const enrichedAddress={...selectedAddress,city:cityName||"Unknown City",district:districtName||"",latitude:hasRealPin(selectedAddress)?Number(selectedAddress.latitude):undefined,longitude:hasRealPin(selectedAddress)?Number(selectedAddress.longitude):undefined};
+    // Nama provinsi & kelurahan/desa ikut disimpan di order supaya alamat di admin/resi lengkap.
+    // Gagal ambil nama = kirim kosong, jangan sampai menahan checkout.
+    let provinceName="",villageName="";
+    try{
+      const [provs,subs]=await Promise.all([
+        selectedAddress.provinceId?logisticsService.getProvinces():Promise.resolve([]),
+        selectedAddress.districtId&&selectedAddress.subdistrictId?logisticsService.getSubdistricts(Number(selectedAddress.districtId)):Promise.resolve([]),
+      ]);
+      provinceName=(provs as any[]).find(p=>Number(p.id)===Number(selectedAddress.provinceId))?.name??"";
+      villageName=(subs as any[]).find(s=>Number(s.id)===Number(selectedAddress.subdistrictId))?.name??"";
+    }catch{}
+    const enrichedAddress={...selectedAddress,city:cityName||"Unknown City",district:districtName||"",province:provinceName||undefined,village:villageName||undefined,latitude:hasRealPin(selectedAddress)?Number(selectedAddress.latitude):undefined,longitude:hasRealPin(selectedAddress)?Number(selectedAddress.longitude):undefined};
     setIsLoading(true);
     try{
       let cardToken:string|undefined;

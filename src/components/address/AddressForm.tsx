@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { MapPin, Navigation, X, Check, Plus } from "lucide-react";
+import { MapPin, Navigation, X, Check, Plus, AlertTriangle } from "lucide-react";
 import { logisticsService } from "@/lib/api/logistics.service";
 import type { UserAddress, CreateUserAddressDto } from "@/types/user.types";
 import ThunderSpinner from "@/components/common/ThunderSpinner";
@@ -407,6 +407,10 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
 
         <div className="space-y-1">
             <label className="text-[12px] font-reguler text-gray-700">Detailed Address</label>
+            <div className="flex gap-2 p-3 bg-amber-50 border border-amber-200 rounded text-[11px] leading-relaxed text-amber-800">
+                <AlertTriangle size={14} className="shrink-0 mt-0.5" />
+                <p><b>Isi alamat selengkap mungkin</b> supaya paket tidak nyasar atau tertahan kurir: nama jalan, nomor rumah, RT/RW, nama gedung/blok, dan patokan bila perlu. Nama tempat saja (mis. &quot;Kantor ABC&quot;) belum cukup.</p>
+            </div>
             <textarea rows={3} value={addressLine} onChange={(e) => { setAddressLine(e.target.value); setErrors(p => ({...p, addressLine: undefined})) }} placeholder="Contoh: Jl. Mawar No. 12, RT 03/RW 05, Gedung Integrity Lt. 2" className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:ring-0 focus:border-primary resize-none" />
             {errors.addressLine
                 ? <p className="text-xs text-red-500">{errors.addressLine}</p>
