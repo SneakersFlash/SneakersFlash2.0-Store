@@ -9,6 +9,9 @@ import ThunderSpinner from "@/components/common/ThunderSpinner";
 // ─── Helpers & Types ────────────────────────────────────────────────────────
 interface LocationOption { id: number; name: string; zip_code?: string; }
 interface Coordinates { lat: number; lng: number; }
+// Alamat cuma nama tempat ("Bimbel Integrity") bikin kurir bingung; paksa isi jalan/nomor.
+const MIN_ADDRESS_LENGTH = 20;
+
 interface FormErrors { recipientName?: string; phone?: string; province?: string; city?: string; district?: string; subdistrict?: string; addressLine?: string; label?: string; }
 
 const DEFAULT_LABELS = ["Home", "Work"];
@@ -276,6 +279,7 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
         if (!recipientName.trim()) errs.recipientName = "Required";
         if (!phone.trim()) errs.phone = "Required";
         if (!addressLine.trim()) errs.addressLine = "Required";
+        else if (addressLine.trim().length < MIN_ADDRESS_LENGTH) errs.addressLine = `Alamat terlalu singkat (min. ${MIN_ADDRESS_LENGTH} karakter). Tulis nama jalan, nomor rumah/gedung, dan RT/RW.`;
         if (!provId) errs.province = "Required";
         if (!cityId) errs.city = "Required";
         if (!distId) errs.district = "Required";
@@ -403,7 +407,10 @@ export function AddressForm({ initialData, onSubmit, isLoading, submitLabel }: A
 
         <div className="space-y-1">
             <label className="text-[12px] font-reguler text-gray-700">Detailed Address</label>
-            <textarea rows={3} value={addressLine} onChange={(e) => setAddressLine(e.target.value)} placeholder="Street name, building, house number..." className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:ring-0 focus:border-primary resize-none" />
+            <textarea rows={3} value={addressLine} onChange={(e) => { setAddressLine(e.target.value); setErrors(p => ({...p, addressLine: undefined})) }} placeholder="Contoh: Jl. Mawar No. 12, RT 03/RW 05, Gedung Integrity Lt. 2" className="w-full border-2 border-gray-200 rounded px-4 py-3 focus:outline-none focus:ring-0 focus:border-primary resize-none" />
+            {errors.addressLine
+                ? <p className="text-xs text-red-500">{errors.addressLine}</p>
+                : <p className="text-[11px] text-gray-400">{addressLine.trim().length}/{MIN_ADDRESS_LENGTH} karakter minimal</p>}
         </div>
 
         <div className="flex items-center gap-3 p-4 bg-gray-50 rounded border border-gray-200">
