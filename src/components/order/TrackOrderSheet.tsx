@@ -35,8 +35,11 @@ function getCourierCode(order: any): string {
   return (order?.courierName || order?.courier?.name || "").toLowerCase();
 }
 
+// JNE mencocokkan 5 digit terakhir HP PENERIMA. /orders/my-orders mengirim
+// kolom mentah (shippingPhone) tanpa address/user — tanpa ini last_phone kosong
+// dan backend menolak "last_phone_number wajib diisi".
 function getPhone(order: any): string {
-  return order?.address?.phone || order?.user?.phone || "";
+  return order?.shippingPhone || order?.address?.phone || order?.user?.phone || "";
 }
 
 function isLionParcelOrder(order: any): boolean {
