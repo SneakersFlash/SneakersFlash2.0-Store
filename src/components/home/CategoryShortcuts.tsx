@@ -11,8 +11,11 @@ const CATEGORIES = [
   {
     label: "WOMEN",
     href: "/products?gender=women",
-    image: "/ik/wzcsyc58s/sf%20web/women.jpg.jpeg",
+    image: "/images/WOMEN.jpg.jpeg",
     span: "col-span-1",
+    // Tulisan "WOMEN" sudah tercetak di gambarnya; label kode dimatikan
+    // supaya tidak dobel.
+    hideLabel: true,
   },
   // Kartu KIDS dihapus: katalog SF tidak punya satu pun produk anak, jadi
   // kartunya selalu mendarat di halaman kosong. Kembalikan kalau stok anak
@@ -97,6 +100,7 @@ function CategoryCard({ cat, index, height }: { cat: Cat; index: number; height:
         className="absolute inset-0 flex flex-col items-center justify-center p-3 md:p-6"
       >
         {/* Label */}
+        {!cat.hideLabel && (
         <span
           className="
             font-black uppercase leading-none tracking-tight text-white
@@ -107,6 +111,7 @@ function CategoryCard({ cat, index, height }: { cat: Cat; index: number; height:
         >
           {cat.label}
         </span>
+        )}
 
         {/* Shop Now button */}
         {/* <span
