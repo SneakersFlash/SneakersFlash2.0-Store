@@ -162,7 +162,7 @@ export function JrfVoucherPage() {
             </Link>
             <span className="brand-div" aria-hidden="true"></span>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="brand-jrf" src="/images/jrf/jrf-logo.png" alt="Jakarta Running Fest 2026" />
+            <img className="brand-jrf" src="/images/jrf/jrf26-logo-white.png" alt="myBCA Jakarta Running Fest 2026" />
           </div>
           <span className="pill tag">JRF 2026 · RUNNER EXCLUSIVE</span>
         </div>
@@ -173,7 +173,7 @@ export function JrfVoucherPage() {
           <div className="wrap">
             <div className="hero-copy">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/images/jrf/jrf-logo.png" alt="Jakarta Running Fest 2026" width={260} style={{ display: "block", maxWidth: "100%", height: "auto" }} />
+              <img src="/images/jrf/jrf26-logo-white.png" alt="myBCA Jakarta Running Fest 2026" width={340} style={{ display: "block", maxWidth: "100%", height: "auto" }} />
               <div className="eyebrow">
                 <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" /></svg>
                 EXCLUSIVE FOR JRF 2026 RUNNERS
@@ -367,7 +367,7 @@ export function JrfVoucherPage() {
               </button>
               <div className="m-inner">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/images/jrf/jrf-logo.png" alt="Jakarta Running Fest 2026" width={180} style={{ display: "block", height: "auto", marginBottom: 6 }} />
+                <img src="/images/jrf/jrf26-logo-white.png" alt="myBCA Jakarta Running Fest 2026" width={240} style={{ display: "block", height: "auto", marginBottom: 6 }} />
                 <span className="k" style={{ color: "#fff", letterSpacing: ".14em" }}>JRF 2026 - {result.category} RUNNER REWARD</span>
                 <h2 className="display" id="popupTitle">Your reward<br />is unlocked!</h2>
                 <p style={{ margin: 0, fontSize: 14, lineHeight: 1.5 }}>Voucher lo berhasil diklaim. Saatnya pilih sneakers favorit lo!</p>
