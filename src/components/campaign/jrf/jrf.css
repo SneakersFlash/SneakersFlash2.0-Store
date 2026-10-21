@@ -135,3 +135,29 @@
 /* Logo Sneakers Flash putih menggantikan wordmark teks (TODO di brief). */
 .jrf .logo-img{display:block;height:28px;width:auto}
 @media (max-width:640px){.jrf .logo-img{height:22px}}
+/* Mobile: hero diringkas supaya form langsung terlihat di layar pertama;
+   kartu voucher pindah ke bawah form. Desktop tidak berubah. */
+@media (max-width:640px){
+.jrf .hero .wrap{flex-direction:column;align-items:stretch;gap:14px;padding-top:20px;padding-bottom:40px}
+.jrf .hero-copy{display:contents}
+.jrf .hero-copy>img{order:1;width:132px}
+.jrf .eyebrow{order:2;font-size:11px;padding:6px 10px}
+.jrf h1{order:3;font-size:38px;line-height:.95}
+.jrf .lead{order:4;font-size:14px;line-height:1.5}
+.jrf .card{order:5;flex:none;padding:20px}
+.jrf .ticket{order:6;align-self:stretch}
+.jrf .ticket-main{padding:16px 18px}
+.jrf .ticket-stub{padding:16px}
+.jrf .ticket .big{font-size:36px}
+.jrf .card h2.display{font-size:28px!important}
+.jrf form{gap:16px}
+.jrf .input{height:46px;font-size:15px}
+.jrf .cat{min-height:56px}
+.jrf .drop{min-height:104px;padding:14px}
+.jrf .steps{padding:48px 0 24px}
+.jrf .steps h2{font-size:32px;margin-bottom:24px}
+.jrf .step{padding:20px}
+.jrf .step .n{font-size:40px}
+.jrf .step h3{font-size:22px}
+.jrf .sk h2,.jrf .faq h2{font-size:28px}
+}
