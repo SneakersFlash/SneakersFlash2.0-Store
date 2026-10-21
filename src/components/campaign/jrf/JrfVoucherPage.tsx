@@ -223,7 +223,7 @@ export function JrfVoucherPage() {
 
                 <div className="field">
                   <label htmlFor="bib">Nomor BIB</label>
-                  <input className="input bib" id="bib" name="bib" type="text" inputMode="numeric" placeholder="Masukkan nomor BIB lo" required value={bib} onChange={(e) => setBib(e.target.value.toUpperCase())} />
+                  <input className="input bib" id="bib" name="bib" type="text" inputMode="text" autoCapitalize="characters" autoCorrect="off" spellCheck={false} placeholder="Masukkan nomor BIB lo" required value={bib} onChange={(e) => setBib(e.target.value.toUpperCase())} />
                 </div>
 
                 <fieldset>
