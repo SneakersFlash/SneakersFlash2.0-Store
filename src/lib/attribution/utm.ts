@@ -22,7 +22,15 @@ const KUNCI_SESI = "sf_utm_visit";
 const UMUR_MS = 30 * 24 * 60 * 60 * 1000;
 const FIELD = ["source", "medium", "campaign", "content", "term"] as const;
 
-/** Ambil UTM dari query string; null kalau tidak ada satu pun. */
+/**
+ * Ambil UTM dari query string; null kalau tidak ada satu pun.
+ *
+ * Klik iklan yang datang tanpa UTM masih bisa dikenali dari click ID yang
+ * ditempel platformnya: ttclid (TikTok) & gclid/gbraid/wbraid (Google) cuma
+ * muncul dari iklan, jadi dicatat sebagai medium berbayar. fbclid SENGAJA
+ * tidak dipakai: Meta menempelkannya juga ke klik link organik FB/IG, jadi
+ * iklan Meta harus diberi UTM lewat "URL parameters" di Ads Manager.
+ */
 export function bacaUtmDariUrl(search: string): Utm | null {
   const params = new URLSearchParams(search);
   const utm: Utm = {};
@@ -30,7 +38,12 @@ export function bacaUtmDariUrl(search: string): Utm | null {
     const v = params.get(`utm_${f}`)?.trim().toLowerCase().slice(0, 100);
     if (v) utm[f] = v;
   }
-  return Object.keys(utm).length ? utm : null;
+  if (Object.keys(utm).length) return utm;
+  if (params.get("ttclid")) return { source: "tiktok", medium: "paid" };
+  if (params.get("gclid") || params.get("gbraid") || params.get("wbraid")) {
+    return { source: "google", medium: "cpc" };
+  }
+  return null;
 }
 
 export function simpanUtm(utm: Utm) {
