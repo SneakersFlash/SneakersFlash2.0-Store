@@ -99,7 +99,15 @@ export const NAV_ITEMS = [
   // Gaya `isSale` (kotak kuning) tetap ada untuk campaign berikutnya.
   // Klaim voucher pelari JRF 2026 (22-29 Okt 2026). Cabut entri ini setelah
   // periode klaim tutup — halamannya sendiri tetap hidup dengan pesan tutup.
-  { label: "JRF 2026", href: "/jrf2026", megaMenu: null, isSale: true },
+  // Warna kotaknya biru JRF (#1E3FE0, sama dengan --jrf di jrf.css), bukan
+  // kuning SF, supaya nyambung dengan halaman tujuannya.
+  {
+    label: "JRF 2026",
+    href: "/jrf2026",
+    megaMenu: null,
+    isSale: true,
+    saleClassName: "bg-[#1E3FE0] !text-white hover:brightness-110",
+  },
 ];
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────
@@ -479,7 +487,11 @@ function NavbarInner() {
                       // warna (0,1,0) — tanpa itu tautannya justru berubah
                       // hitam persis saat halamannya sedang dibuka.
                       (item as { isSale?: boolean }).isSale
-                        ? "bg-primary !text-primary-foreground hover:brightness-95 font-extrabold tracking-tight rounded"
+                        ? cn(
+                            "font-extrabold tracking-tight rounded",
+                            (item as { saleClassName?: string }).saleClassName ??
+                              "bg-primary !text-primary-foreground hover:brightness-95"
+                          )
                         : "text-black",
                       pathname === item.href && "active"
                     )}
