@@ -97,6 +97,9 @@ export const NAV_ITEMS = [
   // Entri "10.10 SALE" (/10-10-sale) dicabut 5 Okt 2026 — halamannya
   // dinonaktifkan dan dialihkan ke /events/clearance-sale (next.config.ts).
   // Gaya `isSale` (kotak kuning) tetap ada untuk campaign berikutnya.
+  // Klaim voucher pelari JRF 2026 (22-29 Okt 2026). Cabut entri ini setelah
+  // periode klaim tutup — halamannya sendiri tetap hidup dengan pesan tutup.
+  { label: "JRF 2026", href: "/jrf2026", megaMenu: null, isSale: true },
 ];
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────
