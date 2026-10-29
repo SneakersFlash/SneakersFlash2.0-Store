@@ -97,17 +97,9 @@ export const NAV_ITEMS = [
   // Entri "10.10 SALE" (/10-10-sale) dicabut 5 Okt 2026 — halamannya
   // dinonaktifkan dan dialihkan ke /events/clearance-sale (next.config.ts).
   // Gaya `isSale` (kotak kuning) tetap ada untuk campaign berikutnya.
-  // Klaim voucher pelari JRF 2026 (22-29 Okt 2026). Cabut entri ini setelah
-  // periode klaim tutup — halamannya sendiri tetap hidup dengan pesan tutup.
-  // Warna kotaknya biru JRF (#1E3FE0, sama dengan --jrf di jrf.css), bukan
-  // kuning SF, supaya nyambung dengan halaman tujuannya.
-  {
-    label: "JRF 2026",
-    href: "/jrf2026",
-    megaMenu: null,
-    isSale: true,
-    saleClassName: "bg-[#1E3FE0] !text-white hover:brightness-110",
-  },
+  // Entri "JRF 2026" (/jrf2026) dicabut 29 Okt 2026 — halamannya dialihkan
+  // ke beranda (next.config.ts). Prop `saleClassName` tetap ada untuk kotak
+  // campaign berwarna lain.
 ];
 
 // ─── Mega Menu ────────────────────────────────────────────────────────────────

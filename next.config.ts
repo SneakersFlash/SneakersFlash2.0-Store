@@ -46,6 +46,14 @@ const nextConfig: NextConfig = {
         destination: "/events/clearance-sale",
         permanent: false,
       },
+      // Halaman klaim voucher JRF 2026 dicabut 29 Okt 2026 (periode klaim
+      // 22-29 Okt). Ke beranda, bukan clearance: voucher JRF tidak berlaku
+      // untuk barang clearance. 307 dengan alasan yang sama seperti 9.9.
+      {
+        source: "/jrf2026",
+        destination: "/",
+        permanent: false,
+      },
     ];
   },
 };
