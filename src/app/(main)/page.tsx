@@ -17,8 +17,7 @@ import VoucherClaimSection from "@/components/home/VoucherClaimSection";
 import { YearEnd1111HomeSection } from "@/components/campaign/YearEnd1111HomeSection";
 import {
   JUMLAH_BERANDA as JUMLAH_1111_BERANDA,
-  KUERI_DEALS as KUERI_1111,
-  SKU_DEALS as SKU_1111,
+  SKU_99K_500K as SKU_1111,
   YEAR_END_EVENT_SLUG,
 } from "@/lib/campaign/year-end-1111";
 
@@ -44,14 +43,9 @@ export default async function HomePage() {
     categoriesService.getAll().catch(() => []),
     CampaignsService.getEvent().catch(() => []),
     bannersService.getBanners("home_middle").catch(() => []),
-    // Rail panel 11.11: daftar SKU event kalau sudah diisi, kalau belum kurasi
-    // katalog (lihat lib/campaign/year-end-1111.ts).
+    // Rail panel 11.11: section 99K–500K dari sheet 11.11 (termurah dulu).
     productsService
-      .getProducts(
-        (SKU_1111.length
-          ? { skus: SKU_1111, limit: SKU_1111.length, page: 1 }
-          : { ...KUERI_1111, page: 1 }) as any,
-      )
+      .getProducts({ skus: SKU_1111, limit: SKU_1111.length, page: 1 } as any)
       .catch(() => ({ data: [] as any[] })),
   ]);
 
