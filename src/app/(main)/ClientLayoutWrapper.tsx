@@ -9,6 +9,7 @@ import { useAuthStore } from "@/lib/store/authStore";
 import { useEffect } from "react";
 import WelcomeVoucherPopup from "@/components/voucher/WelcomeVoucherPopup";
 import { ClearancePoinPopup } from "@/components/campaign/ClearancePoinPopup";
+import { YearEnd1111FloatingButton } from "@/components/campaign/YearEnd1111FloatingButton";
 
 export function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -78,6 +79,9 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
            masih ada di components/campaign kalau mau dipakai lagi).
       ──────────────────────────────────────────────────────────────────────── */}
       <ClearancePoinPopup />
+
+      {/* Tombol mengambang 11.11 — mati sendiri sesudah 11 Nov 23:59 WIB. */}
+      <YearEnd1111FloatingButton />
 
     </>
   );
