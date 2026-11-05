@@ -45,6 +45,12 @@ async function ambilSkus(skus: string[]): Promise<Product[]> {
   return berstok(hasil);
 }
 
+/**
+ * Maksimal kartu per section. Daftar SKU-nya jauh lebih panjang (62/116/170) —
+ * user tidak mau semuanya ditumpahkan; yang tampil = yang termurah duluan.
+ */
+const JUMLAH_PER_SECTION = 12;
+
 const SECTIONS = [
   {
     id: 'harga-99k-500k',
@@ -71,7 +77,10 @@ const SECTIONS = [
 
 export default async function Campaign1111Page() {
   const hasil = await Promise.all(SECTIONS.map((s) => ambilSkus(s.skus)));
-  const sections = SECTIONS.map((s, i) => ({ ...s, products: hasil[i] }));
+  const sections = SECTIONS.map((s, i) => ({
+    ...s,
+    products: hasil[i].slice(0, JUMLAH_PER_SECTION),
+  }));
 
   // Kosong total = hampir pasti backend tak bisa dihubungi (deploy/restart).
   // Melempar error membuat ISR mempertahankan halaman baik yang terakhir;
