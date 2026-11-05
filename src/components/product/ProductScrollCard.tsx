@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Heart, Star, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { HargaTeaser, type HargaTeaserInfo } from "./HargaTeaser";
 import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import type { Product } from "@/types/product.types";
@@ -17,6 +18,11 @@ interface ProductScrollCardProps {
   product: Product;
   index?: number;
   variant?: "scroll" | "grid";
+  /**
+   * Harga promo yang AKAN berlaku (mis. 11.11). Opsional — tanpa prop ini
+   * kartu tidak berubah. Lihat HargaTeaser.
+   */
+  hargaTeaser?: HargaTeaserInfo;
   /**
    * Tampilkan sisa stok di bawah harga. Dipakai section campaign yang stoknya
    * memang terbatas; default mati supaya kartu di beranda tidak ikut berubah.
@@ -57,6 +63,7 @@ export function ProductScrollCard({
   index = 0,
   variant = "scroll",
   showStock = false,
+  hargaTeaser,
 }: ProductScrollCardProps) {
   const [imgError, setImgError] = useState(false);
   const router = useRouter();
@@ -204,6 +211,8 @@ export function ProductScrollCard({
                 </span>
               </div>
             )}
+
+            {hargaTeaser && <HargaTeaser info={hargaTeaser} />}
 
             {showStock && typeof product.totalStock === "number" && product.totalStock > 0 && (
               <span

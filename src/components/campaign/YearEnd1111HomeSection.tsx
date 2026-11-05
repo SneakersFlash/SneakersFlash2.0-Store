@@ -11,6 +11,7 @@ import {
   YEAR_END_HARI_H,
   YEAR_END_HREF,
   YEAR_END_NAMA,
+  teaser1111,
 } from "@/lib/campaign/year-end-1111";
 import type { Product } from "@/types/product.types";
 
@@ -18,9 +19,9 @@ import type { Product } from "@/types/product.types";
  * Panel hitung mundur harga 11.11 di beranda.
  *
  * Cetakannya panel 8.8 (InfiniteDeals88HomeSection): panel gelap, timer di
- * kanan kepala, rail produk yang bergeser sendiri. Selama road-to timer
- * menghitung ke 11 Nov 00:00 WIB ("Harga 11.11 Turun Dalam"); pada 11 Nov ke
- * tengah malamnya. Sesudah itu panel hilang sendiri tanpa deploy ulang.
+ * kanan kepala, rail produk yang bergeser sendiri. Sebelum promo website buka
+ * timer menghitung ke 11 Nov 00:00 WIB ("Promo Website Dimulai Dalam" — copy
+ * PDF revisi 5 Nov); 11–15 Nov ke akhir promo. Sesudah itu panel hilang sendiri.
  *
  * Timer tetap tampil walau rail produk kosong — hitung mundurnya inti panel
  * ini; rail cuma bonus.
@@ -35,9 +36,9 @@ export function YearEnd1111HomeSection({ products }: { products: Product[] }) {
 
   const label =
     fase === "pra"
-      ? "Harga 11.11 Turun Dalam:"
+      ? "Promo Website Dimulai Dalam:"
       : fase === "berjalan"
-        ? "Harga 11.11 Berakhir Dalam:"
+        ? "Promo Berakhir Dalam:"
         : "";
 
   return (
@@ -70,7 +71,9 @@ export function YearEnd1111HomeSection({ products }: { products: Product[] }) {
             </Link>
 
             <p className="text-[11px] md:text-xs text-white/70">
-              Last big sale of the year — harga turun 11 November 00:00 WIB
+              {fase === "berjalan"
+                ? "The sale continues online — sampai 15 November 2026"
+                : "First at USS. Next online. Promo website 11 – 15 November 2026"}
             </p>
           </div>
 
@@ -101,7 +104,12 @@ export function YearEnd1111HomeSection({ products }: { products: Product[] }) {
           >
             {products.map((product, i) => (
               <div key={product.id} className="snap-start shrink-0">
-                <ProductScrollCard product={product} index={i} showStock />
+                <ProductScrollCard
+                  product={product}
+                  index={i}
+                  showStock
+                  hargaTeaser={teaser1111(product.skuParent)}
+                />
               </div>
             ))}
           </div>

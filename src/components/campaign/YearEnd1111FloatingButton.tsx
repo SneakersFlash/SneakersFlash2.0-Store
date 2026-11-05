@@ -15,7 +15,7 @@ import {
  *
  * Cetakannya tombol 9.9: disembunyikan di halaman campaign itu sendiri
  * (percuma) dan di checkout (jangan menarik orang keluar dari alur bayar), dan
- * hilang sendiri sesudah 11 Nov 23:59 WIB — mencabutnya tidak butuh deploy.
+ * hilang sendiri sesudah 15 Nov 23:59 WIB — mencabutnya tidak butuh deploy.
  * Di HP ini satu-satunya pintu masuk selain panel beranda, karena navbar desktop tidak
  * tampil di sana.
  */
@@ -42,7 +42,7 @@ export function YearEnd1111FloatingButton() {
   return (
     <Link
       href={YEAR_END_HREF}
-      aria-label="Buka halaman 11.11 Year End Sale"
+      aria-label="Buka halaman 11.11 Year-End Sale"
       className={cn(
         'fixed z-40 right-4 flex items-center gap-2.5 rounded-full',
         'bg-[#E50012] text-white shadow-lg shadow-black/25',
@@ -65,7 +65,7 @@ export function YearEnd1111FloatingButton() {
       <span className="flex flex-col leading-none">
         <span className="text-[13px] font-black tracking-tight">11.11 SALE</span>
         <span className="text-[9px] font-bold uppercase tracking-wider opacity-85 mt-0.5">
-          Year End Sale
+          Year-End Sale
         </span>
       </span>
 

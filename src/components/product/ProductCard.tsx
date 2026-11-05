@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Star, Heart } from "lucide-react"; 
 import { cn } from "@/lib/utils/cn";
+import { HargaTeaser, type HargaTeaserInfo } from "./HargaTeaser";
 import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import type { Product } from "@/types/product.types";
@@ -18,6 +19,11 @@ interface ProductCardProps {
   product: Product;
   priority?: boolean;
   index?: number;
+  /**
+   * Harga promo yang AKAN berlaku (mis. 11.11). Opsional — tanpa prop ini
+   * kartu tidak berubah. Lihat HargaTeaser.
+   */
+  hargaTeaser?: HargaTeaserInfo;
 }
 
 function StarRating({ rating = 4, count = 78 }: { rating?: number; count?: number }) {
@@ -39,7 +45,7 @@ function StarRating({ rating = 4, count = 78 }: { rating?: number; count?: numbe
   );
 }
 
-export function ProductCard({ product, priority = false, index = 0 }: ProductCardProps) {
+export function ProductCard({ product, priority = false, index = 0, hargaTeaser }: ProductCardProps) {
   const [imageError, setImageError] = useState(false);
   const router = useRouter();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -187,6 +193,7 @@ export function ProductCard({ product, priority = false, index = 0 }: ProductCar
                 </span>
               </div>
             )}
+            {hargaTeaser && <HargaTeaser info={hargaTeaser} />}
           </div>
           {/* <StarRating rating={parseFloat(product?.ratingAvg?.toString() ?? '4') ?? 4} count={product?.reviewCount ?? 78} /> */}
         </div>

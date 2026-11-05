@@ -208,7 +208,7 @@ export default async function HomePage() {
           <VoucherClaimSection />
         </Suspense>
 
-        {/* Hitung mundur harga 11.11 — hilang sendiri sesudah 12 Nov 00:00 WIB. */}
+        {/* Hitung mundur promo 11.11 — hilang sendiri sesudah 15 Nov 23:59 WIB. */}
         <YearEnd1111HomeSection products={produk1111} />
 
         <EventCampaignSection campaigns={campaigns} />

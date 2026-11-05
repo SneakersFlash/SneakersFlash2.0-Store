@@ -1,35 +1,35 @@
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
-
 import { productsService } from '@/lib/api/products.service';
 import { SectionHeading } from '@/components/common/SectionHeading';
 import { ProductCard } from '@/components/product/ProductCard';
-import VoucherClaimSection from '@/components/home/VoucherClaimSection';
 import { YearEnd1111Hero } from '@/components/campaign/YearEnd1111Hero';
 import {
   SKU_99K_500K,
   SKU_500K_999K,
   SKU_REGULER,
+  teaser1111,
 } from '@/lib/campaign/year-end-1111';
 import type { Product } from '@/types/product.types';
 
 export const metadata: Metadata = {
-  title: '11.11 Year End Sale — SneakersFlash',
+  title: '11.11 Year-End Sale — SneakersFlash',
   description:
-    'Last big sale of the year. Road to 11.11 mulai 5 November, harga turun 11 November untuk sneakers original Nike, Adidas, New Balance, ASICS, dan Puma.',
+    'First at USS, next online. Promo 11.11 YEAR-END SALE di sneakersflash.com mulai 11 November sampai 15 November 2026 untuk sneakers original Nike, Adidas, New Balance, ASICS, dan Puma.',
 };
 
 export const revalidate = 60;
 
 /**
- * Halaman campaign 11.11 YEAR END SALE.
+ * Halaman campaign 11.11 YEAR-END SALE.
  *
- * Hero → klaim voucher → tiga section harga (99K–500K, 500K–999K, Reguler).
+ * Hero → jadwal promo → tiga section harga (99K–500K, 500K–999K, Reguler).
+ * Copy mengikuti PDF "REVISI COPY LANDING PAGE 11.11" (5 Nov 2026).
  * Isi section = daftar SKU dari sheet 11.11 di lib/campaign/year-end-1111.ts;
- * harga 11.11-nya menempel lewat event id 11 dan baru berlaku 11 Nov 00:00 WIB.
- * Sebelum itu kartu menampilkan harga normal — disengaja.
+ * harga 11.11-nya menempel lewat event id 11 (11 Nov 00:00 – 15 Nov 23:59 WIB).
+ * Sebelum promo buka kartu tetap harga normal + label teaser "Harga 11.11".
  *
- * Tabel tier voucher belum dipasang karena voucher 11.11 belum dibuat.
+ * Section klaim voucher DICABUT atas arahan PDF: mekanisme voucher belum
+ * disetujui. Pasang lagi (VoucherClaimSection) kalau sudah final.
  */
 
 /** Produk habis stok tidak ditampilkan: percuma makan slot, tetap tak bisa dibeli. */
@@ -51,12 +51,30 @@ async function ambilSkus(skus: string[]): Promise<Product[]> {
  */
 const JUMLAH_PER_SECTION = 12;
 
+const JADWAL = [
+  {
+    judul: 'USS',
+    waktu: '6 – 8 November 2026',
+    ket: 'Promo 11.11 dimulai lebih dulu di USS.',
+  },
+  {
+    judul: 'Countdown Website',
+    waktu: 'Mulai 6 November 2026',
+    ket: 'Hitung mundur menuju pembukaan promo website.',
+  },
+  {
+    judul: 'Promo Website',
+    waktu: '11 Nov 00.00 WIB – 15 Nov 2026',
+    ket: 'Penawaran 11.11 berlaku di sneakersflash.com sampai 15 November 2026.',
+  },
+];
+
 const SECTIONS = [
   {
     id: 'harga-99k-500k',
     eyebrow: '01 Under 500K',
     title: '99K – 500K',
-    subtitle: 'Pairs paling ramah kantong di 11.11. Cepet-cepetan, stoknya tipis.',
+    subtitle: 'Pairs paling ramah kantong di 11.11. Stok dan ukuran mengikuti ketersediaan.',
     skus: SKU_99K_500K,
   },
   {
@@ -70,7 +88,7 @@ const SECTIONS = [
     id: 'reguler-1111',
     eyebrow: '03 Reguler',
     title: 'Reguler',
-    subtitle: 'Pairs incaran dengan harga 11.11 yang cuma berlaku sehari.',
+    subtitle: 'Pairs incaran dengan harga 11.11 sampai 15 November 2026.',
     skus: SKU_REGULER,
   },
 ];
@@ -96,19 +114,29 @@ export default async function Campaign1111Page() {
       <YearEnd1111Hero />
 
       <div className="container mx-auto px-4 max-w-7xl">
-        {/* ── Klaim voucher: ditarik dari modul voucher yang sudah ada, difilter
-             platform oleh backend, supaya kuota dan masa berlaku ikut admin. ── */}
-        <section id="voucher-1111" className="pt-10 scroll-mt-24">
-          <Suspense
-            fallback={
-              <div className="h-32 w-full animate-pulse bg-gray-100 rounded-xl my-4" />
-            }
-          >
-            <VoucherClaimSection
-              title="11.11 Year End Vouchers"
-              subtitle="Klaim voucher sebelum belanja, lalu gunakan kodenya saat checkout. Satu kode berlaku untuk satu akun."
-            />
-          </Suspense>
+        {/* ── Jadwal promo — tujuan tombol hero "Lihat Jadwal Promo". Teks dari
+             bagian "Informasi tambahan di bawah hero" di PDF revisi. ── */}
+        <section id="jadwal-1111" className="pt-10 scroll-mt-24">
+          <SectionHeading eyebrow="Jadwal Promo" title="11.11 Year-End Sale" />
+          <ol className="grid gap-3 sm:grid-cols-3">
+            {JADWAL.map((j, i) => (
+              <li
+                key={j.judul}
+                className="rounded-xl border border-gray-200 bg-white p-4"
+              >
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E50012]">
+                  {String(i + 1).padStart(2, '0')} {j.judul}
+                </span>
+                <p className="mt-1 text-base font-black uppercase tracking-tight text-[#0D0D0D]">
+                  {j.waktu}
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-gray-600">{j.ket}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-3 text-[11px] text-gray-500">
+            *Free shipping mengikuti syarat dan ketentuan website.
+          </p>
         </section>
 
         {/* Jangkar #deals-1111 dipakai tombol hero "Shop The Sale". */}
@@ -134,6 +162,7 @@ export default async function Campaign1111Page() {
                       product={product}
                       index={i}
                       priority={idx === 0 && i < 4}
+                      hargaTeaser={teaser1111(product.skuParent)}
                     />
                   ))}
                 </div>

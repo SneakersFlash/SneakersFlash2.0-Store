@@ -100,7 +100,7 @@ export const NAV_ITEMS = [
   // Entri "JRF 2026" (/jrf2026) dicabut 29 Okt 2026 — halamannya dialihkan
   // ke beranda (next.config.ts). Prop `saleClassName` tetap ada untuk kotak
   // campaign berwarna lain.
-  // 11.11 YEAR END SALE (5-11 Nov 2026). Cabut entri ini sesudah 11 Nov —
+  // 11.11 YEAR-END SALE (promo web 11-15 Nov 2026). Cabut entri ini sesudah 15 Nov —
   // tombol mengambang & panel beranda mati sendiri, entri navbar tidak.
   {
     label: "11.11 SALE",

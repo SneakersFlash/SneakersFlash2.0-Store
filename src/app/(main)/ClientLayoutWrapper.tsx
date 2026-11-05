@@ -80,7 +80,7 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
       ──────────────────────────────────────────────────────────────────────── */}
       <ClearancePoinPopup />
 
-      {/* Tombol mengambang 11.11 — mati sendiri sesudah 11 Nov 23:59 WIB. */}
+      {/* Tombol mengambang 11.11 — mati sendiri sesudah 15 Nov 23:59 WIB. */}
       <YearEnd1111FloatingButton />
 
     </>
