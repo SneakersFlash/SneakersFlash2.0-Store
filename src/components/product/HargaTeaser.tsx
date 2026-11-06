@@ -52,18 +52,21 @@ export function HargaTeaser({ info }: { info: HargaTeaserInfo }) {
   if (sisa !== null && sisa <= 0) return null;
 
   return (
-    <div className="mb-1.5 rounded bg-[#E50012] px-1.5 py-1 text-white leading-tight">
-      <span className="block text-[9px] lg:text-[10px] font-bold uppercase tracking-wider opacity-90">
-        {info.label} · {info.keterangan}
-      </span>
-      <span className="block text-[12px] lg:text-[14px] font-black">
-        {formatPrice(info.harga)}
-      </span>
-      <span className="mt-0.5 flex flex-wrap items-center gap-x-1 border-t border-white/25 pt-0.5 text-[9px] lg:text-[10px] font-bold uppercase tracking-wider">
-        <span className="opacity-80">Mulai dalam</span>
+    <div
+      className="mb-1.5 rounded bg-[#E50012] px-1.5 py-1 text-white leading-tight"
+      aria-label={`${info.label} ${formatPrice(info.harga)}, ${info.keterangan}`}
+    >
+      {/* Baris "Harga 11.11 · mulai 9 Nov" dibuang atas permintaan user
+          (6 Nov): dobel dengan timer. `label`/`keterangan` tetap dipakai
+          sebagai aria-label. */}
+      <span className="flex flex-wrap items-center gap-x-1 text-[9px] lg:text-[10px] font-bold uppercase tracking-wider">
+        <span className="opacity-90">Mulai dalam</span>
         <span className="font-mono tabular-nums">
           {sisa === null ? "--:--:--" : formatSisa(sisa)}
         </span>
+      </span>
+      <span className="block text-[12px] lg:text-[14px] font-black">
+        {formatPrice(info.harga)}
       </span>
     </div>
   );
