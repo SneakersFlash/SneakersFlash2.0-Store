@@ -53,7 +53,7 @@ export function HargaTeaser({ info }: { info: HargaTeaserInfo }) {
 
   return (
     <div
-      className="mb-1.5 rounded bg-[#E50012] px-1.5 py-1 text-white leading-tight"
+      className="mb-1.5 rounded bg-[#F5E809] px-1.5 py-1 text-[#0D0D0D] leading-tight"
       aria-label={`${info.label} ${formatPrice(info.harga)}, ${info.keterangan}`}
     >
       {/* Baris "Harga 11.11 · mulai 9 Nov" dibuang atas permintaan user

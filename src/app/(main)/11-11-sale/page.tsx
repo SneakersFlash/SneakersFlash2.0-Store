@@ -124,7 +124,7 @@ export default async function Campaign1111Page() {
                 key={j.judul}
                 className="rounded-xl border border-gray-200 bg-white p-4"
               >
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E50012]">
+                <span className="inline-block rounded bg-[#F5E809] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#0D0D0D]">
                   {String(i + 1).padStart(2, '0')} {j.judul}
                 </span>
                 <p className="mt-1 text-base font-black uppercase tracking-tight text-[#0D0D0D]">

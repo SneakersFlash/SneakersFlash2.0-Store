@@ -43,10 +43,10 @@ export function YearEnd1111HomeSection({ products }: { products: Product[] }) {
 
   return (
     <section className="relative w-full rounded-[20px] md:rounded-[24px] overflow-hidden shadow-lg bg-[#0D0D0D] mb-4">
-      {/* Garis merah di kepala panel — aksen campaign. Sempat berupa bidang
+      {/* Garis kuning di kepala panel — aksen campaign. Sempat berupa bidang
           miring di pojok kanan, tapi ia membelah kotak timer jadi setengah
           hitam setengah merah dan menutupi judul di layar HP. */}
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1.5 bg-[#E50012]" />
+      <div aria-hidden="true" className="absolute inset-x-0 top-0 h-1.5 bg-[#F5E809]" />
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:16px_16px]"
@@ -57,15 +57,15 @@ export function YearEnd1111HomeSection({ products }: { products: Product[] }) {
           <div className="flex flex-col items-start gap-2">
             <span className="text-[10px] md:text-xs font-bold bg-white text-black px-2 py-1 rounded shadow-sm uppercase tracking-widest flex items-center gap-1.5">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F5E809] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F5E809]" />
               </span>
               {fase === "berjalan" ? "Live Now" : "Coming Soon"}
             </span>
 
             <Link href={YEAR_END_HREF}>
               <h2 className="font-display font-black text-2xl md:text-3xl lg:text-4xl text-white tracking-tight drop-shadow-md hover:text-gray-200 transition-colors">
-                <span className="text-[#E50012]">11.11</span>{" "}
+                <span className="text-[#F5E809]">11.11</span>{" "}
                 {YEAR_END_NAMA.replace(/^11\.11\s*/, "")}
               </h2>
             </Link>

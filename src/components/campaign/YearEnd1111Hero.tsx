@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { CountdownTimer } from '@/components/home/CountdownTimer';
@@ -25,10 +26,13 @@ import {
  * Tambahan di luar PDF: kondisi SALE tetap memasang countdown "Promo Berakhir
  * Dalam" (PDF tidak menyebut timer untuk kondisi itu).
  *
- * Warna: merah #E50012 + hitam + putih. Teks putih di atas merah ~4,9:1.
+ * Warna: kuning #F5E809 + hitam + putih (6 Nov 2026, ganti dari merah).
+ * Teks di atas kuning WAJIB hitam — putih di atas kuning cuma ~1,2:1.
+ * Judul hero = logo upload user (public/images/logo-1111.png).
  */
 
-const MERAH = '#E50012';
+const KUNING = '#F5E809';
+const HITAM = '#0D0D0D';
 
 const STRIP = [
   '11.11 Year-End Sale',
@@ -75,7 +79,7 @@ export function YearEnd1111Hero() {
   return (
     <>
       {/* ── Strip promo berjalan ── */}
-      <div className="w-full text-white overflow-hidden py-1.5" style={{ backgroundColor: MERAH }}>
+      <div className="w-full overflow-hidden py-1.5" style={{ backgroundColor: KUNING, color: HITAM }}>
         <div className="flex w-max gap-8 animate-marquee88" aria-hidden="true">
           {[...STRIP, ...STRIP, ...STRIP, ...STRIP].map((teks, i) => (
             <span
@@ -93,26 +97,20 @@ export function YearEnd1111Hero() {
           <div className="relative grid lg:grid-cols-[1.35fr_1fr]">
             {/* ═══ Kiri: identitas campaign ═══ */}
             <div className="relative p-6 pb-8 md:p-9 lg:p-11 flex flex-col gap-6 justify-between min-h-[420px] lg:min-h-[520px] bg-[radial-gradient(rgba(255,255,255,0.07)_1px,transparent_1px)] [background-size:16px_16px]">
-              <Selotip className="hidden lg:block top-[14%] -right-3 h-6 w-16 rotate-[-8deg] bg-[#E50012]" />
+              <Selotip className="hidden lg:block top-[14%] -right-3 h-6 w-16 rotate-[-8deg] bg-[#F5E809]" />
               <Selotip className="hidden lg:block bottom-[16%] right-8 h-5 w-24 rotate-[6deg] bg-white/10" />
 
               <div className="flex flex-col items-start gap-3">
-                <h1 className="m-0 flex flex-col leading-[0.85]">
-                  <span
-                    className="font-black tracking-[-0.04em] text-[88px] md:text-[128px] lg:text-[156px]"
-                    style={{ color: MERAH }}
-                  >
-                    11.11
-                  </span>
-                  <span className="text-white font-black uppercase tracking-tight text-[44px] md:text-[64px] lg:text-[76px]">
-                    Year-End
-                  </span>
-                  <span
-                    className="mt-3 inline-block w-fit -rotate-2 px-3 py-1.5 text-white font-black uppercase tracking-tight text-[22px] md:text-[30px] lg:text-[34px]"
-                    style={{ backgroundColor: MERAH }}
-                  >
-                    Sale
-                  </span>
+                <h1 className="m-0 w-full max-w-[300px] md:max-w-[420px] lg:max-w-[480px]">
+                  <Image
+                    src="/images/logo-1111.png"
+                    alt="11.11 Year-End Sale"
+                    width={2759}
+                    height={1408}
+                    priority
+                    sizes="(min-width: 1024px) 480px, (min-width: 768px) 420px, 300px"
+                    className="h-auto w-full"
+                  />
                 </h1>
 
                 <span className="pt-3 text-white font-black uppercase leading-none text-xl md:text-2xl lg:text-3xl">
@@ -126,8 +124,8 @@ export function YearEnd1111Hero() {
                 <div className="flex flex-wrap gap-2.5 pt-3">
                   <Link
                     href={copy.ctaUtama.href}
-                    className="inline-flex items-center justify-center text-white px-6 py-3 font-black uppercase tracking-widest text-sm transition-all duration-200 active:scale-95 hover:brightness-110"
-                    style={{ backgroundColor: MERAH }}
+                    className="inline-flex items-center justify-center px-6 py-3 font-black uppercase tracking-widest text-sm transition-all duration-200 active:scale-95 hover:brightness-110"
+                    style={{ backgroundColor: KUNING, color: HITAM }}
                   >
                     {copy.ctaUtama.teks}
                   </Link>
@@ -143,9 +141,9 @@ export function YearEnd1111Hero() {
                   >
                     <span
                       className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full"
-                      style={{ backgroundColor: MERAH }}
+                      style={{ backgroundColor: KUNING }}
                     >
-                      <Check className="h-3 w-3 text-white" strokeWidth={3.5} />
+                      <Check className="h-3 w-3 text-[#0D0D0D]" strokeWidth={3.5} />
                     </span>
                     {teks}
                   </span>
@@ -155,8 +153,8 @@ export function YearEnd1111Hero() {
 
             {/* ═══ Kanan: countdown & pesan konversi ═══ */}
             <div
-              className="relative text-white p-6 md:p-9 lg:p-10 flex flex-col justify-center gap-6"
-              style={{ backgroundColor: MERAH }}
+              className="relative p-6 md:p-9 lg:p-10 flex flex-col justify-center gap-6"
+              style={{ backgroundColor: KUNING, color: HITAM }}
             >
               <Selotip className="top-6 right-6 h-5 w-20 rotate-[-7deg] bg-[#0D0D0D]" />
               <Selotip className="bottom-8 right-6 h-5 w-16 rotate-[9deg] bg-white/85" />
@@ -168,11 +166,11 @@ export function YearEnd1111Hero() {
                   {fase === null ? '' : copy.label}
                 </span>
                 {fase !== null && fase !== 'selesai' && (
-                  <CountdownTimer targetDate={target} />
+                  <CountdownTimer targetDate={target} tone="dark" />
                 )}
               </div>
 
-              <div className="border-t border-white/25 pt-6">
+              <div className="border-t border-black/20 pt-6">
                 <p className="text-2xl md:text-3xl font-black uppercase leading-[0.95] tracking-tight">
                   {copy.headline[0]}
                   <br />
@@ -185,7 +183,7 @@ export function YearEnd1111Hero() {
 
               <Link
                 href={copy.ctaKanan.href}
-                className="inline-flex w-fit items-center justify-center border-2 border-white bg-[#0D0D0D] px-5 py-2.5 font-black uppercase tracking-widest text-xs transition-all duration-200 active:scale-95 hover:bg-white hover:text-[#0D0D0D]"
+                className="inline-flex w-fit items-center justify-center border-2 border-[#0D0D0D] bg-[#0D0D0D] text-white px-5 py-2.5 font-black uppercase tracking-widest text-xs transition-all duration-200 active:scale-95 hover:bg-transparent hover:text-[#0D0D0D]"
               >
                 {copy.ctaKanan.teks}
               </Link>

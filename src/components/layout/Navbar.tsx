@@ -107,7 +107,7 @@ export const NAV_ITEMS = [
     href: "/11-11-sale",
     megaMenu: null,
     isSale: true,
-    saleClassName: "bg-[#E50012] !text-white hover:brightness-110",
+    saleClassName: "bg-[#F5E809] !text-[#0D0D0D] hover:brightness-105",
   },
 ];
 

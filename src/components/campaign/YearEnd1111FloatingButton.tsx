@@ -45,7 +45,7 @@ export function YearEnd1111FloatingButton() {
       aria-label="Buka halaman 11.11 Year-End Sale"
       className={cn(
         'fixed z-40 right-4 flex items-center gap-2.5 rounded-full',
-        'bg-[#E50012] text-white shadow-lg shadow-black/25',
+        'bg-[#F5E809] text-[#0D0D0D] shadow-lg shadow-black/25',
         'pl-3 pr-4 py-2.5 group',
         'transition-all duration-300 ease-out hover:brightness-110 active:scale-95',
         // Di layar kecil bottom-nav (~64px) menutupi kanan bawah, jadi tombol
@@ -58,8 +58,8 @@ export function YearEnd1111FloatingButton() {
     >
       {/* Titik berdenyut — bahasa visual yang sama dengan lencana Special Event */}
       <span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden="true">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-60" />
-        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0D0D0D] opacity-60" />
+        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#0D0D0D]" />
       </span>
 
       <span className="flex flex-col leading-none">
