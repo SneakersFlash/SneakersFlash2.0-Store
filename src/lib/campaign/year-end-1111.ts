@@ -12,19 +12,25 @@
 export const YEAR_END_NAMA = "11.11 YEAR-END SALE";
 export const YEAR_END_HREF = "/11-11-sale";
 
-/** Countdown website mulai terlihat (PDF revisi: 6 Nov; sudah tayang sejak 5 Nov). */
+/** Countdown website mulai terlihat (PDF: kartu "Countdown Promo" 6-8 Nov; sudah tayang sejak 5 Nov). */
 export const YEAR_END_MULAI = "2026-11-05T00:00:00+07:00";
-/** Promo website DIBUKA — countdown teaser menuju jam ini (= start_at event id 11). */
-export const YEAR_END_HARI_H = "2026-11-11T00:00:00+07:00";
+/**
+ * Promo website DIBUKA — countdown teaser menuju jam ini.
+ * PDF "revisi terbaru" (6 Nov 2026) memajukan pembukaan dari 11 ke 9 Nov.
+ * Jam 00:00 WIB = asumsi (PDF: jam masih perlu dikonfirmasi). HARUS sama
+ * dengan start_at event id 11 di backend, kalau tidak harga 11.11 belum
+ * menempel saat countdown sudah habis.
+ */
+export const YEAR_END_HARI_H = "2026-11-09T00:00:00+07:00";
 /** Promo website selesai (15 Nov 23:59:59 WIB = end_at event id 11): panel beranda & tombol mengambang hilang sendiri. */
 export const YEAR_END_BERAKHIR = "2026-11-16T00:00:00+07:00";
 
 /**
- * Teks periode — sumber: PDF "REVISI COPY LANDING PAGE 11.11" (5 Nov 2026).
- * USS (offline) 6–8 Nov, promo website 11 Nov 00:00 – 15 Nov 2026.
+ * Teks periode — sumber: PDF "revisi terbaru" (6 Nov 2026): semua referensi
+ * USS dihapus, periode 9-15 Nov dipakai konsisten di seluruh halaman.
  */
-export const YEAR_END_PERIODE_TEASER = "USS: 6-8 NOV 2026 | WEBSITE: SAMPAI 15 NOV 2026";
-export const YEAR_END_PERIODE_SALE = "WEBSITE: 11 NOV - 15 NOV 2026";
+export const YEAR_END_PERIODE_TEASER = "PROMO WEBSITE: 9 - 15 NOV 2026";
+export const YEAR_END_PERIODE_SALE = "PROMO WEBSITE: 9 - 15 NOV 2026";
 
 /**
  * Slug event 11.11 di backend (event id 11, dibuat 5 Nov 2026).
@@ -40,7 +46,7 @@ export const YEAR_END_EVENT_SLUG = "11-11-year-end-sale";
 
    Isinya `sku_parent` PRODUK AKTIF yang sudah ada (polos atau `LC-`), bukan
    salinan event baru: harga 11.11 menempel lewat event id 11
-   (`event_products.special_price` = kolom "Price USS"), aktif 11 Nov 00:00 –
+   (`event_products.special_price` = kolom "Price USS"), aktif 9 Nov 00:00 –
    15 Nov 23:59:59 WIB. Sebelum itu kartu menampilkan harga normal.
 
    Tiga section sesuai permintaan user: 99K–500K (KAT "300-500K"), 500K–999K,
@@ -786,7 +792,7 @@ export function teaser1111(skuParent?: string | null) {
   return {
     harga,
     label: "Harga 11.11",
-    keterangan: "mulai 11 Nov",
+    keterangan: "mulai 9 Nov",
     berlakuMulai: YEAR_END_HARI_H,
   };
 }

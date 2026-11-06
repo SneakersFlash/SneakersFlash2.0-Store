@@ -20,8 +20,8 @@ import type { Product } from "@/types/product.types";
  *
  * Cetakannya panel 8.8 (InfiniteDeals88HomeSection): panel gelap, timer di
  * kanan kepala, rail produk yang bergeser sendiri. Sebelum promo website buka
- * timer menghitung ke 11 Nov 00:00 WIB ("Promo Website Dimulai Dalam" — copy
- * PDF revisi 5 Nov); 11–15 Nov ke akhir promo. Sesudah itu panel hilang sendiri.
+ * timer menghitung ke 9 Nov 00:00 WIB ("Promo Website Dimulai Dalam" — copy
+ * PDF revisi); 9–15 Nov ke akhir promo. Sesudah itu panel hilang sendiri.
  *
  * Timer tetap tampil walau rail produk kosong — hitung mundurnya inti panel
  * ini; rail cuma bonus.
@@ -72,8 +72,8 @@ export function YearEnd1111HomeSection({ products }: { products: Product[] }) {
 
             <p className="text-[11px] md:text-xs text-white/70">
               {fase === "berjalan"
-                ? "The sale continues online — sampai 15 November 2026"
-                : "First at USS. Next online. Promo website 11 – 15 November 2026"}
+                ? "Last chance 15 November 2026 — belanja sebelum periode berakhir"
+                : "Siapkan wishlist! Promo website 9 – 15 November 2026"}
             </p>
           </div>
 

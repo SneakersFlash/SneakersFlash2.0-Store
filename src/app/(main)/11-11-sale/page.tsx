@@ -14,7 +14,7 @@ import type { Product } from '@/types/product.types';
 export const metadata: Metadata = {
   title: '11.11 Year-End Sale — SneakersFlash',
   description:
-    'First at USS, next online. Promo 11.11 YEAR-END SALE di sneakersflash.com mulai 11 November sampai 15 November 2026 untuk sneakers original Nike, Adidas, New Balance, ASICS, dan Puma.',
+    'Promo 11.11 YEAR-END SALE di sneakersflash.com mulai 9 November sampai 15 November 2026 untuk sneakers original Nike, Adidas, New Balance, ASICS, dan Puma.',
 };
 
 export const revalidate = 60;
@@ -23,9 +23,9 @@ export const revalidate = 60;
  * Halaman campaign 11.11 YEAR-END SALE.
  *
  * Hero → jadwal promo → tiga section harga (99K–500K, 500K–999K, Reguler).
- * Copy mengikuti PDF "REVISI COPY LANDING PAGE 11.11" (5 Nov 2026).
+ * Copy mengikuti PDF "revisi terbaru" (6 Nov 2026, di root repo).
  * Isi section = daftar SKU dari sheet 11.11 di lib/campaign/year-end-1111.ts;
- * harga 11.11-nya menempel lewat event id 11 (11 Nov 00:00 – 15 Nov 23:59 WIB).
+ * harga 11.11-nya menempel lewat event id 11 (9 Nov 00:00 – 15 Nov 23:59 WIB).
  * Sebelum promo buka kartu tetap harga normal + label teaser "Harga 11.11".
  *
  * Section klaim voucher DICABUT atas arahan PDF: mekanisme voucher belum
@@ -53,42 +53,42 @@ const JUMLAH_PER_SECTION = 12;
 
 const JADWAL = [
   {
-    judul: 'USS',
-    waktu: '6 – 8 November 2026',
-    ket: 'Promo 11.11 dimulai lebih dulu di USS.',
+    judul: 'Countdown Promo',
+    waktu: '6-8 Nov 2026',
+    ket: 'Siapkan wishlist! Promo website dimulai 9 November.',
   },
   {
-    judul: 'Countdown Website',
-    waktu: 'Mulai 6 November 2026',
-    ket: 'Hitung mundur menuju pembukaan promo website.',
+    judul: 'Promo Dimulai',
+    waktu: '9 Nov 2026',
+    ket: '11.11 YEAR-END SALE dimulai di sneakersflash.com.',
   },
   {
-    judul: 'Promo Website',
-    waktu: '11 Nov 00.00 WIB – 15 Nov 2026',
-    ket: 'Penawaran 11.11 berlaku di sneakersflash.com sampai 15 November 2026.',
+    judul: 'Last Chance',
+    waktu: '15 Nov 2026',
+    ket: 'Hari terakhir promo 11.11. Belanja sebelum periode berakhir.',
   },
 ];
 
 const SECTIONS = [
   {
     id: 'harga-99k-500k',
-    eyebrow: '01 Under 500K',
-    title: '99K – 500K',
-    subtitle: 'Pairs paling ramah kantong di 11.11. Stok dan ukuran mengikuti ketersediaan.',
+    eyebrow: '01 | Sandals & Sneakers',
+    title: '99K-500K',
+    subtitle: 'Sandal 99K dan sneakers 300K-500K. Pilihan produk dan ukuran mengikuti ketersediaan.',
     skus: SKU_99K_500K,
   },
   {
     id: 'harga-500k-999k',
-    eyebrow: '02 Under 1 Juta',
-    title: '500K – 999K',
-    subtitle: 'Sneakers original di bawah sejuta buat nutup tahun.',
+    eyebrow: '02 | Sneakers Under 1 Juta',
+    title: '500K-999K',
+    subtitle: 'Pilihan sneakers 100% original dengan harga di bawah Rp1 juta. Stok dan ukuran mengikuti ketersediaan.',
     skus: SKU_500K_999K,
   },
   {
     id: 'reguler-1111',
-    eyebrow: '03 Reguler',
-    title: 'Reguler',
-    subtitle: 'Pairs incaran dengan harga 11.11 sampai 15 November 2026.',
+    eyebrow: '03 | Selected Sneakers',
+    title: 'Price Drops',
+    subtitle: 'Sneakers pilihan dengan harga spesial selama 11.11 YEAR-END SALE. Stok dan ukuran mengikuti ketersediaan.',
     skus: SKU_REGULER,
   },
 ];
@@ -117,7 +117,7 @@ export default async function Campaign1111Page() {
         {/* ── Jadwal promo — tujuan tombol hero "Lihat Jadwal Promo". Teks dari
              bagian "Informasi tambahan di bawah hero" di PDF revisi. ── */}
         <section id="jadwal-1111" className="pt-10 scroll-mt-24">
-          <SectionHeading eyebrow="Jadwal Promo" title="11.11 Year-End Sale" />
+          <SectionHeading eyebrow="Jadwal Promo Website" title="11.11 Year-End Sale" />
           <ol className="grid gap-3 sm:grid-cols-3">
             {JADWAL.map((j, i) => (
               <li

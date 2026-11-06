@@ -14,11 +14,12 @@ import {
 /**
  * Hero campaign 11.11 YEAR-END SALE.
  *
- * Copy mengikuti PDF "REVISI COPY LANDING PAGE 11.11" (5 Nov 2026), yang
- * membagi hero jadi DUA kondisi:
- *  - TEASER (sebelum promo website buka 11 Nov 00:00 WIB): countdown menuju
+ * Copy mengikuti PDF "REVISI COPY LANDING PAGE 11.11" (5 Nov 2026) yang
+ * direvisi lagi oleh PDF "revisi terbaru" (6 Nov 2026: USS dihapus, promo
+ * website 9-15 Nov). Hero punya DUA kondisi:
+ *  - TEASER (sebelum promo website buka 9 Nov 00:00 WIB): countdown menuju
  *    pembukaan, CTA ke jadwal & katalog reguler, TANPA tombol voucher.
- *  - SALE (11–15 Nov): "The sale continues online", CTA ke produk promo.
+ *  - SALE (9–15 Nov): "The sale continues online", CTA ke produk promo.
  * Kondisi berganti sendiri di sisi klien; sebelum mount yang tampil teaser.
  *
  * Tambahan di luar PDF: kondisi SALE tetap memasang countdown "Promo Berakhir
@@ -31,9 +32,9 @@ const MERAH = '#E50012';
 
 const STRIP = [
   '11.11 Year-End Sale',
-  'First At USS. Next Online.',
-  'USS 6-8 Nov',
-  'Website Sampai 15 Nov',
+  'Countdown 6-8 Nov',
+  'Promo Dimulai 9 Nov',
+  'Last Chance 15 Nov',
   '100% Original',
 ];
 
@@ -59,14 +60,14 @@ export function YearEnd1111Hero() {
         ctaKanan: { teks: 'Lihat Produk Promo', href: '#deals-1111' },
       }
     : {
-        sub: 'First At USS. Next Online.',
+        sub: 'The Deals Are Coming Online.',
         periode: YEAR_END_PERIODE_TEASER,
         ctaUtama: { teks: 'Lihat Jadwal Promo', href: '#jadwal-1111' },
         benefit: ['100% Original', 'Free Shipping*', 'Paylater'],
         label: 'Promo Website Dimulai Dalam:',
         headline: ['The Deals Are', 'Coming Online.'],
         deskripsi:
-          'Promo 11.11 dimulai di USS pada 6-8 November. Penawaran website menyusul setelah hitung mundur berakhir dan berlangsung sampai 15 November 2026.',
+          'Siapkan wishlist! Promo 11.11 YEAR-END SALE di sneakersflash.com dimulai 9 November dan berlangsung sampai 15 November 2026.',
         // Katalog REGULER — sengaja tidak dilabeli promo 11.11 (arahan PDF).
         ctaKanan: { teks: 'Jelajahi Sneakers', href: '/products' },
       };
