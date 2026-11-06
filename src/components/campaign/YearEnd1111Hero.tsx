@@ -156,7 +156,7 @@ export function YearEnd1111Hero() {
               className="relative p-6 md:p-9 lg:p-10 flex flex-col justify-center gap-6"
               style={{ backgroundColor: KUNING, color: HITAM }}
             >
-              <Selotip className="top-6 right-6 h-5 w-20 rotate-[-7deg] bg-[#0D0D0D]" />
+              <Selotip className="hidden md:block top-6 right-6 h-5 w-20 rotate-[-7deg] bg-[#0D0D0D]" />
               <Selotip className="bottom-8 right-6 h-5 w-16 rotate-[9deg] bg-white/85" />
 
               {/* Tinggi dikunci supaya isi hero tidak melompat saat fase
