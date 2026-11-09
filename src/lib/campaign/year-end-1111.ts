@@ -55,30 +55,16 @@ export const YEAR_END_EVENT_SLUG = "11-11-year-end-sale";
    (termurah dulu). 25 artikel di sheet belum ada di katalog web, dilewati.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/** Section 99K–500K (84 artikel — 22 Sandalboyz 99K di depan, ditambah 9 Nov 2026, urut stok) */
+/**
+ * Section 99K–500K (84 artikel). 22 Sandalboyz 99K (9 Nov 2026, urut stok):
+ * cuma 4 teratas di depan, sisanya termurah lain — 18 Sandalboyz lain di EKOR
+ * (tetap 99K lewat event, tapi tidak kebagian 12 kartu). Permintaan user 9 Nov.
+ */
 export const SKU_99K_500K: string[] = [
   "19SUFU",
   "WTHSS18",
   "21SHOR",
   "19SUKE",
-  "215YOL",
-  "18SHNB",
-  "20PCBL",
-  "21PCBB",
-  "20PCYE",
-  "18HSSR",
-  "18SHGR",
-  "BLKSS18",
-  "MINDBLOWON",
-  "18SHOX",
-  "19SUMA",
-  "19SUYE",
-  "19SURO",
-  "WHTNOMOSS18",
-  "18HSAB",
-  "19USSTC",
-  "20ZIPLO",
-  "20PCBO",
   "LC-100220888",
   "177967BKRD",
   "100209907",
@@ -141,6 +127,24 @@ export const SKU_99K_500K: string[] = [
   "100033374",
   "M460CJ4",
   "LC-150059BBK",
+  "215YOL",
+  "18SHNB",
+  "20PCBL",
+  "21PCBB",
+  "20PCYE",
+  "18HSSR",
+  "18SHGR",
+  "BLKSS18",
+  "MINDBLOWON",
+  "18SHOX",
+  "19SUMA",
+  "19SUYE",
+  "19SURO",
+  "WHTNOMOSS18",
+  "18HSAB",
+  "19USSTC",
+  "20ZIPLO",
+  "20PCBO",
 ];
 
 /** Section 500K–999K (116 artikel) */
