@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SectionHeading } from '@/components/common/SectionHeading';
 import { ProductCard } from '@/components/product/ProductCard';
-import { teaser1111 } from '@/lib/campaign/year-end-1111';
+import { teaser1111, PER_HALAMAN_1111 } from '@/lib/campaign/year-end-1111';
 import { SECTIONS_1111, ambilSkus1111 } from '@/lib/campaign/year-end-1111-sections';
+import { Grid1111Client } from './Grid1111Client';
 
 export const revalidate = 60;
 
@@ -49,7 +51,7 @@ export default async function Kategori1111Page({ params }: Props) {
       <SectionHeading
         eyebrow={s.eyebrow}
         title={s.title}
-        subtitle={`${s.subtitle} ${products.length} pairs tersedia.`}
+        subtitle={s.subtitle}
       />
 
       {products.length === 0 ? (
@@ -57,17 +59,25 @@ export default async function Kategori1111Page({ params }: Props) {
           Semua produk di kategori ini sudah habis.
         </p>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-          {products.map((product, i) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              index={Math.min(i, 8)}
-              priority={i < 4}
-              hargaTeaser={teaser1111(product.skuParent)}
-            />
-          ))}
-        </div>
+        // useSearchParams di halaman ISR wajib dibungkus Suspense. Fallback =
+        // halaman 1 tanpa filter (yang ikut ter-render di HTML statis).
+        <Suspense
+          fallback={
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              {products.slice(0, PER_HALAMAN_1111).map((product, i) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  index={Math.min(i, 8)}
+                  priority={i < 4}
+                  hargaTeaser={teaser1111(product.skuParent)}
+                />
+              ))}
+            </div>
+          }
+        >
+          <Grid1111Client products={products} />
+        </Suspense>
       )}
 
       {/* Pindah kategori tanpa balik ke landing. */}

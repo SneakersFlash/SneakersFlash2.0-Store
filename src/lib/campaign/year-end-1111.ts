@@ -845,3 +845,6 @@ export function teaser1111(skuParent?: string | null) {
     berakhir: YEAR_END_BERAKHIR,
   };
 }
+
+/** Kartu per halaman "See All Pairs" 11.11 (/11-11-sale/[kategori]). */
+export const PER_HALAMAN_1111 = 24;
