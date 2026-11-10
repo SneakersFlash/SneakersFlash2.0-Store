@@ -12,6 +12,12 @@ export interface HargaTeaserInfo {
   keterangan: string;
   /** ISO dengan zona waktu — sesudah jam ini label hilang sendiri. */
   berlakuMulai: string;
+  /**
+   * ISO dengan zona waktu — akhir promo. Kalau diisi, sesudah `berlakuMulai`
+   * lewat label berubah jadi hitung mundur "Berakhir dalam" (harga promonya
+   * sudah tampil sebagai harga utama kartu), lalu hilang di jam ini.
+   */
+  berakhir?: string;
 }
 
 const dua = (n: number) => String(n).padStart(2, "0");
@@ -40,16 +46,37 @@ function formatSisa(ms: number) {
  */
 export function HargaTeaser({ info }: { info: HargaTeaserInfo }) {
   const [sisa, setSisa] = useState<number | null>(null);
+  const [sisaAkhir, setSisaAkhir] = useState<number | null>(null);
 
   useEffect(() => {
     const target = Date.parse(info.berlakuMulai);
-    const cek = () => setSisa(target - Date.now());
+    const akhir = info.berakhir ? Date.parse(info.berakhir) : NaN;
+    const cek = () => {
+      const now = Date.now();
+      setSisa(target - now);
+      setSisaAkhir(Number.isNaN(akhir) ? null : akhir - now);
+    };
     cek();
     const t = setInterval(cek, 1000);
     return () => clearInterval(t);
-  }, [info.berlakuMulai]);
+  }, [info.berlakuMulai, info.berakhir]);
 
-  if (sisa !== null && sisa <= 0) return null;
+  // Promo sedang berjalan: harga 11.11 sudah jadi harga utama kartu (dari
+  // backend), jadi yang ditampilkan cuma sisa waktunya.
+  if (sisa !== null && sisa <= 0) {
+    if (sisaAkhir === null || sisaAkhir <= 0) return null;
+    return (
+      <div
+        className="mb-1.5 rounded bg-[#F5E809] px-1.5 py-1 text-[#0D0D0D] leading-tight"
+        aria-label={`${info.label} berakhir dalam ${formatSisa(sisaAkhir)}`}
+      >
+        <span className="flex flex-wrap items-center gap-x-1 text-[9px] lg:text-[10px] font-bold uppercase tracking-wider">
+          <span className="opacity-90">Berakhir dalam</span>
+          <span className="font-mono tabular-nums">{formatSisa(sisaAkhir)}</span>
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div

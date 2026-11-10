@@ -43,7 +43,10 @@ export function EventFooterBadge({
   product: Product;
   className?: string;
 }) {
-  if (!isKurasiClearance(product)) return null;
+  // Sejak 10 Nov 2026 berlaku untuk SEMUA event aktif, bukan cuma kurasi
+  // Clearance (LC-): pil pojok kiri atas untuk event lain dicabut supaya
+  // tampilan badge seragam (permintaan user, landing 11.11).
+  if (!product.activeEvent?.eventName) return null;
 
   return (
     <div

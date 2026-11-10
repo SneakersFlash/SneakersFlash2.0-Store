@@ -842,5 +842,6 @@ export function teaser1111(skuParent?: string | null) {
     label: "Harga 11.11",
     keterangan: "mulai 9 Nov",
     berlakuMulai: YEAR_END_HARI_H,
+    berakhir: YEAR_END_BERAKHIR,
   };
 }

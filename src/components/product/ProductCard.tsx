@@ -12,7 +12,7 @@ import { formatPrice, discountPercent } from "@/lib/utils/formatPrice";
 import { getProductImageUrl } from "@/lib/utils/imageUrl";
 import type { Product } from "@/types/product.types";
 import { useCheckWishlist, useAddWishlist, useRemoveWishlist } from "@/lib/hooks/useWishlist";
-import { EventFooterBadge, isKurasiClearance } from "./EventFooterBadge";
+import { EventFooterBadge } from "./EventFooterBadge";
 import { useAuthStore } from "@/lib/store/authStore";
 
 interface ProductCardProps {
@@ -66,7 +66,6 @@ export function ProductCard({ product, priority = false, index = 0, hargaTeaser 
 
   const hasEvent = Boolean(product.activeEvent?.specialPrice);
   const eventPrice = hasEvent ? product.activeEvent!.specialPrice! : null;
-  const eventName = product.activeEvent?.eventName ?? null;
 
   const hasDiscount = hasEvent
     ? true
@@ -103,20 +102,9 @@ export function ProductCard({ product, priority = false, index = 0, hargaTeaser 
       >
         {/* ── Image Container ── */}
         <div className="relative w-full aspect-square sm:aspect-[5/4] bg-[#F5F5F5] shrink-0 overflow-hidden">
-        {/* ── Event Badge ──
-            Barang kurasi Clearance pakai pita selebar kartu di kaki gambar
-            (lihat EventFooterBadge, dirender di bawah). Event lain tetap memakai
-            pil pojok yang lama supaya perubahan ini tidak melebar ke luar kurasi
-            yang diminta. */}
-          {eventName && !isKurasiClearance(product) && (
-            <div className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10">
-              {/* Sengaja mungil: ukuran lama menutupi logo SneakersFlash di foto produk */}
-              <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-black text-white text-[7px] sm:text-[8px] font-bold tracking-wide uppercase leading-none shadow-sm">
-                {eventName}
-              </span>
-            </div>
-          )}
-
+        {/* Badge event dulu pil mungil di pojok kiri atas foto (menempel logo
+            SneakersFlash) untuk event non-clearance. Sejak 10 Nov 2026 SEMUA
+            event pakai pita di bawah gambar (EventFooterBadge) supaya seragam. */}
           <button
             onClick={handleWishlistToggle}
             disabled={isProcessing}

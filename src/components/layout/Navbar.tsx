@@ -17,6 +17,7 @@ import { MobileMenu } from "./MobileMenu";
 import { CartSidebar } from "../cart/CartSidebar";
 import { WishlistSidebar } from "../wishlist/WishlistSidebar";
 import CampaignsService from "@/lib/api/campaigns.service";
+import { YEAR_END_EVENT_SLUG } from "@/lib/campaign/year-end-1111";
 
 // ─── Nav data ─────────────────────────────────────────────────────────────────
 
@@ -382,8 +383,12 @@ function NavbarInner() {
         // generik. Pengecualian untuk campaign berlanding-sendiri dicabut
         // 18 Agt 2026 bareng Freedom in Every Step; kalau nanti ada campaign
         // ber-landing lagi, pasang lagi pemetaan slug→href di sini.
+        // Event 11.11 disaring: sudah punya entri kotak kuning "11.11 SALE"
+        // sendiri di NAV_ITEMS, jangan dobel jadi teks merah.
         setCampaignItems(
-          events.map((e: any) => {
+          events
+            .filter((e: any) => e.slug !== YEAR_END_EVENT_SLUG)
+            .map((e: any) => {
             const slug = e.slug as string | undefined;
             return {
               label: e.name ?? e.title ?? "Campaign",
