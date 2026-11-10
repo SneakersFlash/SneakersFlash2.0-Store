@@ -22,7 +22,7 @@ export interface HargaTeaserInfo {
 
 const dua = (n: number) => String(n).padStart(2, "0");
 
-/** "2h 14:03:22" — hari cuma ditulis kalau masih ada. */
+/** "2d 14:03:22" — hari (d = day) cuma ditulis kalau masih ada. */
 function formatSisa(ms: number) {
   const total = Math.max(0, Math.floor(ms / 1000));
   const hari = Math.floor(total / 86400);
@@ -30,7 +30,7 @@ function formatSisa(ms: number) {
   const menit = Math.floor((total % 3600) / 60);
   const detik = total % 60;
   const jms = `${dua(jam)}:${dua(menit)}:${dua(detik)}`;
-  return hari > 0 ? `${hari}h ${jms}` : jms;
+  return hari > 0 ? `${hari}d ${jms}` : jms;
 }
 
 /**
