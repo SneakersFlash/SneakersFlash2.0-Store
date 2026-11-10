@@ -1,15 +1,10 @@
 import type { Metadata } from 'next';
-import { productsService } from '@/lib/api/products.service';
 import { SectionHeading } from '@/components/common/SectionHeading';
 import { ProductCard } from '@/components/product/ProductCard';
 import { YearEnd1111Hero } from '@/components/campaign/YearEnd1111Hero';
-import {
-  SKU_99K_500K,
-  SKU_500K_999K,
-  SKU_REGULER,
-  teaser1111,
-} from '@/lib/campaign/year-end-1111';
-import type { Product } from '@/types/product.types';
+import Link from 'next/link';
+import { teaser1111 } from '@/lib/campaign/year-end-1111';
+import { SECTIONS_1111, ambilSkus1111 } from '@/lib/campaign/year-end-1111-sections';
 
 export const metadata: Metadata = {
   title: '11.11 Year-End Sale — SneakersFlash',
@@ -31,19 +26,6 @@ export const revalidate = 60;
  * Section klaim voucher DICABUT atas arahan PDF: mekanisme voucher belum
  * disetujui. Pasang lagi (VoucherClaimSection) kalau sudah final.
  */
-
-/** Produk habis stok tidak ditampilkan: percuma makan slot, tetap tak bisa dibeli. */
-const berstok = (hasil: { data?: Product[] } | null) =>
-  (hasil?.data ?? []).filter((p) => Number(p?.totalStock ?? 0) > 0);
-
-/** Gagal fetch = daftar kosong, supaya satu section tidak menjatuhkan halaman. */
-async function ambilSkus(skus: string[]): Promise<Product[]> {
-  if (skus.length === 0) return [];
-  const hasil = await productsService
-    .getProducts({ skus, limit: skus.length, page: 1 } as any)
-    .catch(() => ({ data: [] as Product[] }));
-  return berstok(hasil);
-}
 
 /**
  * Maksimal kartu per section. Daftar SKU-nya jauh lebih panjang (62/116/170) —
@@ -69,34 +51,11 @@ const JADWAL = [
   },
 ];
 
-const SECTIONS = [
-  {
-    id: 'harga-99k-500k',
-    eyebrow: '01 | Sandals & Sneakers',
-    title: '99K-500K',
-    subtitle: 'Sandal 99K dan sneakers 300K-500K. Pilihan produk dan ukuran mengikuti ketersediaan.',
-    skus: SKU_99K_500K,
-  },
-  {
-    id: 'harga-500k-999k',
-    eyebrow: '02 | Sneakers Under 1 Juta',
-    title: '500K-999K',
-    subtitle: 'Pilihan sneakers 100% original dengan harga di bawah Rp1 juta. Stok dan ukuran mengikuti ketersediaan.',
-    skus: SKU_500K_999K,
-  },
-  {
-    id: 'reguler-1111',
-    eyebrow: '03 | Selected Sneakers',
-    title: 'Price Drops',
-    subtitle: 'Sneakers pilihan dengan harga spesial selama 11.11 YEAR-END SALE. Stok dan ukuran mengikuti ketersediaan.',
-    skus: SKU_REGULER,
-  },
-];
-
 export default async function Campaign1111Page() {
-  const hasil = await Promise.all(SECTIONS.map((s) => ambilSkus(s.skus)));
-  const sections = SECTIONS.map((s, i) => ({
+  const hasil = await Promise.all(SECTIONS_1111.map((s) => ambilSkus1111(s.skus)));
+  const sections = SECTIONS_1111.map((s, i) => ({
     ...s,
+    total: hasil[i].length,
     products: hasil[i].slice(0, JUMLAH_PER_SECTION),
   }));
 
@@ -166,6 +125,17 @@ export default async function Campaign1111Page() {
                     />
                   ))}
                 </div>
+                {/* Section dipotong 12 kartu; sisanya di halaman per kategori. */}
+                {s.total > s.products.length && (
+                  <div className="mt-6 flex justify-center">
+                    <Link
+                      href={`/11-11-sale/${s.id}`}
+                      className="inline-flex items-center gap-2 rounded-full bg-[#0D0D0D] px-6 py-3 text-xs font-black uppercase tracking-[0.15em] text-white transition hover:bg-[#F5E809] hover:text-[#0D0D0D]"
+                    >
+                      See All Pairs ({s.total}) →
+                    </Link>
+                  </div>
+                )}
               </section>
             ),
         )}
