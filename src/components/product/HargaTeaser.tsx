@@ -68,10 +68,10 @@ export function HargaTeaser({ info }: { info: HargaTeaserInfo }) {
     return (
       <div
         className="mb-1.5 rounded bg-[#F5E809] px-1.5 py-1 text-[#0D0D0D] leading-tight"
-        aria-label={`${info.label} berakhir dalam ${formatSisa(sisaAkhir)}`}
+        aria-label={`${info.label} end in ${formatSisa(sisaAkhir)}`}
       >
         <span className="flex flex-wrap items-center gap-x-1 text-[9px] lg:text-[10px] font-bold uppercase tracking-wider">
-          <span className="opacity-90">Berakhir dalam</span>
+          <span className="opacity-90">End in</span>
           <span className="font-mono tabular-nums">{formatSisa(sisaAkhir)}</span>
         </span>
       </div>
