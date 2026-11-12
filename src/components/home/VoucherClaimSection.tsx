@@ -63,7 +63,7 @@ const MOCK_FIRSTSTEP_VOUCHER = {
   description: "Khusus member baru! Daftar sekarang dan dapatkan voucher ini.",
   discountType: "fixed_amount" as DiscountType,
   discountValue: 100000,
-  minPurchaseAmount: 1000000,
+  minPurchaseAmount: 1500000,
   maxDiscountAmount: null,
   expiresAt: "2030-12-31T23:59:59.000Z",
   isMock: true,
