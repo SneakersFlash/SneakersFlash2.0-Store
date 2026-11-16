@@ -33,7 +33,10 @@ import { ambilUtm } from "@/lib/attribution/utm";
 // Constants
 // ─────────────────────────────────────────────────────────────────────────────
 
-const ORIGIN_COORDS = { lat: -6.1690336, lng: 106.7755197 };
+// Harus sama dengan STORE_LATITUDE/LONGITUDE backend (pin gudang, dikoreksi
+// 4 Agt 2026). Tarif tetap dihitung dari pin server; ini cuma dipakai
+// buat saringan jarak instant di layar.
+const ORIGIN_COORDS = { lat: -6.1752738, lng: 106.7746521 };
 const ORIGIN_PIN = `${ORIGIN_COORDS.lat},${ORIGIN_COORDS.lng}`;
 const INSTANT_DISTANCE_LIMIT_KM = 15;
 const INSTANT_KEYWORDS = ["gosend","grabexpress","grab express","go-send","instant","same day"];
