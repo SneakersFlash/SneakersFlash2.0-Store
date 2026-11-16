@@ -54,6 +54,18 @@ const nextConfig: NextConfig = {
         destination: "/",
         permanent: false,
       },
+      // 11.11 Year-End Sale selesai 15 Nov 2026 dan dicabut 16 Nov atas
+      // permintaan user. Kodenya (app/(main)/11-11-sale) sengaja tidak dihapus.
+      {
+        source: "/11-11-sale",
+        destination: "/events/clearance-sale",
+        permanent: false,
+      },
+      {
+        source: "/11-11-sale/:path*",
+        destination: "/events/clearance-sale",
+        permanent: false,
+      },
     ];
   },
 };

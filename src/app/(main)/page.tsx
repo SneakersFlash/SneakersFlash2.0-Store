@@ -14,12 +14,6 @@ import { productsService } from "@/lib/api/products.service";
 import CampaignsService from "@/lib/api/campaigns.service";
 import { EventCampaignSection } from "@/components/home/EventCampaignSection"
 import VoucherClaimSection from "@/components/home/VoucherClaimSection";
-import { YearEnd1111HomeSection } from "@/components/campaign/YearEnd1111HomeSection";
-import {
-  JUMLAH_BERANDA as JUMLAH_1111_BERANDA,
-  SKU_99K_500K as SKU_1111,
-  YEAR_END_EVENT_SLUG,
-} from "@/lib/campaign/year-end-1111";
 
 export const metadata: Metadata = {
   title: "SneakersFlash — Premium Sneakers & Footwear",
@@ -38,25 +32,12 @@ const SECTION_COLORS = [
 ];
 
 export default async function HomePage() {
-  const [banners, apiCategories, semuaCampaign, middleBanners, hasil1111] = await Promise.all([
+  const [banners, apiCategories, campaigns, middleBanners] = await Promise.all([
     bannersService.getBanners("home_top").catch(() => []),
     categoriesService.getAll().catch(() => []),
     CampaignsService.getEvent().catch(() => []),
     bannersService.getBanners("home_middle").catch(() => []),
-    // Rail panel 11.11: section 99K–500K dari sheet 11.11 (termurah dulu).
-    productsService
-      .getProducts({ skus: SKU_1111, limit: SKU_1111.length, page: 1 } as any)
-      .catch(() => ({ data: [] as any[] })),
   ]);
-
-  // Event 11.11 sudah punya panel hitung mundur sendiri di atas — jangan
-  // sampai panel event generik ikut menampilkannya dobel begitu tersync.
-  const campaigns = (semuaCampaign as any[]).filter(
-    (c) => c?.slug !== YEAR_END_EVENT_SLUG,
-  );
-  const produk1111 = (hasil1111?.data ?? [])
-    .filter((p: any) => Number(p?.totalStock ?? 0) > 0)
-    .slice(0, JUMLAH_1111_BERANDA);
 
   const sidebarBanner = middleBanners?.[0];
 
@@ -208,8 +189,8 @@ export default async function HomePage() {
           <VoucherClaimSection />
         </Suspense>
 
-        {/* Hitung mundur promo 11.11 — hilang sendiri sesudah 15 Nov 23:59 WIB. */}
-        <YearEnd1111HomeSection products={produk1111} />
+        {/* Panel 11.11 dicabut 16 Nov 2026 — komponennya masih ada di
+            components/campaign kalau mau dipakai lagi. */}
 
         <EventCampaignSection campaigns={campaigns} />
 
