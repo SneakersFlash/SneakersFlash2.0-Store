@@ -98,7 +98,34 @@ function LabelIcon({label}:{label:string}){
   if(l==="work")return <Briefcase size={11}/>;
   return <Building2 size={11}/>;
 }
-function formatCardNumber(v:string){return v.replace(/\D/g,"").slice(0,16).replace(/(\d{4})(?=\d)/g,"$1 ");}
+function formatCardNumber(v:string){return v.replace(/\D/g,"").slice(0,19).replace(/(\d{4})(?=\d)/g,"$1 ");}
+// Cek kartu sebelum dikirim ke Midtrans. Pesan Midtrans ("One or more parameters
+// in the payload is invalid") tidak menjelaskan field mana yang salah.
+function luhnOk(num:string){let sum=0,dbl=false;for(let i=num.length-1;i>=0;i--){let d=Number(num[i]);if(dbl){d*=2;if(d>9)d-=9;}sum+=d;dbl=!dbl;}return sum%10===0;}
+function validateCard(c:{number:string;expiry:string;cvv:string;name:string}):string|null{
+  const num=c.number.replace(/\s/g,"");
+  if(num.length<13||num.length>19)return "Nomor kartu belum lengkap.";
+  if(!luhnOk(num))return "Nomor kartu tidak valid. Periksa lagi angkanya.";
+  const m=/^(\d{2})\/(\d{2})$/.exec(c.expiry);
+  if(!m)return "Masa berlaku harus diisi lengkap dengan format MM/YY, misal 08/28.";
+  const mm=Number(m[1]),yy=2000+Number(m[2]);
+  if(mm<1||mm>12)return "Bulan masa berlaku harus 01 sampai 12.";
+  const now=new Date();if(yy<now.getFullYear()||(yy===now.getFullYear()&&mm<now.getMonth()+1))return "Kartu sudah kedaluwarsa.";
+  if(!/^\d{3,4}$/.test(c.cvv))return "CVV harus 3 atau 4 digit (di belakang kartu).";
+  if(!c.name.trim())return "Nama pemegang kartu wajib diisi.";
+  return null;
+}
+// Terjemahkan validation_messages Midtrans ke bahasa pelanggan.
+function cardTokenError(r:any):string{
+  const msgs:string[]=Array.isArray(r?.validation_messages)?r.validation_messages:[];
+  const j=msgs.join(" ").toLowerCase();
+  if(j.includes("luhn")||j.includes("card_number"))return "Nomor kartu tidak valid. Periksa lagi angkanya.";
+  if(j.includes("greater or equal"))return "Kartu sudah kedaluwarsa.";
+  if(j.includes("card_exp"))return "Masa berlaku kartu tidak valid (format MM/YY).";
+  if(j.includes("card_cvv"))return "CVV tidak valid.";
+  if(msgs.length)return `Data kartu ditolak: ${msgs.join("; ")}`;
+  return r?.status_message??"Tokenisasi kartu gagal";
+}
 function formatExpiry(v:string){const d=v.replace(/\D/g,"").slice(0,4);return d.length>=3?`${d.slice(0,2)}/${d.slice(2)}`:d;}
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -116,7 +143,7 @@ function CreditCardForm({value,onChange}:{value:CardFormState;onChange:(v:CardFo
         <p className="text-[12px] text-gray-500">Data kartu dienkripsi via Midtrans</p>
       </div>
       <input inputMode="numeric" placeholder="Nomor Kartu (16 digit)" value={value.number}
-        onChange={e=>onChange({...value,number:formatCardNumber(e.target.value)})} className={cls} maxLength={19}/>
+        onChange={e=>onChange({...value,number:formatCardNumber(e.target.value)})} className={cls} maxLength={23}/>
       <input placeholder="Nama Pemegang Kartu" value={value.name}
         onChange={e=>onChange({...value,name:e.target.value.toUpperCase()})} className={cls}/>
       <div className="grid grid-cols-2 gap-3">
@@ -454,7 +481,7 @@ function CheckoutContent(){
     if(!m?.getCardToken)return reject(new Error("Modul pembayaran kartu belum termuat. Tunggu sebentar lalu coba lagi."));
     m.getCardToken(
       {card_number:cardForm.number.replace(/\s/g,""),card_exp_month:expMonth,card_exp_year:`20${expYear}`,card_cvv:cardForm.cvv},
-      {onSuccess:(r:any)=>resolve(r.token_id),onFailure:(r:any)=>reject(new Error(r.status_message??"Tokenisasi kartu gagal"))},
+      {onSuccess:(r:any)=>resolve(r.token_id),onFailure:(r:any)=>reject(new Error(cardTokenError(r)))},
     );
   });
 
@@ -512,8 +539,8 @@ function CheckoutContent(){
     const isInstant=INSTANT_KEYWORDS.some(kw=>`${selectedCourier.courier_name||selectedCourier.courier} ${selectedCourier.service}`.toLowerCase().includes(kw));
     if(isInstant&&!hasRealPin(selectedAddress))return alert("Pengiriman instan butuh pin lokasi. Edit alamat untuk tambahkan pin.");
     if(selectedPayment==="credit_card"){
-      const num=cardForm.number.replace(/\s/g,"");
-      if(num.length<16||!cardForm.expiry||cardForm.cvv.length<3||!cardForm.name)return alert("Lengkapi data kartu kredit.");
+      const cardErr=validateCard(cardForm);
+      if(cardErr)return alert(cardErr);
     }
     let cityName=selectedAddress.city||selectedAddress.cityName;
     if(!cityName&&selectedAddress.provinceId&&selectedAddress.cityId){const cities=await logisticsService.getCities(selectedAddress.provinceId);cityName=(cities as any[]).find((c:any)=>c.id===selectedAddress.cityId)?.name;}
