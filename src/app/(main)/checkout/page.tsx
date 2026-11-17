@@ -437,11 +437,11 @@ function CheckoutContent(){
   // Load Midtrans.js untuk credit card
   useEffect(()=>{
     if(selectedPayment!=="credit_card")return;
-    if(document.getElementById("midtrans-js"))return;
+    if(document.getElementById("midtrans-script"))return;
     const isProd=process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION==="true";
     const key=process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY??"";
     const s=document.createElement("script");
-    s.id="midtrans-js";
+    s.id="midtrans-script"; // WAJIB "midtrans-script": midtrans-new-3ds.min.js membaca data-client-key lewat id ini
     s.src=isProd?"https://api.midtrans.com/v2/assets/js/midtrans-new-3ds.min.js":"https://api.sandbox.midtrans.com/v2/assets/js/midtrans-new-3ds.min.js";
     s.setAttribute("data-environment",isProd?"production":"sandbox");
     s.setAttribute("data-client-key",key);
@@ -450,7 +450,9 @@ function CheckoutContent(){
 
   const getCardToken=():Promise<string>=>new Promise((resolve,reject)=>{
     const[expMonth,expYear]=cardForm.expiry.split("/");
-    (window as any).MidtransNew3ds?.getCardToken(
+    const m=(window as any).MidtransNew3ds;
+    if(!m?.getCardToken)return reject(new Error("Modul pembayaran kartu belum termuat. Tunggu sebentar lalu coba lagi."));
+    m.getCardToken(
       {card_number:cardForm.number.replace(/\s/g,""),card_exp_month:expMonth,card_exp_year:`20${expYear}`,card_cvv:cardForm.cvv},
       {onSuccess:(r:any)=>resolve(r.token_id),onFailure:(r:any)=>reject(new Error(r.status_message??"Tokenisasi kartu gagal"))},
     );
