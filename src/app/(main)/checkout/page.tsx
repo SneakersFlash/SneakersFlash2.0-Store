@@ -129,6 +129,38 @@ function cardTokenError(r:any):string{
 function formatExpiry(v:string){const d=v.replace(/\D/g,"").slice(0,4);return d.length>=3?`${d.slice(0,2)}/${d.slice(2)}`:d;}
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Cicilan kartu kredit (Midtrans, jenis OFFLINE). Harus sama dengan setelan
+// dashboard Midtrans & backend (src/modules/payment/installment.constants.ts).
+const INSTALLMENT_TERMS=[3,6,12,18,24,36];
+const INSTALLMENT_MIN_AMOUNT=500_000;
+
+function InstallmentPicker({total,value,onChange}:{total:number;value:number;onChange:(v:number)=>void;}){
+  const fmt=(n:number)=>"Rp"+Math.ceil(n).toLocaleString("id-ID");
+  if(total<INSTALLMENT_MIN_AMOUNT)return(
+    <p className="mt-3 text-[12px] text-gray-400">Cicilan kartu kredit tersedia untuk total belanja minimal {fmt(INSTALLMENT_MIN_AMOUNT)}.</p>
+  );
+  const opt=(term:number,label:string,sub?:string)=>{
+    const sel=value===term;
+    return(
+      <button type="button" key={term} onClick={()=>onChange(term)}
+        className={`text-left px-3 py-2.5 rounded-xl border transition-colors ${sel?"border-[#E05600] bg-orange-50":"border-gray-200 bg-white hover:border-gray-300"}`}>
+        <span className="block text-[13px] font-semibold text-gray-900">{label}</span>
+        {sub&&<span className="block text-[11px] text-gray-500">{sub}</span>}
+      </button>
+    );
+  };
+  return(
+    <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+      <p className="text-[12px] font-semibold text-gray-700 mb-2">Bayar penuh atau cicil</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {opt(0,"Bayar penuh",fmt(total))}
+        {INSTALLMENT_TERMS.map(t=>opt(t,`${t} bulan`,`± ${fmt(total/t)}/bln`))}
+      </div>
+      <p className="mt-2 text-[11px] text-gray-400 leading-relaxed">Khusus kartu kredit (bukan debit). Tagihan awal penuh, lalu diubah jadi cicilan oleh bank penerbit kartu. Bunga &amp; biaya mengikuti ketentuan bank.</p>
+    </div>
+  );
+}
+
 // Credit Card Form
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -427,6 +459,7 @@ function CheckoutContent(){
   const[isAddressFormOpen,setIsAddressFormOpen]=useState(false);
   const[isSummaryOpen,setIsSummaryOpen]=useState(false);
   const[cardForm,setCardForm]=useState<CardFormState>({number:"",expiry:"",cvv:"",name:""});
+  const[installmentTerm,setInstallmentTerm]=useState(0); // 0 = bayar penuh
   const[selectedAddress,setSelectedAddress]=useState<any|null>(null);
   const[districtName,setDistrictName]=useState("");
   const[shippingOptions,setShippingOptions]=useState<any[]>([]);
@@ -556,6 +589,9 @@ function CheckoutContent(){
       villageName=(subs as any[]).find(s=>Number(s.id)===Number(selectedAddress.subdistrictId))?.name??"";
     }catch{}
     const enrichedAddress={...selectedAddress,city:cityName||"Unknown City",district:districtName||"",province:provinceName||undefined,village:villageName||undefined,latitude:hasRealPin(selectedAddress)?Number(selectedAddress.latitude):undefined,longitude:hasRealPin(selectedAddress)?Number(selectedAddress.longitude):undefined};
+    // Tenor yang sudah dipilih gugur sendiri kalau total turun di bawah minimum
+    // (mis. voucher/poin dipakai setelah memilih) atau metode bayar diganti.
+    const effectiveInstallment=selectedPayment==="credit_card"&&grandTotal>=INSTALLMENT_MIN_AMOUNT?installmentTerm:0;
     setIsLoading(true);
     try{
       let cardToken:string|undefined;
@@ -563,7 +599,7 @@ function CheckoutContent(){
         setIsTokenizing(true);
         try{cardToken=await getCardToken();}catch(e:any){alert(e.message??"Gagal validasi kartu.");return;}finally{setIsTokenizing(false);}
       }
-      const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:selectedPayment,voucherCode:appliedVoucher?.code||undefined,usePoints:pointsDiscount>0,pointsToRedeem:pointsDiscount>0?pointsDiscount:undefined,utm:ambilUtm(),...(cardToken?{cardToken}:{})};
+      const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:selectedPayment,voucherCode:appliedVoucher?.code||undefined,usePoints:pointsDiscount>0,pointsToRedeem:pointsDiscount>0?pointsDiscount:undefined,utm:ambilUtm(),...(cardToken?{cardToken}:{}),...(cardToken&&effectiveInstallment?{installmentTerm:effectiveInstallment}:{})};
       const finalPayload=isBuyNowFlow?{...basePayload,cartItemIds:[],buyNowVariantId:buyNowVariantId as string,buyNowQuantity:Number(buyNowQuantity)}:{...basePayload,cartItemIds:selectedItemIds.map(id=>id.toString())};
       const res=await ordersService.checkout(finalPayload);
       pixel.purchase({
@@ -730,6 +766,7 @@ function CheckoutContent(){
                             {option.id==="credit_card"&&isSel&&(
                               <div className="px-4 pb-4">
                                 <CreditCardForm value={cardForm} onChange={setCardForm}/>
+                                <InstallmentPicker total={grandTotal} value={installmentTerm} onChange={setInstallmentTerm}/>
                                 {isTokenizing&&<p className="text-[12px] text-gray-400 flex items-center gap-2 mt-3"><ThunderSpinner size={13} tone="mono"/>Memvalidasi kartu…</p>}
                               </div>
                             )}
