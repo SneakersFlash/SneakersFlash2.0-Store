@@ -46,6 +46,7 @@ export interface CheckoutResponse {
   qrCodeUrl:     string | null;  // QRIS & GoPay desktop
   deeplinkUrl:   string | null;  // GoPay mobile, ShopeePay, Akulaku, credit_card 3DS
   expireTime:    string | null;
+  snapToken?:    string | null;  // checkout via Snap: buka pop-up dengan token ini
 }
 
 // ─── Shipping Provider ─────────────────────────────────────────────────────────

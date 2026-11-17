@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef, Suspense } from "react";
+import { openSnap } from "@/lib/midtrans/snap";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { ArrowLeft, ChevronDown, ChevronUp, Zap, Wallet, Circle, CheckCircle2, MapPin, Truck, X, Plus, Home, Briefcase, Building2, AlertTriangle, ChevronRight, Package, Tag, Star, Lock } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronUp, Zap, Wallet, Circle, CheckCircle2, MapPin, Truck, X, Plus, Home, Briefcase, Building2, AlertTriangle, ChevronRight, Package, Tag, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useCartStore } from "@/lib/store/cartStore";
@@ -42,41 +43,6 @@ const INSTANT_DISTANCE_LIMIT_KM = 15;
 const INSTANT_KEYWORDS = ["gosend","grabexpress","grab express","go-send","instant","same day"];
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Payment methods — sesuai active methods di Midtrans dashboard
-// ─────────────────────────────────────────────────────────────────────────────
-
-const PAYMENT_METHODS = [
-  {
-    category: "Virtual Account",
-    options: [
-      { id: "bca_va",     name: "BCA Virtual Account",       logo: "/images/BCA.jpg.jpeg",     logoText: "BCA"     },
-      { id: "bni_va",     name: "BNI Virtual Account",       logo: "/images/BNI.jpg.jpeg",     logoText: "BNI"     },
-      { id: "bri_va",     name: "BRI Virtual Account",       logo: "/images/BRI.jpg.jpeg",     logoText: "BRI"     },
-      { id: "mandiri_va", name: "Bank Mandiri",               logo: "/images/mandiri.jpg.jpeg", logoText: "MANDIRI" },
-      { id: "permata_va", name: "PermataBank",                logo: "/images/permata.jpg.jpeg", logoText: "PERMATA" },
-    ],
-  },
-  {
-    category: "e-Wallet & QRIS",
-    options: [
-      { id: "gopay",     name: "GoPay",              logo: "/images/gopay.jpg.jpeg",     logoText: "GoPay"     },
-      // ShopeePay disembunyikan 6 Okt 2026: Midtrans menolak semua charge dengan
-      // 4045408 "Invalid merchant, status is not active" (merchant di sisi Shopee belum aktif).
-      // Balikin baris ini setelah Midtrans konfirmasi aktif + uji charge kecil.
-      // { id: "shopeepay", name: "ShopeePay",          logo: "/images/Spay.jpg.jpeg", logoText: "ShopeePay" },
-      { id: "qris",      name: "GoPay Dynamic QRIS", logo: "/images/Gopay Qris.jpg.jpeg",      logoText: "QRIS"      },
-    ],
-  },
-  {
-    category: "Paylater & Card",
-    options: [
-      { id: "akulaku",     name: "Akulaku PayLater",    logo: "/images/akulaku paylater.jpg.jpeg", logoText: "Akulaku" },
-      { id: "credit_card", name: "Kartu Kredit / Debit", logo: "/images/Visa.jpg.jpeg",   logoText: "CARD"    },
-    ],
-  },
-];
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -98,119 +64,6 @@ function LabelIcon({label}:{label:string}){
   if(l==="work")return <Briefcase size={11}/>;
   return <Building2 size={11}/>;
 }
-function formatCardNumber(v:string){return v.replace(/\D/g,"").slice(0,19).replace(/(\d{4})(?=\d)/g,"$1 ");}
-// Cek kartu sebelum dikirim ke Midtrans. Pesan Midtrans ("One or more parameters
-// in the payload is invalid") tidak menjelaskan field mana yang salah.
-function luhnOk(num:string){let sum=0,dbl=false;for(let i=num.length-1;i>=0;i--){let d=Number(num[i]);if(dbl){d*=2;if(d>9)d-=9;}sum+=d;dbl=!dbl;}return sum%10===0;}
-function validateCard(c:{number:string;expiry:string;cvv:string;name:string}):string|null{
-  const num=c.number.replace(/\s/g,"");
-  if(num.length<13||num.length>19)return "Nomor kartu belum lengkap.";
-  if(!luhnOk(num))return "Nomor kartu tidak valid. Periksa lagi angkanya.";
-  const m=/^(\d{2})\/(\d{2})$/.exec(c.expiry);
-  if(!m)return "Masa berlaku harus diisi lengkap dengan format MM/YY, misal 08/28.";
-  const mm=Number(m[1]),yy=2000+Number(m[2]);
-  if(mm<1||mm>12)return "Bulan masa berlaku harus 01 sampai 12.";
-  const now=new Date();if(yy<now.getFullYear()||(yy===now.getFullYear()&&mm<now.getMonth()+1))return "Kartu sudah kedaluwarsa.";
-  if(!/^\d{3,4}$/.test(c.cvv))return "CVV harus 3 atau 4 digit (di belakang kartu).";
-  if(!c.name.trim())return "Nama pemegang kartu wajib diisi.";
-  return null;
-}
-// Terjemahkan validation_messages Midtrans ke bahasa pelanggan.
-function cardTokenError(r:any):string{
-  const msgs:string[]=Array.isArray(r?.validation_messages)?r.validation_messages:[];
-  const j=msgs.join(" ").toLowerCase();
-  if(j.includes("luhn")||j.includes("card_number"))return "Nomor kartu tidak valid. Periksa lagi angkanya.";
-  if(j.includes("greater or equal"))return "Kartu sudah kedaluwarsa.";
-  if(j.includes("card_exp"))return "Masa berlaku kartu tidak valid (format MM/YY).";
-  if(j.includes("card_cvv"))return "CVV tidak valid.";
-  if(msgs.length)return `Data kartu ditolak: ${msgs.join("; ")}`;
-  return r?.status_message??"Tokenisasi kartu gagal";
-}
-function formatExpiry(v:string){const d=v.replace(/\D/g,"").slice(0,4);return d.length>=3?`${d.slice(0,2)}/${d.slice(2)}`:d;}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Cicilan kartu kredit (Midtrans, jenis OFFLINE). Harus sama dengan setelan
-// dashboard Midtrans & backend (src/modules/payment/installment.constants.ts).
-const INSTALLMENT_TERMS=[3,6,12,18,24,36];
-const INSTALLMENT_MIN_AMOUNT=500_000;
-
-function InstallmentPicker({total,value,onChange}:{total:number;value:number;onChange:(v:number)=>void;}){
-  const fmt=(n:number)=>"Rp"+Math.ceil(n).toLocaleString("id-ID");
-  if(total<INSTALLMENT_MIN_AMOUNT)return(
-    <p className="mt-3 text-[12px] text-gray-400">Cicilan kartu kredit tersedia untuk total belanja minimal {fmt(INSTALLMENT_MIN_AMOUNT)}.</p>
-  );
-  const opt=(term:number,label:string,sub?:string)=>{
-    const sel=value===term;
-    return(
-      <button type="button" key={term} onClick={()=>onChange(term)}
-        className={`text-left px-3 py-2.5 rounded-xl border transition-colors ${sel?"border-[#E05600] bg-orange-50":"border-gray-200 bg-white hover:border-gray-300"}`}>
-        <span className="block text-[13px] font-semibold text-gray-900">{label}</span>
-        {sub&&<span className="block text-[11px] text-gray-500">{sub}</span>}
-      </button>
-    );
-  };
-  return(
-    <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-      <p className="text-[12px] font-semibold text-gray-700 mb-2">Bayar penuh atau cicil</p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {opt(0,"Bayar penuh",fmt(total))}
-        {INSTALLMENT_TERMS.map(t=>opt(t,`${t} bulan`,`± ${fmt(total/t)}/bln`))}
-      </div>
-      <p className="mt-2 text-[11px] text-gray-400 leading-relaxed">Khusus kartu kredit (bukan debit). Tagihan awal penuh, lalu diubah jadi cicilan oleh bank penerbit kartu. Bunga &amp; biaya mengikuti ketentuan bank.</p>
-    </div>
-  );
-}
-
-// Credit Card Form
-// ─────────────────────────────────────────────────────────────────────────────
-
-interface CardFormState{number:string;expiry:string;cvv:string;name:string;}
-
-function CreditCardForm({value,onChange}:{value:CardFormState;onChange:(v:CardFormState)=>void;}){
-  const cls="w-full border border-gray-200 rounded-xl px-4 py-3 text-[14px] font-medium focus:outline-none focus:border-[#E05600] transition-colors bg-white placeholder-gray-300";
-  return(
-    <div className="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-3">
-      <div className="flex items-center gap-2 mb-1">
-        <Lock size={13} className="text-gray-400"/>
-        <p className="text-[12px] text-gray-500">Data kartu dienkripsi via Midtrans</p>
-      </div>
-      <input inputMode="numeric" placeholder="Nomor Kartu (16 digit)" value={value.number}
-        onChange={e=>onChange({...value,number:formatCardNumber(e.target.value)})} className={cls} maxLength={23}/>
-      <input placeholder="Nama Pemegang Kartu" value={value.name}
-        onChange={e=>onChange({...value,name:e.target.value.toUpperCase()})} className={cls}/>
-      <div className="grid grid-cols-2 gap-3">
-        <input inputMode="numeric" placeholder="MM/YY" value={value.expiry}
-          onChange={e=>onChange({...value,expiry:formatExpiry(e.target.value)})} className={cls} maxLength={5}/>
-        <input inputMode="numeric" placeholder="CVV" type="password" value={value.cvv}
-          onChange={e=>onChange({...value,cvv:e.target.value.replace(/\D/g,"").slice(0,4)})} className={cls} maxLength={4}/>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Payment Logo (fallback ke teks jika gambar error)
-// ─────────────────────────────────────────────────────────────────────────────
-
-function PaymentLogo({logo,logoText}:{logo:string;logoText:string;}){
-  const [err,setErr]=useState(false);
-  if(err)return(
-    <span className="text-[10px] font-black text-blue-800 italic w-14 text-center bg-gray-100 rounded-lg flex items-center justify-center">{logoText}</span>
-  );
-  return(
-    <div className="w-14 h-8 relative rounded-lg overflow-hidden shrink-0 bg-white border border-gray-100">
-      <Image
-        src={logo}
-        alt={logoText}
-        fill
-        className="object-contain"   // ← tidak ada p-1, logo fill penuh
-        sizes="56px"
-        onError={() => setErr(true)}
-      />
-    </div>
-  );
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Mini Map
 // ─────────────────────────────────────────────────────────────────────────────
@@ -450,16 +303,11 @@ function CheckoutContent(){
 
   const hasFiredInitCheckout=useRef(false);
   const[isLoading,setIsLoading]=useState(false);
-  const[isTokenizing,setIsTokenizing]=useState(false);
   const[usePoints,setUsePoints]=useState(false);
-  const[selectedPayment,setSelectedPayment]=useState<string|null>(null);
   const[isShippingOpen,setIsShippingOpen]=useState(false);
-  const[isPaymentOpen,setIsPaymentOpen]=useState(false);
   const[isAddressSheetOpen,setIsAddressSheetOpen]=useState(false);
   const[isAddressFormOpen,setIsAddressFormOpen]=useState(false);
   const[isSummaryOpen,setIsSummaryOpen]=useState(false);
-  const[cardForm,setCardForm]=useState<CardFormState>({number:"",expiry:"",cvv:"",name:""});
-  const[installmentTerm,setInstallmentTerm]=useState(0); // 0 = bayar penuh
   const[selectedAddress,setSelectedAddress]=useState<any|null>(null);
   const[districtName,setDistrictName]=useState("");
   const[shippingOptions,setShippingOptions]=useState<any[]>([]);
@@ -493,30 +341,6 @@ function CheckoutContent(){
     const subtotalNow=checkoutItems.reduce((s,i)=>s+Number(i.price)*i.quantity,0);
     pixel.initiateCheckout({num_items:checkoutItems.length,value:subtotalNow,currency:'IDR'});
   },[checkoutItems.length]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Load Midtrans.js untuk credit card
-  useEffect(()=>{
-    if(selectedPayment!=="credit_card")return;
-    if(document.getElementById("midtrans-script"))return;
-    const isProd=process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION==="true";
-    const key=process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY??"";
-    const s=document.createElement("script");
-    s.id="midtrans-script"; // WAJIB "midtrans-script": midtrans-new-3ds.min.js membaca data-client-key lewat id ini
-    s.src=isProd?"https://api.midtrans.com/v2/assets/js/midtrans-new-3ds.min.js":"https://api.sandbox.midtrans.com/v2/assets/js/midtrans-new-3ds.min.js";
-    s.setAttribute("data-environment",isProd?"production":"sandbox");
-    s.setAttribute("data-client-key",key);
-    document.head.appendChild(s);
-  },[selectedPayment]);
-
-  const getCardToken=():Promise<string>=>new Promise((resolve,reject)=>{
-    const[expMonth,expYear]=cardForm.expiry.split("/");
-    const m=(window as any).MidtransNew3ds;
-    if(!m?.getCardToken)return reject(new Error("Modul pembayaran kartu belum termuat. Tunggu sebentar lalu coba lagi."));
-    m.getCardToken(
-      {card_number:cardForm.number.replace(/\s/g,""),card_exp_month:expMonth,card_exp_year:`20${expYear}`,card_cvv:cardForm.cvv},
-      {onSuccess:(r:any)=>resolve(r.token_id),onFailure:(r:any)=>reject(new Error(cardTokenError(r)))},
-    );
-  });
 
   const distanceMap:Record<number,number>={};
   savedAddresses.forEach(a=>{if(hasRealPin(a))distanceMap[a.id]=haversineKm(ORIGIN_COORDS.lat,ORIGIN_COORDS.lng,a.latitude,a.longitude);});
@@ -566,15 +390,10 @@ function CheckoutContent(){
   if(checkoutItems.length===0)return null;
 
   const handleCheckout=async()=>{
-    if(!selectedPayment)return alert("Pilih metode pembayaran.");
     if(!selectedCourier)return alert("Pilih metode pengiriman.");
     if(!selectedAddress)return alert("Pilih alamat pengiriman.");
     const isInstant=INSTANT_KEYWORDS.some(kw=>`${selectedCourier.courier_name||selectedCourier.courier} ${selectedCourier.service}`.toLowerCase().includes(kw));
     if(isInstant&&!hasRealPin(selectedAddress))return alert("Pengiriman instan butuh pin lokasi. Edit alamat untuk tambahkan pin.");
-    if(selectedPayment==="credit_card"){
-      const cardErr=validateCard(cardForm);
-      if(cardErr)return alert(cardErr);
-    }
     let cityName=selectedAddress.city||selectedAddress.cityName;
     if(!cityName&&selectedAddress.provinceId&&selectedAddress.cityId){const cities=await logisticsService.getCities(selectedAddress.provinceId);cityName=(cities as any[]).find((c:any)=>c.id===selectedAddress.cityId)?.name;}
     // Nama provinsi & kelurahan/desa ikut disimpan di order supaya alamat di admin/resi lengkap.
@@ -589,17 +408,10 @@ function CheckoutContent(){
       villageName=(subs as any[]).find(s=>Number(s.id)===Number(selectedAddress.subdistrictId))?.name??"";
     }catch{}
     const enrichedAddress={...selectedAddress,city:cityName||"Unknown City",district:districtName||"",province:provinceName||undefined,village:villageName||undefined,latitude:hasRealPin(selectedAddress)?Number(selectedAddress.latitude):undefined,longitude:hasRealPin(selectedAddress)?Number(selectedAddress.longitude):undefined};
-    // Tenor yang sudah dipilih gugur sendiri kalau total turun di bawah minimum
-    // (mis. voucher/poin dipakai setelah memilih) atau metode bayar diganti.
-    const effectiveInstallment=selectedPayment==="credit_card"&&grandTotal>=INSTALLMENT_MIN_AMOUNT?installmentTerm:0;
     setIsLoading(true);
+    let keepLoading=false;
     try{
-      let cardToken:string|undefined;
-      if(selectedPayment==="credit_card"){
-        setIsTokenizing(true);
-        try{cardToken=await getCardToken();}catch(e:any){alert(e.message??"Gagal validasi kartu.");return;}finally{setIsTokenizing(false);}
-      }
-      const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:selectedPayment,voucherCode:appliedVoucher?.code||undefined,usePoints:pointsDiscount>0,pointsToRedeem:pointsDiscount>0?pointsDiscount:undefined,utm:ambilUtm(),...(cardToken?{cardToken}:{}),...(cardToken&&effectiveInstallment?{installmentTerm:effectiveInstallment}:{})};
+      const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:"snap",voucherCode:appliedVoucher?.code||undefined,usePoints:pointsDiscount>0,pointsToRedeem:pointsDiscount>0?pointsDiscount:undefined,utm:ambilUtm()};
       const finalPayload=isBuyNowFlow?{...basePayload,cartItemIds:[],buyNowVariantId:buyNowVariantId as string,buyNowQuantity:Number(buyNowQuantity)}:{...basePayload,cartItemIds:selectedItemIds.map(id=>id.toString())};
       const res=await ordersService.checkout(finalPayload);
       pixel.purchase({
@@ -609,24 +421,30 @@ function CheckoutContent(){
         content_ids: checkoutItems.map(i=>i.variantSku||i.id),
         event_id: res.id,  // deduplikasi dengan CAPI server-side
       });
-      router.push(`/orders/${res.id}`);
+      // Order sudah dibuat (stok ditahan). Pembeli memilih metode & membayar di
+      // Snap; apa pun hasilnya, lanjut ke halaman order — di sana pop-up bisa
+      // dibuka ulang selama belum lunas. Loading sengaja dibiarkan menyala
+      // selama Snap terbuka supaya tombol Bayar tidak bikin order dobel.
+      const goToOrder=()=>router.push(`/orders/${res.id}`);
+      if(!res.snapToken){goToOrder();return;}
+      keepLoading=true;
+      await openSnap(res.snapToken,{onSuccess:goToOrder,onPending:goToOrder,onError:goToOrder,onClose:goToOrder});
     }catch(err:any){
       const detail=err?.response?.data;
       if(detail?.code==="MIDTRANS_CHARGE_FAILED"){
         const providerCode=detail.midtransStatusCode?` (kode ${detail.midtransStatusCode})`:"";
-        alert(`Pembayaran ${detail.paymentMethod??selectedPayment} gagal diproses${providerCode}: ${detail.message}`);
+        alert(`Pembayaran gagal diproses${providerCode}: ${detail.message}`);
       }else{
         const message=Array.isArray(detail?.message)?detail.message.join("\n"):detail?.message;
         alert(message||err?.message||"Terjadi kesalahan. Coba lagi.");
       }
     }
-    finally{setIsLoading(false);}
+    finally{if(!keepLoading)setIsLoading(false);}
   };
 
   const regularOptions=shippingOptions.filter(o=>!isInstantCourier(o));
   const instantOptions=shippingOptions.filter(o=>isInstantCourier(o));
-  const canPay=!!(selectedPayment&&selectedCourier&&selectedAddress&&!isCalcShipping);
-  const allOpts=PAYMENT_METHODS.flatMap(g=>g.options);
+  const canPay=!!(selectedCourier&&selectedAddress&&!isCalcShipping);
 
   
   return(
@@ -729,56 +547,14 @@ function CheckoutContent(){
             </button>
           </div>
 
-          {/* Payment selector */}
-          <button onClick={()=>setIsPaymentOpen(!isPaymentOpen)} className="w-full flex items-center justify-between p-4 hover:bg-gray-50">
-            <div className="flex items-center gap-3">
-              <Wallet size={18} className="text-gray-500"/>
-              <div className="text-left">
-                {selectedPayment
-                  ?<p className="text-xs font-semibold text-gray-900">{allOpts.find(o=>o.id===selectedPayment)?.name}</p>
-                  :<p className="text-xs font-medium text-gray-700">Metode Pembayaran</p>}
-              </div>
+          {/* Metode pembayaran dipilih di pop-up Snap Midtrans setelah klik Bayar */}
+          <div className="flex items-start gap-3 p-4">
+            <Wallet size={18} className="text-gray-500 mt-0.5 shrink-0"/>
+            <div>
+              <p className="text-xs font-semibold text-gray-900">Metode Pembayaran</p>
+              <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">Pilih setelah klik Bayar: Virtual Account, QRIS, GoPay, ShopeePay, kartu kredit (bisa cicilan), atau PayLater. Diproses aman oleh Midtrans.</p>
             </div>
-            {isPaymentOpen?<ChevronUp size={18} className="text-gray-400"/>:<ChevronDown size={18} className="text-gray-400"/>}
-          </button>
-
-          <AnimatePresence>{isPaymentOpen&&(
-            <motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}} className="overflow-hidden">
-              <div className="p-4 space-y-4">
-                <p className="text-xs text-gray-400">Pembayaran diproses secara aman oleh Midtrans.</p>
-                {PAYMENT_METHODS.map(group=>(
-                  <div key={group.category}>
-                    <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">{group.category}</h3>
-                    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden divide-y divide-gray-100">
-                      {group.options.map(option=>{
-                        const isSel=selectedPayment===option.id;
-                        return(
-                          <div key={option.id}>
-                            <div onClick={()=>{setSelectedPayment(option.id);}}
-                              className="flex items-center justify-between p-3.5 cursor-pointer hover:bg-gray-50 transition-colors">
-                              <div className="flex items-center">
-                                <PaymentLogo logo={option.logo} logoText={option.logoText}/>
-                                <span className="text-xs font-medium text-gray-900">{option.name}</span>
-                              </div>
-                              {isSel?<CheckCircle2 size={20} className="text-primary shrink-0"/>:<Circle size={20} className="text-gray-300 shrink-0"/>}
-                            </div>
-                            {/* Credit card form inline */}
-                            {option.id==="credit_card"&&isSel&&(
-                              <div className="px-4 pb-4">
-                                <CreditCardForm value={cardForm} onChange={setCardForm}/>
-                                <InstallmentPicker total={grandTotal} value={installmentTerm} onChange={setInstallmentTerm}/>
-                                {isTokenizing&&<p className="text-[12px] text-gray-400 flex items-center gap-2 mt-3"><ThunderSpinner size={13} tone="mono"/>Memvalidasi kartu…</p>}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}</AnimatePresence>
+          </div>
         </section>
 
       </main>
@@ -791,7 +567,7 @@ function CheckoutContent(){
         voucherDiscount={voucherDiscount} pointsDiscount={pointsDiscount}
         actSubtotal={actSubtotal}
         grandTotal={grandTotal} pointsEarned={pointsEarned} itemCount={checkoutItems.length}
-        canPay={canPay} isLoading={isLoading||isTokenizing} onPay={handleCheckout}/>
+        canPay={canPay} isLoading={isLoading} onPay={handleCheckout}/>
     </div>
   );
 }

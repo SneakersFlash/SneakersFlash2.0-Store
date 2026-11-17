@@ -9,6 +9,7 @@ import { ordersService } from "@/lib/api/orders.service";
 import ThunderLoader from "@/components/common/ThunderLoader";
 import { ThunderBolt } from "@/components/common/ThunderBolt";
 import ThunderSpinner from "@/components/common/ThunderSpinner";
+import { openSnap } from "@/lib/midtrans/snap";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -31,6 +32,7 @@ const METHOD_LABEL: Record<string, string> = {
   mandiri_va:  "Mandiri Bill Payment",
   akulaku:     "Akulaku PayLater",
   credit_card: "Kartu Kredit / Debit",
+  snap:        "Midtrans",
 };
 
 /** Nama bank singkat — untuk label badge */
@@ -45,6 +47,7 @@ const METHOD_BADGE: Record<string, string> = {
   mandiri_va:  "Mandiri",
   akulaku:     "Akulaku",
   credit_card: "CARD",
+  snap:        "MIDTRANS",
 };
 
 function isMobileDevice(): boolean {
@@ -156,6 +159,93 @@ function PaymentInstructions({
 // Main Page
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Order Snap yang belum lunas: tombol untuk membuka (ulang) pop-up Midtrans.
+// Backend hanya mengirim snapToken selama order masih pending/waiting_payment.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function SnapPaymentPanel({
+  order, timeLeft, onBack, onRefresh, isRefreshing,
+}: {
+  order: any;
+  timeLeft: { hours: number; minutes: number; seconds: number } | null;
+  onBack: () => void;
+  onRefresh: () => void;
+  isRefreshing: boolean;
+}) {
+  const [copied, setCopied] = useState(false);
+  const chosen = order.paymentMethod && order.paymentMethod !== "snap" ? order.paymentMethod : null;
+  const isMandiri = chosen === "mandiri_va";
+  const mandiri = isMandiri ? parseMandiri(order.vaNumber) : null;
+  const va = !isMandiri ? order.vaNumber : null;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const copy = (t: string) => { navigator.clipboard.writeText(t); setCopied(true); setTimeout(() => setCopied(false), 2000); };
+
+  return (
+    <div className="min-h-screen bg-[#F5F5F5] font-sans text-gray-900 pb-16">
+      <header className="bg-white px-4 lg:px-8 py-4 flex items-center gap-4 sticky top-0 z-30 shadow-sm border-b border-gray-100">
+        <button onClick={onBack} className="flex items-center justify-center hover:bg-gray-50 p-1.5 -ml-1.5 rounded-full transition-colors">
+          <ArrowLeft size={22} className="text-black" />
+        </button>
+        <p className="text-[18px] font-bold text-black">Payment Status</p>
+      </header>
+
+      <main className="max-w-lg mx-auto w-full p-4 mt-2 space-y-4">
+        <section className="bg-white rounded-2xl p-5 text-center shadow-sm">
+          <p className="text-[12px] text-gray-500">Selesaikan pembayaran dalam</p>
+          <p className="text-[26px] font-bold text-[#E05600] tabular-nums mt-1">
+            {timeLeft ? `${pad(timeLeft.hours)}:${pad(timeLeft.minutes)}:${pad(timeLeft.seconds)}` : "--:--:--"}
+          </p>
+          <div className="mt-4 pt-4 border-t border-dashed border-gray-200 space-y-1">
+            <p className="text-[12px] text-gray-500">Total Tagihan</p>
+            <p className="text-[22px] font-bold">{formatPrice(Number(order.total ?? order.finalAmount ?? 0))}</p>
+            <p className="text-[12px] text-gray-400">No. Pesanan {order.orderNumber}</p>
+          </div>
+        </section>
+
+        {chosen && (
+          <section className="bg-white rounded-2xl p-5 shadow-sm">
+            <p className="text-[12px] text-gray-500">Metode dipilih</p>
+            <p className="text-[15px] font-bold mt-0.5">{METHOD_LABEL[chosen] ?? chosen.toUpperCase()}</p>
+            {va && (
+              <button onClick={() => copy(va)} className="mt-3 w-full flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
+                <span className="text-[18px] font-bold tracking-wider tabular-nums">{va}</span>
+                <span className="text-[12px] text-[#E05600] font-semibold flex items-center gap-1">
+                  {copied ? <CheckCircle2 size={14} /> : <Copy size={14} />}{copied ? "Tersalin" : "Salin"}
+                </span>
+              </button>
+            )}
+            {mandiri && (
+              <div className="mt-3 text-[13px] space-y-1">
+                <p>Kode Perusahaan: <span className="font-bold tabular-nums">{mandiri.billerCode}</span></p>
+                <p>Kode Bayar: <span className="font-bold tabular-nums">{mandiri.billKey}</span></p>
+              </div>
+            )}
+            <p className="text-[12px] text-gray-400 mt-3">Cara bayar lengkap ada di tombol di bawah.</p>
+          </section>
+        )}
+
+        <button
+          onClick={() => openSnap(order.snapToken, { onSuccess: onRefresh, onPending: onRefresh, onError: onRefresh, onClose: onRefresh })}
+          className="w-full bg-[#E05600] text-white font-bold py-3.5 rounded-xl flex items-center justify-center gap-2"
+        >
+          <Wallet size={18} /> {chosen ? "Lihat Cara Bayar" : "Pilih Metode & Bayar"}
+        </button>
+        <button
+          onClick={onRefresh}
+          disabled={isRefreshing}
+          className="w-full bg-white border border-gray-200 text-gray-800 font-semibold py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+        >
+          {isRefreshing ? <ThunderSpinner size={14} tone="mono" /> : null} Saya sudah bayar, cek status
+        </button>
+        <p className="text-[11px] text-gray-400 text-center leading-relaxed">
+          Pembayaran diproses oleh Midtrans. Status pesanan berubah otomatis setelah pembayaran diterima.
+        </p>
+      </main>
+    </div>
+  );
+}
+
 export default function OrderPaymentPage({
   params,
 }: {
@@ -223,8 +313,12 @@ export default function OrderPaymentPage({
     if (!order) return;
     if (order.status !== "waiting_payment" && order.status !== "pending") return;
 
-    const expiryMs = order.expireTime
-      ? new Date(order.expireTime).getTime()
+    // Detail order dari backend membawa `paymentExpiresAt`; `expireTime` hanya
+    // ada di respons checkout. Dulu cuma `expireTime` yang dibaca, jadi countdown
+    // selalu jatuh ke createdAt + 1 jam padahal masa bayar 24 jam.
+    const expiryRaw = order.expireTime ?? order.paymentExpiresAt;
+    const expiryMs = expiryRaw
+      ? new Date(expiryRaw).getTime()
       : new Date(order.createdAt).getTime() + 60 * 60 * 1000;
 
     const timer = setInterval(() => {
@@ -277,6 +371,19 @@ export default function OrderPaymentPage({
           Kembali ke Beranda
         </button>
       </div>
+    );
+  }
+
+  // Order Snap belum lunas → pop-up Midtrans yang menangani semua metode.
+  if (order.snapToken) {
+    return (
+      <SnapPaymentPanel
+        order={order}
+        timeLeft={timeLeft}
+        onBack={() => router.back()}
+        onRefresh={() => { setIsRefreshing(true); fetchOrderDetails(false); }}
+        isRefreshing={isRefreshing}
+      />
     );
   }
 
