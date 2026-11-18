@@ -5,7 +5,12 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { SlidersHorizontal } from "lucide-react";
 import { useProducts } from "@/lib/hooks/useProducts";
 import { ProductGrid } from "@/components/product/ProductGrid";
-import { FilterModal, FilterState } from "@/components/common/FIlterModal";
+import {
+  FilterModal,
+  FilterState,
+  filtersFromParams,
+  filtersToParamUpdates,
+} from "@/components/common/FIlterModal";
 import { cn } from "@/lib/utils/cn";
 import type { ProductFilters } from "@/types/product.types";
 import { Pagination } from "@/components/common/Pagination";
@@ -47,6 +52,11 @@ function ProductListingClientInner({
   const genderFromUrl      = searchParams.get("gender");        // dari Navbar (?gender=men)
   const tagFromUrl         = searchParams.get("tag");           // dari kurasi campaign (?tag=daily rotation)
   const pageFromUrl        = Number(searchParams.get("page")) || 1;
+  // FilterModal: gender / sport / budget / size
+  const gendersFromUrl     = searchParams.get("genders");
+  const sportsFromUrl      = searchParams.get("sports");
+  const sizesFromUrl       = searchParams.get("sizes");
+  const maxPriceFromUrl    = Number(searchParams.get("maxPrice")) || null;
 
   // ── Bangun ProductFilters dari URL → dikirim ke useProducts ───────────────
   const currentFilters: ProductFilters = {
@@ -75,8 +85,15 @@ function ProductListingClientInner({
   // backend yang meng-lowercase-kan dan mencocokkan PERSIS ke kolom tags.
   if (tagFromUrl) currentFilters.tag = tagFromUrl;
 
-  // Gender (dari Navbar)
-  if (genderFromUrl) currentFilters.gender = genderFromUrl;
+  // Gender: multi (FilterModal) diprioritaskan, lalu single (Navbar)
+  const splitList = (v: string) => v.split(",").map((x) => x.trim()).filter(Boolean);
+  if (gendersFromUrl) currentFilters.genders = splitList(gendersFromUrl);
+  else if (genderFromUrl) currentFilters.gender = genderFromUrl;
+
+  // Sport, budget, size (FilterModal)
+  if (sportsFromUrl)   currentFilters.sports   = splitList(sportsFromUrl);
+  if (sizesFromUrl)    currentFilters.sizes    = splitList(sizesFromUrl);
+  if (maxPriceFromUrl) currentFilters.maxPrice = maxPriceFromUrl;
 
   // Price sort:
   //   FilterModal → ?priceSort=high-to-low | low-to-high (langsung)
@@ -105,6 +122,7 @@ function ProductListingClientInner({
   // ── Cek ada filter aktif (untuk dot badge di tombol) ──────────────────────
   const hasActiveFilter = Boolean(
     brandsFromUrl || brandFromUrl || priceSortFromUrl || tagFromUrl ||
+    gendersFromUrl || sportsFromUrl || sizesFromUrl || maxPriceFromUrl ||
     (categoryFromUrl && categoryFromUrl !== categoryName) // filter beda dari default page
   );
 
@@ -134,38 +152,10 @@ function ProductListingClientInner({
   };
 
   // ── Handler: FilterModal.onApply ───────────────────────────────────────────
-  //
-  // FilterState dari FilterModal:
-  //   { isAllProduct, category: "new"|"deals"|null, priceSort: "high-to-low"|null, brands: string[] }
-  //
-  // Tulis ke URL dengan field yang sama persis seperti yang BE terima.
-  //
+  // Konversi FilterState ↔ URL ada di FIlterModal.tsx supaya top bar mobile
+  // memakai aturan yang persis sama.
   const handleApplyFilter = (modalFilters: FilterState) => {
-    if (modalFilters.isAllProduct) {
-      // Reset semua filter → hapus semua param filter, pertahankan search & subCategory
-      updateUrlParams({
-        category:  null,
-        brands:    null,
-        brand:     null,
-        priceSort: null,
-        page:      "1",
-      });
-      return;
-    }
-
-    updateUrlParams({
-      // category: "new" | "deals" | null
-      category: modalFilters.category ?? null,
-
-      // brands: ["Nike","Puma"] → "Nike,Puma" (BE split kembali ke array)
-      brands: modalFilters.brands.length > 0 ? modalFilters.brands.join(",") : null,
-
-      // priceSort: langsung tulis, BE mengerti "high-to-low" / "low-to-high"
-      priceSort: modalFilters.priceSort ?? null,
-
-      // Reset pagination
-      page: "1",
-    });
+    updateUrlParams(filtersToParamUpdates(modalFilters));
   };
 
   // ── Display title ──────────────────────────────────────────────────────────
@@ -262,6 +252,7 @@ function ProductListingClientInner({
         isOpen={isFilterModalOpen}
         onClose={() => setIsFilterModalOpen(false)}
         onApply={handleApplyFilter}
+        initial={filtersFromParams(new URLSearchParams(searchParams.toString()))}
       />
     </div>
   );

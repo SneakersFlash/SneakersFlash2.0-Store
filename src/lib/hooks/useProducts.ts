@@ -12,6 +12,7 @@ export const productKeys = {
   details: () => [...productKeys.all, "detail"] as const,
   detail: (slug: string) => [...productKeys.details(), slug] as const,
   search: (q: string) => [...productKeys.all, "search", q] as const,
+  facets: () => [...productKeys.all, "facets"] as const,
 };
 
 // ─── Hooks ────────────────────────────────────────────────────────────────────
@@ -42,6 +43,19 @@ export function useInfiniteProducts(filters: Omit<ProductFilters, "page"> = {}) 
       return hasMore ? lastPage.meta.page + 1 : undefined;
     },
     staleTime: 1000 * 60 * 3,
+  });
+}
+
+/**
+ * Isi FilterModal (brand, ukuran, gender, sport, harga maks).
+ * Diambil saat modal dibuka saja (`enabled`).
+ */
+export function useProductFacets(enabled = true) {
+  return useQuery({
+    queryKey: productKeys.facets(),
+    queryFn: () => productsService.getFacets(),
+    enabled,
+    staleTime: 1000 * 60 * 10,
   });
 }
 

@@ -7,7 +7,11 @@ import { Search, ShoppingBag, SlidersHorizontal, X, ArrowLeft, Share2 } from "lu
 
 import { useAuthStore } from "@/lib/store/authStore";
 import { useCartStore } from "@/lib/store/cartStore"; 
-import { FilterModal } from "../common/FIlterModal";
+import {
+  FilterModal,
+  filtersFromParams,
+  filtersToParamUpdates,
+} from "../common/FIlterModal";
 import { CartSidebar } from "../cart/CartSidebar";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
@@ -191,8 +195,15 @@ function TopSearchBarInner() {
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
+        initial={filtersFromParams(new URLSearchParams(searchParams.toString()))}
         onApply={(selectedFilters) => {
-          // Logika terapkan filter
+          // Dulu kosong: tombol filter di top bar mobile tidak melakukan apa-apa.
+          const params = new URLSearchParams(searchParams.toString());
+          Object.entries(filtersToParamUpdates(selectedFilters)).forEach(([k, v]) => {
+            if (v === null) params.delete(k);
+            else params.set(k, v);
+          });
+          router.replace(`/products?${params.toString()}`);
         }}
       />
       <CartSidebar />

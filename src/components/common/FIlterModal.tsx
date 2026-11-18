@@ -2,51 +2,114 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useProductFacets } from "@/lib/hooks/useProducts";
+import { formatPrice } from "@/lib/utils/formatPrice";
 
 // --- Tipe Data ---
 export interface FilterState {
-  isAllProduct: boolean;
-  category: "new" | "deals" | null;
-  priceSort: "high-to-low" | "low-to-high" | null;
+  genders: string[];                       // "mens" | "womens" | "unisex"
+  sports: string[];                        // "Sportstyle" | "Running" | ...
   brands: string[];
+  maxPrice: number | null;                 // null = semua harga
+  sizes: string[];
+  priceSort: "high-to-low" | "low-to-high" | null;
+  category: "new" | "deals" | null;
+}
+
+export const EMPTY_FILTERS: FilterState = {
+  genders: [],
+  sports: [],
+  brands: [],
+  maxPrice: null,
+  sizes: [],
+  priceSort: null,
+  category: null,
+};
+
+const list = (v: string | null) =>
+  (v ?? "").split(",").map((x) => x.trim()).filter(Boolean);
+
+/**
+ * URL → FilterState. Ikut membaca parameter lama dari Navbar (?gender=men,
+ * ?brand=new-balance) supaya modal terbuka dengan pilihan yang sedang aktif,
+ * bukan kosong.
+ */
+export function filtersFromParams(sp: URLSearchParams): FilterState {
+  const genders = list(sp.get("genders"));
+  const navGender = sp.get("gender")?.toLowerCase();
+  if (genders.length === 0 && navGender) {
+    if (navGender.startsWith("wom")) genders.push("womens");
+    else if (navGender.startsWith("men")) genders.push("mens");
+    else if (navGender === "unisex") genders.push("unisex");
+  }
+
+  const brands = list(sp.get("brands"));
+  const navBrand = sp.get("brand") || sp.get("brandName");
+  if (brands.length === 0 && navBrand) {
+    brands.push(navBrand.replace(/-/g, " ").toUpperCase());
+  }
+
+  const maxPrice = Number(sp.get("maxPrice"));
+  const priceSort = sp.get("priceSort");
+  const category = sp.get("category");
+
+  return {
+    genders,
+    sports: list(sp.get("sports")),
+    brands,
+    maxPrice: Number.isFinite(maxPrice) && maxPrice > 0 ? maxPrice : null,
+    sizes: list(sp.get("sizes")),
+    priceSort:
+      priceSort === "high-to-low" || priceSort === "low-to-high" ? priceSort : null,
+    category: category === "new" || category === "deals" ? category : null,
+  };
 }
 
 /**
- * Konversi FilterState → URLSearchParams untuk dikirim ke BE.
- *
- * Pemakaian di parent component:
- *   const params = buildFilterParams(filters);
- *   const res = await fetch(`/api/products?${params}`);
+ * FilterState → perubahan URL. Parameter Navbar (`gender`, `brand`) dihapus
+ * karena isinya sudah dipindah ke versi multi-nya; kalau dibiarkan, pilihan
+ * di modal kalah oleh parameter lama yang tak kelihatan.
  */
-export function buildFilterParams(
-  filters: FilterState,
-  base: Record<string, string> = {}
-): URLSearchParams {
-  const params = new URLSearchParams(base);
-
-  // Reset ke default jika isAllProduct
-  if (filters.isAllProduct) {
-    return params;
-  }
-
-  // category: "new" | "deals"
-  if (filters.category) {
-    params.set("category", filters.category);
-  }
-
-  // priceSort: langsung cocok dengan field BE
-  if (filters.priceSort) {
-    params.set("priceSort", filters.priceSort);
-  }
-
-  // brands: join array → comma-separated string
-  // BE akan split kembali menjadi array dan filter OR
-  if (filters.brands.length > 0) {
-    params.set("brands", filters.brands.join(","));
-  }
-
-  return params;
+export function filtersToParamUpdates(
+  f: FilterState
+): Record<string, string | null> {
+  const join = (a: string[]) => (a.length > 0 ? a.join(",") : null);
+  return {
+    genders: join(f.genders),
+    sports: join(f.sports),
+    brands: join(f.brands),
+    maxPrice: f.maxPrice != null ? String(f.maxPrice) : null,
+    sizes: join(f.sizes),
+    priceSort: f.priceSort,
+    category: f.category,
+    gender: null,
+    brand: null,
+    brandName: null,
+    page: "1",
+  };
 }
+
+export function countActiveFilters(f: FilterState): number {
+  return (
+    f.genders.length +
+    f.sports.length +
+    f.brands.length +
+    f.sizes.length +
+    (f.maxPrice != null ? 1 : 0) +
+    (f.priceSort ? 1 : 0) +
+    (f.category ? 1 : 0)
+  );
+}
+
+const GENDER_LABEL: Record<string, string> = {
+  mens: "Mens",
+  womens: "Womens",
+  unisex: "Unisex",
+};
+
+const PRICE_STEP = 50_000;
+
+type ListKey = "genders" | "sports" | "brands" | "sizes";
 
 // --- Props ---
 interface FilterModalProps {
@@ -54,24 +117,24 @@ interface FilterModalProps {
   onClose: () => void;
   /** Dipanggil dengan FilterState yang sudah dipilih user */
   onApply: (filters: FilterState) => void;
-  /** Daftar brand yang tersedia (ambil dari API atau hardcode) */
-  availableBrands?: string[];
+  /** Pilihan yang sedang aktif (dari URL); modal dibuka dengan isi ini. */
+  initial?: FilterState;
 }
-
-const DEFAULT_BRANDS = ["Nike", "Puma", "Skechers", "Adidas", "Converse", "Asics"];
 
 export function FilterModal({
   isOpen,
   onClose,
   onApply,
-  availableBrands = DEFAULT_BRANDS,
+  initial = EMPTY_FILTERS,
 }: FilterModalProps) {
-  const [filters, setFilters] = useState<FilterState>({
-    isAllProduct: true,
-    category: null,
-    priceSort: null,
-    brands: [],
-  });
+  const [filters, setFilters] = useState<FilterState>(initial);
+  const { data: facets, isLoading: facetsLoading } = useProductFacets(isOpen);
+
+  // Setiap kali dibuka, mulai dari filter yang sedang aktif di URL.
+  useEffect(() => {
+    if (isOpen) setFilters(initial);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   // Mengunci scroll body saat modal terbuka
   useEffect(() => {
@@ -85,51 +148,49 @@ export function FilterModal({
     };
   }, [isOpen]);
 
-  const toggleBrand = (brandName: string) => {
+  const isOn = (key: ListKey, value: string) =>
+    filters[key].some((v) => v.toLowerCase() === value.toLowerCase());
+
+  const toggle = (key: ListKey, value: string) => {
     setFilters((prev) => {
-      const isSelected = prev.brands.includes(brandName);
+      const has = prev[key].some((v) => v.toLowerCase() === value.toLowerCase());
       return {
         ...prev,
-        brands: isSelected
-          ? prev.brands.filter((b) => b !== brandName)
-          : [...prev.brands, brandName],
-        isAllProduct: false,
+        [key]: has
+          ? prev[key].filter((v) => v.toLowerCase() !== value.toLowerCase())
+          : [...prev[key], value],
       };
     });
   };
 
-  const handleSetCategory = (cat: "new" | "deals") => {
-    setFilters((prev) => ({
-      ...prev,
-      // Toggle: klik lagi → deselect
-      category: prev.category === cat ? null : cat,
-      isAllProduct: false,
-    }));
-  };
+  const handleSetCategory = (cat: "new" | "deals") =>
+    setFilters((prev) => ({ ...prev, category: prev.category === cat ? null : cat }));
 
-  const handleSetPriceSort = (sort: "high-to-low" | "low-to-high") => {
-    setFilters((prev) => ({
-      ...prev,
-      // Toggle: klik lagi → deselect
-      priceSort: prev.priceSort === sort ? null : sort,
-      isAllProduct: false,
-    }));
-  };
+  const handleSetPriceSort = (sort: "high-to-low" | "low-to-high") =>
+    setFilters((prev) => ({ ...prev, priceSort: prev.priceSort === sort ? null : sort }));
 
-  const handleReset = () => {
-    setFilters({
-      isAllProduct: true,
-      category: null,
-      priceSort: null,
-      brands: [],
-    });
-  };
+  const handleReset = () => setFilters(EMPTY_FILTERS);
 
-  // Hitung jumlah filter aktif untuk badge
-  const activeFilterCount =
-    (filters.category ? 1 : 0) +
-    (filters.priceSort ? 1 : 0) +
-    filters.brands.length;
+  const activeFilterCount = countActiveFilters(filters);
+
+  // Ujung kanan slider = harga tertinggi katalog, dibulatkan ke atas.
+  // Slider di ujung kanan berarti "semua harga" (tanpa batas).
+  const sliderMax = Math.max(
+    PRICE_STEP * 2,
+    Math.ceil((facets?.priceMax ?? 10_000_000) / PRICE_STEP) * PRICE_STEP
+  );
+  const sliderValue = Math.min(filters.maxPrice ?? sliderMax, sliderMax);
+  const sliderPct = ((sliderValue - PRICE_STEP) / (sliderMax - PRICE_STEP)) * 100;
+  const noPriceLimit = filters.maxPrice == null || filters.maxPrice >= sliderMax;
+
+  // Pill tanpa produk disembunyikan (data kategori diisi dari sheet bertahap),
+  // kecuali yang sedang dipilih — supaya tetap bisa dimatikan.
+  const genders = (facets?.genders ?? []).filter(
+    (g) => g.count > 0 || isOn("genders", g.value)
+  );
+  const sports = (facets?.sports ?? []).filter(
+    (s) => s.count > 0 || isOn("sports", s.value)
+  );
 
   return (
     <AnimatePresence>
@@ -156,6 +217,7 @@ export function FilterModal({
             <div className="flex items-center px-4 py-4 border-b border-gray-100 bg-white sm:rounded-t-2xl">
               <button
                 onClick={onClose}
+                aria-label="Tutup filter"
                 className="p-1 -ml-1 text-zinc-900 hover:bg-gray-100 rounded-full transition-colors"
               >
                 <svg
@@ -179,7 +241,6 @@ export function FilterModal({
               >
                 Filter
               </p>
-              {/* Badge jumlah filter aktif */}
               {activeFilterCount > 0 && (
                 <span className="ml-2 flex items-center justify-center w-5 h-5 rounded-full bg-[#FF6B00] text-white text-xs font-bold">
                   {activeFilterCount}
@@ -189,59 +250,94 @@ export function FilterModal({
 
             {/* --- BODY (Scrollable) --- */}
             <div className="flex-1 overflow-y-auto p-5 pb-32">
-              {/* All Product */}
-              <button
-                onClick={handleReset}
-                className={`px-6 py-2.5 rounded-full font-bold text-sm transition-all ${
-                  filters.isAllProduct
-                    ? "bg-[#FF6B00] text-white shadow-md"
-                    : "bg-gray-100 text-zinc-700 hover:bg-gray-200"
-                }`}
-              >
-                All Product
-              </button>
+              {/* Gender */}
+              <Section title="Gender" first>
+                {facetsLoading ? (
+                  <PillSkeleton n={3} />
+                ) : (
+                  <div className="flex flex-wrap gap-3">
+                    {genders.map((g) => (
+                      <FilterPill
+                        key={g.value}
+                        label={GENDER_LABEL[g.value] ?? g.value}
+                        isActive={isOn("genders", g.value)}
+                        onClick={() => toggle("genders", g.value)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </Section>
 
-              {/* Categories */}
-              <div className="mt-8">
-                <h3
-                  className="text-sm font-black uppercase tracking-wider text-zinc-900 mb-4"
-                  style={{ fontFamily: "var(--font-oswald), sans-serif" }}
-                >
-                  Categories
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  <FilterPill
-                    label="New Product"
-                    icon="🔥"
-                    isActive={filters.category === "new"}
-                    onClick={() => handleSetCategory("new")}
-                  />
-                  <FilterPill
-                    label="Best Deals"
-                    icon={
-                      <svg
-                        className="w-4 h-4 text-[#FF6B00]"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M12 2l3.09 2.26L18.98 4l.64 3.76L22 10.5l-2.38 2.89L20.26 17l-3.64 1.28L15.09 22 12 20.35 8.91 22l-1.53-3.72L3.74 17l.64-3.61L2 10.5l2.38-2.89L3.74 4l3.64-1.28L8.91 2 12 20.35zM10.5 9.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-4.3-5.2l5.6 5.6 1.4-1.4-5.6-5.6-1.4 1.4z" />
-                      </svg>
-                    }
-                    isActive={filters.category === "deals"}
-                    onClick={() => handleSetCategory("deals")}
-                  />
+              {/* Kategori olahraga */}
+              {(facetsLoading || sports.length > 0) && (
+                <Section title="Category">
+                  {facetsLoading ? (
+                    <PillSkeleton n={4} />
+                  ) : (
+                    <div className="flex flex-wrap gap-3">
+                      {sports.map((s) => (
+                        <FilterPill
+                          key={s.value}
+                          label={s.value}
+                          isActive={isOn("sports", s.value)}
+                          onClick={() => toggle("sports", s.value)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </Section>
+              )}
+
+              {/* Brand */}
+              <Section title="Brand">
+                {facetsLoading ? (
+                  <PillSkeleton n={6} />
+                ) : (
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                    {(facets?.brands ?? []).map((b) => (
+                      <FilterPill
+                        key={b.name}
+                        label={b.name}
+                        isActive={isOn("brands", b.name)}
+                        onClick={() => toggle("brands", b.name)}
+                        className="justify-center w-full"
+                      />
+                    ))}
+                  </div>
+                )}
+              </Section>
+
+              {/* Price: slider budget maksimal + urutan */}
+              <Section title="Price">
+                <div className="flex items-baseline justify-between mb-4">
+                  <span className="text-sm text-zinc-500">Budget maksimal</span>
+                  <span className="text-base font-bold text-zinc-900">
+                    {noPriceLimit ? "Semua harga" : formatPrice(sliderValue)}
+                  </span>
                 </div>
-              </div>
+                <input
+                  type="range"
+                  min={PRICE_STEP}
+                  max={sliderMax}
+                  step={PRICE_STEP}
+                  value={sliderValue}
+                  disabled={facetsLoading}
+                  aria-label="Budget maksimal"
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    setFilters((prev) => ({ ...prev, maxPrice: v >= sliderMax ? null : v }));
+                  }}
+                  className="sf-range w-full"
+                  style={{
+                    background: `linear-gradient(to right, #FF6B00 ${sliderPct}%, #e5e7eb ${sliderPct}%)`,
+                  }}
+                />
+                <div className="flex justify-between mt-2 text-xs text-zinc-400">
+                  <span>{formatPrice(PRICE_STEP)}</span>
+                  <span>{formatPrice(sliderMax, { compact: true })}</span>
+                </div>
 
-              {/* Price Sort */}
-              <div className="mt-8">
-                <h3
-                  className="text-sm font-black uppercase tracking-wider text-zinc-900 mb-4"
-                  style={{ fontFamily: "var(--font-oswald), sans-serif" }}
-                >
-                  Price
-                </h3>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-3 mt-5">
                   <FilterPill
                     label="High to Low"
                     isActive={filters.priceSort === "high-to-low"}
@@ -253,28 +349,48 @@ export function FilterModal({
                     onClick={() => handleSetPriceSort("low-to-high")}
                   />
                 </div>
-              </div>
+              </Section>
 
-              {/* Brands */}
-              <div className="mt-8">
-                <h3
-                  className="text-sm font-black uppercase tracking-wider text-zinc-900 mb-4"
-                  style={{ fontFamily: "var(--font-oswald), sans-serif" }}
-                >
-                  Brand
-                </h3>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {availableBrands.map((brand) => (
-                    <FilterPill
-                      key={brand}
-                      label={brand}
-                      isActive={filters.brands.includes(brand)}
-                      onClick={() => toggleBrand(brand)}
-                      className="justify-center w-full"
-                    />
-                  ))}
+              {/* Size — hanya ukuran yang stoknya masih ada */}
+              <Section title="Size">
+                {facetsLoading ? (
+                  <PillSkeleton n={8} />
+                ) : (
+                  <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
+                    {(facets?.sizes ?? []).map((size) => (
+                      <motion.button
+                        key={size}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => toggle("sizes", size)}
+                        className={`py-2.5 rounded-lg border text-sm font-semibold transition-all ${
+                          isOn("sizes", size)
+                            ? "border-[#FF6B00] bg-orange-50 text-[#FF6B00]"
+                            : "border-gray-200 bg-white text-zinc-800 hover:border-gray-300"
+                        }`}
+                      >
+                        {size}
+                      </motion.button>
+                    ))}
+                  </div>
+                )}
+              </Section>
+
+              {/* Koleksi — filter lama, tetap ada */}
+              <Section title="Collection">
+                <div className="flex flex-wrap gap-3">
+                  <FilterPill
+                    label="New Product"
+                    icon="🔥"
+                    isActive={filters.category === "new"}
+                    onClick={() => handleSetCategory("new")}
+                  />
+                  <FilterPill
+                    label="Best Deals"
+                    isActive={filters.category === "deals"}
+                    onClick={() => handleSetCategory("deals")}
+                  />
                 </div>
-              </div>
+              </Section>
             </div>
 
             {/* --- FOOTER --- */}
@@ -303,6 +419,38 @@ export function FilterModal({
 }
 
 // --- Komponen Pembantu ---
+function Section({
+  title,
+  first = false,
+  children,
+}: {
+  title: string;
+  first?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={first ? "" : "mt-8"}>
+      <h3
+        className="text-sm font-black uppercase tracking-wider text-zinc-900 mb-4"
+        style={{ fontFamily: "var(--font-oswald), sans-serif" }}
+      >
+        {title}
+      </h3>
+      {children}
+    </div>
+  );
+}
+
+function PillSkeleton({ n }: { n: number }) {
+  return (
+    <div className="flex flex-wrap gap-3">
+      {Array.from({ length: n }).map((_, i) => (
+        <div key={i} className="h-10 w-20 rounded-full bg-gray-100 animate-pulse" />
+      ))}
+    </div>
+  );
+}
+
 interface FilterPillProps {
   label: string;
   icon?: React.ReactNode;

@@ -173,9 +173,26 @@ export interface ProductFilters {
   sortBy?: "createdAt" | "price" | "name";
   sortOrder?: "asc" | "desc";
 
-  // ── Reserved (BE belum implement) ───────────────────────────────────────────
+  // ── FilterModal ─────────────────────────────────────────────────────────────
+  // Gender & sport dibaca dari kolom category di sheet (Mens/Womens/Unisex,
+  // Sportstyle/Running/Outdoor/Basketball). Antar-grup AND, dalam grup OR.
+  genders?: string[];
+  sports?: string[];
   minPrice?: number;
+  /** Batas atas slider budget — dicocokkan ke harga efektif (termasuk promo). */
   maxPrice?: number;
+  /** Ukuran yang stoknya masih ada. */
   sizes?: string[];
+
+  // ── Reserved (BE belum implement) ───────────────────────────────────────────
   excludeCategories?: string;
+}
+
+/** Isi FilterModal, dari GET /products/facets. `count` 0 → pill disembunyikan. */
+export interface ProductFacets {
+  genders: { value: string; count: number }[];
+  sports: { value: string; count: number }[];
+  brands: { name: string; count: number }[];
+  sizes: string[];
+  priceMax: number;
 }

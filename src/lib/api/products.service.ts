@@ -3,6 +3,7 @@ import type {
   Product,
   ProductsResponse,
   ProductFilters,
+  ProductFacets,
 } from "@/types/product.types";
 
 export const productsService = {
@@ -53,13 +54,22 @@ export const productsService = {
         ...(filters.sortBy    && { sortBy:    filters.sortBy    }),
         ...(filters.sortOrder && { sortOrder: filters.sortOrder }),
 
+        // ── FilterModal: gender / sport / budget / size ────────────────────────
+        ...(filters.genders?.length   && { genders:  filters.genders.join(",") }),
+        ...(filters.sports?.length    && { sports:   filters.sports.join(",")  }),
+        ...(filters.minPrice != null  && { minPrice: filters.minPrice          }),
+        ...(filters.maxPrice != null  && { maxPrice: filters.maxPrice          }),
+        ...(filters.sizes?.length     && { sizes:    filters.sizes.join(",")   }),
+
         // ── Reserved ───────────────────────────────────────────────────────────
-        ...(filters.minPrice          && { minPrice:          filters.minPrice          }),
-        ...(filters.maxPrice          && { maxPrice:          filters.maxPrice          }),
-        ...(filters.sizes?.length     && { sizes:             filters.sizes.join(",")   }),
         ...(filters.excludeCategories && { excludeCategories: filters.excludeCategories }),
       },
     });
+    return data;
+  },
+
+  async getFacets(): Promise<ProductFacets> {
+    const { data } = await apiClient.get<ProductFacets>("/products/facets");
     return data;
   },
 

@@ -617,3 +617,31 @@ html[data-app-ready] #boot-splash {
     opacity: 0;
   }
 }
+
+/* Slider budget di FilterModal (track diwarnai lewat inline background). */
+.sf-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  outline: none;
+}
+.sf-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid #ff6b00;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+.sf-range::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid #ff6b00;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
