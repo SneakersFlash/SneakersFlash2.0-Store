@@ -72,12 +72,18 @@ export default async function HomePage() {
   // Terukur 9 Sep 2026: daftar running sebelumnya minta 8 dan hanya 3 yang
   // kembali. Sebelum menambah artikel ke daftar ini, pastikan dulu bentuk mana
   // yang aktif di katalog.
+  //
+  // Barang OJI (18 Nov 2026, permintaan user) ditaruh di DEPAN tiap section,
+  // isi lama tetap di belakangnya. 39884609 & 39884631 sengaja tidak dipakai:
+  // tautan Ginee-nya masih nunjuk produk master yang salah.
   const SECTION_SKUS = {
     unisex: [
+      "U1906LNT", "IM5997060", "IM6597001", "JR9445",
       "JI3219", "1203A740100", "LC-U370AI", "JH5470",
       "FZ2068001", "U200210D", "LC-FZ1347100", "LC-1203A600250",
     ],
     mens: [
+      "U1906LAE", "U1906LAF", "U1906LNS", "CD6404002",
       "IB8868222", "HM8818001", "JQ7643", "LC-IH4772",
       "LC-UA950AB1", "U20026PU", "LC-40237301", "LC-39771707",
     ],
@@ -85,10 +91,12 @@ export default async function HomePage() {
     // dibuang karena akan merender sepatu yang sama dua kartu. Section ini jadi
     // 7 kartu sampai ada artikel pengganti.
     womens: [
+      "40128702", "40439501", "40158101", "40633402",
       "JI2625", "DD8959103", "LC-WL574CUL", "LC-WRCXCS4",
       "LC-1147851NKV", "LC-CU9174600", "LC-39934801",
     ],
     lifestyleCasual: [
+      "39884601", "40128706", "39884602", "U1906LBN",
       "LC-CJ1288001", "FQ7860008", "JP7676", "KJ8724",
       "BB550VGC", "U1500PGL", "1203A896750", "1203A574001",
     ],
