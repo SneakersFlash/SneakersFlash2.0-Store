@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { ChevronDown, X } from "lucide-react";
 import { Pagination } from "@/components/common/Pagination"; 
+import SizeChips from "@/components/product/SizeChips";
 
 export function EventGridClient({
   products,
@@ -310,12 +311,7 @@ export function EventGridClient({
               <p className="text-[11px] sm:text-[12px] leading-snug font-medium text-[#111111] line-clamp-2 mb-1.5 sm:mb-2">
                 {p.name.toUpperCase()}
               </p>
-              {p.availableSizes && p.availableSizes.length > 0 && (
-                <p className="text-[10px] lg:text-[11px] text-[#888888] mb-2 lg:mb-3 line-clamp-1">
-                  Size : {p.availableSizes.slice(0, 5).join(", ")}
-                  {p.availableSizes.length > 5 && "..."}
-                </p>
-              )}
+              <SizeChips sizes={p.availableSizes} />
               <div className="flex flex-col mt-auto">
                 <span className="text-[13px] sm:text-[14px] lg:text-[18px] font-bold leading-none tracking-tight mb-1 text-[#FF6B00]">
                   Rp {p.finalPrice?.toLocaleString('id-ID')}

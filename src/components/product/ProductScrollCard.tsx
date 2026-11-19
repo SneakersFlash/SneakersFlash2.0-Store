@@ -13,6 +13,7 @@ import type { Product } from "@/types/product.types";
 import { useAddWishlist, useCheckWishlist, useRemoveWishlist } from "@/lib/hooks/useWishlist";
 import { useAuthStore } from "@/lib/store/authStore";
 import { EventFooterBadge } from "./EventFooterBadge";
+import SizeChips from "@/components/product/SizeChips";
 
 interface ProductScrollCardProps {
   product: Product;
@@ -190,12 +191,7 @@ export function ProductScrollCard({
             {product.name.toUpperCase()}
           </p>
 
-          {product.availableSizes && product.availableSizes.length > 0 && (
-            <p className="text-[10px] lg:text-[11px] text-[#888888] mb-2 lg:mb-3 line-clamp-1">
-              Size : {product.availableSizes.slice(0, 5).join(", ")}
-              {product.availableSizes.length > 5 && "..."}
-            </p>
-          )}
+          <SizeChips sizes={product.availableSizes} />
 
           <div className="flex flex-col mt-auto">
             <span className="text-[14px] lg:text-[18px] font-bold leading-none tracking-tight mb-1.5 text-black">

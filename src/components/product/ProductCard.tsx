@@ -14,6 +14,7 @@ import type { Product } from "@/types/product.types";
 import { useCheckWishlist, useAddWishlist, useRemoveWishlist } from "@/lib/hooks/useWishlist";
 import { EventFooterBadge } from "./EventFooterBadge";
 import { useAuthStore } from "@/lib/store/authStore";
+import SizeChips from "@/components/product/SizeChips";
 
 interface ProductCardProps {
   product: Product;
@@ -158,12 +159,7 @@ export function ProductCard({ product, priority = false, index = 0, hargaTeaser 
           </p>
           
           {/* Penambahan Available Sizes */}
-          {product.availableSizes && product.availableSizes.length > 0 && (
-            <p className="text-[10px] sm:text-[11px] text-[#888888] mb-1.5 sm:mb-2 line-clamp-1">
-              Size : {product.availableSizes.slice(0, 5).join(", ")}
-              {product.availableSizes.length > 5 && "..."}
-            </p>
-          )}
+          <SizeChips sizes={product.availableSizes} />
 
           <div className="flex flex-col mt-auto">
             <span className="text-[14px] lg:text-[18px] font-bold leading-none tracking-tight mb-1.5 text-black">
