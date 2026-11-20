@@ -22,25 +22,25 @@ const CONTACT_LINKS = [
     icon: MessageCircle,
     label: "WhatsApp",
     href: "https://wa.me/6281313911391",
-    display: "WhatsApp",
+    display: "0813 1391 1391",
   },
   {
     icon: Instagram,
     label: "Instagram",
     href: "https://instagram.com/sneakers_flash",
-    display: "Instagram",
+    display: "sneakers_flash",
   },
   {
     icon: TikTokIcon,
     label: "TikTok",
     href: "https://www.tiktok.com/@sneakers_flash",
-    display: "TikTok",
+    display: "sneakers_flash",
   },
   {
     icon: Mail,
     label: "Email",
     href: "mailto:hello@sneakersflash.com",
-    display: "Email",
+    display: "hello@sneakersflash.com",
   },
 ];
 
@@ -57,7 +57,16 @@ const SUPPORT_LINKS = [
   { label: "Term & Conditions", href: "/term-condition"  },
 ];
 
-const PAYMENT_METHODS = ["VISA", "MC", "BCA", "BNI", "GoPay", "OVO", "Dana"];
+// Logo resmi (SVG dari Wikimedia Commons) di public/images/payments.
+const PAYMENT_METHODS = [
+  { name: "Visa",       src: "/images/payments/visa.svg" },
+  { name: "Mastercard", src: "/images/payments/mastercard.svg" },
+  { name: "BCA",        src: "/images/payments/bca.svg" },
+  { name: "BNI",        src: "/images/payments/bni.svg" },
+  { name: "GoPay",      src: "/images/payments/gopay.svg" },
+  { name: "OVO",        src: "/images/payments/ovo.svg" },
+  { name: "DANA",       src: "/images/payments/dana.svg" },
+];
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -159,7 +168,7 @@ export function Footer() {
         <div className="container-2xl py-5">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-              <span>© {year} Sneakers Flash. All rights reserved.</span>
+              <span>© {year} PT. MITRA RITEL INOVATIF. All rights reserved.</span>
               {/* Rute aslinya /privacy-policy dan /term-condition; /privacy dan
                   /terms tidak pernah ada sehingga dua tautan ini 404. */}
               <Link href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy</Link>
@@ -170,10 +179,12 @@ export function Footer() {
             <div className="flex items-center gap-1.5 flex-wrap justify-center">
               {PAYMENT_METHODS.map((m) => (
                 <span
-                  key={m}
-                  className="px-2 py-1 bg-muted border border-border text-[10px] font-mono font-bold text-muted-foreground tracking-wider"
+                  key={m.name}
+                  title={m.name}
+                  className="inline-flex items-center justify-center h-8 px-2 bg-white border border-border"
                 >
-                  {m}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={m.src} alt={m.name} className="h-[18px] w-auto" loading="lazy" />
                 </span>
               ))}
             </div>
