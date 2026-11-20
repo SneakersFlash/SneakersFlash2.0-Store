@@ -79,8 +79,6 @@ const PAYMENT_METHODS = [
   { name: "BCA",        src: "/images/payments/bca.svg" },
   { name: "BNI",        src: "/images/payments/bni.svg" },
   { name: "GoPay",      src: "/images/payments/gopay.svg" },
-  { name: "OVO",        src: "/images/payments/ovo.svg" },
-  { name: "DANA",       src: "/images/payments/dana.svg" },
 ];
 
 export function Footer() {
