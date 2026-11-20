@@ -111,11 +111,10 @@ export function Footer() {
             </Link>
 
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-              At Sneakers Flash, every activation is built with one goal:
-              <br />to convert attention into measurable business results.
-              <br />
-              From offline events to digital channels, we focus on
-              creating impact that goes beyond visibility. ⚡
+              Discover a curated selection of 100% authentic sneakers for every
+              style and occasion. With easy returns, fast delivery, and a
+              seamless shopping experience, finding your next pair has never
+              been easier.
             </p>
           </div>
 
