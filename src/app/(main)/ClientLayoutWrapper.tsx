@@ -46,17 +46,15 @@ export function ClientLayoutWrapper({ children }: { children: React.ReactNode })
         {children}
       </main>
 
+      {/* --- FOOTER (desktop penuh; mobile versi buka-tutup) ---
+           Dirender SEBELUM bottom nav supaya spacer h-16 bottom nav jatuh di
+           bawah footer, jadi baris copyright tidak ketutup nav yang fixed. */}
+      {showFooter && <Footer />}
+
       {/* --- MOBILE BOTTOM NAVIGATION --- */}
       {showBottomNav && (
         <div className="lg:hidden">
           <BottomNavigation />
-        </div>
-      )}
-
-      {/* --- DESKTOP FOOTER --- */}
-      {showFooter && (
-        <div className="hidden lg:block">
-          <Footer />
         </div>
       )}
 

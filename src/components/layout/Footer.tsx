@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Instagram, Mail } from "lucide-react";
+import { Instagram, Mail, ChevronDown } from "lucide-react";
 
 // TikTok tidak ada di lucide-react, pakai custom SVG
 function TikTokIcon({ size = 15 }: { size?: number }) {
@@ -87,14 +87,106 @@ const PAYMENT_METHODS = [
   { name: "Akulaku",    src: "/images/payments/akulaku.png" },
 ];
 
+// Satu bagian buka-tutup di footer mobile. <details> bawaan browser:
+// tanpa state/JS, tetap bisa diakses keyboard & screen reader.
+function MobileSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <details className="group border-b border-border">
+      <summary className="flex items-center justify-between py-3.5 cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+        <span className="font-semibold text-sm text-foreground">{title}</span>
+        <ChevronDown size={16} className="text-muted-foreground transition-transform group-open:rotate-180" />
+      </summary>
+      <div className="pb-4">{children}</div>
+    </details>
+  );
+}
+
+function ContactList() {
+  return (
+    <ul className="space-y-2.5">
+      {CONTACT_LINKS.map(({ icon: Icon, label, href, display }) => (
+        <li key={label}>
+          <a
+            href={href}
+            target={href.startsWith("mailto") ? undefined : "_blank"}
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Icon size={14} className="shrink-0" />
+            {display}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function LinkList({ links }: { links: { label: string; href: string }[] }) {
+  return (
+    <ul className="space-y-2.5">
+      {links.map((link) => (
+        <li key={link.href}>
+          <Link
+            href={link.href}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            {link.label}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function PaymentLogos() {
+  return (
+    // 11 logo → 2 baris (6 + 5), tanpa border.
+    <div className="grid grid-cols-6 gap-x-4 gap-y-3 items-center justify-items-center">
+      {PAYMENT_METHODS.map((m) => (
+        <span
+          key={m.name}
+          title={m.name}
+          className="inline-flex items-center justify-center h-6"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={m.src} alt={m.name} className="h-[18px] w-auto max-w-full object-contain" loading="lazy" />
+        </span>
+      ))}
+    </div>
+  );
+}
+
+const BRAND_BLURB =
+  "Discover a curated selection of 100% authentic sneakers for every style and occasion. With easy returns, fast delivery, and a seamless shopping experience, finding your next pair has never been easier.";
+
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-card border-t border-border mt-24">
+    <footer className="bg-card border-t border-border mt-12 lg:mt-24">
+
+      {/* ── Mobile: bagian buka-tutup ── */}
+      <div className="lg:hidden px-4 pt-6">
+        <Link href="/" className="block mb-2">
+          <Image
+            src="/images/Logo Full Hitam.png"
+            alt="Sneakers Flash"
+            width={120}
+            height={32}
+            className="h-8 w-auto object-contain"
+          />
+        </Link>
+        <MobileSection title="About Sneakers Flash">
+          <p className="text-sm text-muted-foreground leading-relaxed">{BRAND_BLURB}</p>
+        </MobileSection>
+        <MobileSection title="Contact Us"><ContactList /></MobileSection>
+        <MobileSection title="Information"><LinkList links={INFORMATION_LINKS} /></MobileSection>
+        <MobileSection title="Support"><LinkList links={SUPPORT_LINKS} /></MobileSection>
+        <MobileSection title="Payment Methods"><PaymentLogos /></MobileSection>
+      </div>
 
       {/* ── Main grid ── */}
-      <div className="container-2xl py-12">
+      <div className="hidden lg:block container-2xl py-12">
         {/*
           5 kolom:
           col-1 & col-2 → Brand (lg:col-span-2)
@@ -117,91 +209,42 @@ export function Footer() {
             </Link>
 
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-              Discover a curated selection of 100% authentic sneakers for every
-              style and occasion. With easy returns, fast delivery, and a
-              seamless shopping experience, finding your next pair has never
-              been easier.
+              {BRAND_BLURB}
             </p>
           </div>
 
           {/* Contact Us */}
           <div>
             <p className="font-semibold text-sm text-foreground mb-4">Contact Us</p>
-            <ul className="space-y-2.5">
-              {CONTACT_LINKS.map(({ icon: Icon, label, href, display }) => (
-                <li key={label}>
-                  <a
-                    href={href}
-                    target={href.startsWith("mailto") ? undefined : "_blank"}
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <Icon size={14} className="shrink-0" />
-                    {display}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <ContactList />
           </div>
 
           {/* Information */}
           <div>
             <p className="font-semibold text-sm text-foreground mb-4">Information</p>
-            <ul className="space-y-2.5">
-              {INFORMATION_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <LinkList links={INFORMATION_LINKS} />
           </div>
 
           {/* Support */}
           <div>
             <p className="font-semibold text-sm text-foreground mb-4">Support</p>
-            <ul className="space-y-2.5">
-              {SUPPORT_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <LinkList links={SUPPORT_LINKS} />
           </div>
 
         </div>
       </div>
 
       {/* ── Bottom bar ── */}
-      <div className="border-t border-border">
+      <div className="lg:border-t border-border">
         <div className="container-2xl py-5">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
               <span>© {year} PT. MITRA RITEL INOVATIF. All rights reserved.</span>
             </div>
 
-            {/* Payment methods */}
-            {/* 11 logo → 2 baris (6 + 5), tanpa border. */}
-            <div className="grid grid-cols-6 gap-x-4 gap-y-3 items-center justify-items-center">
-              {PAYMENT_METHODS.map((m) => (
-                <span
-                  key={m.name}
-                  title={m.name}
-                  className="inline-flex items-center justify-center h-6"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={m.src} alt={m.name} className="h-[18px] w-auto max-w-full object-contain" loading="lazy" />
-                </span>
-              ))}
+            {/* Payment methods — di mobile ada di bagian buka-tutup */}
+            <div className="hidden lg:block">
+              <PaymentLogos />
             </div>
           </div>
         </div>
