@@ -84,7 +84,7 @@ const PAYMENT_METHODS = [
   { name: "Permata",    src: "/images/payments/permata.svg" },
   { name: "QRIS",       src: "/images/payments/qris.svg" },
   { name: "GoPay",      src: "/images/payments/gopay.svg" },
-  { name: "Akulaku",    src: "/images/payments/akulaku.png" },
+  { name: "Akulaku",    src: "/images/payments/akulaku-logo.png" },
 ];
 
 // Satu bagian buka-tutup di footer mobile. <details> bawaan browser:
