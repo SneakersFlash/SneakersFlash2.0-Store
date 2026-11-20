@@ -72,13 +72,19 @@ const SUPPORT_LINKS = [
   { label: "Term & Conditions", href: "/term-condition"  },
 ];
 
-// Logo resmi (SVG dari Wikimedia Commons) di public/images/payments.
+// Logo resmi di public/images/payments (SVG Wikimedia Commons; Akulaku PNG dari akulaku.com).
 const PAYMENT_METHODS = [
   { name: "Visa",       src: "/images/payments/visa.svg" },
   { name: "Mastercard", src: "/images/payments/mastercard.svg" },
+  { name: "JCB",        src: "/images/payments/jcb.svg" },
   { name: "BCA",        src: "/images/payments/bca.svg" },
+  { name: "Mandiri",    src: "/images/payments/mandiri.svg" },
   { name: "BNI",        src: "/images/payments/bni.svg" },
+  { name: "BRI",        src: "/images/payments/bri.svg" },
+  { name: "Permata",    src: "/images/payments/permata.svg" },
+  { name: "QRIS",       src: "/images/payments/qris.svg" },
   { name: "GoPay",      src: "/images/payments/gopay.svg" },
+  { name: "Akulaku",    src: "/images/payments/akulaku.png" },
 ];
 
 export function Footer() {
@@ -181,10 +187,6 @@ export function Footer() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
               <span>© {year} PT. MITRA RITEL INOVATIF. All rights reserved.</span>
-              {/* Rute aslinya /privacy-policy dan /term-condition; /privacy dan
-                  /terms tidak pernah ada sehingga dua tautan ini 404. */}
-              <Link href="/privacy-policy" className="hover:text-foreground transition-colors">Privacy</Link>
-              <Link href="/term-condition" className="hover:text-foreground transition-colors">Terms</Link>
             </div>
 
             {/* Payment methods */}
