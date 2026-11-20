@@ -101,13 +101,8 @@ export default async function HomePage() {
   };
 
   const sectionDefs = [
-    {
-      id: "unisex",
-      title: "Unisex",
-      filters: { skus: SECTION_SKUS.unisex, limit: SECTION_SKUS.unisex.length, page: 1 },
-      href: "/products?categories=Mens,Womens&type=Footwear",
-      bgImage: getCategoryImage("Mens"),
-    },
+    // Section Unisex dicabut dari beranda 20 Nov 2026 atas permintaan.
+    // Daftar SECTION_SKUS.unisex sengaja disimpan kalau mau dipasang lagi.
     {
       id: "mens",
       title: "Mens",
@@ -173,7 +168,6 @@ export default async function HomePage() {
   }
 
   const bySectionId = (id: string) => sections.find((s) => s.id === id)!;
-  const unisexGroup = [bySectionId("unisex")];
   const firstGroup = [bySectionId("mens"), bySectionId("womens")];
   const restGroup = [bySectionId("lifestyle-casual"), bySectionId("running")];
 
@@ -195,20 +189,6 @@ export default async function HomePage() {
 
         <CategoryShortcuts />
         <BrandCarousel />
-
-        {/* UNISEX SECTION */}
-        <div className="flex flex-col gap-4 pb-4">
-          {unisexGroup.map((section, index) => (
-            <ProductSection
-              key={section.id}
-              title={section.title}
-              products={section.products}
-              bgColor={SECTION_COLORS[index % SECTION_COLORS.length]}
-              viewAllHref={section.href}
-              backgroundImage={section.bgImage}
-            />
-          ))}
-        </div>
 
         {/* MENS + WOMENS (dengan side banner) */}
         <div className="flex flex-col lg:flex-row gap-4 items-stretch">
