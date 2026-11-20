@@ -190,15 +190,16 @@ export function Footer() {
             </div>
 
             {/* Payment methods */}
-            <div className="flex items-center gap-1.5 flex-wrap justify-center">
+            {/* 11 logo → 2 baris (6 + 5), tanpa border. */}
+            <div className="grid grid-cols-6 gap-x-4 gap-y-3 items-center justify-items-center">
               {PAYMENT_METHODS.map((m) => (
                 <span
                   key={m.name}
                   title={m.name}
-                  className="inline-flex items-center justify-center h-8 px-2 bg-white border border-border"
+                  className="inline-flex items-center justify-center h-6"
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={m.src} alt={m.name} className="h-[18px] w-auto" loading="lazy" />
+                  <img src={m.src} alt={m.name} className="h-[18px] w-auto max-w-full object-contain" loading="lazy" />
                 </span>
               ))}
             </div>
