@@ -5,7 +5,7 @@ const MAX_MOBILE = 4;
 const MAX_DESKTOP = 5;
 
 const chipCls =
-  "shrink-0 min-w-[24px] sm:min-w-[28px] px-1 py-[1px] border border-[#D9D9D9] rounded-[3px] text-center text-[9px] sm:text-[11px] leading-[14px] sm:leading-4 text-[#555555]";
+  "shrink-0 min-w-[24px] sm:min-w-[28px] px-1 py-[1px] border border-[#D9D9D9] rounded-md text-center text-[9px] sm:text-[11px] leading-[14px] sm:leading-4 text-[#555555]";
 const moreCls = "shrink-0 text-[9px] sm:text-[11px] text-[#888888]";
 
 export default function SizeChips({
