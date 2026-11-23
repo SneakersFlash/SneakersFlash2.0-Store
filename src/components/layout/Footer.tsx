@@ -182,7 +182,11 @@ export function Footer() {
         <MobileSection title="Contact Us"><ContactList /></MobileSection>
         <MobileSection title="Information"><LinkList links={INFORMATION_LINKS} /></MobileSection>
         <MobileSection title="Support"><LinkList links={SUPPORT_LINKS} /></MobileSection>
-        <MobileSection title="Payment Methods"><PaymentLogos /></MobileSection>
+        {/* Payment Methods sengaja selalu terbuka (bukan buka-tutup) */}
+        <div className="pt-3.5 pb-4">
+          <p className="font-semibold text-sm text-foreground mb-3">Payment Methods</p>
+          <PaymentLogos />
+        </div>
       </div>
 
       {/* ── Main grid ── */}
