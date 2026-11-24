@@ -12,6 +12,7 @@ import "./one-more-thing.css";
 import { HeroWorld3D, LogoPlaque3D } from "./Objects3D";
 import { ClosingBand, Footer, Header, RewardGrid, StepsSlabs, Terms } from "./Sections";
 import { WheelCard } from "./WheelCard";
+import { getCampaign } from "@/lib/api/spin.service";
 
 const CHECK = (
   <span
@@ -43,6 +44,12 @@ export function OneMoreThing({ fontClass }: { fontClass: string }) {
   const tiltRef = useRef(tilt);
   tiltRef.current = tilt;
   const askedOrientation = useRef(false);
+  const [testMode, setTestMode] = useState(false);
+
+  // Badge "Mode testing" selama backend belum menyimpan hasil (lihat SpinService).
+  useEffect(() => {
+    getCampaign().then((c) => setTestMode(!!c?.testMode));
+  }, []);
 
   const queueTilt = useCallback((x: number, y: number) => {
     pending.current = { x, y };
@@ -181,6 +188,28 @@ export function OneMoreThing({ fontClass }: { fontClass: string }) {
       <Terms />
       <ClosingBand />
       <Footer />
+
+      {testMode && (
+        <div
+          role="status"
+          style={{
+            position: "fixed",
+            left: 12,
+            bottom: 12,
+            zIndex: 40,
+            padding: "8px 12px",
+            borderRadius: 999,
+            background: "#111213",
+            color: "#f6e70a",
+            fontSize: 12,
+            lineHeight: "16px",
+            fontWeight: 700,
+            boxShadow: "0 6px 16px rgba(17, 18, 19, 0.25)",
+          }}
+        >
+          MODE TESTING · hasil spin tidak disimpan
+        </div>
+      )}
     </div>
   );
 }
