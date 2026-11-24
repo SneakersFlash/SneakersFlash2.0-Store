@@ -339,8 +339,8 @@ function CheckoutContent(){
   const checkoutSig=checkoutItems.map(i=>`${i.id}:${i.quantity}`).sort().join("|");
   useEffect(()=>{
     if(checkoutItems.length===0)return;
-    const subtotalNow=checkoutItems.reduce((s,i)=>s+Number(i.price)*i.quantity,0);
-    pixel.initiateCheckout({num_items:checkoutItems.reduce((s,i)=>s+i.quantity,0),value:subtotalNow,currency:'IDR'},checkoutItems);
+    // content_ids = SKU varian (variantSku dari cart API = variant.sku) = retailer_id katalog.
+    pixel.initiateCheckout(checkoutItems.map(i=>({id:i.id,sku:i.variantSku,quantity:i.quantity,price:Number(i.price)})));
   },[checkoutSig]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const distanceMap:Record<number,number>={};

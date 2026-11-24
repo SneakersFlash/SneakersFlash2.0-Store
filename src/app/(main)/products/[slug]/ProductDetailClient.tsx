@@ -181,10 +181,9 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
     const evActive = ev && (ev.quotaLimit == null || ev.quotaLimit === 0 || ev.quotaSold < (ev.quotaLimit ?? Infinity));
     const evPrice = evActive && ev?.specialPrice ? ev.specialPrice : null;
     pixel.viewContent({
-      content_ids: [String(product.id)],
+      slug: product.slug,
       content_name: product.name,
       value: Number(evPrice ?? baseP),
-      currency: 'IDR',
     });
   }, [product?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -276,10 +275,10 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
       await addItemToCart(Number(selectedVariant.id), quantity);
       openCart();
       pixel.addToCart({
-        content_ids: [String(product.id)],
+        sku: selectedVariant.sku,
         content_name: product.name,
-        value: Number(displayPrice) * quantity,
-        currency: 'IDR',
+        quantity,
+        itemPrice: Number(displayPrice),
       });
     } catch (error) {
       console.error("Gagal menambahkan ke keranjang", error);
@@ -321,10 +320,10 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
       // 5. AddToCart — Beli Sekarang juga memasukkan barang ke keranjang.
       //    Dulu tidak ditembak, jadi AddToCart < InitiateCheckout di Meta.
       pixel.addToCart({
-        content_ids: [String(product.id)],
+        sku: selectedVariant.sku,
         content_name: product.name,
-        value: Number(displayPrice) * quantity,
-        currency: 'IDR',
+        quantity,
+        itemPrice: Number(displayPrice),
       });
 
       // 6. Eksekusi redirect ke checkout

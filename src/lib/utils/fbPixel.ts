@@ -42,16 +42,44 @@ export interface PaidOrderLike {
 }
 
 export const pixel = {
-  viewContent(p: { content_ids: string[]; content_name: string; value: number; currency: string }) {
-    fbq('track', 'ViewContent', { ...p, content_type: 'product' });
+  /**
+   * ViewContent di halaman produk, sebelum varian/ukuran dipilih → level grup.
+   * content_ids = slug produk = item_group_id / retailer_product_group_id di
+   * feed katalog (instagram-catalog.service.ts).
+   */
+  viewContent(p: { slug: string; content_name: string; value: number }) {
+    fbq('track', 'ViewContent', {
+      content_type: 'product_group',
+      content_ids: [p.slug],
+      content_name: p.content_name,
+      value: p.value,
+      currency: 'IDR',
+    });
   },
   /**
    * AddToCart. Dipanggil dari "Tambah ke keranjang" DAN "Beli Sekarang" —
-   * dua-duanya memasukkan barang ke keranjang. Mengembalikan eventID supaya
-   * bisa ikut dikirim ke backend kalau nanti ada event server-nya.
+   * dua-duanya memasukkan barang ke keranjang. content_ids = SKU varian =
+   * `id` / retailer_id di feed katalog. Mengembalikan eventID supaya bisa ikut
+   * dikirim ke backend kalau nanti ada event server-nya.
    */
-  addToCart(p: { content_ids: string[]; content_name: string; value: number; currency: string }, eventId = newEventId('atc')) {
-    fbq('track', 'AddToCart', { ...p, content_type: 'product' }, { eventID: eventId });
+  addToCart(
+    p: { sku: string; content_name: string; quantity: number; itemPrice: number },
+    eventId = newEventId('atc'),
+  ) {
+    fbq(
+      'track',
+      'AddToCart',
+      {
+        content_type: 'product',
+        content_ids: [p.sku],
+        contents: [{ id: p.sku, quantity: p.quantity, item_price: p.itemPrice }],
+        content_name: p.content_name,
+        num_items: p.quantity,
+        value: p.itemPrice * p.quantity,
+        currency: 'IDR',
+      },
+      { eventID: eventId },
+    );
     return eventId;
   },
   /**
@@ -62,8 +90,7 @@ export const pixel = {
    * Mengembalikan eventID, atau null kalau dilewati.
    */
   initiateCheckout(
-    p: { num_items: number; value: number; currency: string },
-    cartItems: { id: string | number; quantity: number }[],
+    cartItems: { id: string | number; sku: string; quantity: number; price: number }[],
   ): string | null {
     const key = `fb_ic:${cartSignature(cartItems)}`;
     try {
@@ -72,7 +99,20 @@ export const pixel = {
       // sessionStorage diblokir — tembak saja, lebih baik lebih dari hilang.
     }
     const eventId = newEventId('ic');
-    fbq('track', 'InitiateCheckout', p, { eventID: eventId });
+    const items = cartItems.filter((i) => i.sku);
+    fbq(
+      'track',
+      'InitiateCheckout',
+      {
+        content_type: 'product',
+        content_ids: items.map((i) => i.sku),
+        contents: items.map((i) => ({ id: i.sku, quantity: i.quantity, item_price: i.price })),
+        num_items: items.reduce((s, i) => s + i.quantity, 0),
+        value: items.reduce((s, i) => s + i.price * i.quantity, 0),
+        currency: 'IDR',
+      },
+      { eventID: eventId },
+    );
     try {
       sessionStorage.setItem(key, eventId);
     } catch {}
