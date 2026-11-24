@@ -1,0 +1,64 @@
+/*
+ * ONE MORE THING — semua @keyframes & aturan hover dari <helmet><style>
+ * docs/one-more-thing/design/reference.dc.html, disalin apa adanya.
+ * Semua nama berawalan sf- jadi tidak bentrok dengan stylesheet toko.
+ */
+@keyframes sf-float{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+@keyframes sf-sway{from{transform:rotateY(-16deg) rotateX(5deg)}to{transform:rotateY(16deg) rotateX(-2deg)}}
+@keyframes sf-plaque{from{transform:rotateY(-22deg) rotateX(8deg)}to{transform:rotateY(22deg) rotateX(-4deg)}}
+@keyframes sf-shadow{from{transform:scale(1);opacity:.6}to{transform:scale(.8);opacity:.32}}
+@keyframes sf-ring{0%{transform:scale(.72);opacity:.9}100%{transform:scale(1.22);opacity:0}}
+@keyframes sf-bulb{0%,100%{background:#d4c600;box-shadow:inset 0 0 0 1px rgba(4,7,7,.15)}50%{background:#ffffff;box-shadow:0 0 10px 3px rgba(255,255,255,.95),0 0 0 1px rgba(4,7,7,.12)}}
+@keyframes sf-flash{0%,100%{background:#ffffff;box-shadow:0 0 14px 5px rgba(255,255,255,1)}50%{background:#faa61a;box-shadow:0 0 0 1px rgba(4,7,7,.15)}}
+@keyframes sf-tick{0%,100%{transform:rotate(0)}40%{transform:rotate(-18deg)}}
+@keyframes sf-glow{from{opacity:.25}to{opacity:.85}}
+@keyframes sf-fall{0%{transform:translateY(0) rotateX(0) rotateY(0) rotateZ(0);opacity:1}80%{opacity:1}100%{transform:translateY(300px) rotateX(720deg) rotateY(540deg) rotateZ(160deg);opacity:0}}
+@keyframes sf-flip-in{0%{opacity:0;transform:rotateX(-75deg) translateY(24px)}60%{opacity:1}100%{opacity:1;transform:rotateX(0) translateY(0)}}
+@keyframes sf-sheet-in{0%{opacity:0;transform:rotateX(-88deg)}55%{opacity:1}100%{opacity:1;transform:rotateX(0)}}
+@keyframes sf-fade{from{opacity:0}to{opacity:1}}
+@keyframes sf-spin-y{from{transform:rotateY(0)}to{transform:rotateY(360deg)}}
+@keyframes sf-tumble{from{transform:rotateX(0) rotateY(0) rotateZ(0)}to{transform:rotateX(360deg) rotateY(720deg) rotateZ(360deg)}}
+@keyframes sf-bob{from{transform:translateY(0)}to{transform:translateY(-16px)}}
+@keyframes sf-rise{from{opacity:0;transform:perspective(600px) translateY(28px) rotateX(-24deg)}to{opacity:1;transform:none}}
+@keyframes sf-reveal{from{opacity:0;transform:perspective(900px) translateY(70px) translateZ(-140px) rotateX(-50deg)}to{opacity:1;transform:none}}
+@keyframes sf-card-in{from{opacity:0;transform:perspective(1400px) rotateY(-26deg) rotateX(8deg) translateZ(-180px)}to{opacity:1;transform:none}}
+@keyframes sf-bob-sm{from{transform:translateY(0)}to{transform:translateY(-5px)}}
+@keyframes sf-pop{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+.sf-prize{transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+.sf-prize:hover{transform:translateY(-6px);box-shadow:0 16px 28px rgba(17,18,19,.1)}
+.sf-prize-token{transition:rotate .7s cubic-bezier(.2,.8,.2,1)}
+.sf-prize:hover .sf-prize-token{rotate:y 360deg}
+@supports (animation-timeline: view()){.sf-pop-in{animation:sf-pop linear both;animation-timeline:view();animation-range:entry 0% entry 50%}}
+.sf-slab{transform-style:preserve-3d;transform:perspective(900px) rotateX(-9deg) rotateY(-13deg);transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.sf-slab:hover{transform:perspective(900px) rotateX(0) rotateY(0) translateY(-6px)}
+.sf-round{transition:transform .2s ease-out}
+.sf-round:hover{transform:translateY(-2px)}
+.sf-press{transition:transform .12s ease-out}
+.sf-press:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 #d4c600 !important}
+@supports (animation-timeline: view()){.sf-reveal{animation:sf-reveal linear both;animation-timeline:view();animation-range:entry 0% entry 70%}}
+@media (prefers-reduced-motion: reduce){.sf-anim,.sf-reveal,.sf-pop-in{animation:none !important}.sf-prize,.sf-prize-token{transition:none}.sf-slab,.sf-press,.sf-round{transition:none}}
+
+/*
+ * Tambahan (bukan dari referensi): panggung roda selebar 330px pas di 390px,
+ * tapi kelebaran di 360px. Di layar < 380px panggung diperkecil 90% supaya
+ * tidak terpotong; tampilannya tetap sama, cuma skalanya.
+ */
+.omt-stage-wrap{position:relative;width:330px;height:440px;margin:0 auto}
+@media (max-width:379px){
+  .omt-stage-wrap{transform:scale(.9);transform-origin:50% 0;margin-left:calc((100% - 330px) / 2);margin-bottom:-44px}
+}
+.omt-code-input::placeholder{color:#6b6b66;text-transform:none;letter-spacing:0;font-weight:500}
+.omt-code-input:focus{outline:2px solid #111213;outline-offset:2px}
+
+/* globals.css memaksa h1-h6 jadi font-display + uppercase. Halaman ini pakai
+   Plus Jakarta Sans & huruf sesuai copy, jadi dinetralkan di sini. */
+.omt-root h1,.omt-root h2{font-family:inherit;text-transform:none}
+
+/* Satu kolom (HP/tablet): di posisi referensi, koin FP & kubus jatuh tepat di
+   belakang judul. HANDOFF §1 melarang objek hero di belakang teks, jadi di
+   layout ini keduanya dipindah ke ruang kosong di kanan plakat logo.
+   (!important karena posisi aslinya inline style.) */
+@media (max-width:907px){
+  .omt-o-cube{right:-1% !important;top:-88px !important}
+  .omt-o-fp{left:70% !important;top:-32px !important}
+}

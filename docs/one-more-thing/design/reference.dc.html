@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Spin hadiah SneakersFlash</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+@keyframes sf-float{from{transform:translateY(0)}to{transform:translateY(-12px)}}
+@keyframes sf-sway{from{transform:rotateY(-16deg) rotateX(5deg)}to{transform:rotateY(16deg) rotateX(-2deg)}}
+@keyframes sf-plaque{from{transform:rotateY(-22deg) rotateX(8deg)}to{transform:rotateY(22deg) rotateX(-4deg)}}
+@keyframes sf-shadow{from{transform:scale(1);opacity:.6}to{transform:scale(.8);opacity:.32}}
+@keyframes sf-ring{0%{transform:scale(.72);opacity:.9}100%{transform:scale(1.22);opacity:0}}
+@keyframes sf-bulb{0%,100%{background:#d4c600;box-shadow:inset 0 0 0 1px rgba(4,7,7,.15)}50%{background:#ffffff;box-shadow:0 0 10px 3px rgba(255,255,255,.95),0 0 0 1px rgba(4,7,7,.12)}}
+@keyframes sf-flash{0%,100%{background:#ffffff;box-shadow:0 0 14px 5px rgba(255,255,255,1)}50%{background:#faa61a;box-shadow:0 0 0 1px rgba(4,7,7,.15)}}
+@keyframes sf-tick{0%,100%{transform:rotate(0)}40%{transform:rotate(-18deg)}}
+@keyframes sf-glow{from{opacity:.25}to{opacity:.85}}
+@keyframes sf-fall{0%{transform:translateY(0) rotateX(0) rotateY(0) rotateZ(0);opacity:1}80%{opacity:1}100%{transform:translateY(300px) rotateX(720deg) rotateY(540deg) rotateZ(160deg);opacity:0}}
+@keyframes sf-flip-in{0%{opacity:0;transform:rotateX(-75deg) translateY(24px)}60%{opacity:1}100%{opacity:1;transform:rotateX(0) translateY(0)}}
+@keyframes sf-sheet-in{0%{opacity:0;transform:rotateX(-88deg)}55%{opacity:1}100%{opacity:1;transform:rotateX(0)}}
+@keyframes sf-fade{from{opacity:0}to{opacity:1}}
+@keyframes sf-spin-y{from{transform:rotateY(0)}to{transform:rotateY(360deg)}}
+@keyframes sf-tumble{from{transform:rotateX(0) rotateY(0) rotateZ(0)}to{transform:rotateX(360deg) rotateY(720deg) rotateZ(360deg)}}
+@keyframes sf-bob{from{transform:translateY(0)}to{transform:translateY(-16px)}}
+@keyframes sf-rise{from{opacity:0;transform:perspective(600px) translateY(28px) rotateX(-24deg)}to{opacity:1;transform:none}}
+@keyframes sf-reveal{from{opacity:0;transform:perspective(900px) translateY(70px) translateZ(-140px) rotateX(-50deg)}to{opacity:1;transform:none}}
+@keyframes sf-card-in{from{opacity:0;transform:perspective(1400px) rotateY(-26deg) rotateX(8deg) translateZ(-180px)}to{opacity:1;transform:none}}
+@keyframes sf-bob-sm{from{transform:translateY(0)}to{transform:translateY(-5px)}}
+@keyframes sf-pop{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+.sf-prize{transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+.sf-prize:hover{transform:translateY(-6px);box-shadow:0 16px 28px rgba(17,18,19,.1)}
+.sf-prize-token{transition:rotate .7s cubic-bezier(.2,.8,.2,1)}
+.sf-prize:hover .sf-prize-token{rotate:y 360deg}
+@supports (animation-timeline: view()){.sf-pop-in{animation:sf-pop linear both;animation-timeline:view();animation-range:entry 0% entry 50%}}
+.sf-slab{transform-style:preserve-3d;transform:perspective(900px) rotateX(-9deg) rotateY(-13deg);transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.sf-slab:hover{transform:perspective(900px) rotateX(0) rotateY(0) translateY(-6px)}
+.sf-round{transition:transform .2s ease-out}
+.sf-round:hover{transform:translateY(-2px)}
+.sf-press{transition:transform .12s ease-out}
+.sf-press:active:not(:disabled){transform:translateY(4px);box-shadow:0 2px 0 #d4c600 !important}
+@supports (animation-timeline: view()){.sf-reveal{animation:sf-reveal linear both;animation-timeline:view();animation-range:entry 0% entry 70%}}
+@media (prefers-reduced-motion: reduce){.sf-anim,.sf-reveal,.sf-pop-in{animation:none !important}.sf-prize,.sf-prize-token{transition:none}.sf-slab,.sf-press,.sf-round{transition:none}}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 100%; background: #f5f5f3; color: #111213; font-family: 'Plus Jakarta Sans', 'Helvetica Neue', Arial, sans-serif; font-variant-numeric: tabular-nums; overflow-x: clip">
+
+<!-- Header -->
+<header style="position: relative; z-index: 5; background: #ffffff; border-bottom: 1px solid #e7e7e3">
+<div style="max-width: 1120px; margin: 0 auto; padding: 0 16px; height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 16px; box-sizing: border-box">
+<a href="https://sneakersflash.com" style="display: flex; align-items: center; min-height: 48px">
+<img src="/_blob/fc2fe95a243d9350dbe4478deaf28576" alt="SNKRS FLASH" style="height: 38px; width: auto; display: block">
+</a>
+<a href="https://sneakersflash.com" style="min-height: 44px; padding: 0 16px; border-radius: 999px; background: #efefec; color: #111213; text-decoration: none; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 6px">Ke toko<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+</div>
+</header>
+
+<!-- Hero with 3D world -->
+<section onMouseMove="{{onHeroMove}}" onMouseLeave="{{onHeroLeave}}" style="position: relative; overflow: hidden">
+
+<div aria-hidden="true" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; perspective: 1400px; perspective-origin: 50% 40%; pointer-events: none; z-index: 0">
+<div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateX({{worldX}}deg) rotateY({{worldY}}deg); transition: transform .7s cubic-bezier(.2,.7,.2,1)">
+
+<!-- gift box, right bottom -->
+<div style="position: absolute; right: 3%; top: 80%; width: 92px; height: 92px; transform-style: preserve-3d; transform: translateZ(-60px)">
+<div class="sf-anim" style="width: 92px; height: 92px; transform-style: preserve-3d; animation: sf-bob 4.4s ease-in-out .6s infinite alternate">
+<div class="sf-anim" style="position: relative; width: 92px; height: 92px; transform-style: preserve-3d; animation: sf-tumble 26s linear infinite">
+<div style="position: absolute; left: 0; top: 0; width: 92px; height: 92px; background: #ffffff; transform: translateZ(46px); display: flex; justify-content: center"><div style="width: 16px; background: #f6e70a"></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 92px; height: 92px; background: #ffffff; transform: rotateY(180deg) translateZ(46px); display: flex; justify-content: center"><div style="width: 16px; background: #f6e70a"></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 92px; height: 92px; background: #ecece8; transform: rotateY(90deg) translateZ(46px); display: flex; justify-content: center"><div style="width: 16px; background: #e0d200"></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 92px; height: 92px; background: #ecece8; transform: rotateY(-90deg) translateZ(46px); display: flex; justify-content: center"><div style="width: 16px; background: #e0d200"></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 92px; height: 92px; background: #f5f5f3; transform: rotateX(90deg) translateZ(46px); display: flex; align-items: center; justify-content: center"><div style="position: absolute; left: 38px; top: 0; width: 16px; height: 92px; background: #f6e70a"></div><div style="position: absolute; left: 0; top: 38px; width: 92px; height: 16px; background: #f6e70a"></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 92px; height: 92px; background: #dcdcd7; transform: rotateX(-90deg) translateZ(46px)"></div>
+</div>
+</div>
+</div>
+
+<!-- yellow cube, right top far -->
+<div style="position: absolute; right: 6%; top: 5%; width: 48px; height: 48px; transform-style: preserve-3d; transform: translateZ(-260px)">
+<div class="sf-anim" style="position: relative; width: 48px; height: 48px; transform-style: preserve-3d; animation: sf-tumble 18s linear infinite reverse">
+<div style="position: absolute; left: 0; top: 0; width: 48px; height: 48px; background: #f6e70a; transform: translateZ(24px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 48px; height: 48px; background: #f6e70a; transform: rotateY(180deg) translateZ(24px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 48px; height: 48px; background: #d4c600; transform: rotateY(90deg) translateZ(24px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 48px; height: 48px; background: #d4c600; transform: rotateY(-90deg) translateZ(24px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 48px; height: 48px; background: #faa61a; transform: rotateX(90deg) translateZ(24px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 48px; height: 48px; background: #faa61a; transform: rotateX(-90deg) translateZ(24px)"></div>
+</div>
+</div>
+
+<!-- big coin, top center far -->
+<div style="position: absolute; left: 46%; top: 5%; width: 72px; height: 72px; transform-style: preserve-3d; transform: translateZ(-340px)">
+<div class="sf-anim" style="width: 72px; height: 72px; transform-style: preserve-3d; animation: sf-bob 3.8s ease-in-out infinite alternate">
+<div class="sf-anim" style="position: relative; width: 72px; height: 72px; transform-style: preserve-3d; animation: sf-spin-y 6s linear infinite">
+<sc-for list="{{layers9}}" as="l" hint-placeholder-count="9"><div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: 50%; background: #c9bd00; transform: translateZ({{l.z}}px)"></div></sc-for>
+<div style="position: absolute; left: 0; top: 0; width: 72px; height: 72px; border-radius: 50%; background: #f6e70a; transform: translateZ(5px); display: flex; align-items: center; justify-content: center"><div style="width: 52px; height: 52px; border-radius: 50%; border: 2px solid #d4c600; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; color: #040707">FP</div></div>
+<div style="position: absolute; left: 0; top: 0; width: 72px; height: 72px; border-radius: 50%; background: #f6e70a; transform: rotateY(180deg) translateZ(5px); display: flex; align-items: center; justify-content: center"><div style="width: 52px; height: 52px; border-radius: 50%; border: 2px solid #d4c600; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700; color: #040707">FP</div></div>
+</div>
+</div>
+</div>
+
+<!-- orange coin, top right near -->
+<div style="position: absolute; right: 24%; top: 3%; width: 44px; height: 44px; transform-style: preserve-3d; transform: translateZ(40px)">
+<div class="sf-anim" style="width: 44px; height: 44px; transform-style: preserve-3d; animation: sf-bob 3.2s ease-in-out .3s infinite alternate">
+<div class="sf-anim" style="position: relative; width: 44px; height: 44px; transform-style: preserve-3d; animation: sf-spin-y 4.2s linear infinite reverse">
+<sc-for list="{{layers7}}" as="l" hint-placeholder-count="7"><div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: 50%; background: #c47e08; transform: translateZ({{l.z}}px)"></div></sc-for>
+<div style="position: absolute; left: 0; top: 0; width: 44px; height: 44px; border-radius: 50%; background: #faa61a; transform: translateZ(4px)"><div style="position: absolute; left: 10px; top: 10px; width: 24px; height: 24px; border-radius: 50%; border: 2px solid #c47e08; box-sizing: border-box"></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 44px; height: 44px; border-radius: 50%; background: #faa61a; transform: rotateY(180deg) translateZ(4px)"><div style="position: absolute; left: 10px; top: 10px; width: 24px; height: 24px; border-radius: 50%; border: 2px solid #c47e08; box-sizing: border-box"></div></div>
+</div>
+</div>
+</div>
+
+<!-- yellow coin, bottom center near -->
+<div style="position: absolute; left: 38%; top: 90%; width: 54px; height: 54px; transform-style: preserve-3d; transform: translateZ(80px)">
+<div class="sf-anim" style="width: 54px; height: 54px; transform-style: preserve-3d; animation: sf-bob 3.6s ease-in-out 1s infinite alternate">
+<div class="sf-anim" style="position: relative; width: 54px; height: 54px; transform-style: preserve-3d; animation: sf-spin-y 5s linear infinite">
+<sc-for list="{{layers9}}" as="l" hint-placeholder-count="9"><div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: 50%; background: #c9bd00; transform: translateZ({{l.z}}px)"></div></sc-for>
+<div style="position: absolute; left: 0; top: 0; width: 54px; height: 54px; border-radius: 50%; background: #f6e70a; transform: translateZ(5px)"><div style="position: absolute; left: 9px; top: 9px; width: 36px; height: 36px; border-radius: 50%; border: 2px solid #d4c600; box-sizing: border-box"></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 54px; height: 54px; border-radius: 50%; background: #f6e70a; transform: rotateY(180deg) translateZ(5px)"><div style="position: absolute; left: 9px; top: 9px; width: 36px; height: 36px; border-radius: 50%; border: 2px solid #d4c600; box-sizing: border-box"></div></div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div style="position: relative; z-index: 1; max-width: 1120px; margin: 0 auto; padding: 40px 16px 88px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 56px">
+
+<div style="flex: 1 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+
+<!-- 3D logo plaque -->
+<div class="sf-anim" style="align-self: flex-start; display: flex; flex-direction: column; align-items: center; animation: sf-rise 1s cubic-bezier(.2,.8,.2,1) .05s both">
+<div style="width: 210px; height: 112px; perspective: 800px">
+<div class="sf-anim" style="position: relative; width: 210px; height: 112px; transform-style: preserve-3d; animation: sf-plaque 7s ease-in-out infinite alternate">
+<sc-for list="{{plaqueLayers}}" as="l" hint-placeholder-count="8"><div style="position: absolute; left: 0; top: 0; width: 210px; height: 112px; border-radius: 20px; background: {{l.color}}; transform: translateZ({{l.z}}px)"></div></sc-for>
+<div style="position: absolute; left: 0; top: 0; width: 210px; height: 112px; border-radius: 20px; background: #ffffff; transform: translateZ(1px); display: flex; align-items: center; justify-content: center">
+<img src="/_blob/fc2fe95a243d9350dbe4478deaf28576" alt="SNKRS FLASH" style="width: 156px; height: auto; display: block">
+</div>
+</div>
+</div>
+<div class="sf-anim" style="width: 170px; height: 18px; margin-top: 14px; border-radius: 50%; background: rgba(17, 18, 19, 0.14); filter: blur(7px); animation: sf-shadow 3.5s ease-in-out infinite alternate"></div>
+</div>
+
+<h1 class="sf-anim" style="margin: 0; font-size: clamp(34px, 8vw, 54px); line-height: 1.08; font-weight: 700; letter-spacing: -0.035em; max-width: 560px; transform-origin: 50% 100%; animation: sf-rise 1s cubic-bezier(.2,.8,.2,1) .15s both">ONE MORE THING.</h1>
+<div class="sf-anim" style="display: flex; flex-direction: column; gap: 10px; max-width: 480px; animation: sf-rise 1s cubic-bezier(.2,.8,.2,1) .28s both">
+<p style="margin: 0; font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: -0.015em; color: #111213">Your pair is here. Now unlock the extra.</p>
+<p style="margin: 0; font-size: 17px; line-height: 26px; font-weight: 500; color: #4f4f4a">Scan QR di kartu, masuk dengan Google, masukkan kode unik, lalu spin untuk reward yang bisa dipakai saat belanja berikutnya di sneakersflash.com.</p>
+</div>
+<ul class="sf-anim" style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; animation: sf-rise 1s cubic-bezier(.2,.8,.2,1) .4s both">
+<li style="display: flex; align-items: center; gap: 12px; font-size: 16px; line-height: 24px; font-weight: 500">
+<span aria-hidden="true" style="flex: 0 0 32px; height: 32px; border-radius: 10px; background: #ffffff; box-shadow: 0 3px 0 #e2e2dd; display: flex; align-items: center; justify-content: center; color: #085229"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+Setiap spin valid pasti dapat reward
+</li>
+<li style="display: flex; align-items: center; gap: 12px; font-size: 16px; line-height: 24px; font-weight: 500">
+<span aria-hidden="true" style="flex: 0 0 32px; height: 32px; border-radius: 10px; background: #ffffff; box-shadow: 0 3px 0 #e2e2dd; display: flex; align-items: center; justify-content: center; color: #085229"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+1 kode unik = 1 kali spin
+</li>
+<li style="display: flex; align-items: center; gap: 12px; font-size: 16px; line-height: 24px; font-weight: 500">
+<span aria-hidden="true" style="flex: 0 0 32px; height: 32px; border-radius: 10px; background: #ffffff; box-shadow: 0 3px 0 #e2e2dd; display: flex; align-items: center; justify-content: center; color: #085229"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+Reward bisa diklaim saat belanja di website
+</li>
+</ul>
+</div>
+
+<!-- Wheel card -->
+<div id="roda" class="sf-anim" style="flex: 1 1 400px; max-width: 480px; min-width: 0; position: relative; animation: sf-card-in 1.3s cubic-bezier(.2,.8,.2,1) .2s both">
+<!-- 3D shoe box, sits on the card's bottom-right corner, clear of any text -->
+<div aria-hidden="true" class="sf-anim" style="position: absolute; bottom: -40px; right: 12px; width: 60px; height: 60px; perspective: 500px; z-index: 3; pointer-events: none; animation: sf-bob 4.2s ease-in-out infinite alternate">
+<div style="width: 60px; height: 60px; transform-style: preserve-3d; transform: rotateX(-22deg)">
+<div class="sf-anim" style="position: relative; width: 60px; height: 60px; transform-style: preserve-3d; animation: sf-spin-y 12s linear infinite">
+<div style="position: absolute; left: 0; top: 0; width: 60px; height: 60px; background: #111213; transform: translateZ(30px); display: flex; flex-direction: column"><div style="height: 13px; background: #2a2d2f"></div><div style="flex: 1; display: flex; align-items: center; justify-content: center"><div style="width: 26px; height: 6px; border-radius: 3px; background: #f6e70a"></div></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 60px; height: 60px; background: #111213; transform: rotateY(180deg) translateZ(30px); display: flex; flex-direction: column"><div style="height: 13px; background: #2a2d2f"></div><div style="flex: 1; display: flex; align-items: center; justify-content: center"><div style="width: 26px; height: 6px; border-radius: 3px; background: #f6e70a"></div></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 60px; height: 60px; background: #1c1e20; transform: rotateY(90deg) translateZ(30px); display: flex; flex-direction: column"><div style="height: 13px; background: #34373a"></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 60px; height: 60px; background: #1c1e20; transform: rotateY(-90deg) translateZ(30px); display: flex; flex-direction: column"><div style="height: 13px; background: #34373a"></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 60px; height: 60px; background: #3a3d40; transform: rotateX(90deg) translateZ(30px); display: flex; align-items: center; justify-content: center"><div style="width: 20px; height: 20px; border-radius: 4px; background: #faa61a"></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 60px; height: 60px; background: #040707; transform: rotateX(-90deg) translateZ(30px)"></div>
+</div>
+</div>
+</div>
+<div style="position: relative; background: #ffffff; border-radius: 20px; padding: 14px; box-sizing: border-box; box-shadow: 0 1px 3px rgba(17, 18, 19, 0.06), 0 30px 60px rgba(17, 18, 19, 0.1); display: flex; flex-direction: column; gap: 16px">
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 6px 0">
+<div style="font-size: 17px; line-height: 22px; font-weight: 600; letter-spacing: -0.01em">Roda hadiah</div>
+<div style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: {{chipBg}}; color: {{chipFg}}; font-size: 13px; line-height: 16px; font-weight: 600">
+<span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 50%; background: {{chipDot}}"></span>
+{{chipLabel}}
+</div>
+</div>
+
+<!-- 3D stage -->
+<div style="position: relative; width: 330px; height: 440px; margin: 0 auto; perspective: 1100px; perspective-origin: 50% 30%">
+<div style="position: absolute; left: 0; top: 0; width: 330px; height: 440px; transform-style: preserve-3d; transform: rotateX({{tiltX}}deg) rotateY({{tiltY}}deg) scale({{stageScale}}); transition: transform .5s cubic-bezier(.2,.7,.2,1)">
+
+<div aria-hidden="true" style="position: absolute; left: 165px; top: 396px; width: 0; height: 0; transform-style: preserve-3d">
+<sc-for list="{{podiumLayers}}" as="l" hint-placeholder-count="14">
+<div style="position: absolute; left: -120px; top: -120px; width: 240px; height: 240px; border-radius: 50%; background: {{l.color}}; transform: translateY({{l.y}}px) rotateX(90deg)"></div>
+</sc-for>
+<div style="position: absolute; left: -120px; top: -120px; width: 240px; height: 240px; border-radius: 50%; background: #111213; transform: rotateX(90deg); display: flex; align-items: center; justify-content: center">
+<div class="sf-anim" style="position: absolute; left: 20px; top: 20px; width: 200px; height: 200px; border-radius: 50%; border: 2px solid #f6e70a; box-sizing: border-box; animation: sf-ring 2.6s ease-out infinite"></div>
+<div style="width: 200px; height: 200px; border-radius: 50%; border: 3px solid #f6e70a; box-sizing: border-box; display: flex; align-items: center; justify-content: center">
+<div class="sf-anim" style="width: 210px; height: 44px; border-radius: 50%; background: rgba(0, 0, 0, 0.7); filter: blur(8px); animation: sf-shadow 3.2s ease-in-out infinite alternate"></div>
+</div>
+</div>
+</div>
+
+<div class="sf-anim" style="position: absolute; left: 0; top: 18px; width: 330px; height: 330px; transform-style: preserve-3d; animation: sf-float 3.2s ease-in-out infinite alternate">
+<div class="sf-anim" style="position: absolute; left: 0; top: 0; width: 330px; height: 330px; transform-style: preserve-3d; animation: sf-sway 8s ease-in-out infinite alternate">
+
+<div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 330px; height: 330px; border-radius: 50%; background: #8f5a05; transform: translateZ(-26px)"></div>
+<sc-for list="{{wheelLayers}}" as="l" hint-placeholder-count="12">
+<div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 330px; height: 330px; border-radius: 50%; background: {{l.color}}; transform: translateZ({{l.z}}px)"></div>
+</sc-for>
+<div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 330px; height: 330px; border-radius: 50%; background: #f6e70a; box-shadow: inset 0 0 0 2px rgba(4, 7, 7, 0.06), inset 0 -6px 12px rgba(4, 7, 7, 0.1)"></div>
+
+<div aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 330px; height: 330px; transform: translateZ(1px)">
+<sc-for list="{{bulbs}}" as="b" hint-placeholder-count="20">
+<div class="sf-anim" style="position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: #ffffff; transform: rotate({{b.angle}}deg) translateY(-159px); animation: {{b.anim}}"></div>
+</sc-for>
+</div>
+
+<div role="img" aria-label="Roda hadiah berisi 8 hadiah" style="position: absolute; left: 12px; top: 12px; width: 306px; height: 306px; border-radius: 50%; overflow: hidden; background: conic-gradient(#f6e70a 0deg 45deg, #f5f5f3 45deg 90deg, #111213 90deg 135deg, #f5f5f3 135deg 180deg, #f6e70a 180deg 225deg, #f5f5f3 225deg 270deg, #111213 270deg 315deg, #f5f5f3 315deg 360deg); box-shadow: inset 0 0 0 2px rgba(17, 18, 19, 0.08); transform: translateZ(2px) rotate({{rot}}deg); transition: {{discT}}">
+<sc-for list="{{segs}}" as="s" hint-placeholder-count="8">
+<div style="position: absolute; left: 50%; top: 50%; width: 84px; height: 48px; margin: -24px 0 0 -42px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: {{s.fg}}; transform: rotate({{s.angle}}deg) translateY(-100px)">
+<div style="font-size: 20px; line-height: 22px; font-weight: 700; letter-spacing: -0.02em">{{s.top}}</div>
+<div style="font-size: 13px; line-height: 16px; font-weight: 600; letter-spacing: -0.01em">{{s.cap}}</div>
+</div>
+</sc-for>
+</div>
+
+<sc-if value="{{done}}" hint-placeholder-val="{{ false }}">
+<div aria-hidden="true" class="sf-anim" style="position: absolute; left: 12px; top: 12px; width: 306px; height: 306px; border-radius: 50%; background: conic-gradient(from -22.5deg, rgba(255, 255, 255, 0.6) 0deg 45deg, rgba(255, 255, 255, 0) 45deg 360deg); transform: translateZ(3px); animation: sf-glow .7s ease-in-out infinite alternate"></div>
+</sc-if>
+
+<div aria-hidden="true" style="position: absolute; left: 129px; top: 129px; width: 72px; height: 72px; transform-style: preserve-3d">
+<div style="position: absolute; left: 0; top: 0; width: 72px; height: 72px; border-radius: 50%; background: #b8ad00; transform: translateZ(6px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 72px; height: 72px; border-radius: 50%; background: #c9bd00; transform: translateZ(10px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 72px; height: 72px; border-radius: 50%; background: #d4c600; transform: translateZ(14px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 72px; height: 72px; border-radius: 50%; background: #f6e70a; border: 4px solid #ffffff; box-sizing: border-box; transform: translateZ(18px); display: flex; align-items: center; justify-content: center; color: #040707">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
+</div>
+</div>
+
+<div aria-hidden="true" style="position: absolute; left: 149px; top: -18px; width: 32px; height: 52px; transform-style: preserve-3d; transform: translateZ(22px)">
+<div class="sf-anim" style="position: absolute; left: 0; top: 0; width: 32px; height: 52px; transform-style: preserve-3d; transform-origin: 16px 16px; animation: {{tickAnim}}">
+<div style="position: absolute; left: 0; top: 0; width: 32px; height: 52px; transform: translateZ(-5px)">
+<div style="position: absolute; left: 0; top: 0; width: 32px; height: 32px; border-radius: 50%; background: #040707"></div>
+<div style="position: absolute; left: 4px; top: 24px; width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 26px solid #040707"></div>
+</div>
+<div style="position: absolute; left: 0; top: 0; width: 32px; height: 52px; transform: translateZ(-2.5px)">
+<div style="position: absolute; left: 0; top: 0; width: 32px; height: 32px; border-radius: 50%; background: #040707"></div>
+<div style="position: absolute; left: 4px; top: 24px; width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 26px solid #040707"></div>
+</div>
+<div style="position: absolute; left: 0; top: 0; width: 32px; height: 52px">
+<div style="position: absolute; left: 4px; top: 24px; width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 26px solid #111213"></div>
+<div style="position: absolute; left: 0; top: 0; width: 32px; height: 32px; border-radius: 50%; background: #111213; display: flex; align-items: center; justify-content: center"><div style="width: 10px; height: 10px; border-radius: 50%; background: #f6e70a"></div></div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+<sc-if value="{{confetti}}" hint-placeholder-val="{{ false }}">
+<div aria-hidden="true" style="position: absolute; left: 165px; top: 190px; width: 0; height: 0; z-index: 6; pointer-events: none">
+<sc-for list="{{pieces}}" as="c" hint-placeholder-count="1">
+<div style="position: absolute; left: -5px; top: -7px; width: {{c.w}}px; height: {{c.h}}px; perspective: 300px; transform: translate({{c.x}}px, {{c.y}}px); transition: transform {{c.t}}s cubic-bezier(0.1, 0.8, 0.25, 1)">
+<div class="sf-anim" style="width: 100%; height: 100%; box-sizing: border-box; border-radius: {{c.radius}}; border: {{c.border}}; background: {{c.color}}; animation: sf-fall {{c.dur}}s cubic-bezier(0.45, 0, 0.75, 0.5) {{c.delay}}s forwards"></div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+
+<!-- Action area -->
+<sc-if value="{{showAction}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 14px; padding: 0 6px 4px">
+
+<!-- Guest: Google login -->
+<sc-if value="{{guest}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #efefec">
+<div style="display: flex; align-items: center; gap: 12px; min-width: 0">
+<span aria-hidden="true" style="flex: 0 0 40px; height: 40px; border-radius: 10px; background: #ffffff; box-shadow: 0 3px 0 #dcdcd7; display: flex; align-items: center; justify-content: center; color: #111213"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg></span>
+<div style="display: flex; flex-direction: column; min-width: 0">
+<div style="font-size: 15px; line-height: 20px; font-weight: 600">Kesempatan dari kode unik</div>
+<div style="font-size: 13px; line-height: 18px; font-weight: 500; color: #4f4f4a">Masuk dengan Google, lalu aktifkan kode unik</div>
+</div>
+</div>
+<div style="font-size: 24px; line-height: 30px; font-weight: 700; letter-spacing: -0.02em">1x</div>
+</div>
+<button type="button" class="sf-press" onClick="{{login}}" style="width: 100%; height: 64px; border: 0; border-radius: 10px; font-family: inherit; font-size: 18px; line-height: 24px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; background: #f6e70a; color: #040707; box-shadow: 0 6px 0 #d4c600, 0 12px 20px rgba(17, 18, 19, 0.12)">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>
+Masuk dengan Google
+</button>
+<div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; font-size: 15px; line-height: 20px; color: #4f4f4a">
+Belum punya akun?
+<button type="button" onClick="{{login}}" style="min-height: 44px; padding: 0 6px; border: 0; background: transparent; font-family: inherit; font-weight: 700; color: #111213; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-size: 15px">Daftar dengan Google</button>
+</div>
+<div style="display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #ffffff; box-shadow: inset 0 0 0 1px #e7e7e3">
+<span aria-hidden="true" style="flex: 0 0 32px; height: 32px; border-radius: 10px; background: #f6e70a; box-shadow: 0 3px 0 #d4c600; display: flex; align-items: center; justify-content: center; color: #040707"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg></span>
+<div style="font-size: 13px; line-height: 18px; font-weight: 500; color: #4f4f4a"><span style="font-weight: 700; color: #111213">Baru pertama kali daftar?</span> Dapatkan voucher Rp100.000 untuk pengguna baru. Syarat dan ketentuan berlaku.</div>
+</div>
+</div>
+</sc-if>
+
+<!-- Logged in: enter unique code -->
+<sc-if value="{{showCodeForm}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<label for="sf-code" style="font-size: 15px; line-height: 20px; font-weight: 600">Masukkan kode unik</label>
+<input id="sf-code" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Kode dari stiker di kartu" value="{{codeInput}}" onChange="{{onCode}}" aria-invalid="{{codeInvalid}}" aria-describedby="sf-code-error" style="width: 100%; height: 56px; padding: 0 16px; box-sizing: border-box; border: {{codeBorder}}; border-radius: 10px; background: #efefec; font-family: inherit; font-size: 18px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: #111213">
+<sc-if value="{{hasError}}" hint-placeholder-val="{{ false }}">
+<div id="sf-code-error" role="alert" style="display: flex; align-items: flex-start; gap: 8px; padding: 12px 14px; border-radius: 10px; background: #fdecec; color: #931212; font-size: 15px; line-height: 20px; font-weight: 600">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 20px"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+{{codeError}}
+</div>
+</sc-if>
+</div>
+<button type="button" class="sf-press" onClick="{{activate}}" disabled="{{activateDisabled}}" style="width: 100%; height: 64px; border: 0; border-radius: 10px; font-family: inherit; font-size: 18px; line-height: 24px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; background: {{activateBg}}; color: {{activateFg}}; box-shadow: {{activateShadow}}">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/></svg>
+Aktifkan kode
+</button>
+<div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; font-size: 13px; line-height: 18px; font-weight: 500; color: #6b6b66">
+Sudah masuk dengan Google.
+<button type="button" onClick="{{logout}}" style="min-height: 44px; padding: 0 6px; border: 0; background: transparent; font-family: inherit; font-weight: 700; color: #111213; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-size: 13px">Ganti akun</button>
+</div>
+</div>
+</sc-if>
+
+<!-- Code valid: spin -->
+<sc-if value="{{showSpin}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #e8f5ec; color: #0a5a2b">
+<svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex: 0 0 22px"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+<div style="display: flex; flex-direction: column">
+<div style="font-size: 15px; line-height: 20px; font-weight: 700">Kode aktif</div>
+<div style="font-size: 13px; line-height: 18px; font-weight: 600; letter-spacing: 0.04em">{{codeActive}}</div>
+</div>
+</div>
+<button type="button" class="sf-press" onClick="{{spin}}" disabled="{{spinning}}" style="width: 100%; height: 64px; border: 0; border-radius: 10px; font-family: inherit; font-size: 18px; line-height: 24px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; background: {{spinBg}}; color: {{spinFg}}; box-shadow: {{spinShadow}}">
+<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+{{spinLabel}}
+</button>
+</div>
+</sc-if>
+
+</div>
+</sc-if>
+
+<!-- Result -->
+<sc-if value="{{done}}" hint-placeholder-val="{{ false }}">
+<div style="perspective: 1000px; padding: 0 6px 4px">
+<div aria-live="polite" class="sf-anim" style="display: flex; flex-direction: column; gap: 16px; transform-origin: 50% 0; animation: sf-flip-in .9s cubic-bezier(.2,.8,.2,1) .15s both">
+<div style="display: flex; align-items: center; gap: 16px">
+<div aria-hidden="true" style="flex: 0 0 96px; height: 96px; perspective: 500px">
+<div class="sf-anim" style="position: relative; width: 96px; height: 96px; transform-style: preserve-3d; animation: sf-spin-y 4.5s linear infinite">
+<sc-for list="{{layers11}}" as="m" hint-placeholder-count="11">
+<div style="position: absolute; left: 0; top: 0; width: 96px; height: 96px; border-radius: 50%; background: {{medalEdge}}; transform: translateZ({{m.z}}px)"></div>
+</sc-for>
+<div style="position: absolute; left: 0; top: 0; width: 96px; height: 96px; border-radius: 50%; background: {{medalFace}}; color: {{medalFg}}; border: 3px solid {{medalRing}}; box-sizing: border-box; transform: translateZ(6px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center">
+<div style="font-size: 22px; line-height: 24px; font-weight: 700; letter-spacing: -0.02em">{{prizeTop}}</div>
+<div style="font-size: 13px; line-height: 16px; font-weight: 600">{{prizeCap}}</div>
+</div>
+<div style="position: absolute; left: 0; top: 0; width: 96px; height: 96px; border-radius: 50%; background: {{medalFace}}; color: {{medalFg}}; border: 3px solid {{medalRing}}; box-sizing: border-box; transform: rotateY(180deg) translateZ(6px); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center">
+<div style="font-size: 22px; line-height: 24px; font-weight: 700; letter-spacing: -0.02em">{{prizeTop}}</div>
+<div style="font-size: 13px; line-height: 16px; font-weight: 600">{{prizeCap}}</div>
+</div>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<div style="align-self: flex-start; display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: #e8f5ec; color: #0a5a2b; font-size: 13px; line-height: 16px; font-weight: 600">
+<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+Sukses
+</div>
+<div style="font-size: 26px; line-height: 32px; font-weight: 700; letter-spacing: -0.02em">REWARD UNLOCKED!</div>
+</div>
+</div>
+<div style="font-size: 16px; line-height: 24px; color: #4f4f4a">{{prizeDesc}}</div>
+<a href="https://sneakersflash.com" class="sf-press" style="height: 64px; border-radius: 10px; background: #f6e70a; color: #040707; text-decoration: none; font-size: 18px; line-height: 24px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 6px 0 #d4c600, 0 12px 20px rgba(17, 18, 19, 0.12)">Belanja di sneakersflash.com<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+<button type="button" onClick="{{again}}" style="height: 56px; margin-bottom: 6px; border: 0; border-radius: 10px; background: #efefec; color: #111213; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer">Aktifkan kode lain</button>
+</div>
+</div>
+</sc-if>
+
+</div>
+</div>
+</div>
+</section>
+
+<!-- How it works: 3D slabs -->
+<section style="max-width: 1120px; margin: 0 auto; padding: 24px 16px 96px; box-sizing: border-box; display: flex; flex-direction: column; gap: 32px">
+<h2 style="margin: 0; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.025em">Cara dapat hadiahnya</h2>
+<div class="sf-reveal" style="display: flex; flex-wrap: wrap; gap: 28px">
+<div class="sf-slab" style="position: relative; flex: 1 1 280px; min-width: 0; background: #ffffff; border-radius: 16px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 24px 40px rgba(17, 18, 19, 0.06)">
+<div aria-hidden="true" style="position: absolute; left: 10px; right: 10px; bottom: 100%; height: 16px; background: #f0f0ec; transform-origin: 50% 100%; transform: rotateX(90deg)"></div>
+<div aria-hidden="true" style="position: absolute; top: 10px; bottom: 10px; left: 100%; width: 16px; background: #dcdcd7; transform-origin: 0 50%; transform: rotateY(90deg)"></div>
+<div aria-hidden="true" style="font-size: 72px; line-height: 72px; font-weight: 700; letter-spacing: -0.04em; color: #111213; text-shadow: 1px 1px 0 #f6e70a, 2px 2px 0 #f6e70a, 3px 3px 0 #f6e70a, 4px 4px 0 #faa61a, 5px 5px 0 #faa61a, 6px 6px 0 #faa61a">1</div>
+<div style="font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: -0.015em">Scan QR di kartu</div>
+<div style="font-size: 16px; line-height: 24px; color: #4f4f4a">Buka folded card di paketmu, lalu scan QR untuk masuk ke halaman ONE MORE THING.</div>
+</div>
+<div class="sf-slab" style="position: relative; flex: 1 1 280px; min-width: 0; background: #ffffff; border-radius: 16px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 24px 40px rgba(17, 18, 19, 0.06)">
+<div aria-hidden="true" style="position: absolute; left: 10px; right: 10px; bottom: 100%; height: 16px; background: #f0f0ec; transform-origin: 50% 100%; transform: rotateX(90deg)"></div>
+<div aria-hidden="true" style="position: absolute; top: 10px; bottom: 10px; left: 100%; width: 16px; background: #dcdcd7; transform-origin: 0 50%; transform: rotateY(90deg)"></div>
+<div aria-hidden="true" style="font-size: 72px; line-height: 72px; font-weight: 700; letter-spacing: -0.04em; color: #111213; text-shadow: 1px 1px 0 #f6e70a, 2px 2px 0 #f6e70a, 3px 3px 0 #f6e70a, 4px 4px 0 #faa61a, 5px 5px 0 #faa61a, 6px 6px 0 #faa61a">2</div>
+<div style="font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: -0.015em">Masuk dengan Google</div>
+<div style="font-size: 16px; line-height: 24px; color: #4f4f4a">Login atau daftar dengan Google, lalu masukkan kode unik dari stiker di dalam kartu.</div>
+</div>
+<div class="sf-slab" style="position: relative; flex: 1 1 280px; min-width: 0; background: #ffffff; border-radius: 16px; padding: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 24px 40px rgba(17, 18, 19, 0.06)">
+<div aria-hidden="true" style="position: absolute; left: 10px; right: 10px; bottom: 100%; height: 16px; background: #f0f0ec; transform-origin: 50% 100%; transform: rotateX(90deg)"></div>
+<div aria-hidden="true" style="position: absolute; top: 10px; bottom: 10px; left: 100%; width: 16px; background: #dcdcd7; transform-origin: 0 50%; transform: rotateY(90deg)"></div>
+<div aria-hidden="true" style="font-size: 72px; line-height: 72px; font-weight: 700; letter-spacing: -0.04em; color: #111213; text-shadow: 1px 1px 0 #f6e70a, 2px 2px 0 #f6e70a, 3px 3px 0 #f6e70a, 4px 4px 0 #faa61a, 5px 5px 0 #faa61a, 6px 6px 0 #faa61a">3</div>
+<div style="font-size: 20px; line-height: 26px; font-weight: 600; letter-spacing: -0.015em">Spin &amp; unlock reward</div>
+<div style="font-size: 16px; line-height: 24px; color: #4f4f4a">Setiap spin valid mendapatkan reward. Gunakan saat belanja berikutnya di sneakersflash.com sesuai ketentuan.</div>
+</div>
+</div>
+</section>
+
+<!-- Prizes -->
+<section style="border-top: 1px solid #e7e7e3">
+<div style="max-width: 1120px; margin: 0 auto; padding: 72px 16px 80px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 32px">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center">
+<h2 style="margin: 0; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.025em">Ada 5 jenis reward</h2>
+<p style="margin: 0; font-size: 17px; line-height: 26px; font-weight: 500; color: #4f4f4a; max-width: 440px">Setiap spin valid pasti mendapatkan satu reward.</p>
+</div>
+<div style="width: 100%; max-width: 920px; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px">
+<div class="sf-pop-in">
+<div class="sf-prize" style="height: 100%; box-sizing: border-box; background: #ffffff; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 3px rgba(17, 18, 19, 0.06)">
+<span aria-hidden="true" class="sf-anim sf-prize-token" style="width: 48px; height: 48px; border-radius: 12px; background: #f6e70a; color: #040707; box-shadow: 0 4px 0 #d4c600; display: flex; align-items: center; justify-content: center; animation: sf-bob-sm 2.6s ease-in-out 0.00s infinite alternate"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg></span>
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="font-size: 17px; line-height: 22px; font-weight: 600">Flash Point 50K</div><div style="font-size: 13px; line-height: 18px; font-weight: 500; color: #4f4f4a">Poin belanja senilai Rp 50.000</div></div>
+</div>
+</div>
+<div class="sf-pop-in">
+<div class="sf-prize" style="height: 100%; box-sizing: border-box; background: #ffffff; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 3px rgba(17, 18, 19, 0.06)">
+<span aria-hidden="true" class="sf-anim sf-prize-token" style="width: 48px; height: 48px; border-radius: 12px; background: #f6e70a; color: #040707; box-shadow: 0 4px 0 #d4c600; display: flex; align-items: center; justify-content: center; animation: sf-bob-sm 2.6s ease-in-out 0.25s infinite alternate"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg></span>
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="font-size: 17px; line-height: 22px; font-weight: 600">Flash Point 100K</div><div style="font-size: 13px; line-height: 18px; font-weight: 500; color: #4f4f4a">Poin belanja senilai Rp 100.000</div></div>
+</div>
+</div>
+<div class="sf-pop-in">
+<div class="sf-prize" style="height: 100%; box-sizing: border-box; background: #ffffff; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 3px rgba(17, 18, 19, 0.06)">
+<span aria-hidden="true" class="sf-anim sf-prize-token" style="width: 48px; height: 48px; border-radius: 12px; background: #f6e70a; color: #040707; box-shadow: 0 4px 0 #d4c600; display: flex; align-items: center; justify-content: center; animation: sf-bob-sm 2.6s ease-in-out 0.50s infinite alternate"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/></svg></span>
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="font-size: 17px; line-height: 22px; font-weight: 600">Flash Point 150K</div><div style="font-size: 13px; line-height: 18px; font-weight: 500; color: #4f4f4a">Poin belanja senilai Rp 150.000</div></div>
+</div>
+</div>
+<div class="sf-pop-in">
+<div class="sf-prize" style="height: 100%; box-sizing: border-box; background: #ffffff; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 3px rgba(17, 18, 19, 0.06)">
+<span aria-hidden="true" class="sf-anim sf-prize-token" style="width: 48px; height: 48px; border-radius: 12px; background: #efefec; color: #111213; box-shadow: 0 4px 0 #dcdcd7; display: flex; align-items: center; justify-content: center; animation: sf-bob-sm 2.6s ease-in-out 1.25s infinite alternate"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 1.994 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></svg></span>
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="font-size: 17px; line-height: 22px; font-weight: 600">Double box</div><div style="font-size: 13px; line-height: 18px; font-weight: 500; color: #4f4f4a">Bonus double box untuk pesanan website berikutnya.</div></div>
+</div>
+</div>
+<div class="sf-pop-in">
+<div class="sf-prize" style="height: 100%; box-sizing: border-box; background: #ffffff; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 3px rgba(17, 18, 19, 0.06)">
+<span aria-hidden="true" class="sf-anim sf-prize-token" style="width: 48px; height: 48px; border-radius: 12px; background: #efefec; color: #111213; box-shadow: 0 4px 0 #dcdcd7; display: flex; align-items: center; justify-content: center; animation: sf-bob-sm 2.6s ease-in-out 1.75s infinite alternate"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h7v9l3.5 3.5a3.5 3.5 0 0 1-5 5L8.6 14.6A2 2 0 0 1 8 13.2z"/><path d="M8 6h7"/></svg></span>
+<div style="display: flex; flex-direction: column; gap: 4px"><div style="font-size: 17px; line-height: 22px; font-weight: 600">Kaos kaki</div><div style="font-size: 13px; line-height: 18px; font-weight: 500; color: #4f4f4a">Bonus kaos kaki untuk pesanan website berikutnya.</div></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Terms -->
+<section style="max-width: 1120px; margin: 0 auto; padding: 24px 16px 88px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 32px">
+<div style="flex: 1 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-size: 28px; line-height: 34px; font-weight: 700; letter-spacing: -0.025em">Syarat dan ketentuan</h2>
+<p style="margin: 0; font-size: 16px; line-height: 24px; color: #4f4f4a">Periode program [TANGGAL MULAI] sampai [TANGGAL BERAKHIR].</p>
+</div>
+<ol class="sf-reveal" style="flex: 2 1 480px; min-width: 0; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; background: #ffffff; border-radius: 14px; box-shadow: 0 1px 3px rgba(17, 18, 19, 0.06)">
+<li style="display: flex; gap: 14px; padding: 16px 20px; border-bottom: 1px solid #e7e7e3; font-size: 16px; line-height: 24px"><span style="flex: 0 0 24px; font-weight: 700; color: #6b6b66">1</span><span>Program berlaku bagi pemegang kode unik pada folded card Sneakers Flash yang disertakan dalam paket marketplace.</span></li>
+<li style="display: flex; gap: 14px; padding: 16px 20px; border-bottom: 1px solid #e7e7e3; font-size: 16px; line-height: 24px"><span style="flex: 0 0 24px; font-weight: 700; color: #6b6b66">2</span><span>QR digunakan untuk membuka halaman aktivasi. Setiap kode unik hanya berlaku untuk satu kali spin.</span></li>
+<li style="display: flex; gap: 14px; padding: 16px 20px; border-bottom: 1px solid #e7e7e3; font-size: 16px; line-height: 24px"><span style="flex: 0 0 24px; font-weight: 700; color: #6b6b66">3</span><span>Flash Point tercatat di akun yang digunakan untuk spin dan dapat dipakai pada pembelian berikutnya di sneakersflash.com, dengan minimum belanja serta masa berlaku sesuai ketentuan.</span></li>
+<li style="display: flex; gap: 14px; padding: 16px 20px; border-bottom: 1px solid #e7e7e3; font-size: 16px; line-height: 24px"><span style="flex: 0 0 24px; font-weight: 700; color: #6b6b66">4</span><span>Setiap spin dengan kode valid menghasilkan satu reward, mengikuti alokasi dan ketersediaan program.</span></li>
+<li style="display: flex; gap: 14px; padding: 16px 20px; border-bottom: 1px solid #e7e7e3; font-size: 16px; line-height: 24px"><span style="flex: 0 0 24px; font-weight: 700; color: #6b6b66">5</span><span>Kaos kaki dan double box dapat diklaim bersama pesanan berikutnya di sneakersflash.com sesuai ketentuan.</span></li>
+<li style="display: flex; gap: 14px; padding: 16px 20px; border-bottom: 1px solid #e7e7e3; font-size: 16px; line-height: 24px"><span style="flex: 0 0 24px; font-weight: 700; color: #6b6b66">6</span><span>Hadiah tidak dapat diuangkan. Penggunaan reward mengikuti ketentuan program dan akun penerima.</span></li>
+<li style="display: flex; gap: 14px; padding: 16px 20px; font-size: 16px; line-height: 24px"><span style="flex: 0 0 24px; font-weight: 700; color: #6b6b66">7</span><span>Voucher pengguna baru Rp100.000 merupakan benefit terpisah dan mengikuti syarat promo yang berlaku.</span></li>
+</ol>
+</section>
+
+<!-- Closing band with 3D objects -->
+<section style="position: relative; overflow: hidden; background: #111213; color: #f4f4f2">
+<div aria-hidden="true" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; perspective: 1000px; pointer-events: none">
+<div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; transform-style: preserve-3d">
+
+<div style="position: absolute; left: 6%; top: 18%; width: 64px; height: 64px; transform-style: preserve-3d; transform: translateZ(-80px)">
+<div class="sf-anim" style="width: 64px; height: 64px; transform-style: preserve-3d; animation: sf-bob 3.4s ease-in-out infinite alternate">
+<div class="sf-anim" style="position: relative; width: 64px; height: 64px; transform-style: preserve-3d; animation: sf-spin-y 5.5s linear infinite">
+<sc-for list="{{layers9}}" as="l" hint-placeholder-count="9"><div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: 50%; background: #c9bd00; transform: translateZ({{l.z}}px)"></div></sc-for>
+<div style="position: absolute; left: 0; top: 0; width: 64px; height: 64px; border-radius: 50%; background: #f6e70a; transform: translateZ(5px)"><div style="position: absolute; left: 11px; top: 11px; width: 42px; height: 42px; border-radius: 50%; border: 2px solid #d4c600; box-sizing: border-box"></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 64px; height: 64px; border-radius: 50%; background: #f6e70a; transform: rotateY(180deg) translateZ(5px)"><div style="position: absolute; left: 11px; top: 11px; width: 42px; height: 42px; border-radius: 50%; border: 2px solid #d4c600; box-sizing: border-box"></div></div>
+</div>
+</div>
+</div>
+
+<div style="position: absolute; right: 8%; top: 58%; width: 42px; height: 42px; transform-style: preserve-3d; transform: translateZ(40px)">
+<div class="sf-anim" style="width: 42px; height: 42px; transform-style: preserve-3d; animation: sf-bob 3s ease-in-out .5s infinite alternate">
+<div class="sf-anim" style="position: relative; width: 42px; height: 42px; transform-style: preserve-3d; animation: sf-spin-y 4s linear infinite reverse">
+<sc-for list="{{layers7}}" as="l" hint-placeholder-count="7"><div style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-radius: 50%; background: #c47e08; transform: translateZ({{l.z}}px)"></div></sc-for>
+<div style="position: absolute; left: 0; top: 0; width: 42px; height: 42px; border-radius: 50%; background: #faa61a; transform: translateZ(4px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 42px; height: 42px; border-radius: 50%; background: #faa61a; transform: rotateY(180deg) translateZ(4px)"></div>
+</div>
+</div>
+</div>
+
+<div style="position: absolute; right: 16%; top: 12%; width: 50px; height: 50px; transform-style: preserve-3d; transform: translateZ(-160px)">
+<div class="sf-anim" style="position: relative; width: 50px; height: 50px; transform-style: preserve-3d; animation: sf-tumble 16s linear infinite">
+<div style="position: absolute; left: 0; top: 0; width: 50px; height: 50px; background: #f6e70a; transform: translateZ(25px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 50px; height: 50px; background: #f6e70a; transform: rotateY(180deg) translateZ(25px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 50px; height: 50px; background: #d4c600; transform: rotateY(90deg) translateZ(25px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 50px; height: 50px; background: #d4c600; transform: rotateY(-90deg) translateZ(25px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 50px; height: 50px; background: #faa61a; transform: rotateX(90deg) translateZ(25px)"></div>
+<div style="position: absolute; left: 0; top: 0; width: 50px; height: 50px; background: #faa61a; transform: rotateX(-90deg) translateZ(25px)"></div>
+</div>
+</div>
+
+</div>
+</div>
+<div class="sf-reveal" style="position: relative; max-width: 1120px; margin: 0 auto; padding: 96px 16px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center">
+<h2 style="margin: 0; font-size: clamp(30px, 6vw, 44px); line-height: 1.1; font-weight: 700; letter-spacing: -0.03em; color: #f4f4f2; max-width: 560px">Satu kode. Satu kesempatan.</h2>
+<p style="margin: 0; font-size: 17px; line-height: 26px; font-weight: 500; color: #b8bcbf; max-width: 440px">Punya kode unik? Masuk dengan Google, aktifkan kode, lalu spin untuk mendapatkan reward.</p>
+<a href="#roda" class="sf-round" style="margin-top: 8px; min-height: 56px; padding: 0 24px; border-radius: 10px; background: #ffffff; color: #111213; text-decoration: none; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 10px; box-shadow: 0 5px 0 #7d8286">Kembali ke roda<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></a>
+</div>
+</section>
+
+<!-- Footer -->
+<footer style="background: #ffffff">
+<div style="max-width: 1120px; margin: 0 auto; padding: 28px 16px 36px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px">
+<div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
+<img src="/_blob/fc2fe95a243d9350dbe4478deaf28576" alt="SNKRS FLASH" style="height: 30px; width: auto; display: block">
+<div style="font-size: 13px; line-height: 18px; font-weight: 500; color: #6b6b66">© 2026 SneakersFlash. Ada kendala? Chat CS di [NOMOR WHATSAPP CS].</div>
+</div>
+<div style="display: flex; gap: 8px">
+<a href="https://sneakersflash.com" style="min-height: 44px; padding: 0 14px; display: flex; align-items: center; border-radius: 999px; background: #efefec; color: #111213; text-decoration: none; font-size: 13px; font-weight: 600">sneakersflash.com</a>
+<a href="[LINK INSTAGRAM]" style="min-height: 44px; padding: 0 14px; display: flex; align-items: center; border-radius: 999px; background: #efefec; color: #111213; text-decoration: none; font-size: 13px; font-weight: 600">Instagram</a>
+</div>
+</div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"previewState":{"editor":"enum","options":["Interaktif","Sudah masuk","Kode tidak valid","Kode sudah dipakai","Kode aktif","Hasil Flash Point","Hasil hadiah fisik"],"default":"Interaktif","section":"Preview"},"$preview":{"width":1280,"height":3200}}'>
+// 8 wheel slots, 5 reward types (some repeat). Order must match the conic-gradient colors:
+// yellow, light, ink, light, yellow, light, ink, light.
+var SF_PRIZES = [
+  { top: '50K', cap: 'Flash Point', fg: '#040707', kind: 'fp', value: 'Rp 50.000' },
+  { top: 'Kaos', cap: 'kaki', fg: '#111213', kind: 'fisik', name: 'kaos kaki' },
+  { top: '100K', cap: 'Flash Point', fg: '#ffffff', kind: 'fp', value: 'Rp 100.000' },
+  { top: 'Double', cap: 'box', fg: '#111213', kind: 'fisik', name: 'double box' },
+  { top: '150K', cap: 'Flash Point', fg: '#040707', kind: 'fp', value: 'Rp 150.000' },
+  { top: 'Kaos', cap: 'kaki', fg: '#111213', kind: 'fisik', name: 'kaos kaki' },
+  { top: '50K', cap: 'Flash Point', fg: '#ffffff', kind: 'fp', value: 'Rp 50.000' },
+  { top: 'Double', cap: 'box', fg: '#111213', kind: 'fisik', name: 'double box' }
+];
+var SF_MEDAL = {
+  fp: { face: '#f6e70a', edge: '#c9bd00', fg: '#040707', ring: '#d4c600' },
+  fisik: { face: '#ffffff', edge: '#d9d9d4', fg: '#111213', ring: '#e7e7e3' }
+};
+var SF_ERRORS = {
+  invalid: 'Kode tidak valid. Periksa kembali kode pada stiker di kartu.',
+  used: 'Kode ini sudah digunakan. Satu kode hanya berlaku untuk satu kali spin.'
+};
+
+function sfLerp(a, b, t) {
+  var pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+  var r = Math.round(((pa >> 16) & 255) + ((((pb >> 16) & 255) - ((pa >> 16) & 255)) * t));
+  var g = Math.round(((pa >> 8) & 255) + ((((pb >> 8) & 255) - ((pa >> 8) & 255)) * t));
+  var bl = Math.round((pa & 255) + (((pb & 255) - (pa & 255)) * t));
+  return '#' + ((1 << 24) | (r << 16) | (g << 8) | bl).toString(16).slice(1);
+}
+function sfRange(n, fn) { var out = []; for (var i = 0; i < n; i++) out.push(fn(i)); return out; }
+function sfDesc(p) {
+  return p.kind === 'fp'
+    ? 'Kamu dapat Flash Point senilai ' + p.value + '. Gunakan saat pembelian berikutnya di website sesuai ketentuan.'
+    : 'Kamu dapat ' + p.name + '. Klaim bersama pesanan website berikutnya sesuai ketentuan.';
+}
+
+var SF_WHEEL_LAYERS = sfRange(12, function (i) { return { z: -2 * (i + 1), color: sfLerp('#f0a015', '#a86b05', i / 11) }; });
+var SF_PODIUM_LAYERS = sfRange(14, function (i) { return { y: 1.5 * (i + 1), color: sfLerp('#2a2d2f', '#0b0c0d', i / 13) }; });
+var SF_PLAQUE_LAYERS = sfRange(8, function (i) { return { z: -1.5 * (i + 1), color: sfLerp('#e7e7e3', '#c9c9c3', i / 7) }; });
+var SF_L7 = sfRange(7, function (i) { return { z: i - 3 }; });
+var SF_L9 = sfRange(9, function (i) { return { z: i - 4 }; });
+var SF_L11 = sfRange(11, function (i) { return { z: i - 5 }; });
+var SF_SEGS = SF_PRIZES.map(function (p, i) { return { top: p.top, cap: p.cap, fg: p.fg, angle: i * 45 + 22.5 }; });
+
+class Component extends DCLogic {
+  state = {
+    loggedIn: false,
+    codeInput: '', codeError: '', codeActive: '', usedCodes: [],
+    rot: -22.5, discT: 'none', phase: 'idle', tickDur: 0,
+    spinning: false, done: false, prize: 0,
+    confetti: false, burst: false, pieces: [],
+    tiltX: 0, tiltY: 0
+  };
+
+  componentDidMount() {
+    var self = this;
+    this._timers = [];
+    this._onOrient = function (e) {
+      if (e.gamma == null) return;
+      var ty = Math.max(-12, Math.min(12, e.gamma / 3));
+      var tx = Math.max(-8, Math.min(8, (45 - (e.beta || 45)) / 5));
+      self.queueTilt(tx, ty);
+    };
+    if (typeof window !== 'undefined') window.addEventListener('deviceorientation', this._onOrient);
+  }
+
+  componentWillUnmount() {
+    (this._timers || []).forEach(function (t) { clearTimeout(t); });
+    if (this._raf) cancelAnimationFrame(this._raf);
+    if (typeof window !== 'undefined' && this._onOrient) window.removeEventListener('deviceorientation', this._onOrient);
+  }
+
+  later(fn, ms) { (this._timers = this._timers || []).push(setTimeout(fn, ms)); }
+
+  queueTilt(x, y) {
+    var self = this;
+    this._pending = { x: x, y: y };
+    if (this._raf) return;
+    this._raf = requestAnimationFrame(function () {
+      self._raf = null;
+      var p = self._pending;
+      if (Math.abs(p.x - self.state.tiltX) > 0.4 || Math.abs(p.y - self.state.tiltY) > 0.4) {
+        self.setState({ tiltX: p.x, tiltY: p.y });
+      }
+    });
+  }
+
+  // Demo only: real validation happens server-side (code exists, not yet used, bound to this Google account).
+  activateCode() {
+    var code = this.state.codeInput.trim().toUpperCase();
+    if (!code) return;
+    if (this.state.usedCodes.indexOf(code) !== -1) { this.setState({ codeError: 'used' }); return; }
+    if (!/^[A-Z0-9-]{6,}$/.test(code)) { this.setState({ codeError: 'invalid' }); return; }
+    this.setState({ codeError: '', codeActive: code });
+  }
+
+  makePieces() {
+    var colors = ['#f6e70a', '#faa61a', '#111213', '#ffffff', '#f6e70a', '#faa61a'];
+    return sfRange(44, function (i) {
+      var ang = -Math.PI * (0.05 + Math.random() * 0.9);
+      var dist = 90 + Math.random() * 190;
+      var round = Math.random() < 0.3;
+      var color = colors[i % colors.length];
+      return {
+        x: Math.round(Math.cos(ang) * dist * 1.25), y: Math.round(Math.sin(ang) * dist),
+        t: (0.7 + Math.random() * 0.4).toFixed(2),
+        dur: (1.6 + Math.random() * 1.2).toFixed(2),
+        delay: (0.45 + Math.random() * 0.35).toFixed(2),
+        w: round ? 9 : 8, h: round ? 9 : 14,
+        radius: round ? '50%' : '2px',
+        color: color,
+        border: color === '#ffffff' ? '1px solid #d9d9d4' : '0'
+      };
+    });
+  }
+
+  doSpin(code) {
+    var self = this;
+    var s = this.state;
+    if (!code || s.spinning || s.done) return;
+    // Demo only: the reward must be decided server-side (code + account + allocation + stock).
+    var idx = Math.floor(Math.random() * 8);
+    var center = idx * 45 + 22.5;
+    var wind = s.rot - 20;
+    var mod = ((wind % 360) + 360) % 360;
+    var target = wind - mod + 360 * 6 + (360 - center);
+    this.setState({ loggedIn: true, codeActive: code, spinning: true, phase: 'wind', discT: 'transform 0.4s cubic-bezier(0.5, 0, 0.75, 0)', rot: wind, prize: idx, tickDur: 0 });
+    this.later(function () { self.setState({ phase: 'spin', discT: 'transform 5.4s cubic-bezier(0.1, 0.75, 0.1, 1)', rot: target, tickDur: 0.08 }); }, 420);
+    this.later(function () { self.setState({ tickDur: 0.14 }); }, 2420);
+    this.later(function () { self.setState({ tickDur: 0.26 }); }, 3820);
+    this.later(function () { self.setState({ tickDur: 0.5 }); }, 4820);
+    this.later(function () {
+      self.setState({
+        spinning: false, done: true, phase: 'win', tickDur: 0,
+        usedCodes: self.state.usedCodes.concat([code]),
+        confetti: true, burst: false, pieces: self.makePieces()
+      });
+    }, 5920);
+    this.later(function () { self.setState({ burst: true }); }, 5980);
+    this.later(function () { self.setState({ confetti: false, phase: 'done' }); }, 9400);
+  }
+
+  renderVals() {
+    var self = this;
+    var mode = this.props.previewState;
+    var s = Object.assign({}, this.state);
+    if (mode && mode !== 'Interaktif') {
+      s.loggedIn = true; s.done = false; s.spinning = false; s.codeError = ''; s.codeActive = ''; s.codeInput = '';
+      if (mode === 'Kode tidak valid') { s.codeInput = 'SF12'; s.codeError = 'invalid'; }
+      if (mode === 'Kode sudah dipakai') { s.codeInput = 'SF7K2Q9M'; s.codeError = 'used'; }
+      if (mode === 'Kode aktif') { s.codeActive = 'SF7K2Q9M'; }
+      if (mode === 'Hasil Flash Point' || mode === 'Hasil hadiah fisik') {
+        s.done = true; s.phase = 'done'; s.discT = 'none'; s.confetti = false; s.tickDur = 0;
+        s.prize = mode === 'Hasil Flash Point' ? 2 : 1;
+        s.rot = 360 - (s.prize * 45 + 22.5);
+      }
+    }
+    var prize = SF_PRIZES[s.prize] || SF_PRIZES[0];
+    var medal = SF_MEDAL[prize.kind];
+    var fast = s.phase === 'wind' || s.phase === 'spin';
+    var win = s.phase === 'win';
+    var hasInput = s.codeInput.trim().length > 0;
+    var showSpin = s.loggedIn && !!s.codeActive && !s.done;
+
+    var chipLabel, chipBg, chipFg, chipDot;
+    if (s.done) { chipLabel = 'Reward unlocked'; chipBg = '#e8f5ec'; chipFg = '#0a5a2b'; chipDot = '#2f9a5a'; }
+    else if (showSpin) { chipLabel = 'Kode aktif'; chipBg = '#e8f5ec'; chipFg = '#0a5a2b'; chipDot = '#2f9a5a'; }
+    else if (s.loggedIn) { chipLabel = 'Sudah masuk'; chipBg = '#eaf1ff'; chipFg = '#0b3d91'; chipDot = '#4b7fe0'; }
+    else { chipLabel = 'Belum masuk'; chipBg = '#efefec'; chipFg = '#4f4f4a'; chipDot = '#a5a5a0'; }
+
+    return {
+      onHeroMove: function (e) {
+        var r = e.currentTarget.getBoundingClientRect();
+        var nx = (e.clientX - r.left) / r.width - 0.5;
+        var ny = (e.clientY - r.top) / r.height - 0.5;
+        self.queueTilt(-ny * 14, nx * 20);
+      },
+      onHeroLeave: function () { self.queueTilt(0, 0); },
+      worldX: (s.tiltX * 0.7).toFixed(2),
+      worldY: (s.tiltY * 0.9).toFixed(2),
+      tiltX: (s.tiltX + (s.spinning ? 6 : 0)).toFixed(2),
+      tiltY: s.tiltY.toFixed(2),
+      stageScale: s.spinning ? 1.03 : 1,
+
+      rot: s.rot,
+      discT: s.discT,
+      tickAnim: s.tickDur > 0 ? 'sf-tick ' + s.tickDur + 's ease-in-out infinite' : 'none',
+      segs: SF_SEGS,
+      wheelLayers: SF_WHEEL_LAYERS,
+      podiumLayers: SF_PODIUM_LAYERS,
+      plaqueLayers: SF_PLAQUE_LAYERS,
+      layers7: SF_L7,
+      layers9: SF_L9,
+      layers11: SF_L11,
+      bulbs: sfRange(20, function (i) {
+        var anim = win
+          ? 'sf-flash .5s ease-in-out 0s infinite'
+          : fast
+            ? 'sf-bulb .45s ease-in-out ' + (i * 0.0225).toFixed(3) + 's infinite'
+            : 'sf-bulb 1.6s ease-in-out ' + (i * 0.08).toFixed(2) + 's infinite';
+        return { angle: i * 18, anim: anim };
+      }),
+      confetti: s.confetti,
+      pieces: s.pieces.map(function (p) {
+        return { x: s.burst ? p.x : 0, y: s.burst ? p.y : 0, t: p.t, dur: p.dur, delay: p.delay, w: p.w, h: p.h, radius: p.radius, color: p.color, border: p.border };
+      }),
+
+      chipLabel: chipLabel, chipBg: chipBg, chipFg: chipFg, chipDot: chipDot,
+      showAction: !s.done,
+      guest: !s.loggedIn,
+      showCodeForm: s.loggedIn && !s.codeActive && !s.done,
+      showSpin: showSpin,
+      login: function () { self.setState({ loggedIn: true }); },
+      logout: function () { self.setState({ loggedIn: false, codeInput: '', codeError: '', codeActive: '' }); },
+
+      codeInput: s.codeInput,
+      onCode: function (e) { self.setState({ codeInput: e.target.value, codeError: '' }); },
+      hasError: !!s.codeError,
+      codeError: SF_ERRORS[s.codeError] || '',
+      codeInvalid: s.codeError ? 'true' : 'false',
+      codeBorder: s.codeError ? '2px solid #d94141' : '1px solid #8a8a84',
+      activate: function () { self.activateCode(); },
+      activateDisabled: !hasInput,
+      activateBg: hasInput ? '#f6e70a' : '#efefec',
+      activateFg: hasInput ? '#040707' : '#6b6b66',
+      activateShadow: hasInput ? '0 6px 0 #d4c600, 0 12px 20px rgba(17, 18, 19, 0.12)' : 'none',
+
+      codeActive: s.codeActive,
+      spinning: s.spinning,
+      spin: function () { self.doSpin(s.codeActive); },
+      spinLabel: s.spinning ? 'Spinning…' : 'SPIN NOW',
+      spinBg: s.spinning ? '#efefec' : '#f6e70a',
+      spinFg: s.spinning ? '#6b6b66' : '#040707',
+      spinShadow: s.spinning ? 'none' : '0 6px 0 #d4c600, 0 12px 20px rgba(17, 18, 19, 0.12)',
+
+      done: s.done,
+      again: function () { self.setState({ done: false, phase: 'idle', codeActive: '', codeInput: '', codeError: '' }); },
+      prizeDesc: sfDesc(prize),
+      prizeTop: prize.top,
+      prizeCap: prize.cap,
+      medalFace: medal.face,
+      medalEdge: medal.edge,
+      medalFg: medal.fg,
+      medalRing: medal.ring
+    };
+  }
+}
+</script>
+</body>
+</html>
