@@ -179,7 +179,7 @@ export function OneMoreThing({ fontClass }: { fontClass: string }) {
             </ul>
           </div>
 
-          <WheelCard tiltX={tilt.x} tiltY={tilt.y} onGesture={onGesture} />
+          <WheelCard tiltX={tilt.x} tiltY={tilt.y} onGesture={onGesture} freeSpinMode={testMode} />
         </div>
       </section>
 
@@ -207,7 +207,7 @@ export function OneMoreThing({ fontClass }: { fontClass: string }) {
             boxShadow: "0 6px 16px rgba(17, 18, 19, 0.25)",
           }}
         >
-          MODE TESTING · hasil spin tidak disimpan
+          MODE TESTING · free spin, hasil tidak disimpan
         </div>
       )}
     </div>

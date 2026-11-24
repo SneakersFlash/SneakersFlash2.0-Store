@@ -53,6 +53,16 @@ export async function activateCode(raw: string) {
   }
 }
 
+/** Free spin tanpa login & kode — hanya ada selama backend mode testing. */
+export async function freeSpin(): Promise<PlayResult> {
+  try {
+    const { data } = await apiClient.post("/spin/free-play");
+    return data as PlayResult;
+  } catch (e) {
+    throw toError(e);
+  }
+}
+
 export async function playSpin(code: string): Promise<PlayResult> {
   try {
     const { data } = await apiClient.post("/spin/play", { code });

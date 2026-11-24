@@ -9,7 +9,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAuthStore } from "@/lib/store/authStore";
-import { activateCode, playSpin, SpinApiError, type PlayResult } from "@/lib/api/spin.service";
+import { activateCode, freeSpin, playSpin, SpinApiError, type PlayResult } from "@/lib/api/spin.service";
 import {
   OMT_COPY,
   OMT_REWARDS,
@@ -104,7 +104,21 @@ function makePieces(): Piece[] {
 const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-export function WheelCard({ tiltX, tiltY, onGesture }: { tiltX: number; tiltY: number; onGesture: () => void }) {
+/**
+ * `freeSpinMode` (backend mode testing): tanpa login & tanpa kode, langsung
+ * SPIN NOW lewat /spin/free-play. Hasil tidak disimpan.
+ */
+export function WheelCard({
+  tiltX,
+  tiltY,
+  onGesture,
+  freeSpinMode = false,
+}: {
+  tiltX: number;
+  tiltY: number;
+  onGesture: () => void;
+  freeSpinMode?: boolean;
+}) {
   const { loginWithGoogle } = useAuth();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const isHydrated = useAuthStore((s) => s.isHydrated);
@@ -149,7 +163,7 @@ export function WheelCard({ tiltX, tiltY, onGesture }: { tiltX: number; tiltY: n
   }, [codeInput, codeActive]);
 
   const done = !!result && (phase === "win" || phase === "done");
-  const showSpin = loggedIn && !!codeActive && !done;
+  const showSpin = (freeSpinMode || (loggedIn && !!codeActive)) && !done;
   const hasInput = codeInput.trim().length > 0;
 
   const login = async () => {
@@ -183,7 +197,7 @@ export function WheelCard({ tiltX, tiltY, onGesture }: { tiltX: number; tiltY: n
 
   const spin = async () => {
     onGesture();
-    if (!codeActive || spinning || done) return;
+    if ((!freeSpinMode && !codeActive) || spinning || done) return;
     const reduced = prefersReducedMotion();
     const wind = rot - 20;
     setSpinError(false);
@@ -198,7 +212,7 @@ export function WheelCard({ tiltX, tiltY, onGesture }: { tiltX: number; tiltY: n
     const started = Date.now();
     let res: PlayResult;
     try {
-      res = await playSpin(codeActive);
+      res = freeSpinMode ? await freeSpin() : await playSpin(codeActive);
     } catch {
       // Hentikan roda, jangan tampilkan reward apa pun.
       setDiscT("transform .4s ease-out");
@@ -642,9 +656,9 @@ export function WheelCard({ tiltX, tiltY, onGesture }: { tiltX: number; tiltY: n
         {/* ── Panel aksi ── */}
         {!done && (
           <div style={{ display: "flex", flexDirection: "column", gap: 14, padding: "0 6px 4px" }}>
-            {!loggedIn && <GuestPanel onLogin={login} />}
+            {!freeSpinMode && !loggedIn && <GuestPanel onLogin={login} />}
 
-            {loggedIn && !codeActive && (
+            {!freeSpinMode && loggedIn && !codeActive && (
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   <label htmlFor="sf-code" style={{ fontSize: 15, lineHeight: "20px", fontWeight: 600 }}>
@@ -734,8 +748,10 @@ export function WheelCard({ tiltX, tiltY, onGesture }: { tiltX: number; tiltY: n
                     <path d="m9 12 2 2 4-4" />
                   </svg>
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div style={{ fontSize: 15, lineHeight: "20px", fontWeight: 700 }}>Kode aktif</div>
-                    <div style={{ fontSize: 13, lineHeight: "18px", fontWeight: 600, letterSpacing: "0.04em" }}>{codeActive}</div>
+                    <div style={{ fontSize: 15, lineHeight: "20px", fontWeight: 700 }}>{freeSpinMode ? "Free spin" : "Kode aktif"}</div>
+                    <div style={{ fontSize: 13, lineHeight: "18px", fontWeight: 600, letterSpacing: "0.04em" }}>
+                      {freeSpinMode ? "Mode testing, tanpa kode" : codeActive}
+                    </div>
                   </div>
                 </div>
                 <button type="button" className="sf-press" onClick={spin} disabled={spinning} style={primaryBtn(!spinning)}>
@@ -863,7 +879,7 @@ export function WheelCard({ tiltX, tiltY, onGesture }: { tiltX: number; tiltY: n
                   cursor: "pointer",
                 }}
               >
-                Aktifkan kode lain
+                {freeSpinMode ? "Spin lagi" : "Aktifkan kode lain"}
               </button>
             </div>
           </div>
