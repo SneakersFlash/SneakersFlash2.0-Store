@@ -27,6 +27,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { cartService } from "@/lib/api/cart.service";
 import PageLoader from "@/components/common/PageLoader";
 import { pixel } from "@/lib/utils/fbPixel";
+import { metaCookies } from "@/lib/utils/metaMatching";
 import ThunderSpinner from "@/components/common/ThunderSpinner";
 import { ambilUtm } from "@/lib/attribution/utm";
 
@@ -412,7 +413,7 @@ function CheckoutContent(){
     setIsLoading(true);
     let keepLoading=false;
     try{
-      const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:"snap",voucherCode:appliedVoucher?.code||undefined,usePoints:pointsDiscount>0,pointsToRedeem:pointsDiscount>0?pointsDiscount:undefined,utm:ambilUtm()};
+      const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:"snap",voucherCode:appliedVoucher?.code||undefined,usePoints:pointsDiscount>0,pointsToRedeem:pointsDiscount>0?pointsDiscount:undefined,utm:ambilUtm(),meta:metaCookies()};
       const finalPayload=isBuyNowFlow?{...basePayload,cartItemIds:[],buyNowVariantId:buyNowVariantId as string,buyNowQuantity:Number(buyNowQuantity)}:{...basePayload,cartItemIds:selectedItemIds.map(id=>id.toString())};
       const res=await ordersService.checkout(finalPayload);
       // Purchase TIDAK ditembak di sini: order baru dibuat, belum tentu dibayar.

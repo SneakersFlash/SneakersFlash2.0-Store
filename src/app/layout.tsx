@@ -7,6 +7,7 @@ import { BootSplash } from "@/components/common/BootSplash";
 import { ChatWidget } from "@/components/chat/ChatWidget";
 import { MerdekaFloatingButton } from "@/components/game/MerdekaFloatingButton";
 import { UtmCapture } from "@/components/common/UtmCapture";
+import { MetaMatchingCapture } from "@/components/common/MetaMatchingCapture";
 import "./globals.css";
 
 // ─── Fonts ────────────────────────────────────────────────────────────────────
@@ -119,6 +120,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <UtmCapture />
+          <MetaMatchingCapture />
           <ChatWidget />
           {/* Duduk di atas tombol chat. Urutannya di sini tidak menentukan
               lapisan - tombol game sudah dipatok z-40, chat z-50. */}
@@ -139,6 +141,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         />
 
 
+        {/* Advanced Matching manual: em/ph/external_id ter-hash dari cache
+            sf-meta-am (diisi MetaMatchingCapture saat login). Wajib di init
+            pertama — Meta tidak menjamin init kedua memperbarui data. */}
         <Script
           id="meta-pixel"
           strategy="afterInteractive"
@@ -151,7 +156,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         t.src=v;s=b.getElementsByTagName(e)[0];
         s.parentNode.insertBefore(t,s)}(window, document,'script',
         'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '1703072617370190');
+        var am={};try{var c=JSON.parse(localStorage.getItem('sf-meta-am')||'null');
+        if(c&&c.v===1){if(c.em)am.em=c.em;if(c.ph)am.ph=c.ph;if(c.external_id)am.external_id=c.external_id;}}catch(e){}
+        fbq('init', '1703072617370190', am);
         fbq('track', 'PageView');`
           }}
         />
