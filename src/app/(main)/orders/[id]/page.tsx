@@ -10,6 +10,7 @@ import ThunderLoader from "@/components/common/ThunderLoader";
 import { ThunderBolt } from "@/components/common/ThunderBolt";
 import ThunderSpinner from "@/components/common/ThunderSpinner";
 import { openSnap } from "@/lib/midtrans/snap";
+import { pixel } from "@/lib/utils/fbPixel";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -278,6 +279,8 @@ export default function OrderPaymentPage({
         const data = await ordersService.getOrderDetails(resolvedParams.id);
         setOrder(data);
         if (data.status === "paid" || data.status === "processing") {
+          // Satu-satunya titik Purchase di browser (guard sekali per order di dalamnya).
+          pixel.purchaseFromPaidOrder(data);
           router.push(`/orders/${resolvedParams.id}/success`);
         }
       } catch (err: any) {

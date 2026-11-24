@@ -414,13 +414,8 @@ function CheckoutContent(){
       const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:"snap",voucherCode:appliedVoucher?.code||undefined,usePoints:pointsDiscount>0,pointsToRedeem:pointsDiscount>0?pointsDiscount:undefined,utm:ambilUtm()};
       const finalPayload=isBuyNowFlow?{...basePayload,cartItemIds:[],buyNowVariantId:buyNowVariantId as string,buyNowQuantity:Number(buyNowQuantity)}:{...basePayload,cartItemIds:selectedItemIds.map(id=>id.toString())};
       const res=await ordersService.checkout(finalPayload);
-      pixel.purchase({
-        value: grandTotal,
-        currency: 'IDR',
-        num_items: checkoutItems.length,
-        content_ids: checkoutItems.map(i=>i.variantSku||i.id),
-        event_id: res.id,  // deduplikasi dengan CAPI server-side
-      });
+      // Purchase TIDAK ditembak di sini: order baru dibuat, belum tentu dibayar.
+      // Browser menembaknya di /orders/[id] setelah lunas, server dari webhook.
       // Order sudah dibuat (stok ditahan). Pembeli memilih metode & membayar di
       // Snap; apa pun hasilnya, lanjut ke halaman order — di sana pop-up bisa
       // dibuka ulang selama belum lunas. Loading sengaja dibiarkan menyala
