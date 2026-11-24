@@ -301,7 +301,6 @@ function CheckoutContent(){
   const{data:profile}=useMyProfile();
   const queryClient=useQueryClient();
 
-  const hasFiredInitCheckout=useRef(false);
   const[isLoading,setIsLoading]=useState(false);
   const[usePoints,setUsePoints]=useState(false);
   const[isShippingOpen,setIsShippingOpen]=useState(false);
@@ -335,12 +334,14 @@ function CheckoutContent(){
   useEffect(()=>{if(hasEventItem){setAppliedVoucher(null);cartService.saveAppliedVoucher(null);return;}const s=cartService.loadAppliedVoucher();if(s)setAppliedVoucher(s);},[hasEventItem]);
   useEffect(()=>{if(!isStoreReady)return;if(!isAuthenticated)router.push("/login");else if(checkoutItems.length===0)router.push("/");},[isStoreReady,isAuthenticated,checkoutItems.length,router]);
 
+  // InitiateCheckout: penjaga sekali-per-isi-keranjang ada di pixel.initiateCheckout
+  // (sessionStorage). useRef dulu reset tiap halaman dibuka ulang → IC dobel.
+  const checkoutSig=checkoutItems.map(i=>`${i.id}:${i.quantity}`).sort().join("|");
   useEffect(()=>{
-    if(checkoutItems.length===0||hasFiredInitCheckout.current)return;
-    hasFiredInitCheckout.current=true;
+    if(checkoutItems.length===0)return;
     const subtotalNow=checkoutItems.reduce((s,i)=>s+Number(i.price)*i.quantity,0);
-    pixel.initiateCheckout({num_items:checkoutItems.length,value:subtotalNow,currency:'IDR'});
-  },[checkoutItems.length]); // eslint-disable-line react-hooks/exhaustive-deps
+    pixel.initiateCheckout({num_items:checkoutItems.reduce((s,i)=>s+i.quantity,0),value:subtotalNow,currency:'IDR'},checkoutItems);
+  },[checkoutSig]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const distanceMap:Record<number,number>={};
   savedAddresses.forEach(a=>{if(hasRealPin(a))distanceMap[a.id]=haversineKm(ORIGIN_COORDS.lat,ORIGIN_COORDS.lng,a.latitude,a.longitude);});

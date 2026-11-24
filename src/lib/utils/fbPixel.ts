@@ -10,6 +10,26 @@ function fbq(...args: unknown[]) {
   }
 }
 
+/** ID event unik untuk dedup browser↔server (Meta mencocokkan event_name + event_id). */
+export function newEventId(prefix: string): string {
+  const rnd =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
+  return `${prefix}.${Date.now()}.${rnd}`;
+}
+
+/** Sidik isi keranjang yang stabil terhadap urutan: "id:qty|id:qty" → hash pendek. */
+export function cartSignature(items: { id: string | number; quantity: number }[]): string {
+  const raw = items
+    .map((i) => `${i.id}:${i.quantity}`)
+    .sort()
+    .join('|');
+  let h = 5381;
+  for (let i = 0; i < raw.length; i++) h = ((h << 5) + h + raw.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+
 // Bentuk minimal dari GET /orders/:id yang dibutuhkan Purchase.
 export interface PaidOrderLike {
   orderNumber: string;
@@ -25,11 +45,38 @@ export const pixel = {
   viewContent(p: { content_ids: string[]; content_name: string; value: number; currency: string }) {
     fbq('track', 'ViewContent', { ...p, content_type: 'product' });
   },
-  addToCart(p: { content_ids: string[]; content_name: string; value: number; currency: string }) {
-    fbq('track', 'AddToCart', { ...p, content_type: 'product' });
+  /**
+   * AddToCart. Dipanggil dari "Tambah ke keranjang" DAN "Beli Sekarang" —
+   * dua-duanya memasukkan barang ke keranjang. Mengembalikan eventID supaya
+   * bisa ikut dikirim ke backend kalau nanti ada event server-nya.
+   */
+  addToCart(p: { content_ids: string[]; content_name: string; value: number; currency: string }, eventId = newEventId('atc')) {
+    fbq('track', 'AddToCart', { ...p, content_type: 'product' }, { eventID: eventId });
+    return eventId;
   },
-  initiateCheckout(p: { num_items: number; value: number; currency: string }) {
-    fbq('track', 'InitiateCheckout', p);
+  /**
+   * InitiateCheckout, SEKALI per isi keranjang per tab. Kuncinya hash isi
+   * checkout (id item + qty) di sessionStorage: reload, balik dari Snap, atau
+   * balik dari login dengan keranjang yang sama tidak menembak lagi. Isi
+   * keranjang berubah = checkout baru = boleh tembak lagi.
+   * Mengembalikan eventID, atau null kalau dilewati.
+   */
+  initiateCheckout(
+    p: { num_items: number; value: number; currency: string },
+    cartItems: { id: string | number; quantity: number }[],
+  ): string | null {
+    const key = `fb_ic:${cartSignature(cartItems)}`;
+    try {
+      if (sessionStorage.getItem(key)) return null;
+    } catch {
+      // sessionStorage diblokir — tembak saja, lebih baik lebih dari hilang.
+    }
+    const eventId = newEventId('ic');
+    fbq('track', 'InitiateCheckout', p, { eventID: eventId });
+    try {
+      sessionStorage.setItem(key, eventId);
+    } catch {}
+    return eventId;
   },
   /**
    * Purchase dari order yang SUDAH LUNAS (dipanggil halaman /orders/[id] saat

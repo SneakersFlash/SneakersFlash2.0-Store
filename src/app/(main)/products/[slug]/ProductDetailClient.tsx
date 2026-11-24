@@ -318,7 +318,16 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
         setSelectedItemIds([addedItem.id]);
       }
 
-      // 5. Eksekusi redirect ke checkout
+      // 5. AddToCart — Beli Sekarang juga memasukkan barang ke keranjang.
+      //    Dulu tidak ditembak, jadi AddToCart < InitiateCheckout di Meta.
+      pixel.addToCart({
+        content_ids: [String(product.id)],
+        content_name: product.name,
+        value: Number(displayPrice) * quantity,
+        currency: 'IDR',
+      });
+
+      // 6. Eksekusi redirect ke checkout
       router.push("/checkout");
       
     } catch (error) {
