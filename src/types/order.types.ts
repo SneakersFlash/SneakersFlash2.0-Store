@@ -31,6 +31,8 @@ export interface CheckoutPayload {
     usePoints?: boolean;
     pointsToRedeem?: number;
     utm?: Utm;
+    // Cookie Meta + eventID InitiateCheckout browser (dedup dgn event server)
+    meta?: { fbp?: string; fbc?: string; icEventId?: string };
 }
 
 // Response dari POST /orders/checkout
@@ -47,6 +49,18 @@ export interface CheckoutResponse {
   deeplinkUrl:   string | null;  // GoPay mobile, ShopeePay, Akulaku, credit_card 3DS
   expireTime:    string | null;
   snapToken?:    string | null;  // checkout via Snap: buka pop-up dengan token ini
+  // Purchase Meta untuk pixel browser (mode 'checkout'); null kalau Purchase
+  // menunggu lunas. Isinya identik dgn event server → dedup.
+  metaPurchase?: {
+    eventId: string;
+    currency: string;
+    value: number;
+    order_id: string;
+    content_type: string;
+    content_ids: string[];
+    contents: { id: string; quantity: number; item_price: number }[];
+    num_items: number;
+  } | null;
 }
 
 // ─── Shipping Provider ─────────────────────────────────────────────────────────

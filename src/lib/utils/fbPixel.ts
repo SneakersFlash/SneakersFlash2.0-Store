@@ -4,10 +4,34 @@ declare global {
   interface Window { fbq?: FbqFn; }
 }
 
+// Script pixel di layout dimuat `afterInteractive`, SETELAH efek React di
+// halaman pertama jalan. Halaman yang dibuka langsung (reload /checkout, balik
+// dari login) dulu menembak event sebelum window.fbq ada → event hilang diam-
+// diam. Sekarang event diantre dan dikirim begitu pixel siap (maks 10 detik).
+const pending: unknown[][] = [];
+let flushTimer: ReturnType<typeof setInterval> | null = null;
+
 function fbq(...args: unknown[]) {
-  if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+  if (typeof window === 'undefined') return;
+  if (typeof window.fbq === 'function') {
     window.fbq(...args);
+    return;
   }
+  pending.push(args);
+  if (flushTimer) return;
+  let tries = 0;
+  flushTimer = setInterval(() => {
+    tries++;
+    if (typeof window.fbq === 'function') {
+      clearInterval(flushTimer!);
+      flushTimer = null;
+      pending.splice(0).forEach((a) => window.fbq!(...a));
+    } else if (tries >= 50) {
+      clearInterval(flushTimer!);
+      flushTimer = null;
+      pending.length = 0;
+    }
+  }, 200);
 }
 
 /** ID event unik untuk dedup browser↔server (Meta mencocokkan event_name + event_id). */
@@ -118,6 +142,49 @@ export const pixel = {
     } catch {}
     return eventId;
   },
+  /** eventID InitiateCheckout yang sudah ditembak untuk isi keranjang ini (untuk dedup server). */
+  initiateCheckoutEventId(cartItems: { id: string | number; quantity: number }[]): string | undefined {
+    try {
+      return sessionStorage.getItem(`fb_ic:${cartSignature(cartItems)}`) ?? undefined;
+    } catch {
+      return undefined;
+    }
+  },
+  /**
+   * Purchase saat pembeli menekan Bayar (mode 'checkout' di backend), walaupun
+   * belum dibayar. Datanya dari respons checkout — eventID, nilai, dan isi
+   * identik dengan event server, jadi Meta men-dedup. Sekali per order.
+   */
+  purchaseAtCheckout(p: {
+    eventId: string;
+    value: number;
+    currency: string;
+    content_ids: string[];
+    contents: { id: string; quantity: number; item_price: number }[];
+    num_items: number;
+  }) {
+    if (typeof window === 'undefined' || !p?.eventId) return;
+    const key = `fb_purchase_sent:${p.eventId}`;
+    try {
+      if (localStorage.getItem(key)) return;
+    } catch {}
+    fbq(
+      'track',
+      'Purchase',
+      {
+        currency: p.currency || 'IDR',
+        value: p.value,
+        content_type: 'product',
+        content_ids: p.content_ids,
+        contents: p.contents,
+        num_items: p.num_items,
+      },
+      { eventID: p.eventId },
+    );
+    try {
+      localStorage.setItem(key, String(Date.now()));
+    } catch {}
+  },
   /**
    * Purchase dari order yang SUDAH LUNAS (dipanggil halaman /orders/[id] saat
    * status paid/processing). Jangan dipanggil saat order baru dibuat — order
@@ -127,8 +194,8 @@ export const pixel = {
    * - Guard localStorage per orderNumber: buka ulang halaman tidak menembak lagi.
    * - Lewat 24 jam dari paidAt tidak ditembak: jendela dedup Meta 48 jam, dan
    *   server sudah mengirimnya saat webhook.
-   * - value = total setelah diskon, sebelum ongkir — rumus sama dengan
-   *   purchaseValue() di backend (meta-capi.payload.ts).
+   * - value = total yang ditagihkan apa adanya — sama dengan orderValue()
+   *   di backend (meta-capi.payload.ts).
    */
   purchaseFromPaidOrder(order: PaidOrderLike) {
     if (typeof window === 'undefined' || !order?.orderNumber) return;
@@ -141,10 +208,9 @@ export const pixel = {
     } catch {
       // localStorage diblokir (mode privat) — tetap kirim, dedup eventID menjaga.
     }
-    if (typeof window.fbq !== 'function') return; // pixel belum siap: biar server yang lapor
 
-    const ongkirBersih = Math.max(0, Number(order.shippingCost ?? 0) - Number(order.shippingSubsidy ?? 0));
-    const value = Math.max(0, Number(order.total ?? 0) - ongkirBersih);
+    // Nilai = total yang ditagihkan apa adanya (sama dengan orderValue() backend).
+    const value = Math.max(0, Number(order.total ?? 0));
     const items = (order.items ?? []).filter((i) => i.sku);
 
     fbq(

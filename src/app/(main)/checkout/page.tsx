@@ -413,11 +413,13 @@ function CheckoutContent(){
     setIsLoading(true);
     let keepLoading=false;
     try{
-      const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:"snap",voucherCode:appliedVoucher?.code||undefined,usePoints:pointsDiscount>0,pointsToRedeem:pointsDiscount>0?pointsDiscount:undefined,utm:ambilUtm(),meta:metaCookies()};
+      const basePayload={address:enrichedAddress,courier:{name:selectedCourier.courier_name||selectedCourier.courier,service:selectedCourier.service,cost:selectedCourier.cost,cashback:selectedCourier.cashback??0},paymentMethod:"snap",voucherCode:appliedVoucher?.code||undefined,usePoints:pointsDiscount>0,pointsToRedeem:pointsDiscount>0?pointsDiscount:undefined,utm:ambilUtm(),meta:{...metaCookies(),icEventId:pixel.initiateCheckoutEventId(checkoutItems)}};
       const finalPayload=isBuyNowFlow?{...basePayload,cartItemIds:[],buyNowVariantId:buyNowVariantId as string,buyNowQuantity:Number(buyNowQuantity)}:{...basePayload,cartItemIds:selectedItemIds.map(id=>id.toString())};
       const res=await ordersService.checkout(finalPayload);
-      // Purchase TIDAK ditembak di sini: order baru dibuat, belum tentu dibayar.
-      // Browser menembaknya di /orders/[id] setelah lunas, server dari webhook.
+      // Purchase saat klik Bayar (keputusan user 25 Nov 2026), datanya dari
+      // backend supaya identik dgn event server. Backend mengirim null kalau
+      // META_PURCHASE_TRIGGER=paid → Purchase menunggu lunas di /orders/[id].
+      if(res.metaPurchase)pixel.purchaseAtCheckout(res.metaPurchase);
       // Order sudah dibuat (stok ditahan). Pembeli memilih metode & membayar di
       // Snap; apa pun hasilnya, lanjut ke halaman order — di sana pop-up bisa
       // dibuka ulang selama belum lunas. Loading sengaja dibiarkan menyala
