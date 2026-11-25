@@ -138,6 +138,22 @@ function ReviewsSheet({ isOpen, onClose, productImages }: { isOpen: boolean; onC
 
 // ─── MAIN INNER COMPONENT ─────────────────────────────────────────────────────
 
+// Gender ditaruh paling akhir: "Footwear / Lifestyle/Casual / Mens / Womens".
+// Urutan lain dipertahankan (sort stabil); nama dobel dibuang.
+const GENDER_ORDER = ['mens', 'men', 'pria', 'womens', 'women', 'wanita', 'unisex', 'kids', 'anak'];
+function orderCategoryNames(categories?: { name?: string | null }[] | null): string {
+  const names = Array.from(
+    new Set((categories ?? []).map((c) => c?.name?.trim()).filter((n): n is string => !!n)),
+  );
+  // Non-gender = -1 (tetap di depan), gender sesuai urutan GENDER_ORDER.
+  const rank = (n: string) => GENDER_ORDER.indexOf(n.toLowerCase());
+  return names
+    .map((n, i) => ({ n, i, r: rank(n) }))
+    .sort((a, b) => (a.r === b.r ? a.i - b.i : a.r - b.r))
+    .map((x) => x.n)
+    .join(' / ');
+}
+
 function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
   const router       = useRouter();
   const pathname     = usePathname();
@@ -461,10 +477,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
 
               {/* {product.categories.map((item: any) =>  */}
               <p className="text-[10px] font-medium tracking-widest my-1 text-gray-400">
-                {product?.categories
-                  ?.map(category => category?.name)
-                  ?.filter(Boolean)                 
-                  ?.join(' / ')}
+                {orderCategoryNames(product?.categories)}
               </p>
               <p className="text-[18px] lg:text-[20px] font-semibold font-black text-gray-900 leading-tight">
                 {product.name}
