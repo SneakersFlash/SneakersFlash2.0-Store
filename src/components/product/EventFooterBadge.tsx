@@ -62,12 +62,13 @@ export function EventFooterBadge({
       className={cn(
         // `shrink-0`: kartu itu flex kolom — tanpa ini pita bisa terpencet tipis
         // saat isi kartu lebih tinggi dari ruang yang ada.
-        "w-full shrink-0 px-2 py-1 text-center sm:py-1.5",
+        // Pita tipis ala referensi user 25 Nov 2026: teks kecil, spasi huruf lebar.
+        "w-full shrink-0 px-2 py-[3px] text-center sm:py-1",
         eventName ? "bg-black text-white" : "invisible",
         className,
       )}
     >
-      <span className="block text-[12px] font-black uppercase leading-tight tracking-[0.08em] sm:text-[15px]">
+      <span className="block text-[9px] font-bold uppercase leading-tight tracking-[0.25em] sm:text-[11px]">
         {eventName ?? "\u00A0"}
       </span>
     </div>
