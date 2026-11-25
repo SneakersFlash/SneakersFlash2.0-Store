@@ -147,7 +147,7 @@ export function ProductCard({ product, priority = false, index = 0, hargaTeaser 
 
         {/* Pita event: DI BAWAH gambar, bukan menimpanya — tidak ada bagian
             sepatu yang tertutup. Selebar kartu karena anak langsung <Link>. */}
-        <EventFooterBadge product={product} />
+        <EventFooterBadge product={product} reserveSpace />
 
         {/* ── Product Info ── */}
         <div className="pt-3 sm:pt-4 px-3 sm:px-4 md:px-5 flex flex-col flex-1">
@@ -159,7 +159,7 @@ export function ProductCard({ product, priority = false, index = 0, hargaTeaser 
           </p>
           
           {/* Penambahan Available Sizes */}
-          <SizeChips sizes={product.availableSizes} />
+          <SizeChips sizes={product.availableSizes} soldOut={product.soldOutSizes} />
 
           <div className="flex flex-col mt-auto">
             <span className="text-[14px] lg:text-[18px] font-bold leading-none tracking-tight mb-1.5 text-black">

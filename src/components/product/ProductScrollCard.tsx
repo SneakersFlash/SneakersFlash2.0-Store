@@ -180,7 +180,7 @@ export function ProductScrollCard({
 
         {/* Pita event: DI BAWAH gambar, bukan menimpanya — sama seperti di
             ProductCard. */}
-        <EventFooterBadge product={product} />
+        <EventFooterBadge product={product} reserveSpace />
 
         {/* ── Product info ── */}
         <div className="pt-3 lg:pt-4 px-3 lg:px-4 flex flex-col flex-1">
@@ -191,7 +191,7 @@ export function ProductScrollCard({
             {product.name.toUpperCase()}
           </p>
 
-          <SizeChips sizes={product.availableSizes} />
+          <SizeChips sizes={product.availableSizes} soldOut={product.soldOutSizes} />
 
           <div className="flex flex-col mt-auto">
             <span className="text-[14px] lg:text-[18px] font-bold leading-none tracking-tight mb-1.5 text-black">

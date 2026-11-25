@@ -80,6 +80,8 @@ export interface Product {
   activeEvent: ActiveEvent | null;
   wishlists: any[];
   availableSizes?: string[];
+  /** Ukuran yang semua variannya stok 0 — dicoret di kartu produk. */
+  soldOutSizes?: string[];
   totalStock?: number;
   ratingAvg?: number;
   reviewCount?: number;

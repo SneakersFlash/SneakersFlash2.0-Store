@@ -39,27 +39,36 @@ export function isKurasiClearance(product: Product): boolean {
 export function EventFooterBadge({
   product,
   className,
+  reserveSpace = false,
 }: {
   product: Product;
   className?: string;
+  /**
+   * Produk tanpa event tetap memesan ruang setinggi pita (tak terlihat), supaya
+   * brand/nama/size di kartu tanpa pita sejajar dengan kartu yang berpita di
+   * baris grid yang sama (permintaan user 25 Nov 2026).
+   */
+  reserveSpace?: boolean;
 }) {
   // Sejak 10 Nov 2026 berlaku untuk SEMUA event aktif, bukan cuma kurasi
   // Clearance (LC-): pil pojok kiri atas untuk event lain dicabut supaya
   // tampilan badge seragam (permintaan user, landing 11.11).
-  if (!product.activeEvent?.eventName) return null;
+  const eventName = product.activeEvent?.eventName;
+  if (!eventName && !reserveSpace) return null;
 
   return (
     <div
+      aria-hidden={eventName ? undefined : true}
       className={cn(
         // `shrink-0`: kartu itu flex kolom — tanpa ini pita bisa terpencet tipis
         // saat isi kartu lebih tinggi dari ruang yang ada.
         "w-full shrink-0 px-2 py-1 text-center sm:py-1.5",
-        "bg-black text-white",
+        eventName ? "bg-black text-white" : "invisible",
         className,
       )}
     >
       <span className="block text-[12px] font-black uppercase leading-tight tracking-[0.08em] sm:text-[15px]">
-        {product.activeEvent?.eventName}
+        {eventName ?? "\u00A0"}
       </span>
     </div>
   );
