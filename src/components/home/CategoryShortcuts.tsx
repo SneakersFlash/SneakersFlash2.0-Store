@@ -9,6 +9,13 @@ import { motion } from "framer-motion";
 // tidak dobel.
 const CATEGORIES = [
   {
+    label: "MEN",
+    href: "/products?gender=men",
+    image: "/images/category/men.jpeg",
+    span: "col-span-1",
+    hideLabel: true,
+  },
+  {
     label: "WOMEN",
     href: "/products?gender=women",
     image: "/images/category/women.jpeg",
@@ -18,13 +25,6 @@ const CATEGORIES = [
   // Kartu KIDS dihapus: katalog SF tidak punya satu pun produk anak, jadi
   // kartunya selalu mendarat di halaman kosong. Kembalikan kalau stok anak
   // sudah masuk (baris pertama tinggal dikembalikan ke 3 kolom).
-  {
-    label: "MEN",
-    href: "/products?gender=men",
-    image: "/images/category/men.jpeg",
-    span: "col-span-1",
-    hideLabel: true,
-  },
   {
     label: "CASUAL",
     // Slug katalognya "lifestylecasual", tanpa tanda hubung.
