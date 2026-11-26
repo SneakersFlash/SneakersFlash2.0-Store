@@ -9,7 +9,7 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAuthStore } from "@/lib/store/authStore";
-import { activateCode, freeSpin, playSpin, SpinApiError, type PlayResult } from "@/lib/api/spin.service";
+import { activateCode, freeActivate, freeSpin, playSpin, SpinApiError, type PlayResult } from "@/lib/api/spin.service";
 import {
   OMT_COPY,
   OMT_REWARDS,
@@ -105,8 +105,9 @@ const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 /**
- * `freeSpinMode` (backend mode testing): tanpa login & tanpa kode, langsung
- * SPIN NOW lewat /spin/free-play. Hasil tidak disimpan.
+ * `freeSpinMode` (backend mode testing): tanpa login, tapi tetap wajib
+ * masukin kode (/spin/free-activate → /spin/free-play). Hasil tidak disimpan.
+ * Kode berformat benar selalu valid & bisa dipakai ulang selama testing.
  */
 export function WheelCard({
   tiltX,
@@ -163,7 +164,8 @@ export function WheelCard({
   }, [codeInput, codeActive]);
 
   const done = !!result && (phase === "win" || phase === "done");
-  const showSpin = (freeSpinMode || (loggedIn && !!codeActive)) && !done;
+  const canEnterCode = freeSpinMode || loggedIn;
+  const showSpin = canEnterCode && !!codeActive && !done;
   const hasInput = codeInput.trim().length > 0;
 
   const login = async () => {
@@ -184,7 +186,7 @@ export function WheelCard({
     if (!hasInput || activating) return;
     setActivating(true);
     try {
-      const res = await activateCode(codeInput);
+      const res = freeSpinMode ? await freeActivate(codeInput) : await activateCode(codeInput);
       setCodeError("");
       setCodeActive(res.code);
     } catch (e) {
@@ -197,7 +199,7 @@ export function WheelCard({
 
   const spin = async () => {
     onGesture();
-    if ((!freeSpinMode && !codeActive) || spinning || done) return;
+    if (!codeActive || spinning || done) return;
     const reduced = prefersReducedMotion();
     const wind = rot - 20;
     setSpinError(false);
@@ -212,7 +214,7 @@ export function WheelCard({
     const started = Date.now();
     let res: PlayResult;
     try {
-      res = freeSpinMode ? await freeSpin() : await playSpin(codeActive);
+      res = freeSpinMode ? await freeSpin(codeActive) : await playSpin(codeActive);
     } catch {
       // Hentikan roda, jangan tampilkan reward apa pun.
       setDiscT("transform .4s ease-out");
@@ -658,7 +660,7 @@ export function WheelCard({
           <div style={{ display: "flex", flexDirection: "column", gap: 14, padding: "0 6px 4px" }}>
             {!freeSpinMode && !loggedIn && <GuestPanel onLogin={login} />}
 
-            {!freeSpinMode && loggedIn && !codeActive && (
+            {canEnterCode && !codeActive && (
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   <label htmlFor="sf-code" style={{ fontSize: 15, lineHeight: "20px", fontWeight: 600 }}>
@@ -708,24 +710,26 @@ export function WheelCard({
                   </svg>
                   Aktifkan kode
                 </button>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexWrap: "wrap",
-                    gap: 4,
-                    fontSize: 13,
-                    lineHeight: "18px",
-                    fontWeight: 500,
-                    color: "#6b6b66",
-                  }}
-                >
-                  Sudah masuk dengan Google.
-                  <button type="button" onClick={logout} style={linkBtn(13)}>
-                    Ganti akun
-                  </button>
-                </div>
+                {loggedIn && (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexWrap: "wrap",
+                      gap: 4,
+                      fontSize: 13,
+                      lineHeight: "18px",
+                      fontWeight: 500,
+                      color: "#6b6b66",
+                    }}
+                  >
+                    Sudah masuk dengan Google.
+                    <button type="button" onClick={logout} style={linkBtn(13)}>
+                      Ganti akun
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -748,9 +752,9 @@ export function WheelCard({
                     <path d="m9 12 2 2 4-4" />
                   </svg>
                   <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div style={{ fontSize: 15, lineHeight: "20px", fontWeight: 700 }}>{freeSpinMode ? "Free spin" : "Kode aktif"}</div>
+                    <div style={{ fontSize: 15, lineHeight: "20px", fontWeight: 700 }}>Kode aktif</div>
                     <div style={{ fontSize: 13, lineHeight: "18px", fontWeight: 600, letterSpacing: "0.04em" }}>
-                      {freeSpinMode ? "Mode testing, tanpa kode" : codeActive}
+                      {codeActive}
                     </div>
                   </div>
                 </div>
@@ -879,7 +883,7 @@ export function WheelCard({
                   cursor: "pointer",
                 }}
               >
-                {freeSpinMode ? "Spin lagi" : "Aktifkan kode lain"}
+                Aktifkan kode lain
               </button>
             </div>
           </div>

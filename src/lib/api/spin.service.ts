@@ -53,10 +53,20 @@ export async function activateCode(raw: string) {
   }
 }
 
-/** Free spin tanpa login & kode — hanya ada selama backend mode testing. */
-export async function freeSpin(): Promise<PlayResult> {
+/** Mode testing tanpa login (tetap wajib kode) — hanya ada selama backend testMode. */
+export async function freeActivate(raw: string) {
+  const code = raw.trim().toUpperCase();
   try {
-    const { data } = await apiClient.post("/spin/free-play");
+    const { data } = await apiClient.post("/spin/free-activate", { code });
+    return data as { code: string; status: "RESERVED" };
+  } catch (e) {
+    throw toError(e);
+  }
+}
+
+export async function freeSpin(code: string): Promise<PlayResult> {
+  try {
+    const { data } = await apiClient.post("/spin/free-play", { code });
     return data as PlayResult;
   } catch (e) {
     throw toError(e);
