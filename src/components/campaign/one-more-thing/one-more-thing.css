@@ -43,9 +43,9 @@
  * tapi kelebaran di 360px. Di layar < 380px panggung diperkecil 90% supaya
  * tidak terpotong; tampilannya tetap sama, cuma skalanya.
  */
-.omt-stage-wrap{position:relative;width:330px;height:440px;margin:0 auto}
+.omt-stage-wrap{position:relative;width:330px;height:360px;margin:0 auto}
 @media (max-width:379px){
-  .omt-stage-wrap{transform:scale(.9);transform-origin:50% 0;margin-left:calc((100% - 330px) / 2);margin-bottom:-44px}
+  .omt-stage-wrap{transform:scale(.9);transform-origin:50% 0;margin-left:calc((100% - 330px) / 2);margin-bottom:-36px}
 }
 .omt-code-input::placeholder{color:#6b6b66;text-transform:none;letter-spacing:0;font-weight:500}
 .omt-code-input:focus{outline:2px solid #111213;outline-offset:2px}
@@ -62,3 +62,13 @@
   .omt-o-cube{right:-1% !important;top:-88px !important}
   .omt-o-fp{left:70% !important;top:-32px !important}
 }
+
+/* Satu kolom (HP/tablet): roda hadiah naik ke atas, teks hero di bawahnya. */
+@media (max-width:907px){.omt-wheel{order:-1}}
+
+/* Pop-up hasil spin (ResultModal). */
+@keyframes sf-fade-out{from{opacity:1}to{opacity:0}}
+@keyframes sf-modal-in{0%{opacity:0;transform:translateY(80px) translateZ(-280px) rotateX(-62deg) rotateY(12deg) scale(.85)}55%{opacity:1}100%{opacity:1;transform:none}}
+@keyframes sf-modal-out{from{opacity:1;transform:none}to{opacity:0;transform:translateY(50px) translateZ(-220px) rotateX(38deg) scale(.9)}}
+@keyframes sf-medal-pop{0%{transform:scale(0) rotateY(-540deg)}70%{transform:scale(1.12) rotateY(0)}100%{transform:scale(1) rotateY(0)}}
+@keyframes sf-rays{from{transform:rotate(0)}to{transform:rotate(360deg)}}

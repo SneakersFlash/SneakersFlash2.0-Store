@@ -7,6 +7,7 @@
  * slotIndex yang dikembalikan playSpin().
  */
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAuthStore } from "@/lib/store/authStore";
 import { activateCode, freeActivate, freeSpin, playSpin, SpinApiError, type PlayResult } from "@/lib/api/spin.service";
@@ -17,8 +18,9 @@ import {
   OMT_SLOT_DEG,
   rewardDescription,
   spinTarget,
+  type RewardKey,
 } from "@/lib/campaign/one-more-thing";
-import { L11, PODIUM_LAYERS, ShoeBox3D, WHEEL_LAYERS, range } from "./Objects3D";
+import { L11, ShoeBox3D, WHEEL_LAYERS, range } from "./Objects3D";
 
 type Phase = "idle" | "wind" | "spin" | "win" | "done";
 type CodeError = "" | "invalid" | "used" | "generic";
@@ -141,6 +143,7 @@ export function WheelCard({
   const [confetti, setConfetti] = useState(false);
   const [burst, setBurst] = useState(false);
   const [pieces, setPieces] = useState<Piece[]>([]);
+  const [showModal, setShowModal] = useState(false);
 
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const later = useCallback((fn: () => void, ms: number) => {
@@ -231,6 +234,8 @@ export function WheelCard({
       setSpinning(false);
       setPhase("done");
       setCodeActive("");
+      setPieces([]);
+      setShowModal(true);
       return;
     }
     const wait = Math.max(0, 420 - (Date.now() - started));
@@ -254,6 +259,8 @@ export function WheelCard({
       setConfetti(true);
     }, wait + 5500);
     later(() => setBurst(true), wait + 5560);
+    // Pop-up muncul setelah roda berhenti & confetti roda sempat meledak.
+    later(() => setShowModal(true), wait + 6300);
     later(() => {
       setConfetti(false);
       setPhase("done");
@@ -262,6 +269,7 @@ export function WheelCard({
 
   const again = () => {
     onGesture();
+    setShowModal(false);
     setResult(null);
     setPhase("idle");
     setCodeActive("");
@@ -288,7 +296,7 @@ export function WheelCard({
   return (
     <div
       id="roda"
-      className="sf-anim"
+      className="sf-anim omt-wheel"
       style={{ flex: "1 1 400px", maxWidth: 480, minWidth: 0, position: "relative", animation: "sf-card-in 1.3s cubic-bezier(.2,.8,.2,1) .2s both" }}
     >
       <ShoeBox3D />
@@ -334,85 +342,12 @@ export function WheelCard({
               left: 0,
               top: 0,
               width: 330,
-              height: 440,
+              height: 360,
               transformStyle: "preserve-3d",
               transform: `rotateX(${(tiltX + (spinning ? 6 : 0)).toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg) scale(${spinning ? 1.03 : 1})`,
               transition: "transform .5s cubic-bezier(.2,.7,.2,1)",
             }}
           >
-            {/* podium */}
-            <div aria-hidden="true" style={{ position: "absolute", left: 165, top: 396, width: 0, height: 0, transformStyle: "preserve-3d" }}>
-              {PODIUM_LAYERS.map((l) => (
-                <div
-                  key={l.y}
-                  style={{
-                    position: "absolute",
-                    left: -120,
-                    top: -120,
-                    width: 240,
-                    height: 240,
-                    borderRadius: "50%",
-                    background: l.color,
-                    transform: `translateY(${l.y}px) rotateX(90deg)`,
-                  }}
-                />
-              ))}
-              <div
-                style={{
-                  position: "absolute",
-                  left: -120,
-                  top: -120,
-                  width: 240,
-                  height: 240,
-                  borderRadius: "50%",
-                  background: "#111213",
-                  transform: "rotateX(90deg)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <div
-                  className="sf-anim"
-                  style={{
-                    position: "absolute",
-                    left: 20,
-                    top: 20,
-                    width: 200,
-                    height: 200,
-                    borderRadius: "50%",
-                    border: "2px solid #f6e70a",
-                    boxSizing: "border-box",
-                    animation: "sf-ring 2.6s ease-out infinite",
-                  }}
-                />
-                <div
-                  style={{
-                    width: 200,
-                    height: 200,
-                    borderRadius: "50%",
-                    border: "3px solid #f6e70a",
-                    boxSizing: "border-box",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <div
-                    className="sf-anim"
-                    style={{
-                      width: 210,
-                      height: 44,
-                      borderRadius: "50%",
-                      background: "rgba(0, 0, 0, 0.7)",
-                      filter: "blur(8px)",
-                      animation: "sf-shadow 3.2s ease-in-out infinite alternate",
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
             {/* roda */}
             <div
               className="sf-anim"
@@ -771,122 +706,9 @@ export function WheelCard({
           </div>
         )}
 
-        {/* ── Hasil ── */}
-        {done && result && reward && (
-          <div style={{ perspective: 1000, padding: "0 6px 4px" }}>
-            <div
-              aria-live="polite"
-              className="sf-anim"
-              style={{ display: "flex", flexDirection: "column", gap: 16, transformOrigin: "50% 0", animation: "sf-flip-in .9s cubic-bezier(.2,.8,.2,1) .15s both" }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                <div aria-hidden="true" style={{ flex: "0 0 96px", height: 96, perspective: 500 }}>
-                  <div className="sf-anim" style={{ position: "relative", width: 96, height: 96, transformStyle: "preserve-3d", animation: "sf-spin-y 4.5s linear infinite" }}>
-                    {L11.map((z) => (
-                      <div
-                        key={z}
-                        style={{ position: "absolute", left: 0, top: 0, width: 96, height: 96, borderRadius: "50%", background: medal.edge, transform: `translateZ(${z}px)` }}
-                      />
-                    ))}
-                    {[false, true].map((back) => (
-                      <div
-                        key={String(back)}
-                        style={{
-                          position: "absolute",
-                          left: 0,
-                          top: 0,
-                          width: 96,
-                          height: 96,
-                          borderRadius: "50%",
-                          background: medal.face,
-                          color: medal.fg,
-                          border: `3px solid ${medal.ring}`,
-                          boxSizing: "border-box",
-                          transform: `${back ? "rotateY(180deg) " : ""}translateZ(6px)`,
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          textAlign: "center",
-                        }}
-                      >
-                        <div style={{ fontSize: 22, lineHeight: "24px", fontWeight: 700, letterSpacing: "-0.02em" }}>{reward.top}</div>
-                        <div style={{ fontSize: 13, lineHeight: "16px", fontWeight: 600 }}>{reward.cap}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8, minWidth: 0 }}>
-                  <div
-                    style={{
-                      alignSelf: "flex-start",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 6,
-                      padding: "6px 12px",
-                      borderRadius: 999,
-                      background: "#e8f5ec",
-                      color: "#0a5a2b",
-                      fontSize: 13,
-                      lineHeight: "16px",
-                      fontWeight: 600,
-                    }}
-                  >
-                    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="m9 12 2 2 4-4" />
-                    </svg>
-                    Sukses
-                  </div>
-                  <div style={{ fontSize: 26, lineHeight: "32px", fontWeight: 700, letterSpacing: "-0.02em" }}>REWARD UNLOCKED!</div>
-                </div>
-              </div>
-              <div style={{ fontSize: 16, lineHeight: "24px", color: "#4f4f4a" }}>{rewardDescription(result.rewardKey)}</div>
-              <a
-                href="/"
-                className="sf-press"
-                style={{
-                  height: 64,
-                  borderRadius: 10,
-                  background: "#f6e70a",
-                  color: "#040707",
-                  textDecoration: "none",
-                  fontSize: 18,
-                  lineHeight: "24px",
-                  fontWeight: 700,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 10,
-                  boxShadow: yellowShadow,
-                }}
-              >
-                Belanja di sneakersflash.com
-                <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14" />
-                  <path d="m12 5 7 7-7 7" />
-                </svg>
-              </a>
-              <button
-                type="button"
-                onClick={again}
-                style={{
-                  height: 56,
-                  marginBottom: 6,
-                  border: 0,
-                  borderRadius: 10,
-                  background: "#efefec",
-                  color: "#111213",
-                  fontFamily: "inherit",
-                  fontSize: 16,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
-                Aktifkan kode lain
-              </button>
-            </div>
-          </div>
+        {/* ── Hasil: pop-up ── */}
+        {showModal && result && reward && (
+          <ResultModal rewardKey={result.rewardKey} reward={reward} medal={medal} pieces={pieces} onClose={again} />
         )}
       </div>
     </div>
@@ -1007,5 +829,331 @@ function GuestPanel({ onLogin }: { onLogin: () => void }) {
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Pop-up hasil spin. Di-portal ke .omt-root (bukan body) supaya font halaman
+ * ikut, dan supaya `position: fixed` tidak terkurung transform kartu roda.
+ * Masuk: kartu terbalik 3D dari belakang, medali berputar + sinar berputar,
+ * confetti meledak dari medali. Tutup (X / latar / Esc / "Aktifkan kode lain")
+ * = reset ke input kode.
+ */
+function ResultModal({
+  rewardKey,
+  reward,
+  medal,
+  pieces,
+  onClose,
+}: {
+  rewardKey: RewardKey;
+  reward: { top: string; cap: string };
+  medal: { face: string; edge: string; fg: string; ring: string };
+  pieces: Piece[];
+  onClose: () => void;
+}) {
+  const anchor = useRef<HTMLSpanElement>(null);
+  const dialog = useRef<HTMLDivElement>(null);
+  const [host, setHost] = useState<Element | null>(null);
+  const [burst, setBurst] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const closingRef = useRef(false);
+
+  const close = useCallback(() => {
+    if (closingRef.current) return;
+    closingRef.current = true;
+    setClosing(true);
+    setTimeout(onClose, prefersReducedMotion() ? 0 : 320);
+  }, [onClose]);
+
+  useEffect(() => {
+    setHost(anchor.current?.closest(".omt-root") ?? document.body);
+    const t = setTimeout(() => setBurst(true), 380);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      clearTimeout(t);
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [close]);
+
+  useEffect(() => {
+    if (host) dialog.current?.focus();
+  }, [host]);
+
+  const M = 128;
+  const modal = (
+    <div
+      className="sf-anim"
+      onClick={close}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 1000,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+        boxSizing: "border-box",
+        background: "rgba(17, 18, 19, 0.6)",
+        backdropFilter: "blur(6px)",
+        WebkitBackdropFilter: "blur(6px)",
+        perspective: 1200,
+        animation: closing ? "sf-fade-out .32s ease-in both" : "sf-fade .3s ease-out both",
+      }}
+    >
+      <div
+        ref={dialog}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="omt-result-title"
+        tabIndex={-1}
+        className="sf-anim"
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          position: "relative",
+          width: "100%",
+          maxWidth: 420,
+          maxHeight: "calc(100dvh - 32px)",
+          overflowX: "hidden",
+          overflowY: "auto",
+          background: "#ffffff",
+          borderRadius: 24,
+          padding: "28px 22px 22px",
+          boxSizing: "border-box",
+          boxShadow: "0 2px 0 #e2e2dd, 0 40px 80px rgba(0, 0, 0, 0.35)",
+          outline: "none",
+          transformOrigin: "50% 60%",
+          animation: closing
+            ? "sf-modal-out .32s cubic-bezier(.5,0,.75,0) both"
+            : "sf-modal-in .85s cubic-bezier(.2,.9,.25,1.12) both",
+        }}
+      >
+        <button
+          type="button"
+          aria-label="Tutup"
+          onClick={close}
+          className="sf-round"
+          style={{
+            position: "absolute",
+            top: 12,
+            right: 12,
+            width: 40,
+            height: 40,
+            border: 0,
+            borderRadius: "50%",
+            background: "#efefec",
+            color: "#111213",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 2,
+          }}
+        >
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
+        </button>
+
+        {/* medali 3D + sinar */}
+        <div aria-hidden="true" style={{ position: "relative", height: M + 40, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div
+            className="sf-anim"
+            style={{
+              position: "absolute",
+              width: 260,
+              height: 260,
+              borderRadius: "50%",
+              background: "repeating-conic-gradient(from 0deg, rgba(246, 231, 10, 0.55) 0deg 10deg, rgba(246, 231, 10, 0) 10deg 30deg)",
+              WebkitMaskImage: "radial-gradient(circle, #000 25%, transparent 68%)",
+              maskImage: "radial-gradient(circle, #000 25%, transparent 68%)",
+              animation: "sf-rays 14s linear infinite",
+            }}
+          />
+          <div
+            className="sf-anim"
+            style={{
+              position: "absolute",
+              width: 170,
+              height: 170,
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(246, 231, 10, 0.55), rgba(246, 231, 10, 0) 70%)",
+              animation: "sf-glow 1.6s ease-in-out infinite alternate",
+            }}
+          />
+          <div className="sf-anim" style={{ position: "relative", animation: "sf-bob-sm 1.8s ease-in-out infinite alternate" }}>
+            <div className="sf-anim" style={{ width: M, height: M, perspective: 600, animation: "sf-medal-pop 1.1s cubic-bezier(.2,.9,.3,1.2) .25s both" }}>
+              <div className="sf-anim" style={{ position: "relative", width: M, height: M, transformStyle: "preserve-3d", animation: "sf-spin-y 4.5s linear infinite" }}>
+                {L11.map((z) => (
+                  <div
+                    key={z}
+                    style={{ position: "absolute", left: 0, top: 0, width: M, height: M, borderRadius: "50%", background: medal.edge, transform: `translateZ(${z}px)` }}
+                  />
+                ))}
+                {[false, true].map((back) => (
+                  <div
+                    key={String(back)}
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      top: 0,
+                      width: M,
+                      height: M,
+                      borderRadius: "50%",
+                      background: medal.face,
+                      color: medal.fg,
+                      border: `4px solid ${medal.ring}`,
+                      boxSizing: "border-box",
+                      transform: `${back ? "rotateY(180deg) " : ""}translateZ(6px)`,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      textAlign: "center",
+                    }}
+                  >
+                    <div style={{ fontSize: 28, lineHeight: "30px", fontWeight: 700, letterSpacing: "-0.02em" }}>{reward.top}</div>
+                    <div style={{ fontSize: 15, lineHeight: "18px", fontWeight: 600 }}>{reward.cap}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* confetti dari medali */}
+          <div style={{ position: "absolute", left: "50%", top: "50%", width: 0, height: 0, pointerEvents: "none", zIndex: 3 }}>
+            {pieces.map((c, i) => (
+              <div
+                key={i}
+                style={{
+                  position: "absolute",
+                  left: -5,
+                  top: -7,
+                  width: c.w,
+                  height: c.h,
+                  perspective: 300,
+                  transform: `translate(${burst ? c.x : 0}px, ${burst ? c.y : 0}px)`,
+                  transition: `transform ${c.t}s cubic-bezier(0.1, 0.8, 0.25, 1)`,
+                }}
+              >
+                <div
+                  className="sf-anim"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    boxSizing: "border-box",
+                    borderRadius: c.radius,
+                    border: c.border,
+                    background: c.color,
+                    opacity: burst ? undefined : 0,
+                    animation: burst ? `sf-fall ${c.dur}s cubic-bezier(0.45, 0, 0.75, 0.5) ${c.delay}s forwards` : "none",
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div
+          aria-live="polite"
+          className="sf-anim"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 12,
+            textAlign: "center",
+            transformOrigin: "50% 0",
+            animation: "sf-flip-in .9s cubic-bezier(.2,.8,.2,1) .45s both",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "6px 12px",
+              borderRadius: 999,
+              background: "#e8f5ec",
+              color: "#0a5a2b",
+              fontSize: 13,
+              lineHeight: "16px",
+              fontWeight: 600,
+            }}
+          >
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+            Sukses
+          </div>
+          <div id="omt-result-title" style={{ fontSize: 28, lineHeight: "34px", fontWeight: 700, letterSpacing: "-0.02em" }}>
+            REWARD UNLOCKED!
+          </div>
+          <div style={{ fontSize: 16, lineHeight: "24px", color: "#4f4f4a" }}>{rewardDescription(rewardKey)}</div>
+        </div>
+
+        <div
+          className="sf-anim"
+          style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 20, animation: "sf-rise .8s cubic-bezier(.2,.8,.2,1) .6s both" }}
+        >
+          <a
+            href="/"
+            className="sf-press"
+            style={{
+              height: 64,
+              borderRadius: 10,
+              background: "#f6e70a",
+              color: "#040707",
+              textDecoration: "none",
+              fontSize: 18,
+              lineHeight: "24px",
+              fontWeight: 700,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 10,
+              boxShadow: yellowShadow,
+            }}
+          >
+            Belanja di sneakersflash.com
+            <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14" />
+              <path d="m12 5 7 7-7 7" />
+            </svg>
+          </a>
+          <button
+            type="button"
+            onClick={close}
+            style={{
+              height: 56,
+              border: 0,
+              borderRadius: 10,
+              background: "#efefec",
+              color: "#111213",
+              fontFamily: "inherit",
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Aktifkan kode lain
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <span ref={anchor} hidden />
+      {host && createPortal(modal, host)}
+    </>
   );
 }
