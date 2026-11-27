@@ -11,6 +11,11 @@
 export const META_AM_CACHE_KEY = "sf-meta-am";
 
 const FBC_MAX_AGE_S = 90 * 24 * 3600; // umur _fbc bawaan Meta
+// Cadangan fbclid di localStorage: cookie _fbc bisa terhapus (pembersihan
+// browser, ITP Safari membatasi cookie buatan JS jadi 7 hari) padahal UTM
+// iklannya masih ada. Tanpa penanda klik, Meta bisa gagal mengkreditkan order
+// yang di website jelas datang dari iklan.
+const FBCLID_KEY = "sf-fbclid";
 
 export function readCookie(name: string): string | undefined {
   if (typeof document === "undefined") return undefined;
@@ -26,6 +31,14 @@ export function readCookie(name: string): string | undefined {
 export function captureFbc(search: string, hostname: string): void {
   const fbclid = new URLSearchParams(search).get("fbclid");
   if (!fbclid) return;
+  // Cadangan disimpan duluan — juga saat cookie-nya sudah ada — kecuali klik
+  // yang sama sudah tercatat (refresh halaman), supaya waktu klik asli tetap.
+  try {
+    const prev = JSON.parse(localStorage.getItem(FBCLID_KEY) || "null");
+    if (!prev || prev.fbclid !== fbclid) {
+      localStorage.setItem(FBCLID_KEY, JSON.stringify({ fbclid, at: Date.now() }));
+    }
+  } catch {}
   const existing = readCookie("_fbc");
   if (existing && existing.split(".").slice(3).join(".") === fbclid) return;
 
@@ -39,7 +52,20 @@ export function captureFbc(search: string, hostname: string): void {
 
 /** Cookie Meta untuk dikirim bareng checkout (disimpan di order untuk CAPI). */
 export function metaCookies(): { fbp?: string; fbc?: string } {
-  return { fbp: readCookie("_fbp"), fbc: readCookie("_fbc") };
+  return { fbp: readCookie("_fbp"), fbc: readCookie("_fbc") || fbcCadangan() };
+}
+
+/** _fbc dibangun ulang dari fbclid tersimpan (≤ 90 hari) kalau cookie-nya hilang. */
+function fbcCadangan(): string | undefined {
+  try {
+    const raw = localStorage.getItem(FBCLID_KEY);
+    if (!raw) return undefined;
+    const { fbclid, at } = JSON.parse(raw);
+    if (!fbclid || typeof at !== "number" || Date.now() - at > FBC_MAX_AGE_S * 1000) return undefined;
+    return `fb.1.${at}.${fbclid}`;
+  } catch {
+    return undefined;
+  }
 }
 
 /** Sama dengan normalizePhoneId backend: 08xx / +628xx / 8xx → 628xx. */
