@@ -6,6 +6,23 @@ import type {
   ProductFacets,
 } from "@/types/product.types";
 
+export interface ProductReview {
+  id: string;
+  rating: number;
+  comment: string | null;
+  images: string[];
+  source: string;
+  name: string;
+  variantLabel: string | null;
+  replyText: string | null;
+  createdAt: string;
+}
+
+export interface ProductReviewsResponse {
+  summary: { count: number; average: number; distribution: Record<string, number> };
+  reviews: ProductReview[];
+}
+
 export const productsService = {
   async getProducts(filters: ProductFilters = {}): Promise<ProductsResponse> {
     const { data } = await apiClient.get<ProductsResponse>("/products", {
@@ -70,6 +87,11 @@ export const productsService = {
 
   async getFacets(): Promise<ProductFacets> {
     const { data } = await apiClient.get<ProductFacets>("/products/facets");
+    return data;
+  },
+
+  async getReviews(productId: string | number): Promise<ProductReviewsResponse> {
+    const { data } = await apiClient.get<ProductReviewsResponse>(`/products/${productId}/reviews`);
     return data;
   },
 

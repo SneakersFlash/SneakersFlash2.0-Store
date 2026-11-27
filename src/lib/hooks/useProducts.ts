@@ -82,6 +82,15 @@ export function useProduct(slug: string) {
   });
 }
 
+export function useProductReviews(productId?: string | number) {
+  return useQuery({
+    queryKey: ["products", "reviews", String(productId)],
+    queryFn: () => productsService.getReviews(productId!),
+    enabled: productId != null,
+    staleTime: 1000 * 60 * 5,
+  });
+}
+
 /**
  * Search — enabled only when query length > 1.
  */

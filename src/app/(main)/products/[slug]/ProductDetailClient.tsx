@@ -6,7 +6,8 @@ import Image from "next/image";
 import { Star, ChevronRight, Zap, CreditCard, ShieldCheck, Ruler, Check, BadgeCheck, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { useProduct } from "@/lib/hooks/useProducts";
+import { useProduct, useProductReviews } from "@/lib/hooks/useProducts";
+import type { ProductReviewsResponse } from "@/lib/api/products.service";
 import PageLoader from "@/components/common/PageLoader";
 import { useCartStore } from "@/lib/store/cartStore";
 import { useAuthStore } from "@/lib/store/authStore";
@@ -23,30 +24,29 @@ interface ProductDetailClientProps {
 
 // ─── REVIEWS SHEET COMPONENT ──────────────────────────────────────────────────
 
-function ReviewsSheet({ isOpen, onClose, productImages }: { isOpen: boolean; onClose: () => void; productImages: string[] }) {
-  // Mock data tailored to match the screenshot UI
-  const mockReviews = [
-    {
-      id: 1,
-      name: "Budi Santoso",
-      date: "Jan 19, 2026",
-      rating: 5,
-      text: "Pengiriman cepat sampai, packing rapih dan barang original 👍",
-      highlights: "Authentic Product, Fast Delivery, Great Quality, True to Color / Size, Neat Packaging.",
-      images: productImages.length > 0 ? [productImages[0], productImages[0], productImages[0], productImages[0]] : [],
-      avatar: "https://i.pravatar.cc/150?u=1"
-    },
-    {
-      id: 2,
-      name: "Siti Aminah",
-      date: "Jan 18, 2026",
-      rating: 5,
-      text: "Sepatunya keren banget! Nyaman dipakai buat lari maupun jalan-jalan.",
-      highlights: "Comfortable, Great Design, Fast Delivery",
-      images: productImages.length > 1 ? [productImages[1], productImages[1]] : [],
-      avatar: "https://i.pravatar.cc/150?u=2"
-    }
-  ];
+const SOURCE_LABEL: Record<string, string> = {
+  shopee: "Ulasan dari Shopee",
+  tokopedia: "Ulasan dari Tokopedia",
+  tiktok: "Ulasan dari TikTok Shop",
+};
+
+function formatReviewDate(iso: string) {
+  return new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function ReviewsSheet({
+  isOpen,
+  onClose,
+  data,
+  isLoading,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  data?: ProductReviewsResponse;
+  isLoading: boolean;
+}) {
+  const [preview, setPreview] = useState<string | null>(null);
+  const reviews = data?.reviews ?? [];
 
   return (
     <AnimatePresence>
@@ -74,7 +74,15 @@ function ReviewsSheet({ isOpen, onClose, productImages }: { isOpen: boolean; onC
 
             {/* Header */}
             <div className="flex items-center justify-between px-5 pb-4 pt-2 lg:pt-5 border-b border-gray-100 shrink-0">
-              <h3 className="font-bold text-base text-gray-900">All Reviews</h3>
+              <div>
+                <h3 className="font-bold text-base text-gray-900">All Reviews</h3>
+                {data && data.summary.count > 0 && (
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    <Star size={12} className="inline -mt-0.5 mr-1 fill-[#FF6B00] text-[#FF6B00]" />
+                    {data.summary.average.toFixed(1)} dari 5 · {data.summary.count} ulasan
+                  </p>
+                )}
+              </div>
               <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors">
                 <X size={20} />
               </button>
@@ -82,14 +90,23 @@ function ReviewsSheet({ isOpen, onClose, productImages }: { isOpen: boolean; onC
 
             {/* Scrollable Review List */}
             <div className="overflow-y-auto flex-1 p-5 space-y-6">
-              {mockReviews.map((review, idx) => (
-                <div key={review.id} className={cn("pb-6", idx !== mockReviews.length - 1 && "border-b border-gray-100")}>
+              {isLoading && <p className="text-sm text-gray-400 text-center py-10">Memuat ulasan…</p>}
+              {!isLoading && reviews.length === 0 && (
+                <p className="text-sm text-gray-400 text-center py-10">Belum ada ulasan untuk produk ini.</p>
+              )}
+              {reviews.map((review, idx) => (
+                <div key={review.id} className={cn("pb-6", idx !== reviews.length - 1 && "border-b border-gray-100")}>
                   {/* User Info */}
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-100 border border-gray-200">
-                      <Image src={review.avatar} alt={review.name} fill className="object-cover" />
+                    <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-500 uppercase">
+                      {review.name.charAt(0)}
                     </div>
-                    <span className="text-[10px] font-bold text-gray-900">{review.name}</span>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold text-gray-900">{review.name}</span>
+                      {SOURCE_LABEL[review.source] && (
+                        <span className="text-[10px] text-[#EE4D2D]">{SOURCE_LABEL[review.source]}</span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Rating & Date */}
@@ -103,32 +120,58 @@ function ReviewsSheet({ isOpen, onClose, productImages }: { isOpen: boolean; onC
                         />
                       ))}
                     </div>
-                    <span className="text-xs text-gray-400">Reviewed on {review.date}</span>
+                    <span className="text-xs text-gray-400">{formatReviewDate(review.createdAt)}</span>
                   </div>
+
+                  {review.variantLabel && (
+                    <p className="text-[10px] text-gray-400 mb-2">Variasi: {review.variantLabel}</p>
+                  )}
 
                   {/* Images row */}
                   {review.images.length > 0 && (
                     <div className="flex gap-2 mb-3 overflow-x-auto no-scrollbar pb-1">
                       {review.images.map((img, i) => (
-                        <div key={i} className="relative w-[72px] h-[72px] rounded-lg overflow-hidden shrink-0 border border-gray-200 bg-gray-50">
-                          <Image src={img} alt={`Review img ${i}`} fill className="object-cover" />
-                        </div>
+                        <button
+                          key={i}
+                          type="button"
+                          onClick={() => setPreview(img)}
+                          className="relative w-[72px] h-[72px] rounded-lg overflow-hidden shrink-0 border border-gray-200 bg-gray-50"
+                        >
+                          <Image src={img} alt={`Foto ulasan ${i + 1}`} fill className="object-cover" />
+                        </button>
                       ))}
                     </div>
                   )}
 
                   {/* Review Text */}
-                  <p className="text-[10px] text-gray-800 leading-relaxed mb-2">{review.text}</p>
+                  {review.comment && (
+                    <p className="text-[10px] text-gray-800 leading-relaxed mb-2 whitespace-pre-line">{review.comment}</p>
+                  )}
 
-                  {/* Highlights */}
-                  {review.highlights && (
-                    <p className="text-[11px] text-gray-400 leading-relaxed">
-                      Highlights: {review.highlights}
-                    </p>
+                  {review.replyText && (
+                    <div className="mt-2 rounded-lg bg-gray-50 px-3 py-2">
+                      <p className="text-[10px] font-bold text-gray-700 mb-0.5">Respon Penjual</p>
+                      <p className="text-[10px] text-gray-600 leading-relaxed whitespace-pre-line">{review.replyText}</p>
+                    </div>
                   )}
                 </div>
               ))}
             </div>
+
+            {/* Image preview */}
+            {preview && (
+              <div
+                className="absolute inset-0 z-20 bg-black/90 flex items-center justify-center lg:rounded-2xl rounded-t-2xl"
+                onClick={() => setPreview(null)}
+              >
+                <button className="absolute top-4 right-4 text-white/80 hover:text-white" aria-label="Tutup foto">
+                  <X size={24} />
+                </button>
+                <div className="relative w-full h-[70%]">
+                  <Image src={preview} alt="Foto ulasan" fill className="object-contain" />
+                </div>
+              </div>
+            )}
           </motion.div>
         </div>
       )}
@@ -164,6 +207,7 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
 
   // --- STATE & HOOKS ---
   const { data: product, isLoading: isProductLoading } = useProduct(slug);
+  const { data: reviewsData, isLoading: isReviewsLoading } = useProductReviews(product?.id);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const { openCart, addItemToCart, setSelectedItemIds } = useCartStore();
 
@@ -251,8 +295,8 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
   const isSoldOut = product.variants?.length > 0 && product.variants.every((v: any) => v.stock === 0);
   // ================================================
 
-  const rating       = product.ratingAvg != null ? parseFloat(String(product.ratingAvg)) : 4.8;
-  const reviewCount  = product.reviewCount ?? 98;
+  const rating       = reviewsData?.summary.average ?? 0;
+  const reviewCount  = reviewsData?.summary.count ?? 0;
   const earnedPoints = Math.floor(Number(displayPrice) * 0.01);
 
   // --- ACTIONS ---
@@ -468,8 +512,14 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
                     />
                   ))}
                 </div>
-                <span className="text-[10px] font-bold text-gray-700">{rating}</span>
-                <span className="text-xs text-gray-400 underline underline-offset-2">({reviewCount} reviews)</span>
+                {reviewCount > 0 ? (
+                  <>
+                    <span className="text-[10px] font-bold text-gray-700">{rating.toFixed(1)}</span>
+                    <span className="text-xs text-gray-400 underline underline-offset-2">({reviewCount} reviews)</span>
+                  </>
+                ) : (
+                  <span className="text-xs text-gray-400">Belum ada ulasan</span>
+                )}
               </button>
               <p className="text-[18px] lg:text-[20px] font-bold uppercase tracking-widest my-1">
                 {product.brand?.name || "SneakersFlash"}
@@ -788,10 +838,11 @@ function ProductDetailClientInner({ slug }: ProductDetailClientProps) {
       </div>
 
       {/* RENDER THE REVIEWS SHEET */}
-      <ReviewsSheet 
-        isOpen={isReviewsOpen} 
-        onClose={() => setIsReviewsOpen(false)} 
-        productImages={images} 
+      <ReviewsSheet
+        isOpen={isReviewsOpen}
+        onClose={() => setIsReviewsOpen(false)}
+        data={reviewsData}
+        isLoading={isReviewsLoading}
       />
     </div>
   );
